@@ -28,11 +28,12 @@ let camera, scene, canvas , renderer, labelRenderer, controls, mouse;
 let planeMeshFloar, planeGrid;
 let objectAxesHelper;
 let raycaster ;
-let light1, light2, light3;
+let light1, light2, light3,cameraLight, ambientLight;
 var srcRefresh = false;
 var togleBackgoundV= false;
 let drawingLine = false;
 let lineId = 0;
+let bbox_center = new THREE.Vector3();
 const fov = 75;
 const near = 0.1;
 const far = 1000;
@@ -56,6 +57,19 @@ function createSphereHelper() {
   sphereHelper.visible = false;
   scene.add(sphereHelper);
 }
+
+document.getElementById("toggle_light_settings").onclick = function () {
+    const group = document.getElementById("light_settings_group");
+
+    if (group.style.display === "none") {
+        group.style.display = "block";
+        this.innerHTML = "<b>▼ Light Settings</b>";
+    } else {
+        group.style.display = "none";
+        this.innerHTML = "<b>▶ Light Settings</b>";
+    }
+};
+
 
 function fitCameraToSelection(selection, fitOffset = 1.2 ) {
 	  const box = new THREE.Box3();
@@ -113,7 +127,7 @@ function togleBackgound(){
 
 function tecnicalBckground(){
 	objectAxesHelper.visible=true;
-	planeMeshFloar = new THREE.Mesh( new THREE.PlaneBufferGeometry( 2000, 2000 ),
+	planeMeshFloar = new THREE.Mesh( new THREE.PlaneGeometry( 2000, 2000 ),
 			new THREE.MeshPhongMaterial( { color: 0x999999, depthWrite: false } ) );
 	planeGrid = new THREE.GridHelper( 200, 40, 0x000000, 0x000000 );
 	planeMeshFloar.rotation.x = - Math.PI / 2;
@@ -310,11 +324,6 @@ function init() {
 
 }
 
-
-
-
-
-
 function getCameraCSSMatrix(matrix) {
 
   var elements = matrix.elements;
@@ -370,16 +379,41 @@ function initcommand(){
 	document.addEventListener('pointermove', onPointerMove );
 	document.addEventListener('keydown', onKeyDone);
 	document.addEventListener('keyup', onKeyup);
+
+
+    // Permanent menu delegates → real buttons
+   document.getElementById("fit_view_perm").onclick = function() {
+       fitCameraToSelectionEvent();
+   };
+   document.getElementById("save_view_perm").onclick = function() {
+       saveAsImage();
+   };
+   document.getElementById("markup_button_perm").onclick = function() {
+       // markup lives in markup_system.js — call directly
+       openMarkupEditor();
+   };
+
 	const html_canvas =  document.getElementById('odoo_canvas');
 	html_canvas.addEventListener("OdooCAD_fit_items", fitCameraToSelectionEvent, false);
+    // light
+    var object_light_distance = document.getElementById("object_distance")
+    object_light_distance.oninput = chenge_light_distance;
+    var object_light1 = document.getElementById("object_light1");
+    object_light1.oninput = chenge_light1;
+    var object_light2 = document.getElementById("object_light2");
+    object_light2.oninput = chenge_light2;
+    var object_light3 = document.getElementById("object_light3");
+    object_light3.oninput = chenge_light3;
+    var object_light_camera = document.getElementById("object_light_camera");
+    object_light_camera.oninput = chenge_light_camera;
+    var object_light_ambient = document.getElementById("object_light_ambient");
+    object_light_ambient.oninput = chenge_light_ambient;
+
 	var object_transparency = document.getElementById("object_transparency");
 	object_transparency.oninput = change_object_transparency;
 
     var object_explosion = document.getElementById("object_explosion");
     object_explosion.oninput = change_object_explosion;
-
-	var colorPicker = document.getElementById("object_color");
-	colorPicker.oninput = change_object_color;
 	/*
 	 * Make screen shot
 	 */
@@ -404,23 +438,27 @@ function initcommand(){
 	xmlhttp.send();
 }
 function onActivatorClick(event) {
-	  // highlight the mouseover target
-	  let activatorDiv = document.getElementById("activatorDiv");
-	  let main_command_slide = document.getElementById('mainCommandSlide')
-//	  $(bottom_command).toggleClass('d-none')
-	  if (activatorDiv.classList.contains('d-none')) {
-	    activatorDiv.style.visibility = 'visible';
-	    activatorDiv.style.opacity=0.8;
-	    activatorDiv.classList.remove('d-none');
-	    main_command_slide.style.height= '210px';
-	  }
-	  else{
-	    activatorDiv.style.visibility= 'invisible';
-	    activatorDiv.style.opacity=0;
-	    activatorDiv.classList.add('d-none');
-	    main_command_slide.style.height= '26px';
-	  }
-	}
+      // highlight the mouseover target
+      let activatorDiv = document.getElementById("activatorDiv");
+      let permanentMenu = document.getElementById("dropdown_menu_left_permenant");
+      let main_command_slide = document.getElementById('mainCommandSlide')
+//    $(bottom_command).toggleClass('d-none')
+      if (activatorDiv.classList.contains('d-none')) {
+        permanentMenu.style.display = 'none';
+        activatorDiv.style.visibility = 'visible';
+        activatorDiv.style.opacity=0.8;
+        activatorDiv.classList.remove('d-none');
+        main_command_slide.style.height= '210px';
+      }
+      else{
+        permanentMenu.style.display = 'block';
+        activatorDiv.style.visibility= 'invisible';
+        activatorDiv.style.opacity=0;
+        activatorDiv.classList.add('d-none');
+        main_command_slide.style.height= '26px';
+      }
+    }
+
 function on_data_card_button_click(event) {
 	  // highlight the mouseover target
 	  let main_div = document.getElementById("main_div");
@@ -504,21 +542,67 @@ var change_object_transparency = function(event) {
         });
 	}
 }
+var chenge_light_distance =  function(event){
+    var value = this.value;
+    change_light_position(value/1000);
+}
+var chenge_light1 = function(event){
+    var value = this.value;
+    light1.intensity= value/100;
+}
+var chenge_light2 = function(event){
+    var value = this.value;
+    light2.intensity= value/100;
+}
+var chenge_light3 = function(event){
+    var value = this.value;
+    light3.intensity= value/100;
+}
+var chenge_light_ambient = function(event){
+    var value = this.value;
+    ambientLight.intensity= value/100;
+}
+var chenge_light_camera = function(event){
+    var value = this.value;
+    cameraLight.intensity= value/100;
+}
 
-var change_object_explosion = function(event){
+/*, light2, light3, ambientLight;
+var chenge_light_ambient = funciton(event){
+    var value = this.value;
+}*/
+var change_object_explosion = function(event) {
     var entitys_BBOX = OdooCad.active_bbox;
     var center = new THREE.Vector3();
-    var items = OdooCad.items;
-    var value = this.value;
-    var factor= entitys_BBOX.max.length()/10000
-    for (let i = 0; i < items.length; i=i+1) {
-        var loop_item = items[i];
-            explode(loop_item,
-                    entitys_BBOX.getCenter(center),
-                    value,
-                    factor) ;
+    var value = parseFloat(this.value);
+    var factor = entitys_BBOX.max.length() / 20000;
+
+    // Store original positions only once before first explosion
+    if (!_explosionInitialized) {
+        storeOriginalPositions();
+        _explosionInitialized = true;
+    }
+
+    // Slider back to 0 → restore all original positions
+    if (value === 0) {
+        for (const [guid, obj] of Object.entries(OdooCad.tree_ref_elements)) {
+            var orig = _originalPositions.get(guid);
+            if (orig) obj.position.copy(orig);
         }
+        render();
+        return;
+    }
+
+    entitys_BBOX.getCenter(center);
+
+    // Explode each named tree item independently
+    for (const [guid, obj] of Object.entries(OdooCad.tree_ref_elements)) {
+        explode(obj, guid, center, value, factor);
+    }
+
+    render();
 }
+
 
 var fitCameraToSelectionEvent = function(e){
     if (Object.values(OdooCad.tree_ref_elements).length>0){
@@ -648,6 +732,10 @@ function addCamera(){
 			near,
 			far);
 	camera.position.z = 2;
+	// light
+    cameraLight = new THREE.PointLight( 0xffffff, 0.5 );
+    camera.add( cameraLight );
+    scene.add(camera);
 }
 
 function addOrbit(){
@@ -661,18 +749,26 @@ function addOrbit(){
 }
 
 function resetLight(bbox, size) {
-	var mult = size * 1000;
-	var center = new THREE.Vector3();
-	bbox.getCenter(center);
-	var x = center.x + mult;
-	var y = center.y + mult;
-	var z = center.z + mult;
+	bbox_center = new THREE.Vector3();
+	bbox.getCenter(bbox_center);
+    change_light_position(size)
+    }
+
+function change_light_position(size){
+    var mult = size * 1000;
+    //
+	var x = bbox_center.x + mult;
+	var y = bbox_center.y + mult;
+	var z = bbox_center.z + mult;
+	//
 	light1.position.z = z;
 	light1.position.y = - y;
 	light1.position.x = - x;
+	//
 	light2.position.z = z;
 	light2.position.x = - x;
 	light2.position.y = y;
+	//
 	light3.position.z = z;
 	light3.position.x = x;
 	light3.position.y = - y;
@@ -683,30 +779,33 @@ function addLight(){
 	const group = new THREE.Group();
 	scene.add( group );
 
-	light1 = new THREE.DirectionalLight( 0xf7d962, 0.1);
+	light1 = new THREE.SpotLight( 0xf7d962, 0.1);
 	light1.castShadow = true; // default false
 	light1.position.z = 70;
 	light1.position.y = - 70;
 	light1.position.x = - 70;
+	light1.intensity = 0.5;
 	scene.add( light1 );
 
-	light2 = new THREE.DirectionalLight( 0xffdddd, 0.1 );
+	light2 = new THREE.SpotLight( 0xffdddd, 0.1 );
 	light2.castShadow = true; // default false
 	light2.position.z = 70;
 	light2.position.x = - 70;
 	light2.position.y = 70;
+	light2.intensity =0.5;
 	scene.add( light2 );
 
-	light3 = new THREE.DirectionalLight( 0xf7d962, 0.1 );
+	light3 = new THREE.SpotLight( 0xf7d962, 0.1 );
 	light3.castShadow = true; // default false
 	light3.position.z = 70;
 	light3.position.x = 70;
 	light3.position.y = - 70;
+	light3.intensity = 0.5;
 	scene.add( light3 );
 
-    const ambientLight = new THREE.HemisphereLight('#b199ff',           // bright sky color
-                                                  'darkslategrey',  // dim ground color
-                                                  1.5,                // intensity
+    ambientLight = new THREE.HemisphereLight('#b199ff',        // bright sky color
+                                             'darkslategrey',  // dim ground color
+                                             0.5,              // intensity
     );
 
     scene.add(ambientLight);
@@ -858,53 +957,49 @@ function getElementByXpath(path, document_env) {
  * box_ct_world : a vec3 center of the bounding box
  *
  */
-function explode(obj,
-                 box_center,
-                 speed,
-                 factor){
-    //var scene = this.el.sceneEl.object3D ; //I am using Aframe , so this is how I retrieve the whole scene .
-    if(obj instanceof THREE.Mesh){
-        var position = obj.position ;
+var _originalPositions = new Map();
+var _explosionInitialized = false;
 
-        position.setFromMatrixPosition(scene.matrixWorld) ;
+function storeOriginalPositions() {
+    _originalPositions.clear();
+    // Store positions of each NAMED tree item (Group level), not raw meshes
+    for (const [guid, obj] of Object.entries(OdooCad.tree_ref_elements)) {
+        _originalPositions.set(guid, obj.position.clone());
+    }
+}
 
-        var addx =0 ;
-        var addy =0 ;
-        var addz =0 ;
+function explode(obj, guid, box_center, speed, factor) {
+    var originalPos = _originalPositions.get(guid);
+    if (!originalPos) return;
 
-        /**
-         * This is the vector from the center of the box to the node . we use that to translate every meshes away from the center
-         */
-        var addx =(position.x - box_center.x) * speed * factor;
-        var addy =(position.y - box_center.y) * speed * factor;
-        var addz =(position.z - box_center.z) * speed * factor;
-        var explode_vectorx=  addx;
-        var explode_vectory=  addy;
-        var explode_vectorz=  addz;
+    var dir = new THREE.Vector3(
+        originalPos.x - box_center.x,
+        originalPos.y - box_center.y,
+        originalPos.z - box_center.z
+    );
 
-        var vector = new THREE.Vector3(explode_vectorx , explode_vectory, explode_vectorz) ;
-        obj.position.set(vector.x , vector.y , vector.z ) ;
+    // Fallback: part sits at center → use its bounding box center as direction
+    if (dir.length() < 0.001) {
+        var bbox = new THREE.Box3().setFromObject(obj);
+        var bCenter = new THREE.Vector3();
+        bbox.getCenter(bCenter);
+        dir.set(
+            bCenter.x - box_center.x,
+            bCenter.y - box_center.y,
+            bCenter.z - box_center.z
+        );
+    }
 
-        if(obj.children.length != 0 ){
-          for(var i = 0 ; i < obj.children.length ; i++){
-             explode(obj.children[i],
-                     box_center,
-                     speed,
-                     factor);
-          }
-        }
-      }
-      else{
-        if(obj.children.length != 0 ){
-            for(var i = 0 ; i < obj.children.length ; i++){
-                explode(obj.children[i],
-                        box_center,
-                        speed,
-                        factor);
-            }
-        }
-     }
-};
+    if (dir.length() > 0.001) {
+        dir.normalize().multiplyScalar(speed * factor * 100);
+    }
+
+    obj.position.set(
+        originalPos.x + dir.x,
+        originalPos.y + dir.y,
+        originalPos.z + dir.z
+    );
+}
 
 
 

@@ -1340,7 +1340,7 @@ class IrAttachment(models.Model):
                 if parent_docs:
                     msg = _('You cannot unlink a component child that is present in a related documents:\n')
                     for parent_doc in parent_docs:
-                        msg += _(f'\t Engineering Name = {parent_doc.engineering_code}   Engineering Revision = {parent_doc.engineering_revision}   Id = {parent_doc.id}\n') 
+                        msg += _(f'\t Engineering Name = {parent_doc.engineering_code}   Engineering Revision = {parent_doc.engineering_revision}   Id = {parent_doc.id}\n')
                     raise UserError(msg)
 
             #
@@ -1519,7 +1519,7 @@ class IrAttachment(models.Model):
             return False
         self.env["plm.checkout"].browse(checkOutId).unlink()
         return self.id
-    
+
     def getRelatedLayouts(self):
         out = self.env['ir.attachment']
         ir_attachment_relation = self.env['ir.attachment.relation']
@@ -1528,7 +1528,7 @@ class IrAttachment(models.Model):
                 if f"{relation.parent_id.document_type}".upper()=='2D':
                     out+= relation.parent_id
         return out
-    
+
     def assign_must_update_flag(self,
                                 only_layout=False):
         cad_open_obj = self.env['plm.cad.open']
@@ -1630,11 +1630,11 @@ class IrAttachment(models.Model):
         out = self.env['ir.attachment']
         ir_attachment_relation = self.env['ir.attachment.relation']
         for ir_attachment_id in self:
-            for relation in ir_attachment_relation.search([('parent_id', '=', ir_attachment_id.id)]): 
+            for relation in ir_attachment_relation.search([('parent_id', '=', ir_attachment_id.id)]):
                 if f"{relation.child_id.document_type}".upper()=='3D':
                     out+= relation.child_id
         return out
-                        
+
     def _compute_linkedcomponents(self):
         for record in self:
             if record.linkedcomponents:
@@ -2947,7 +2947,7 @@ class IrAttachment(models.Model):
         )
         if not product_product_id:
             logging.warning(
-                f"Unable to create / get product_product from {component_props}" 
+                f"Unable to create / get product_product from {component_props}"
             )
         #
         #  generate document
@@ -3636,7 +3636,7 @@ class IrAttachment(models.Model):
                         )
                         appendItem(out["to_info"], tmp_dict)
             return tmp_dict
-    
+
     def getOutUserInfo(self):
         self.ensure_one()
         checkoutBrwsList = self.env['plm.checkout'].search([('documentid', '=', self.id)])
@@ -3649,7 +3649,7 @@ class IrAttachment(models.Model):
                  'hostname': '',
                  'pws_path':'',
                  }
-        
+
     def getCheckInOutFlag(self):
         self.ensure_one()
         return {
@@ -3773,8 +3773,7 @@ class IrAttachment(models.Model):
                     continue
                 is_check_in = doc_id.ischecked_in()
                 if is_check_in:
-                    newer_in_odoo = doc_id.checkNewer(hostname,
-                                                      hostpws)
+                    newer_in_odoo = not self.is_open_by_me(hostname, hostpws)
                     if newer_in_odoo:
                         doc_fields["checkout"] = False
                         doc_fields["newer"] = True
@@ -3931,9 +3930,9 @@ class IrAttachment(models.Model):
         """
         self.ensure_one()
         #
-        
+
         def get_all_ids(attachment_id,
-                        link_kinds, 
+                        link_kinds,
                         latest):
             out=[]
             check = []
@@ -3943,11 +3942,11 @@ class IrAttachment(models.Model):
                     root_id = attachment_id.get_latest_version()
                 else:
                     root_id = attachment_id
-                
+
                 if root_id.id in check:
                     return
                 check.append(root_id.id)
-                out.append(root_id)    
+                out.append(root_id)
                 for root_model_attachment_id in root_id.getRelatedOneLevelLinks(root_id.id,
                                                                                 link_kinds):
 
@@ -3957,13 +3956,27 @@ class IrAttachment(models.Model):
             return out
         #
         if self.document_type.upper() in ['2D']:
-            return get_all_ids(self,
-                             ['LyTree', 'RfTree'],
-                             latest)
+            out=[]
+            check=[]
+            for attachment_id in get_all_ids(self,
+                                              ['LyTree', 'RfTree'],
+                                              latest):
+                if attachment_id.id not in check:
+                    check.append(attachment_id.id)
+                    out.append(attachment_id)
+                    if attachment_id.document_type.upper() in ['3D']:
+                        for model_attachment_id in get_all_ids(attachment_id,
+                                                               ['HiTree', 'RfTree'],
+                                                               latest):
+                            if model_attachment_id.id not in check:
+                                check.append(model_attachment_id.id)
+                                out.append(model_attachment_id)
+            return out
         else:
             return get_all_ids(self,
                              ['HiTree', 'RfTree'],
                              latest)
+
 
     def getDocBomFlatSql(self):
         """
@@ -3983,6 +3996,8 @@ class IrAttachment(models.Model):
         for link_kind in to_compute:
             for related_attachment_id in self.get_all_relation_flat_structure_sql(link_kind):
                 out.append(related_attachment_id)
+                if link_kind=='LyTree' and self.id!=related_attachment_id.id:
+                    out+=related_attachment_id.getDocBomFlatSql()
         return out
 
     @api.model
@@ -4062,7 +4077,7 @@ class IrAttachment(models.Model):
             out_parent_attrs = self.get_clone_info_attr(attachment_id,
                                                         product_product_id)
             out_parent_attrs['CONFIGURATION_NAME'] = parent_attrs.get('product',{}).get('CONFIGURATION_NAME','')
-            out_parent_attrs['CONFIGURATIONS'] = parent_attrs.get('product',{}).get('CONFIGURATIONS',[])
+            out_parent_attrs['INTEGRATION_FILE_TYPE'] = parent_attrs.get('document',{}).get('INTEGRATION_FILE_TYPE','')
             out_parent_attrs['CONFIGURATIONS_ATTRIBUTES']={}
             for config_name, config_attrs in parent_attrs.get('product',{}).get('CONFIGURATIONS_ATTRIBUTES',{}).items():
                 config_product_product_id, config_attachment_id = self._GetproductDocumentID(tuple(parent_attrs.values()))
@@ -4074,7 +4089,7 @@ class IrAttachment(models.Model):
             #
             children = []
             for doc_id_2d in self.getRelatedLyTree(
-                attachment_id, 
+                attachment_id,
                 optional_return_type=["2d"]
                 ):
                 layout_data = self.get_clone_info_attr(doc_id_2d)
@@ -4210,13 +4225,13 @@ class IrAttachment(models.Model):
         #
 
         return json.dumps(out)
-    
+
     def getDocumentChechOutDict(self, document_id):
         out_template = {'id':0,
-                        'document_name':'', 
-                        'document_revision':0, 
+                        'document_name':'',
+                        'document_revision':0,
                         'workflow':'',
-                        'type':'', 
+                        'type':'',
                         'layouts' : [],
                         'file_name':'',
                         'message': 'template',
@@ -4236,15 +4251,15 @@ class IrAttachment(models.Model):
             out_data['message'] = "Found"
             out_data['check_in_out_flag'] = document_id.getCheckInOutFlag()
         return out_data
-        
+
     @api.model
     def getCheckOutInState(self,
                           args):
         """
         :args data in {'engineering_code':, 'engineering_revision':, 'file-readonly_flag':}
-        :return:   [{'document_name':, 
-                     'document_revision':, 
-                     'type':, 
+        :return:   [{'document_name':,
+                     'document_revision':,
+                     'type':,
                      'file_name':,
                      'workflow':,
                      'layouts' : [<some -structure>],
@@ -4256,8 +4271,8 @@ class IrAttachment(models.Model):
                                                         'pws_path':<pws_checkout_path>}
                                                         'workflow':<status>,
                                                     }},
-                    
-         
+
+
         """
         out = []
         for document_attributes in json.loads(args[0]):
@@ -4265,7 +4280,7 @@ class IrAttachment(models.Model):
             out.append(self.getDocumentChechOutDict(document_id))
         #
         return json.dumps(out)
-    
+
     def getLayoutsCheckInOutState(self):
         self.ensure_one()
         out=[]
@@ -4486,16 +4501,16 @@ class IrAttachment(models.Model):
             if child.id == self.id:
                 out += parent_id
                 if recursion:
-                    for obj in self.getRelatedRfTreeNew(parent_id, 
-                                                        recursion, 
+                    for obj in self.getRelatedRfTreeNew(parent_id,
+                                                        recursion,
                                                         evaluated,
                                                         latest):
                         out = obj
             else:
                 out += child_id
                 if recursion:
-                    for obj in self.getRelatedRfTreeNew(child_id, 
-                                                        recursion, 
+                    for obj in self.getRelatedRfTreeNew(child_id,
+                                                        recursion,
                                                         evaluated,
                                                         latest):
                         out = obj
@@ -4593,7 +4608,7 @@ class IrAttachment(models.Model):
         # never open the file
         #
         return True # Download
-    
+
     def isCollectable(self, hostname, pws_path):
         self.ensure_one()
         out = True
@@ -4606,7 +4621,7 @@ class IrAttachment(models.Model):
                     if last_revision_id.isCheckedOutByMe():
                         out = False
         return out
-    
+
 
     def isCollectableNew(self,
                          hostname,
@@ -4657,7 +4672,7 @@ class IrAttachment(models.Model):
             'flags': self.getCheckInOutFlag(),
             'last_update': self.get_last_cad_save_date().strftime(DEFAULT_SERVER_DATETIME_FORMAT),
             'last_my_open': self.get_last_my_open().strftime(DEFAULT_SERVER_DATETIME_FORMAT),
-            'is_downloadable': self.isCollectableNew(hostname, 
+            'is_downloadable': self.isCollectableNew(hostname,
                                                      pws_path),
             'is_last_revision': True if self.engineering_state not in [OBSOLATED_STATUS,
                                                                          UNDER_MODIFY_STATUS] else False
@@ -4688,8 +4703,8 @@ class IrAttachment(models.Model):
                     e.link_kind
                 FROM
                     ir_attachment_relation e
-                INNER JOIN subordinates s ON s.child_id = e.parent_id and s.link_kind=e.link_kind 
-        ) 
+                INNER JOIN subordinates s ON s.child_id = e.parent_id and s.link_kind=e.link_kind
+        )
         SELECT child_id from subordinates;
         """
         ids = set()
