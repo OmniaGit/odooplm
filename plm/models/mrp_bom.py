@@ -438,6 +438,9 @@ class MrpBomExtension(models.Model):
 
     @api.model
     def SaveStructure(self, relations, level=0, curr_level=0, kind_bom='normal'):
+        return self.with_context(from_cad=True)._SaveStructure(relations, level, curr_level, kind_bom)
+
+    def _SaveStructure(self, relations, level=0, curr_level=0, kind_bom='normal'):
         """
             Save EBom relations
         """
@@ -828,6 +831,11 @@ class MrpBomExtension(models.Model):
     @api.model
     def saveRelationNew(self,
                         clientArgs):
+        return self.with_context(from_cad=True)._saveRelationNew(clientArgs)
+     
+    def _saveRelationNew(self,
+                        clientArgs):
+
         #
         product_product = self.env['product.product']
         ir_attachment_relation = self.env['ir.attachment.relation']
@@ -908,6 +916,10 @@ class MrpBomExtension(models.Model):
                                                                          self.env['ir.attachment'].browse(l_tree_document_id))
             if mrp_bom_found_id and not mrp_bom_found_id.bom_line_ids:
                 mrp_bom_found_id.unlink()
+            #
+            if hasattr(self, 'afterSaveRelationNew') and mrp_bom_found_id:
+                self.afterSaveRelationNew(mrp_bom_found_id)
+            #
             return True
         except Exception as ex:
             logging.error(ex)

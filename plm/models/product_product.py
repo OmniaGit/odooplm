@@ -138,21 +138,21 @@ class ProductProduct(models.Model):
                            size=32,
                            default='',
                            help="Allow to specify a unit measure for the first feature.")
-    std_value1 = fields.Float('Value 1',
+    std_value1 = fields.Char('Value 1',
                               default=0,
                               help="Assign value to the first characteristic.")
     std_umc2 = fields.Char('UM / Feature 2',
                            size=32,
                            default='',
                            help="Allow to specify a unit measure for the second feature.")
-    std_value2 = fields.Float('Value 2',
+    std_value2 = fields.Char('Value 2',
                               default=0,
                               help="Assign value to the second characteristic.")
     std_umc3 = fields.Char('UM / Feature 3',
                            size=32,
                            default='',
                            help="Allow to specifiy a unit measure for the third feature.")
-    std_value3 = fields.Float('Value 3',
+    std_value3 = fields.Char('Value 3',
                               default=0,
                               help="Assign value to the second characteristic.")
 
