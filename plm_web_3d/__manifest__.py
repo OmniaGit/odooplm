@@ -21,7 +21,7 @@
 ##############################################################################
 {
     "name": "PLM Web 3d Support",
-    "version": "18.0.3.0.2",
+    "version": "18.0.3.0.3",
     "author": "OmniaSolutions",
     "website": "https://odooplm.omniasolutions.website",
     "category": "Manufacturing/Product Lifecycle Management (PLM)",
