@@ -444,6 +444,15 @@ ul,
     user-select: none;
 }
 
+.caret::before {
+    content: "\25B6";
+    color: #4a1942;
+    display: inline-block;
+    margin-right: 6px;
+    font-size: 10px;
+    transition: transform 0.15s ease-in-out;
+}
+
 .caret-down::before {
     transform: rotate(90deg);
 }
@@ -461,21 +470,25 @@ ul,
     text-align: left;
 }
 
-.document_tree_line:hover {
+.document_tree_span:hover {
     background-color: #eda3da;
+    border-radius: 2px;
 }
 
-.document_tree_line>span:hover {
+.caret:hover {
     background-color: #eda3da;
+    border-radius: 2px;
 }
 
 .document_tree_line>i {
     padding: 8px;
+    border-radius: 2px;
 }
 
 .document_tree_line>i:hover {
     background-color: #eda3da;
 }
+
 
 .document_tree_line_highlighted,
 .document_tree_line_highlighted span {
@@ -1201,4 +1214,9 @@ canvas#odoo_canvas {
     width: 25px;
     margin-left: 1px;
     height: 85px;
+}
+
+.document_tree_line.hovered {
+    background-color: #eda3da;
+    border-radius: 6px;
 }
