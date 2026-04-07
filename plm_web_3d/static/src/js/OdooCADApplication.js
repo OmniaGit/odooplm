@@ -739,13 +739,22 @@ window.onPointerMove = function (event) {
 	let hoveredGuid = null;
 	if (intersects.length > 0) {
 		let obj = intersects[0].object;
+		let foundGuid = null;
 		while (obj) {
 			if (obj.userData && obj.userData.webgl_ref_name) {
-				hoveredGuid = obj.userData.webgl_ref_name;
-				break;
+				let nodeName = (obj.name || "").toLowerCase();
+				// If we find a valid component that is NOT just a geometry "body"
+				if (!nodeName.startsWith("body")) {
+					foundGuid = obj.userData.webgl_ref_name;
+					break;
+				} else if (!foundGuid) {
+					// Keep the body guid as a fallback just in case there's no other parent
+					foundGuid = obj.userData.webgl_ref_name;
+				}
 			}
 			obj = obj.parent;
 		}
+		hoveredGuid = foundGuid;
 	}
 
 	if (hoveredGuid !== window.last_highlighted_li) {
@@ -783,18 +792,6 @@ window.onPointerMove = function (event) {
 			}
 
 			if (targetLi) {
-				// JUMP TO TOP-LEVEL PARENT (The PROD... item)
-				// We keep jumping up until the parent is the main container 'myUL' or 'document_tree'
-				let topLevelLi = targetLi;
-				while (topLevelLi && topLevelLi.parentElement &&
-					topLevelLi.parentElement.id !== 'myUL' &&
-					topLevelLi.parentElement.id !== 'document_tree') {
-					const parentLi = topLevelLi.parentElement.closest('li');
-					if (!parentLi) break;
-					topLevelLi = parentLi;
-				}
-				targetLi = topLevelLi;
-
 				const highlightColor = "#eda3da"; // Unified Pink
 				const textColor = "#000000";
 
