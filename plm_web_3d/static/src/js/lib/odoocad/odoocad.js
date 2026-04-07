@@ -118,6 +118,7 @@ class OdooCAD {
             // Recursively get children structure
             const [inner_html, children_found] = self.get_li_structure(child, true);
             var obj_name = child.name || child.type; // Use type as fallback name
+            var clean_code = (child.name || "").split('(')[0].trim();
             var internal_obj_name = guid();
             var span_lable = "<span class='document_tree_span' webgl_ref_name='" + internal_obj_name + "'>" + obj_name + "</span>";
 
@@ -125,6 +126,7 @@ class OdooCAD {
             if (children_found || child.name !== '') {
                 self.tree_ref_elements[internal_obj_name] = child;
                 child.userData.webgl_ref_name = internal_obj_name;
+                child.userData.engineering_code = clean_code;
 
                 // Check if the inner HTML actually contains any elements from sub-parts,
                 // or if it's just an empty ul wrapper (because all children were 'body' nodes and got filtered).
@@ -143,6 +145,7 @@ class OdooCAD {
             else if (child.name !== '') {
                 // Leaf node with a name
                 child.userData.webgl_ref_name = internal_obj_name;
+                child.userData.engineering_code = clean_code;
                 // Only push to HTML if it's not a geometry body
                 if (!(child.name || '').toLowerCase().startsWith('body')) {
                     out_lis += "<li class='document_tree_line' webgl_ref_name='" + internal_obj_name + "'>" + span_lable + "</li>";

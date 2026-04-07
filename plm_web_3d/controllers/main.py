@@ -85,31 +85,26 @@ class Web3DView(Controller):
                     )
                     components = self.component_extra(components)
                     out["component"] = components
-        return json.dumps(out)
 
     @route("/plm/get_3d_web_document_info", type="http", auth="user")
-    @webservice
-    def get_3d_web_document_info(self, src_name):
-        src_name = src_name.split("(")[0]
-        # this split is needed for solidwoks file the put the configuration
-        # on the name filename(<configuration name>)description
-        out = f"""<span>{src_name}</span>"""
-        for ir_attachment in (
-            request.env["ir.attachment"].sudo().search([
-                "|", ("name", "ilike", src_name),
-                ("engineering_code", "ilike", src_name)
-            ])
-        ):
-            for product_product_id in ir_attachment.linkedcomponents:
-                out = f"""
-                <span title={product_product_id.name}>
-                {product_product_id.engineering_code}
-                Rev. {product_product_id.engineering_revision}
-                </span>
-                """
-                break
+    def get_3d_web_document_info(self, src_name, parent_id=None):
+        if not parent_id or not str(parent_id).isdigit():
+            return src_name
 
-        return out
+        parent_doc = request.env["ir.attachment"].sudo().browse(int(parent_id))
+        if not parent_doc.exists():
+            return src_name
+
+        if parent_doc.linkedcomponents:
+            p = parent_doc.linkedcomponents[0]
+            code = p.engineering_code or ''
+            name = p.name or ''
+            if code:
+                return f"{code} - {name}"
+            return name
+        # we can here manage the name of the document by parent_doc.
+        return src_name
+
 
     @http.route('/plm_web_3d/save_markup', type='json', auth='user')
     def save_markup(self, image=None, base_image=None, filename=None, comment=None,
