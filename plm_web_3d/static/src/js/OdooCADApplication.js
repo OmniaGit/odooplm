@@ -683,6 +683,8 @@ if (typeof window.last_highlighted_sidebar_el === 'undefined') {
 	window.last_highlighted_sidebar_el = null;
 }
 window.ODOO_HILIGHT_COLOR = new THREE.Color("#eda3da");
+window.tooltipCache = {};
+
 
 // Helper to expand all parent folders in the sidebar tree
 function expandAncestors(element) {
@@ -721,7 +723,6 @@ window.highlight3D = function (guid, enable = true) {
 };
 
 
-// 3. MAIN POINTER MOVE & SIDEBAR SYNC
 window.onPointerMove = function (event) {
 	if (typeof canvas === 'undefined' || !canvas) return;
 	if (typeof raycaster === 'undefined' || typeof camera === 'undefined') return;
@@ -739,22 +740,73 @@ window.onPointerMove = function (event) {
 	let hoveredGuid = null;
 	if (intersects.length > 0) {
 		let obj = intersects[0].object;
+		let foundGuid = null;
 		while (obj) {
 			if (obj.userData && obj.userData.webgl_ref_name) {
-				hoveredGuid = obj.userData.webgl_ref_name;
-				break;
+				let nodeName = (obj.name || "").toLowerCase();
+				if (!nodeName.startsWith("body")) {
+					foundGuid = obj.userData.webgl_ref_name;
+					break;
+				} else if (!foundGuid) {
+					foundGuid = obj.userData.webgl_ref_name;
+				}
 			}
 			obj = obj.parent;
 		}
+		hoveredGuid = foundGuid;
 	}
 
+	// --- TOOLTIP LOGIC ---
+	const tooltip = document.getElementById('part_tooltip');
+	if (!tooltip) {
+		console.warn("Tooltip element #part_tooltip not found in DOM");
+	} else if (hoveredGuid) {
+		tooltip.style.display = 'block';
+		tooltip.style.left = (event.clientX + 15) + 'px';
+		tooltip.style.top = (event.clientY + 15) + 'px';
+
+		const obj3d = OdooCad.tree_ref_elements[hoveredGuid];
+		if (obj3d) {
+			const srcName = (obj3d.userData && obj3d.userData.engineering_code) || obj3d.name || obj3d.type || "Component";
+
+			if (window.tooltipCache[srcName]) {
+				tooltip.innerText = window.tooltipCache[srcName];
+			} else {
+				tooltip.innerText = srcName;
+
+				const parentId = document.getElementById('main_3d_web')?.getAttribute('data-res-id') || document.getElementById('active_model')?.getAttribute('active_model') || "";
+				const url = `/plm/get_3d_web_document_info/?src_name=${encodeURIComponent(srcName)}&parent_id=${parentId}`;
+				fetch(url)
+
+					.then(response => response.text())
+					.then(data => {
+						const finalMsg = data.trim() || srcName;
+						window.tooltipCache[srcName] = finalMsg;
+						if (window.last_highlighted_li === hoveredGuid) {
+							tooltip.innerText = finalMsg;
+						}
+					})
+					.catch(err => {
+						console.error("Tooltip error:", err);
+						window.tooltipCache[srcName] = srcName;
+						tooltip.innerText = srcName;
+					});
+			}
+		} else {
+			tooltip.innerText = "Unknown Part";
+		}
+	} else {
+		tooltip.style.display = 'none';
+		tooltip.innerText = "";
+	}
+
+
+	// --- HIGHLIGHT SYNC LOGIC ---
 	if (hoveredGuid !== window.last_highlighted_li) {
-		// --- STEP 1: CLEANUP PREVIOUS ---
 		if (window.last_highlighted_li) {
 			window.highlight3D(window.last_highlighted_li, false);
 		}
 
-		// ALWAYS cleanup the last element we actually touched in the sidebar
 		if (window.last_highlighted_sidebar_el) {
 			const el = window.last_highlighted_sidebar_el;
 			el.classList.remove('document_tree_line_highlighted');
@@ -762,7 +814,6 @@ window.onPointerMove = function (event) {
 			el.style.color = "";
 			el.style.border = "";
 			el.style.boxShadow = "";
-			// Reset child spans/icons
 			const children = el.querySelectorAll('span, i');
 			children.forEach(c => {
 				c.style.backgroundColor = "";
@@ -771,11 +822,8 @@ window.onPointerMove = function (event) {
 			window.last_highlighted_sidebar_el = null;
 		}
 
-		// --- STEP 2: APPLY NEW HIGHLIGHT ---
 		if (hoveredGuid) {
 			window.highlight3D(hoveredGuid, true);
-
-			// Precise selector for the tree entry
 			let targetLi = document.querySelector(`li[webgl_ref_name="${hoveredGuid}"]`);
 			if (!targetLi) {
 				const span = document.querySelector(`span[webgl_ref_name="${hoveredGuid}"]`);
@@ -783,57 +831,31 @@ window.onPointerMove = function (event) {
 			}
 
 			if (targetLi) {
-				// JUMP TO TOP-LEVEL PARENT (The PROD... item)
-				// We keep jumping up until the parent is the main container 'myUL' or 'document_tree'
-				let topLevelLi = targetLi;
-				while (topLevelLi && topLevelLi.parentElement &&
-					topLevelLi.parentElement.id !== 'myUL' &&
-					topLevelLi.parentElement.id !== 'document_tree') {
-					const parentLi = topLevelLi.parentElement.closest('li');
-					if (!parentLi) break;
-					topLevelLi = parentLi;
-				}
-				targetLi = topLevelLi;
-
-				const highlightColor = "#eda3da"; // Unified Pink
+				const highlightColor = "#eda3da";
 				const textColor = "#000000";
-
-				// AUTO-EXPAND FOLDERS (Ensures visibility)
 				expandAncestors(targetLi);
-
 				targetLi.classList.add('document_tree_line_highlighted');
-
-				// Force styles on the LI
 				targetLi.style.setProperty('background-color', highlightColor, 'important');
 				targetLi.style.setProperty('color', textColor, 'important');
 				targetLi.style.setProperty('border', '2px solid #714B67', 'important');
 				targetLi.style.setProperty('box-shadow', '0 0 14px rgba(113, 75, 103, 0.7)', 'important');
 				targetLi.style.borderRadius = "4px";
-
-				// Store this element so we can clean it up later
 				window.last_highlighted_sidebar_el = targetLi;
 
-				// Ensure all internal spans/icons also show the color
 				const subElements = targetLi.querySelectorAll('span, i');
 				subElements.forEach(sub => {
 					sub.style.setProperty('background-color', highlightColor, 'important');
 					sub.style.setProperty('color', textColor, 'important');
 				});
 
-				// ROBUST SCROLLING
-				targetLi.scrollIntoView({
-					behavior: 'smooth',
-					block: 'center',
-					inline: 'nearest'
-				});
-
-				console.info("Reflected 3D hover on Parent Component:", targetLi.innerText.trim());
+				targetLi.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' });
 			}
 		}
 		window.last_highlighted_li = hoveredGuid;
 	}
 	if (typeof render === "function") render();
 };
+
 
 // 4. ATTACH EVENT LISTENER SAFELY
 // Remove existing listener first to prevent multiple triggers if script reloads

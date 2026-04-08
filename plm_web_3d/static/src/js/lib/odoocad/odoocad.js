@@ -12,7 +12,7 @@ const odoo_hilight_color = new THREE.Color("#eda3da")
 
 var guid = () => {
     var w = () => { return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1); }
-    return `${w()}${w()}-${w()}-${w()}-${w()}-${w()}${w()}${w()}`;
+    return `${w()}${w()}-${w()}-${w()}-${w()}-${w()}${w()}${w()}${w()}`;
 }
 
 class OdooCAD {
@@ -92,6 +92,9 @@ class OdooCAD {
         xmlhttp.send();
     }
 
+    // ============================================
+    // MODIFIED FUNCTION #1: get_li_structure
+    // ============================================
     get_li_structure(object, nested = false) {
         var self = this;
         var found = false;
@@ -102,55 +105,99 @@ class OdooCAD {
         else {
             out_lis = '<ul id="myUL">';
         }
+
+        // FIXED: Process all children, not just Groups
         for (let i = 0; i < object.children.length; i++) {
-            if (object.children[i].type == 'Group' || object.children[i].name != '') {
-                const [inner_html, children_found] = self.get_li_structure(object.children[i], true);
-                var obj_name = object.children[i].name;
-                var internal_obj_name = guid()
-                var span_lable = "<span class='document_tree_span' webgl_ref_name='" + internal_obj_name + "'>" + obj_name + "</span>";
-                if (children_found || object.children[i].name != '') {
-                    self.tree_ref_elements[internal_obj_name] = object.children[i]
-                    object.children[i].userData.webgl_ref_name = internal_obj_name;
-                    out_lis += "<li class='document_tree_line' webgl_ref_name='" + internal_obj_name + "'><i class='tree_item_visibility fa fa-eye' aria-hidden='true'></i><span class='caret'>" + span_lable + "</span>" + inner_html + "</li>";
+            const child = object.children[i];
+
+            // Skip children with no name and no meaningful type
+            if (child.name === '' && !['Group', 'Object3D', 'Mesh'].includes(child.type)) {
+                continue;
+            }
+
+            // Recursively get children structure
+            const [inner_html, children_found] = self.get_li_structure(child, true);
+            var obj_name = child.name || child.type; // Use type as fallback name
+            var clean_code = (child.name || "").split('(')[0].trim();
+            var internal_obj_name = guid();
+            var span_lable = "<span class='document_tree_span' webgl_ref_name='" + internal_obj_name + "'>" + obj_name + "</span>";
+
+            // Add item if it has children or a meaningful name
+            if (children_found || child.name !== '') {
+                self.tree_ref_elements[internal_obj_name] = child;
+                child.userData.webgl_ref_name = internal_obj_name;
+                child.userData.engineering_code = clean_code;
+
+                // Check if the inner HTML actually contains any elements from sub-parts,
+                // or if it's just an empty ul wrapper (because all children were 'body' nodes and got filtered).
+                let has_visible_children = (inner_html !== '<ul class="nested"></ul>' && inner_html !== '<ul id="myUL"></ul>');
+
+                // Only push to HTML if it's not a geometry body
+                if (!(child.name || '').toLowerCase().startsWith('body')) {
+                    if (has_visible_children) {
+                        out_lis += "<li class='document_tree_line' webgl_ref_name='" + internal_obj_name + "'><i class='tree_item_visibility fa fa-eye' aria-hidden='true'></i><span class='caret'>" + span_lable + "</span>" + inner_html + "</li>";
+                    } else {
+                        // Render as a leaf node without caret and without empty sub list
+                        out_lis += "<li class='document_tree_line' webgl_ref_name='" + internal_obj_name + "'><i class='tree_item_visibility fa fa-eye' aria-hidden='true'></i> " + span_lable + "</li>";
+                    }
                 }
-                else {
-                    object.children[i].userData.webgl_ref_name = internal_obj_name;
+            }
+            else if (child.name !== '') {
+                // Leaf node with a name
+                child.userData.webgl_ref_name = internal_obj_name;
+                child.userData.engineering_code = clean_code;
+                // Only push to HTML if it's not a geometry body
+                if (!(child.name || '').toLowerCase().startsWith('body')) {
                     out_lis += "<li class='document_tree_line' webgl_ref_name='" + internal_obj_name + "'>" + span_lable + "</li>";
                 }
-                found = true;
             }
+
+            found = found || children_found || (child.name !== '');
         }
+
         return [out_lis + "</ul>", found];
     }
-    //
+
+    // ============================================
+    // MODIFIED FUNCTION #2: show_hide_item
+    // ============================================
     show_hide_item(guid_item_name, visible) {
-        var groupObj = self.tree_ref_elements[guid_item_name];
+        var groupObj = this.tree_ref_elements[guid_item_name];
         if (groupObj) {
             groupObj.visible = visible;
         } else {
-            console.log("Item " + item_name + " Not Found")
+            console.log("Item " + guid_item_name + " Not Found")  // FIXED: was item_name
         }
     }
+
+    // ============================================
+    // MODIFIED FUNCTION #3: hide_item
+    // ============================================
+    hide_item(guid_item_name) {
+        this.show_hide_item(guid_item_name, false);  // FIXED: added 'this.'
+    }
+
+    // ============================================
+    // MODIFIED FUNCTION #4: show_item
+    // ============================================
+    show_item(guid_item_name) {
+        this.show_hide_item(guid_item_name, true);   // FIXED: added 'this.'
+    }
+
     //
     hide_all() {
         for (const scene_object_element of Object.values(this.tree_ref_elements)) {
             scene_object_element.visible = false;
         }
     }
-    //
-    hide_item(guid_item_name) {
-        show_hide_item(guid_item_name, false);
-    }
+
     //
     show_all() {
         for (const scene_object_element of Object.values(this.tree_ref_elements)) {
             scene_object_element.visible = true;
         }
     }
-    //
-    show_item(guid_item_name) {
-        show_hide_item(guid_item_name, true);
-    }
+
     //
     search_document_tree(element) {
         var input, filter, ul, li, a, i, txtValue;
@@ -168,21 +215,36 @@ class OdooCAD {
             }
         }
     }
-    //
+
     create_tree_structure(out_html_structure) {
         const self = this;
+
         var html_out = "<div class='tree_structure' style='overflow-y: scroll;min-height: 1px;max-height: 400px;'>";
-        html_out += out_html_structure
+        html_out += out_html_structure;
         html_out += "</div>";
 
-        var li_document_tree = document.querySelectorAll('#document_tree')
+        var li_document_tree = document.querySelectorAll('#document_tree');
         li_document_tree[0].innerHTML = html_out;
-        var toggler = document.getElementsByClassName("document_tree_line");
-        var i;
-        for (i = 0; i < toggler.length; i++) {
-            toggler[i].onmouseover = function () {
-                var webgl_name = this.attributes['webgl_ref_name'].value;
+
+        // ✅ IMPORTANT: use full row instead of span
+        var hoverTargets = document.getElementsByClassName("document_tree_line");
+
+        for (let i = 0; i < hoverTargets.length; i++) {
+
+            // =========================
+            // HOVER IN
+            // =========================
+            hoverTargets[i].onmouseover = function (event) {
+                event.stopPropagation();
+
+                this.classList.add('hovered'); // ✅ full row highlight
+
+                var webgl_name = this.getAttribute('webgl_ref_name');
+                if (!webgl_name) return;
+
                 var groupObj = self.tree_ref_elements[webgl_name];
+                if (!groupObj) return;
+
                 groupObj.traverse(function (child) {
                     if (child instanceof THREE.Mesh) {
                         if (child.material.userData.oldColor == undefined) {
@@ -191,10 +253,22 @@ class OdooCAD {
                         child.material.color = odoo_hilight_color;
                     }
                 });
-            }
-            toggler[i].onmouseout = function () {
-                var webgl_name = this.attributes['webgl_ref_name'].value;
+            };
+
+            // =========================
+            // HOVER OUT
+            // =========================
+            hoverTargets[i].onmouseout = function (event) {
+                event.stopPropagation();
+
+                this.classList.remove('hovered');
+
+                var webgl_name = this.getAttribute('webgl_ref_name');
+                if (!webgl_name) return;
+
                 var groupObj = self.tree_ref_elements[webgl_name];
+                if (!groupObj) return;
+
                 groupObj.traverse(function (child) {
                     if (child instanceof THREE.Mesh) {
                         if (child.material.userData.oldColor != undefined) {
@@ -202,29 +276,41 @@ class OdooCAD {
                         }
                     }
                 });
-            }
-            toggler[i].addEventListener("click", function () {
-                if (event.srcElement.tagName != 'I') {
+            };
+
+            // =========================
+            // CLICK
+            // =========================
+            hoverTargets[i].addEventListener("click", function (event) {
+                if (event.target.tagName != 'I') {
                     let url = location.origin;
                     let product_tag = document.getElementById('linked_component_id');
-                    if (product_tag && product_tag.length != 0) {
-                        let product_id = product_tag.dataset.id
-                        if (product_id) {
-                            url = url + '/odoo/product.product/' + product_id
-                            window.open(url);
-                        }
+
+                    if (product_tag && product_tag.dataset.id) {
+                        let product_id = product_tag.dataset.id;
+                        url = url + '/odoo/product.product/' + product_id;
+                        window.open(url);
                     }
                 }
             });
         }
+
+        // =========================
+        // VISIBILITY TOGGLE
+        // =========================
         var tree_item_visibility = document.getElementsByClassName("tree_item_visibility");
-        for (i = 0; i < tree_item_visibility.length; i++) {
-            tree_item_visibility[i].addEventListener("click", function () {
+
+        for (let i = 0; i < tree_item_visibility.length; i++) {
+            tree_item_visibility[i].addEventListener("click", function (event) {
+                event.stopPropagation();
+
                 function objectsVisibility(items, visible, currentAttrValue) {
                     items.forEach(name => {
                         var groupObj = self.tree_ref_elements[name];
-                        if (!groupObj) return; // Check if groupObj exists
+                        if (!groupObj) return;
+
                         var groupDiv = document.querySelector(`.document_tree_line[webgl_ref_name="${name}"]`);
+
                         if (groupDiv && currentAttrValue !== name) {
                             var icon = groupDiv.querySelector('.tree_item_visibility');
                             if (icon) {
@@ -232,33 +318,67 @@ class OdooCAD {
                                 icon.classList.toggle('fa-eye-slash', !visible);
                             }
                         }
+
                         groupObj.visible = visible;
                     });
                 }
-                let currentAttrValue = this.parentElement.attributes['webgl_ref_name'].value;
-                let caretSpan = this.parentElement.querySelector('span.caret span');
-                if (!caretSpan) return; // Early return if caretSpan is not found
-                let caretContent = caretSpan.textContent;
-                const matchingSpans = Array.from(document.querySelectorAll('span.caret span'))
-                    .filter(span => span.textContent === caretContent);
-                let webglRefNames = matchingSpans.map(span => span.getAttribute('webgl_ref_name')).filter(name => name !== null);
-                var icon = this;
+
+                let currentAttrValue = this.parentElement.getAttribute('webgl_ref_name');
+                let labelSpan = this.parentElement.querySelector('.document_tree_span');
+                if (!labelSpan) return;
+
+                let labelContent = labelSpan.textContent;
+
+                const matchingSpans = Array.from(document.querySelectorAll('.document_tree_span'))
+                    .filter(span => span.textContent === labelContent);
+
+                let webglRefNames = matchingSpans
+                    .map(span => span.getAttribute('webgl_ref_name'))
+                    .filter(name => name !== null);
+
+                let icon = this;
                 let isVisible = icon.classList.contains('fa-eye');
+
                 icon.classList.toggle('fa-eye', !isVisible);
                 icon.classList.toggle('fa-eye-slash', isVisible);
+
                 objectsVisibility(webglRefNames, !isVisible, currentAttrValue);
             });
         }
 
-        // NOTE: set_str_name is disabled because it fetches from a backend API
-        // which can return the login page HTML if the session is invalid,
-        // corrupting the entire Document Structure tree with login page content.
-        // var span_tree_documents = document.getElementsByClassName("document_tree_span");
-        // for (i = 0; i < span_tree_documents.length; i++) {
-        //     this.set_str_name(tree_item_visibility[i])
-        // }
+        // =========================
+        // CARET TOGGLE
+        // =========================
+        var carets = document.getElementsByClassName("caret");
+
+        for (let i = 0; i < carets.length; i++) {
+            carets[i].addEventListener("click", function (event) {
+
+                if (event.target !== this) return;
+
+                var nestedList = this.parentElement.querySelector(".nested");
+
+                if (nestedList) {
+                    nestedList.classList.toggle("active");
+                    this.classList.toggle("caret-down");
+                }
+
+                event.stopPropagation();
+            });
+        }
     }
+
+
+    // NOTE: set_str_name is disabled because it fetches from a backend API
+    // which can return the login page HTML if the session is invalid,
+    // corrupting the entire Document Structure tree with login page content.
+    // var span_tree_documents = document.getElementsByClassName("document_tree_span");
+    // for (i = 0; i < span_tree_documents.length; i++) {
+    //     this.set_str_name(tree_item_visibility[i])
+    // }
+
     //
+
     create_relation_structure(object) {
         const grp_types = ["Group", "Object3D"];
         var self = this;
