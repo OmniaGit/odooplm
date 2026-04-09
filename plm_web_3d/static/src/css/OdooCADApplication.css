@@ -306,14 +306,14 @@ label {
     padding: 2px;
     margin-top: 27px;
     width: 300px;
-    height: 400px;
-    /* REMOVED: visibility: visible !important and opacity: 1 !important */
-    /* These were preventing JS from hiding the panel */
+    height: 500px;
     visibility: hidden;
     opacity: 0;
     transition: visibility 0.2s, opacity 0.2s;
     resize: horizontal;
-    overflow: auto;
+    overflow: hidden !important;
+    display: flex;
+    flex-direction: column;
     direction: rtl;
     min-width: 300px;
 }
@@ -325,8 +325,12 @@ label {
 }
 
 #main_div_hidden {
-    padding: 5px;
-    transition: visibility 0.3s linear, opacity 0.3s linear;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+    /* ✅ CRITICAL: allows child to shrink */
+    overflow: hidden;
 }
 
 div.info_header {
@@ -347,14 +351,6 @@ div.info_header {
     right: 7px;
 }
 
-#tree_structure {
-    margin-left: auto;
-    margin-right: auto;
-    overflow-y: scroll;
-    overflow-x: hidden;
-    width: 100%;
-    height: 500px;
-}
 
 li.attribute_info {
     text-align: left;
@@ -465,9 +461,20 @@ ul,
     display: block;
 }
 
+/* ✅ FIX: ONLY #document_tree should have overflow-y: auto */
 #document_tree {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto !important;
+    /* ✅ Only scroll here */
+    overflow-x: hidden;
+
     direction: ltr;
+    /* ✅ fix weird RTL scroll bug */
     text-align: left;
+
+    padding-right: 4px;
+    /* optional: avoid scrollbar overlap */
 }
 
 .document_tree_span:hover {
@@ -914,7 +921,7 @@ canvas#odoo_canvas {
         font-size: 11px !important;
         box-sizing: border-box !important;
         max-height: 70vh !important;
-        overflow: auto !important;
+        overflow: hidden !important;
     }
 
     .plm_button,
@@ -983,6 +990,7 @@ canvas#odoo_canvas {
         max-width: 100% !important;
         font-size: 10px !important;
         box-sizing: border-box !important;
+        overflow: hidden !important;
     }
 
     #markup_logs_list {
