@@ -316,7 +316,6 @@ function init() {
 	// input_search_document_tree present.
 	//  var input_document_tree = document.getElementById('input_search_document_tree');
 	var input_document_list = document.getElementById('input_search_document_list');
-	console.log('hel ....... oo .........cad called ')
 	input_document_list.addEventListener("keyup", OdooCad.search_document_tree);
 	/*
 	 * function to hide show all components
@@ -802,7 +801,9 @@ window.onPointerMove = function (event) {
 
 
 	// --- HIGHLIGHT SYNC LOGIC ---
-	if (hoveredGuid !== window.last_highlighted_li) {
+	// ✅ PERSISTENT HIGHLIGHT: Only change highlight if we hit a NEW part.
+	// We no longer clear it when moving into empty space (hoveredGuid === null).
+	if (hoveredGuid && hoveredGuid !== window.last_highlighted_li) {
 		if (window.last_highlighted_li) {
 			window.highlight3D(window.last_highlighted_li, false);
 		}
