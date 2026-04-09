@@ -199,27 +199,30 @@ function imageBckground(path_to_load) {
 }
 
 function mesuraments() {
-	const measurementDiv = document.createElement('div');
-	const labelDiv = document.createElement('div');
-	const close_button = document.createElement('button');
-	close_button.type = "button";
-	close_button.innerHTML = 'x';
-	close_button.id = lineId;
-	close_button.className = 'measurementButton';
-	measurementDiv.className = 'measurement';
-	labelDiv.className = 'measurementLabel';
-	labelDiv.innerText = "0.0 mm";
-	measurementDiv.appendChild(labelDiv);
-	measurementDiv.appendChild(close_button);
-	// remove the lable from scene
-	close_button.addEventListener('pointerdown', function () {
-		console.log("remove");
-		scene.remove(measurementLabels[close_button.id]);
-		scene.remove(endPoint[close_button.id]);
-		scene.remove(startPoint[close_button.id]);
-		scene.remove(lines[close_button.id]);
-	});
-	return measurementDiv;
+    const measurementDiv = document.createElement('div');
+    const labelDiv = document.createElement('div');
+    const close_button = document.createElement('button');
+
+    close_button.type = "button";
+    close_button.innerHTML = 'x';
+    close_button.id = lineId;
+    close_button.className = 'measurementButton';
+
+    measurementDiv.className = 'measurement';
+    labelDiv.className = 'measurementLabel';
+    labelDiv.innerText = "0.0 mm";
+
+    measurementDiv.appendChild(labelDiv);
+    measurementDiv.appendChild(close_button);
+
+    close_button.addEventListener('pointerdown', function () {
+        scene.remove(measurementLabels[close_button.id]);
+        scene.remove(endPoint[close_button.id]);
+        scene.remove(startPoint[close_button.id]);
+        scene.remove(lines[close_button.id]);
+    });
+
+    return measurementDiv;
 }
 
 function createMarker() {
@@ -430,21 +433,27 @@ function initcommand() {
 	 * Load datacard
 	 */
 	var document_id = document.querySelector('#active_model').getAttribute('active_model');
-	var xmlhttp = new XMLHttpRequest();
-	var url = "../plm/get_product_info/?document_id=" + document_id;
+	const url = `/plm/get_product_info?document_id=${document_id}`;
 
-	xmlhttp.onreadystatechange = function () {
-		if (this.readyState == 4 && this.status == 200) {
-			var result = JSON.parse(this.responseText);
-			var product_info = document.getElementById("product_info");
-			product_info.innerHTML = result['component'];
-			var document_info = document.getElementById("document_info");
-			document_info.innerHTML = result['document'];
-		}
-	};
-	xmlhttp.open("GET", url, true);
-	xmlhttp.send();
+    fetch(url)
+        .then(res => res.json())
+        .then(function (result) {
+            if (result.error) {
+                console.error("Server Error:", result.error);
+                return;
+            }
+
+            let product_info = document.getElementById("product_info");
+            let document_info = document.getElementById("document_info");
+
+            product_info.innerHTML = (result.component || []).join("");
+            document_info.innerHTML = result.document || "";
+        })
+        .catch(function (err) {
+            console.error("Fetch Error:", err);
+        });
 }
+
 function onActivatorClick(event) {
 	// highlight the mouseover target
 	let activatorDiv = document.getElementById("activatorDiv");
@@ -631,43 +640,121 @@ var fitCameraToSelectionEvent = function (e) {
  * canvas.clientWidth ) * 2 - 1; mouse.y = - ( event.clientY /
  * canvas.clientHeight ) * 2 + 1; }
  */
-var onClick = function (e) {
-	if (ctrlDown) {
-		if (!lines[lineId]) {
-			// start the line
-			const points = [];
-			points.push(sphereHelper.position);
-			points.push(sphereHelper.position.clone());
-			const geometry = new THREE.BufferGeometry().setFromPoints(points);
-			lines[lineId] = new THREE.LineSegments(geometry, new THREE.LineBasicMaterial({
-				color: 0x714B67,  // ODOO COLOR
-				transparent: true,
-				linewidth: 2,
-				opacity: 0.75
-			}));
-			lines[lineId].frustumCulled = false;
-			const measurementLabel = new CSS2DObject(mesuraments());
-			measurementLabel.position.copy(sphereHelper.position);
-			measurementLabels[lineId] = measurementLabel;
-			startPoint[lineId] = createMarker();
-			scene.add(measurementLabels[lineId]);
-			scene.add(lines[lineId]);
-			drawingLine = true;
-		}
-		else {
-			// finish the line
-			const positions = lines[lineId].geometry.attributes.position.array;
-			positions[3] = sphereHelper.position.x;
-			positions[4] = sphereHelper.position.y;
-			positions[5] = sphereHelper.position.z;
-			lines[lineId].geometry.attributes.position.needsUpdate = true;
-			endPoint[lineId] = createMarker();
-			drawingLine = false;
-			lineId++;
-		}
-	}
 
-}
+var onClick = function (e) {
+
+    if (!ctrlDown) return;
+
+
+    if (!lines[lineId]) {
+
+        const start = sphereHelper.position.clone();
+
+        const points = [];
+
+        points.push(start);
+
+        points.push(start.clone());
+
+        const geometry = new THREE.BufferGeometry().setFromPoints(points);
+
+        lines[lineId] = new THREE.LineSegments(
+
+            geometry,
+
+            new THREE.LineBasicMaterial({
+
+                color: 0x714B67,
+
+                transparent: true,
+
+                linewidth: 2,
+
+                opacity: 0.75
+
+            })
+
+        );
+
+        lines[lineId].frustumCulled = false;
+
+        const measurementLabel = new CSS2DObject(mesuraments());
+
+        measurementLabel.position.copy(start);
+
+        measurementLabels[lineId] = measurementLabel;
+
+        startPoint[lineId] = createMarker();
+
+        scene.add(measurementLabels[lineId]);
+
+        scene.add(lines[lineId]);
+
+        drawingLine = true;
+
+    }
+
+
+    else {
+
+        const positions = lines[lineId].geometry.attributes.position.array;
+
+        const end = sphereHelper.position.clone();
+
+        positions[3] = end.x;
+
+        positions[4] = end.y;
+
+        positions[5] = end.z;
+
+        lines[lineId].geometry.attributes.position.needsUpdate = true;
+
+        endPoint[lineId] = createMarker();
+
+        const start = new THREE.Vector3(
+
+            positions[0],
+
+            positions[1],
+
+            positions[2]
+
+        );
+
+
+        let distance = start.distanceTo(end);
+
+        // 👉 Convert to mm if needed
+
+        distance = distance * 1; // change to 1000 if units are meters
+
+        // 🏷 Update label
+
+        const labelDiv = measurementLabels[lineId].element.querySelector('.measurementLabel');
+
+        if (labelDiv) {
+
+            labelDiv.innerText = distance.toFixed(2) + " mm";
+
+        }
+
+
+        const midPoint = new THREE.Vector3()
+
+            .addVectors(start, end)
+
+            .multiplyScalar(0.5);
+
+        measurementLabels[lineId].position.copy(midPoint);
+
+        drawingLine = false;
+
+        lineId++;
+
+    }
+
+};
+
 
 /**
  * OdooCADApplication.js
@@ -801,7 +888,7 @@ window.onPointerMove = function (event) {
 
 
 	// --- HIGHLIGHT SYNC LOGIC ---
-	// ✅ PERSISTENT HIGHLIGHT: Only change highlight if we hit a NEW part.
+	// PERSISTENT HIGHLIGHT: Only change highlight if we hit a NEW part.
 	// We no longer clear it when moving into empty space (hoveredGuid === null).
 	if (hoveredGuid && hoveredGuid !== window.last_highlighted_li) {
 		if (window.last_highlighted_li) {
@@ -855,6 +942,42 @@ window.onPointerMove = function (event) {
 		window.last_highlighted_li = hoveredGuid;
 	}
 	if (typeof render === "function") render();
+
+    if (drawingLine && lines[lineId]) {
+        const positions = lines[lineId].geometry.attributes.position.array;
+
+        const start = new THREE.Vector3(
+            positions[0],
+            positions[1],
+            positions[2]
+        );
+
+        const end = sphereHelper.position.clone();
+
+        // Update line dynamically
+        positions[3] = end.x;
+        positions[4] = end.y;
+        positions[5] = end.z;
+        lines[lineId].geometry.attributes.position.needsUpdate = true;
+
+        // Calculate distance
+        let distance = start.distanceTo(end);
+
+        // 👉 Convert if needed
+        distance = distance * 1; // or 1000
+
+        const labelDiv = measurementLabels[lineId].element.querySelector('.measurementLabel');
+        if (labelDiv) {
+            labelDiv.innerText = distance.toFixed(2) + " mm";
+        }
+
+        // Move label to midpoint
+        const midPoint = new THREE.Vector3()
+            .addVectors(start, end)
+            .multiplyScalar(0.5);
+
+        measurementLabels[lineId].position.copy(midPoint);
+    }
 };
 
 
