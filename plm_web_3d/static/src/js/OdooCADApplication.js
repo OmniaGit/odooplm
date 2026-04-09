@@ -199,27 +199,30 @@ function imageBckground(path_to_load) {
 }
 
 function mesuraments() {
-	const measurementDiv = document.createElement('div');
-	const labelDiv = document.createElement('div');
-	const close_button = document.createElement('button');
-	close_button.type = "button";
-	close_button.innerHTML = 'x';
-	close_button.id = lineId;
-	close_button.className = 'measurementButton';
-	measurementDiv.className = 'measurement';
-	labelDiv.className = 'measurementLabel';
-	labelDiv.innerText = "0.0 mm";
-	measurementDiv.appendChild(labelDiv);
-	measurementDiv.appendChild(close_button);
-	// remove the lable from scene
-	close_button.addEventListener('pointerdown', function () {
-		console.log("remove");
-		scene.remove(measurementLabels[close_button.id]);
-		scene.remove(endPoint[close_button.id]);
-		scene.remove(startPoint[close_button.id]);
-		scene.remove(lines[close_button.id]);
-	});
-	return measurementDiv;
+    const measurementDiv = document.createElement('div');
+    const labelDiv = document.createElement('div');
+    const close_button = document.createElement('button');
+
+    close_button.type = "button";
+    close_button.innerHTML = 'x';
+    close_button.id = lineId;
+    close_button.className = 'measurementButton';
+
+    measurementDiv.className = 'measurement';
+    labelDiv.className = 'measurementLabel';
+    labelDiv.innerText = "0.0 mm";
+
+    measurementDiv.appendChild(labelDiv);
+    measurementDiv.appendChild(close_button);
+
+    close_button.addEventListener('pointerdown', function () {
+        scene.remove(measurementLabels[close_button.id]);
+        scene.remove(endPoint[close_button.id]);
+        scene.remove(startPoint[close_button.id]);
+        scene.remove(lines[close_button.id]);
+    });
+
+    return measurementDiv;
 }
 
 function createMarker() {
@@ -430,20 +433,25 @@ function initcommand() {
 	 * Load datacard
 	 */
 	var document_id = document.querySelector('#active_model').getAttribute('active_model');
-	var xmlhttp = new XMLHttpRequest();
-	var url = "../plm/get_product_info/?document_id=" + document_id;
+	const url = `/plm/get_product_info?document_id=${document_id}`;
 
-	xmlhttp.onreadystatechange = function () {
-		if (this.readyState == 4 && this.status == 200) {
-			var result = JSON.parse(this.responseText);
-			var product_info = document.getElementById("product_info");
-			product_info.innerHTML = result['component'];
-			var document_info = document.getElementById("document_info");
-			document_info.innerHTML = result['document'];
-		}
-	};
-	xmlhttp.open("GET", url, true);
-	xmlhttp.send();
+    fetch(url)
+        .then(res => res.json())
+        .then(function (result) {
+            if (result.error) {
+                console.error("Server Error:", result.error);
+                return;
+            }
+
+            let product_info = document.getElementById("product_info");
+            let document_info = document.getElementById("document_info");
+
+            product_info.innerHTML = (result.component || []).join("");
+            document_info.innerHTML = result.document || "";
+        })
+        .catch(function (err) {
+            console.error("Fetch Error:", err);
+        });
 }
 function onActivatorClick(event) {
 	// highlight the mouseover target
@@ -855,6 +863,33 @@ window.onPointerMove = function (event) {
 		window.last_highlighted_li = hoveredGuid;
 	}
 	if (typeof render === "function") render();
+
+    if (drawingLine && lines[lineId]) {
+    const line = lines[lineId];
+    const positions = line.geometry.attributes.position.array;
+
+    const current = sphereHelper.position;
+
+    positions[3] = current.x;
+    positions[4] = current.y;
+    positions[5] = current.z;
+
+    line.geometry.attributes.position.needsUpdate = true;
+
+    // update distance label
+    const start = new THREE.Vector3(
+        positions[0],
+        positions[1],
+        positions[2]
+    );
+
+    const distance = start.distanceTo(current);
+
+    const label = measurementLabels[lineId]?.element?.querySelector('.measurementLabel');
+    if (label) {
+        label.innerText = distance.toFixed(2) + " mm";
+    }
+}
 };
 
 
@@ -879,11 +914,12 @@ function onKeyup(event) {
 		if (drawingLine) {
 			drawingLine = false;
 		}
-		scene.remove(measurementLabels[lineId]);
-		scene.remove(startPoint[lineId]);
-		scene.remove(endPoint[lineId]);
-		scene.remove(lines[lineId]);
-		lineId++;
+		function onKeyup(event) {
+            if (event.key === "Control") {
+                ctrlDown = false;
+                renderer.domElement.style.cursor = "pointer";
+            }
+        }
 	}
 }
 
@@ -1052,6 +1088,11 @@ function render() {
 	updateOrientationCube(camera);
 	labelRenderer.render(scene, camera);
 	renderer.render(scene, camera);
+    Object.values(measurementLabels).forEach(label => {
+    if (label) {
+        label.lookAt(camera.position);
+    }
+});
 }
 
 function tweenCamera(position) {
