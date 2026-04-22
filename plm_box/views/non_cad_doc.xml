@@ -84,7 +84,7 @@
     </record>
 
     <record id="action_non_cad_doc" model="ir.actions.act_window">
-        <field name="name">Non CAD Document Relations</field>
+        <field name="name">Box</field>
         <field name="res_model">plm.box</field>
         <field name="view_mode">list,form</field>
         <field name="view_id" ref="plm_box_list"/>

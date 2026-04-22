@@ -59,23 +59,16 @@
     </record>
 
     <record id="action_plm_box_documents_custom" model="ir.actions.act_window">
-        <field name="name">PLM Box Documents</field>
+        <field name="name">Box Documents</field>
         <field name="res_model">ir.attachment</field>
         <field name="view_mode">kanban,list,form</field>
-        <field name="search_view_id" ref="view_plm_box_document_search_custom"/>
-    </record>
-
-    <record id="action_box_docs" model="ir.actions.act_window">
-        <field name="name">BOX Documents</field>
-        <field name="res_model">ir.attachment</field>
-        <field name="view_mode">list,form</field>
-        <field name="search_view_id" ref="plm.ir_attachment_search"/>
-        <field name="context">{"odooPLM":True}</field>
         <field name="domain">[('is_plm_box', '=', True)]</field>
+        <field name="search_view_id" ref="view_plm_box_document_search_custom"/>
         <field name="view_ids" eval="[
         (5, 0, 0),
         (0, 0, {'view_mode': 'list', 'view_id': ref('plm_box.plm_box_attachment_list')}),
         (0, 0, {'view_mode': 'form', 'view_id': ref('plm_box.view_attachment_form_plm_box')})
         ]"/>
     </record>
+
 </odoo>

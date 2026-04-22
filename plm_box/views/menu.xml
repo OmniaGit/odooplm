@@ -4,22 +4,14 @@
               groups="plm_box.group_plm_box_admin" sequence="40"/>
 
     <menuitem
-        name="Box Entities"
-        action="action_non_cad_doc"
+        name="Box"
         id="menu_non_cad_doc_relations"
-        parent="plm_box.menu_plm_box_main"/>
+        parent="plm_box.menu_plm_box_main"
+        action="action_non_cad_doc"/>
 
     <menuitem
-        name="Box Documents"
-        action="plm_box.action_box_docs"
-        groups="plm_box.group_plm_box_admin"
-        id="menu_box_docs"
-        parent="plm_box.menu_plm_box_main"/>
-
-    <menuitem
+        name="Documents"
         id="menu_plm_box_documents"
-        name="PLM Box Documents"
         parent="menu_plm_box_main"
-        action="action_plm_box_documents_custom"
-    />
+        action="action_plm_box_documents_custom"/>
 </odoo>
