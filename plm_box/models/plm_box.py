@@ -124,6 +124,14 @@ class Plm_box(models.Model):
         string="Sub Folders"
     )
 
+    @api.depends('description', 'engineering_code')
+    def _compute_display_name(self):
+        for box_id in self:
+            if box_id.engineering_code:
+                box_id.display_name = f'[{box_id.engineering_code.strip()}] - {box_id.description.strip()}'[:20]
+            else:
+                box_id.display_name = f'{box_id.description.strip()}'[:20]
+                
     def unlink(self):
         for plm_box_id in self:
             if not self.boxUnlinkPossible(plm_box_id):

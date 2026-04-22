@@ -52,7 +52,6 @@
                         name="plm_box_id"
                         enable_counters="1"
                         hierarchize="1"
-                        expand="1"
                     />
                 </searchpanel>
             </search>
