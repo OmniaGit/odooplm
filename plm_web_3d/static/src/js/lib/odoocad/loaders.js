@@ -86,9 +86,12 @@ class Loader {
 	loadDxf(document_name, url){
         var self=this;
         dxfLoader.load(url,
-            function (objects) {
+            function (objects, textEntities, origin) {
                 for (const obj of objects) {
                    self.odooCad.addItemToScene(obj)
+                }
+                if (textEntities && textEntities.length > 0) {
+                    self.odooCad.addDxfTextLabels(textEntities, origin)
                 }
             },
             (xhr) => {
