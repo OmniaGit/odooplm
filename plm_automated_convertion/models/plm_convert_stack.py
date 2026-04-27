@@ -49,7 +49,7 @@ class PlmConvertStack(models.Model):
     name = fields.Char("Name", compute="_compute_name")
     sequence = fields.Integer(string="Sequence")
     convrsion_rule = fields.Many2one(
-        "plm.convert.format", string="Conversion rule"
+        "plm.convert.format", string="Conversion rule", required=True
     )
     product_category = fields.Many2one("product.category", string="Category")
     conversion_done = fields.Boolean(string="Conversion Done")
@@ -109,6 +109,72 @@ class PlmConvertStack(models.Model):
             r.sequence = r.id
         return ret
 
+    def convert(self):
+        for stack_id in self:
+            if stack_id.conversion_done:
+                continue
+            try:
+                if stack_id.operation_type == "UPDATE":
+                    stack_id.start_document_id._updatePreview()
+                elif stack_id.operation_type in "TOSHARED":
+                    file_converted = stack_id._generateFile()
+                    if stack_id.server_id.folder_to:
+                        dest_path = os.path.join(
+                            stack_id.server_id.folder_to,
+                            os.path.basename(file_converted),
+                        )
+                        shutil.copyfile(file_converted, dest_path)
+                    else:
+                        raise Exception(
+                            _("No server path defined for server %s" % stack_id.server_id.name)
+                        )
+                elif stack_id.operation_type == "CONVERT":
+                    file_converted = stack_id._generateFile()
+                    stack_id._attach_to_stack(file_converted)
+                else:
+                    continue
+                stack_id.setToConverted()
+                stack_id.error_string = ""
+                self.env.cr.commit()
+            except Exception as ex:
+                logging.error(ex)
+                traceback.print_exc()
+                stack_id.error_string = (
+                    _("Internal Error %s check odoo log for the full error stack") % ex
+                )
+
+    def generateConvertedDocuments(self):
+        logging.info("generateConvertedDocuments started")
+        toConvert = self.search([("conversion_done", "=", False)], order="sequence ASC")
+        toConvert.convert()
+
+    def getAllFiles(self):
+        out = {}
+        document = self.start_document_id
+        ir_attachment = self.env["ir.attachment"]
+        fileStoreLocation = ir_attachment._get_filestore()
+
+        def templateFile(docId):
+            document = ir_attachment.browse(docId)
+            return {
+                document.name: (
+                    document.name,
+                    open(os.path.join(fileStoreLocation, document.store_fname), "rb"),
+                )
+            }
+
+        out["root_file"] = (
+            document.name,
+            open(os.path.join(fileStoreLocation, document.store_fname), "rb"),
+        )
+        request = (document.id, [], -1)
+        for outId, _, _, _, _, _ in ir_attachment.CheckAllFiles(
+            request
+        ):  # todo: verificare se carica il datas
+            if outId == document.id:
+                continue
+            out.update(templateFile(outId))
+        return out
     def getFileConverted(self, newFileName=False):
         targetExtention = self.convrsion_rule.end_format
         cadExange_path = self.env.ref("plm_automated_convertion.odoo_cadexcange")
@@ -185,41 +251,6 @@ class PlmConvertStack(models.Model):
             raise Exception(_("File not converted"))
         return newFilePath
 
-    def convert(self):
-        for stack_id in self:
-            if stack_id.state == 'done':
-                continue
-            try:
-                if stack_id.operation_type == "UPDATE":
-                    stack_id.start_document_id._updatePreview()
-                elif stack_id.operation_type in "TOSHARED":
-                    file_converted = stack_id._generateFile()
-                    if stack_id.server_id.folder_to:
-                        dest_path = os.path.join(
-                            stack_id.server_id.folder_to,
-                            os.path.basename(file_converted),
-                        )
-                        shutil.copyfile(file_converted, dest_path)
-                    else:
-                        raise Exception(
-                            _("No server path defined for server %s" % stack_id.server_id.name)
-                        )
-                elif stack_id.operation_type == "CONVERT":
-                    file_converted = stack_id._generateFile()
-                    stack_id._attach_to_stack(file_converted)
-                else:
-                    continue
-                stack_id.setToConverted()
-                stack_id.error_string = ""
-                self.env.cr.commit()
-                stack_id.start_document_id.toggle_check_out()
-
-            except Exception as ex:
-                logging.error(ex)
-                traceback.print_exc()
-                stack_id.error_string = (
-                    _("Internal Error %s check odoo log for the full error stack") % ex
-                )
 
     def generateConvertedDocuments(self):
         logging.info("generateConvertedDocuments started")
@@ -309,5 +340,7 @@ class PlmConvertStack(models.Model):
                 % (self.start_document_id.id, self.id)
             )
         self.end_document_id = target_attachment.id
+        if self.start_document_id.preview:
+            target_attachment.preview = self.start_document_id.preview
 
     logging.debug("generateConvertedDocuments ended")

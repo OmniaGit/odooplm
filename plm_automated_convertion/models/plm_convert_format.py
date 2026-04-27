@@ -22,7 +22,7 @@
 Created on Sep 7, 2019
 @author: mboscolo
 """
-from odoo import fields, models
+from odoo import fields, models, api
 
 
 class PlmConvertFormat(models.Model):
