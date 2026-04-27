@@ -131,7 +131,7 @@ function togleBackgound() {
 function tecnicalBckground() {
 	objectAxesHelper.visible = true;
 	planeMeshFloar = new THREE.Mesh(new THREE.PlaneGeometry(2000, 2000),
-		new THREE.MeshPhongMaterial({ color: 0x999999, depthWrite: false }));
+		new THREE.MeshPhongMaterial({ color: 0x999999, depthWrite: false, transparent: true, opacity: 0.15 }));
 	planeGrid = new THREE.GridHelper(200, 40, 0x000000, 0x000000);
 	planeMeshFloar.rotation.x = - Math.PI / 2;
 	scene.add(planeMeshFloar);
@@ -309,6 +309,21 @@ function init() {
 	 */
 	OdooCad = new ODOOCAD.OdooCAD(scene);
 	OdooCad.load_document(document_id, document_name);
+	if (document_name && document_name.split('.').pop().toLowerCase() === 'dxf') {
+		controls.enableRotate = false;
+		if (cube) cube.style.display = 'none';
+		if (planeMeshFloar) planeMeshFloar.visible = false;
+		if (planeGrid) planeGrid.visible = false;
+		if (objectAxesHelper) objectAxesHelper.visible = false;
+		[
+			document.getElementById('webgl_background')?.closest('.plm_button'),
+			document.getElementById('toggle_light_settings'),
+			document.getElementById('light_settings_group'),
+			document.getElementById('object_transparency')?.closest('.plm_button'),
+			document.getElementById('color_object_grp')?.closest('.plm_button'),
+			document.getElementById('plm_button1'),
+		].forEach(el => { if (el) el.style.display = 'none'; });
+	}
 	/*
 	 * Inizialize tree view search
 	 */
@@ -362,13 +377,6 @@ function epsilon(value) {
 }
 
 function initcommand() {
-	var element = document.getElementById("fit_view");
-	element.onclick = function (event) {
-		fitCameraToSelectionEvent();
-		/*		fitCameraToSelection(OdooCad.tree_ref_elements,
-									 1.1);
-			*/
-	}
 	var selector = document.getElementById("webgl_background");
 	selector.onchange = function (event) {
 		change_background();
@@ -401,6 +409,35 @@ function initcommand() {
 		// markup lives in markup_system.js — call directly
 		openMarkupEditor();
 	};
+	document.getElementById("show_all_perm").onclick = function () {
+		show_all_scene_item();
+	};
+	document.getElementById("measure_btn_perm").onclick = function () {
+		ctrlDown = !ctrlDown;
+		drawingLine = ctrlDown;
+		renderer.domElement.style.cursor = ctrlDown ? "crosshair" : "pointer";
+		this.classList.toggle("active", ctrlDown);
+		if (!ctrlDown) {
+			scene.remove(measurementLabels[lineId]);
+			scene.remove(startPoint[lineId]);
+			scene.remove(endPoint[lineId]);
+			scene.remove(lines[lineId]);
+			lineId++;
+		}
+	};
+
+	const helpBtn = document.getElementById("help_btn");
+	const shortcutModal = document.getElementById("shortcut_modal");
+	const shortcutClose = document.getElementById("shortcut_modal_close");
+	helpBtn.onclick = function () {
+		shortcutModal.classList.add("open");
+	};
+	shortcutClose.onclick = function () {
+		shortcutModal.classList.remove("open");
+	};
+	shortcutModal.addEventListener("click", function (e) {
+		if (e.target === shortcutModal) shortcutModal.classList.remove("open");
+	});
 
 	const html_canvas = document.getElementById('odoo_canvas');
 	html_canvas.addEventListener("OdooCAD_fit_items", fitCameraToSelectionEvent, false);
@@ -424,10 +461,6 @@ function initcommand() {
 	var object_explosion = document.getElementById("object_explosion");
 	object_explosion.oninput = change_object_explosion;
 	/*
-	 * Make screen shot
-	 */
-	document.getElementById("save_view").addEventListener('click', saveAsImage);
-	/*
 	 * Load datacard
 	 */
 	var document_id = document.querySelector('#active_model').getAttribute('active_model');
@@ -447,24 +480,16 @@ function initcommand() {
 	xmlhttp.send();
 }
 function onActivatorClick(event) {
-	// highlight the mouseover target
-	let activatorDiv = document.getElementById("activatorDiv");
-	let permanentMenu = document.getElementById("dropdown_menu_left_permenant");
-	let main_command_slide = document.getElementById('mainCommandSlide')
-	//    $(bottom_command).toggleClass('d-none')
-	if (activatorDiv.classList.contains('d-none')) {
-		permanentMenu.style.display = 'none';
-		activatorDiv.style.visibility = 'visible';
-		activatorDiv.style.opacity = 0.8;
-		activatorDiv.classList.remove('d-none');
-		main_command_slide.style.height = '210px';
-	}
-	else {
-		permanentMenu.style.display = 'block';
-		activatorDiv.style.visibility = 'invisible';
+	const activatorDiv = document.getElementById("activatorDiv");
+	const isOpen = !activatorDiv.classList.contains('d-none');
+	if (isOpen) {
+		activatorDiv.style.visibility = 'hidden';
 		activatorDiv.style.opacity = 0;
 		activatorDiv.classList.add('d-none');
-		main_command_slide.style.height = '26px';
+	} else {
+		activatorDiv.style.visibility = 'visible';
+		activatorDiv.style.opacity = 0.95;
+		activatorDiv.classList.remove('d-none');
 	}
 }
 
@@ -581,10 +606,7 @@ var chenge_light_ambient = funciton(event){
 	var value = this.value;
 }*/
 var change_object_explosion = function (event) {
-	var entitys_BBOX = OdooCad.active_bbox;
-	var center = new THREE.Vector3();
 	var value = parseFloat(this.value);
-	var factor = entitys_BBOX.max.length() / 20000;
 
 	// Store original positions only once before first explosion
 	if (!_explosionInitialized) {
@@ -602,11 +624,19 @@ var change_object_explosion = function (event) {
 		return;
 	}
 
-	entitys_BBOX.getCenter(center);
+	// Compute bounding box of all entities to get the true global center
+	const allBBox = new THREE.Box3();
+	for (const obj of Object.values(OdooCad.tree_ref_elements)) {
+		allBBox.expandByObject(obj);
+	}
+	const center = new THREE.Vector3();
+	allBBox.getCenter(center);
+	const size = allBBox.getSize(new THREE.Vector3());
+	const maxSize = Math.max(size.x, size.y, size.z);
 
 	// Explode each named tree item independently
 	for (const [guid, obj] of Object.entries(OdooCad.tree_ref_elements)) {
-		explode(obj, guid, center, value, factor);
+		explode(obj, guid, center, value, maxSize);
 	}
 
 	render();
@@ -658,10 +688,20 @@ var onClick = function (e) {
 		else {
 			// finish the line
 			const positions = lines[lineId].geometry.attributes.position.array;
-			positions[3] = sphereHelper.position.x;
-			positions[4] = sphereHelper.position.y;
-			positions[5] = sphereHelper.position.z;
+			const startVec = new THREE.Vector3(positions[0], positions[1], positions[2]);
+			const endVec = sphereHelper.position.clone();
+			positions[3] = endVec.x;
+			positions[4] = endVec.y;
+			positions[5] = endVec.z;
 			lines[lineId].geometry.attributes.position.needsUpdate = true;
+			// update label with final distance at midpoint
+			const dist = startVec.distanceTo(endVec);
+			const mid = new THREE.Vector3().addVectors(startVec, endVec).multiplyScalar(0.5);
+			if (measurementLabels[lineId]) {
+				measurementLabels[lineId].position.copy(mid);
+				const lbl = measurementLabels[lineId].element.querySelector('.measurementLabel');
+				if (lbl) lbl.innerText = dist.toFixed(2) + ' mm';
+			}
 			endPoint[lineId] = createMarker();
 			drawingLine = false;
 			lineId++;
@@ -684,6 +724,8 @@ if (typeof window.last_highlighted_sidebar_el === 'undefined') {
 }
 window.ODOO_HILIGHT_COLOR = new THREE.Color("#eda3da");
 window.tooltipCache = {};
+window.tooltipTimer = null;
+window.tooltipPendingGuid = null;
 
 
 // Helper to expand all parent folders in the sidebar tree
@@ -708,14 +750,29 @@ window.highlight3D = function (guid, enable = true) {
 	if (!OdooCad?.tree_ref_elements?.[guid]) return;
 	const obj = OdooCad.tree_ref_elements[guid];
 	obj.traverse((child) => {
-		if (child instanceof THREE.Mesh && child.material) {
-			if (enable) {
-				if (!child.material.userData.originalColor) {
-					child.material.userData.originalColor = child.material.color.clone();
-				}
-				child.material.color.copy(window.ODOO_HILIGHT_COLOR);
-			} else if (child.material.userData.originalColor) {
+		if (!(child instanceof THREE.Mesh) || !child.material) return;
+		if (enable) {
+			if (!child.material.userData.originalColor) {
+				child.material.userData.originalColor = child.material.color.clone();
+			}
+			child.material.color.copy(window.ODOO_HILIGHT_COLOR);
+			if (!child.getObjectByName('__highlight_edges__')) {
+				const edges = new THREE.EdgesGeometry(child.geometry);
+				const edgeMat = new THREE.LineBasicMaterial({ color: 0x714B67 });
+				const wireframe = new THREE.LineSegments(edges, edgeMat);
+				wireframe.name = '__highlight_edges__';
+				wireframe.raycast = () => {};
+				child.add(wireframe);
+			}
+		} else {
+			if (child.material.userData.originalColor) {
 				child.material.color.copy(child.material.userData.originalColor);
+			}
+			const wireframe = child.getObjectByName('__highlight_edges__');
+			if (wireframe) {
+				child.remove(wireframe);
+				wireframe.geometry.dispose();
+				wireframe.material.dispose();
 			}
 		}
 	});
@@ -761,43 +818,57 @@ window.onPointerMove = function (event) {
 	if (!tooltip) {
 		console.warn("Tooltip element #part_tooltip not found in DOM");
 	} else if (hoveredGuid) {
-		tooltip.style.display = 'block';
+		// Always track cursor so the tooltip appears at the right position when it shows
 		tooltip.style.left = (event.clientX + 15) + 'px';
 		tooltip.style.top = (event.clientY + 15) + 'px';
 
-		const obj3d = OdooCad.tree_ref_elements[hoveredGuid];
-		if (obj3d) {
-			const srcName = (obj3d.userData && obj3d.userData.engineering_code) || obj3d.name || obj3d.type || "Component";
+		if (hoveredGuid !== window.tooltipPendingGuid) {
+			// Moved to a new object — hide any visible tooltip and restart the delay
+			tooltip.style.display = 'none';
+			tooltip.innerText = '';
+			clearTimeout(window.tooltipTimer);
+			window.tooltipPendingGuid = hoveredGuid;
 
-			if (window.tooltipCache[srcName]) {
-				tooltip.innerText = window.tooltipCache[srcName];
-			} else {
-				tooltip.innerText = srcName;
+			window.tooltipTimer = setTimeout(function () {
+				const guid = window.tooltipPendingGuid;
+				if (!guid) return;
+				tooltip.style.display = 'block';
 
-				const parentId = document.getElementById('main_3d_web')?.getAttribute('data-res-id') || document.getElementById('active_model')?.getAttribute('active_model') || "";
-				const url = `/plm/get_3d_web_document_info/?src_name=${encodeURIComponent(srcName)}&parent_id=${parentId}`;
-				fetch(url)
+				const obj3d = OdooCad.tree_ref_elements[guid];
+				if (obj3d) {
+					const srcName = (obj3d.userData && obj3d.userData.engineering_code) || obj3d.name || obj3d.type || "Component";
 
-					.then(response => response.text())
-					.then(data => {
-						const finalMsg = data.trim() || srcName;
-						window.tooltipCache[srcName] = finalMsg;
-						if (window.last_highlighted_li === hoveredGuid) {
-							tooltip.innerText = finalMsg;
-						}
-					})
-					.catch(err => {
-						console.error("Tooltip error:", err);
-						window.tooltipCache[srcName] = srcName;
+					if (window.tooltipCache[srcName]) {
+						tooltip.innerText = window.tooltipCache[srcName];
+					} else {
 						tooltip.innerText = srcName;
-					});
-			}
-		} else {
-			tooltip.innerText = "Unknown Part";
+
+						const parentId = document.getElementById('main_3d_web')?.getAttribute('data-res-id') || document.getElementById('active_model')?.getAttribute('active_model') || "";
+						const url = `/plm/get_3d_web_document_info/?src_name=${encodeURIComponent(srcName)}&parent_id=${parentId}`;
+						fetch(url)
+							.then(response => response.text())
+							.then(data => {
+								const finalMsg = data.trim() || srcName;
+								window.tooltipCache[srcName] = finalMsg;
+								if (window.tooltipPendingGuid === guid) {
+									tooltip.innerText = finalMsg;
+								}
+							})
+							.catch(err => {
+								console.error("Tooltip error:", err);
+								window.tooltipCache[srcName] = srcName;
+							});
+					}
+				} else {
+					tooltip.innerText = "Unknown Part";
+				}
+			}, 1000);
 		}
 	} else {
+		clearTimeout(window.tooltipTimer);
+		window.tooltipPendingGuid = null;
 		tooltip.style.display = 'none';
-		tooltip.innerText = "";
+		tooltip.innerText = '';
 	}
 
 
@@ -867,6 +938,43 @@ function onKeyDone(event) {
 		ctrlDown = true;
 		drawingLine = true;
 		renderer.domElement.style.cursor = "crosshair";
+		document.getElementById("measure_btn_perm")?.classList.add("active");
+	}
+	const tag = (event.target || document.activeElement || {}).tagName || '';
+	if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+	if (event.key === 'f' || event.key === 'F') {
+		fitCameraToSelectionEvent();
+	}
+	if (event.key === 'a' || event.key === 'A') {
+		show_all_scene_item();
+		render();
+	}
+	if (event.key === 'h' || event.key === 'H') {
+		const guid = window.last_highlighted_li;
+		if (guid && OdooCad?.tree_ref_elements?.[guid]) {
+			const obj = OdooCad.tree_ref_elements[guid];
+			const show = !obj.visible;
+			obj.visible = show;
+			// sync sidebar eye icon
+			let targetLi = document.querySelector(`li[webgl_ref_name="${guid}"]`);
+			if (!targetLi) {
+				const span = document.querySelector(`span[webgl_ref_name="${guid}"]`);
+				if (span) targetLi = span.closest('li');
+			}
+			if (targetLi) {
+				const icon = targetLi.querySelector('.tree_item_visibility');
+				if (icon) {
+					icon.classList.toggle('fa-eye', show);
+					icon.classList.toggle('fa-eye-slash', !show);
+				}
+			}
+			if (!show) {
+				// remove highlight/edges when hiding; keep last_highlighted_li so a
+				// second h-press (without moving the mouse) can toggle it back
+				window.highlight3D(guid, false);
+			}
+			render();
+		}
 	}
 }
 
@@ -874,10 +982,9 @@ function onKeyDone(event) {
 function onKeyup(event) {
 	if (event.key === "Control") {
 		ctrlDown = false;
+		drawingLine = false;
 		renderer.domElement.style.cursor = "pointer";
-		if (drawingLine) {
-			drawingLine = false;
-		}
+		document.getElementById("measure_btn_perm")?.classList.remove("active");
 		scene.remove(measurementLabels[lineId]);
 		scene.remove(startPoint[lineId]);
 		scene.remove(endPoint[lineId]);
@@ -1024,6 +1131,22 @@ function showSnapPoint() {
 			}
 			sphereHelper.position.copy(nearestPoint);
 			sphereHelper.visible = true;
+			// live preview while drawing a measurement line
+			if (drawingLine && lines[lineId]) {
+				const pos = lines[lineId].geometry.attributes.position.array;
+				pos[3] = nearestPoint.x;
+				pos[4] = nearestPoint.y;
+				pos[5] = nearestPoint.z;
+				lines[lineId].geometry.attributes.position.needsUpdate = true;
+				const startVec = new THREE.Vector3(pos[0], pos[1], pos[2]);
+				const liveDist = startVec.distanceTo(nearestPoint);
+				const liveMid = new THREE.Vector3().addVectors(startVec, nearestPoint).multiplyScalar(0.5);
+				if (measurementLabels[lineId]) {
+					measurementLabels[lineId].position.copy(liveMid);
+					const lbl = measurementLabels[lineId].element.querySelector('.measurementLabel');
+					if (lbl) lbl.innerText = liveDist.toFixed(2) + ' mm';
+				}
+			}
 		} else {
 			sphereHelper.visible = false;
 		}
@@ -1126,41 +1249,36 @@ function getElementByXpath(path, document_env) {
  *
  */
 var _originalPositions = new Map();
+var _originalBBoxCenters = new Map();
 var _explosionInitialized = false;
 
 function storeOriginalPositions() {
 	_originalPositions.clear();
-	// Store positions of each NAMED tree item (Group level), not raw meshes
+	_originalBBoxCenters.clear();
 	for (const [guid, obj] of Object.entries(OdooCad.tree_ref_elements)) {
 		_originalPositions.set(guid, obj.position.clone());
+		const bbox = new THREE.Box3().setFromObject(obj);
+		const bCenter = new THREE.Vector3();
+		bbox.getCenter(bCenter);
+		_originalBBoxCenters.set(guid, bCenter);
 	}
 }
 
-function explode(obj, guid, box_center, speed, factor) {
-	var originalPos = _originalPositions.get(guid);
+function explode(obj, guid, globalCenter, speed, maxSize) {
+	const originalPos = _originalPositions.get(guid);
 	if (!originalPos) return;
 
-	var dir = new THREE.Vector3(
-		originalPos.x - box_center.x,
-		originalPos.y - box_center.y,
-		originalPos.z - box_center.z
-	);
+	// Direction: from global bbox center to this object's geometric center
+	const objCenter = _originalBBoxCenters.get(guid) || originalPos;
+	const dir = new THREE.Vector3().subVectors(objCenter, globalCenter);
 
-	// Fallback: part sits at center → use its bounding box center as direction
 	if (dir.length() < 0.001) {
-		var bbox = new THREE.Box3().setFromObject(obj);
-		var bCenter = new THREE.Vector3();
-		bbox.getCenter(bCenter);
-		dir.set(
-			bCenter.x - box_center.x,
-			bCenter.y - box_center.y,
-			bCenter.z - box_center.z
-		);
+		obj.position.copy(originalPos);
+		return;
 	}
 
-	if (dir.length() > 0.001) {
-		dir.normalize().multiplyScalar(speed * factor * 100);
-	}
+	// Displacement is proportional to the max dimension of the assembly
+	dir.normalize().multiplyScalar((speed / 100) * maxSize);
 
 	obj.position.set(
 		originalPos.x + dir.x,

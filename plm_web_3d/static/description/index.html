@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>PLM Web 3D Viewer</title>
+    <style>
+        body { font-family: Arial, sans-serif; color: #333; max-width: 900px; margin: 0 auto; padding: 24px; }
+        h1 { color: #714B67; border-bottom: 3px solid #714B67; padding-bottom: 8px; }
+        h2 { color: #572649; margin-top: 32px; border-left: 4px solid #714B67; padding-left: 10px; }
+        h3 { color: #714B67; margin-top: 20px; }
+        table { width: 100%; border-collapse: collapse; margin: 12px 0; }
+        th { background: #714B67; color: white; padding: 8px 12px; text-align: left; }
+        td { padding: 8px 12px; border-bottom: 1px solid #e0d0e0; vertical-align: top; }
+        tr:nth-child(even) td { background: #faf5fa; }
+        kbd { display: inline-block; padding: 2px 7px; background: #f5f5f5; border: 1px solid #ccc;
+              border-radius: 3px; font-family: monospace; font-size: 12px;
+              box-shadow: 0 1px 2px rgba(0,0,0,0.15); }
+        .badge { display: inline-block; padding: 2px 8px; border-radius: 3px; font-size: 12px;
+                 font-weight: bold; margin: 2px; }
+        .badge-3d  { background: #d4edda; color: #155724; }
+        .badge-2d  { background: #cce5ff; color: #004085; }
+        .feature-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 16px 0; }
+        .feature-card { border: 1px solid #e0d0e0; border-radius: 6px; padding: 14px;
+                        border-top: 3px solid #714B67; }
+        .feature-card h3 { margin: 0 0 8px; font-size: 15px; }
+        .feature-card p  { margin: 0; font-size: 13px; color: #555; }
+        ul { padding-left: 20px; }
+        li { margin-bottom: 4px; }
+        .note { background: #fff3cd; border-left: 4px solid #ffc107; padding: 10px 14px;
+                border-radius: 0 4px 4px 0; margin: 12px 0; font-size: 13px; }
+    </style>
+</head>
+<body>
+
+<h1>PLM Web 3D Viewer</h1>
+
+<p>
+    An interactive browser-based 3D/2D viewer for CAD files embedded directly in Odoo PLM.
+    Built on <strong>Three.js</strong>, it provides real-time inspection, measurement, markup,
+    and assembly explosion — all without installing any desktop software.
+</p>
+
+<h2>Supported File Formats</h2>
+<table>
+    <tr><th>Extension</th><th>Type</th><th>Notes</th></tr>
+    <tr><td><code>.glb</code> / <code>.gltf</code></td><td><span class="badge badge-3d">3D</span></td><td>GL Transmission Format — recommended for assemblies</td></tr>
+    <tr><td><code>.3mf</code></td><td><span class="badge badge-3d">3D</span></td><td>3D Manufacturing Format with named components</td></tr>
+    <tr><td><code>.stl</code></td><td><span class="badge badge-3d">3D</span></td><td>Stereolithography mesh</td></tr>
+    <tr><td><code>.fbx</code></td><td><span class="badge badge-3d">3D</span></td><td>Autodesk FBX</td></tr>
+    <tr><td><code>.obj</code></td><td><span class="badge badge-3d">3D</span></td><td>Wavefront OBJ</td></tr>
+    <tr><td><code>.wrl</code></td><td><span class="badge badge-3d">3D</span></td><td>VRML</td></tr>
+    <tr><td><code>.stp</code> / <code>.step</code></td><td><span class="badge badge-3d">3D</span></td><td>Auto-converted to 3MF on first open (requires plm_automated_convertion)</td></tr>
+    <tr><td><code>.dxf</code></td><td><span class="badge badge-2d">2D</span></td><td>2D drawing — rotation disabled, 3D scene elements hidden</td></tr>
+    <tr><td><code>.svg</code></td><td><span class="badge badge-2d">2D</span></td><td>Scalable Vector Graphics</td></tr>
+    <tr><td><code>.json</code></td><td><span class="badge badge-3d">3D</span></td><td>Three.js JSON scene</td></tr>
+</table>
+
+<h2>Toolbar</h2>
+<p>
+    A transparent icon toolbar sits in the upper-left corner and is always visible.
+    Each button has a tooltip on hover.
+</p>
+<table>
+    <tr><th>Icon</th><th>Action</th></tr>
+    <tr><td><code>fa-home</code></td><td>Fit all objects to screen</td></tr>
+    <tr><td><code>fa-save</code></td><td>Save screenshot as JPEG</td></tr>
+    <tr><td><code>fa-edit</code></td><td>Open markup editor</td></tr>
+    <tr><td><code>fa-lightbulb-o</code></td><td>Show all hidden objects</td></tr>
+    <tr><td><code>fa-arrows-h</code></td><td>Toggle measure mode</td></tr>
+    <tr><td><code>fa-cog</code></td><td>Open settings panel (background, lights, transparency, explosion)</td></tr>
+</table>
+
+<h2>Keyboard Shortcuts</h2>
+<table>
+    <tr><th>Key</th><th>Action</th></tr>
+    <tr><td><kbd>F</kbd></td><td>Fit all objects to screen</td></tr>
+    <tr><td><kbd>H</kbd></td><td>Toggle hide / show the currently hovered object</td></tr>
+    <tr><td><kbd>A</kbd></td><td>Show all hidden objects and refresh scene</td></tr>
+    <tr><td><kbd>Ctrl</kbd> + Click</td><td>Measure distance between two snap points</td></tr>
+</table>
+<p>The in-viewer <strong>?</strong> button (bottom-left) opens a shortcut reference panel.</p>
+
+<h2>Features</h2>
+
+<div class="feature-grid">
+    <div class="feature-card">
+        <h3>Loading Progress Bar</h3>
+        <p>Frosted-glass overlay shows file name, animated progress bar, and percentage while any format is loading.</p>
+    </div>
+    <div class="feature-card">
+        <h3>Hover Highlight</h3>
+        <p>Hovering a part colours it pink and adds <strong>wireframe edges</strong> (Odoo purple). After 1 second the part name tooltip appears, fetched from Odoo.</p>
+    </div>
+    <div class="feature-card">
+        <h3>Sidebar Sync</h3>
+        <p>Hovering a part in the 3D scene highlights and auto-scrolls to the matching entry in the document tree panel on the right.</p>
+    </div>
+    <div class="feature-card">
+        <h3>Measure Tool</h3>
+        <p>Click two snap points to measure the distance. The label tracks the cursor in real time and shows the final distance in mm at the line midpoint.</p>
+    </div>
+    <div class="feature-card">
+        <h3>Explosion View</h3>
+        <p>Slider explodes the assembly outward from the global bounding-box centre. Displacement is proportional to the max dimension of the assembly.</p>
+    </div>
+    <div class="feature-card">
+        <h3>Markup System</h3>
+        <p>Draw, annotate and submit screenshots with comments or Odoo activities directly from the viewer.</p>
+    </div>
+    <div class="feature-card">
+        <h3>View Cube</h3>
+        <p>3D orientation cube in the bottom-right corner. Click any face to snap the camera to Front, Back, Top, Bottom, Left or Right.</p>
+    </div>
+    <div class="feature-card">
+        <h3>DXF 2D Mode</h3>
+        <p>For DXF files, rotation is disabled, the floor plane / grid / axes helper are hidden, and 3D-only controls (background, lights, transparency, explosion) are removed from the settings panel.</p>
+    </div>
+</div>
+
+<h2>Settings Panel</h2>
+<ul>
+    <li><strong>Background</strong> — technical grid, two room environments, outdoor, three workshop HDRIs</li>
+    <li><strong>Light Settings</strong> — distance, three spot lights, camera light, ambient light</li>
+    <li><strong>Transparency</strong> — global opacity slider</li>
+    <li><strong>Color</strong> — global colour picker</li>
+    <li><strong>Explosion</strong> — assembly explosion slider (0–100)</li>
+    <li><strong>Markup Logs</strong> — list of saved markups with preview thumbnails</li>
+</ul>
+
+<h2>Technical Dependencies</h2>
+<ul>
+    <li><strong>Three.js</strong> — bundled in <code>static/src/js/lib/three.js/</code></li>
+    <li><strong>Fabric.js</strong> (CDN) — markup canvas drawing</li>
+    <li><strong>Font Awesome 4.7</strong> (CDN) — toolbar icons</li>
+    <li>Odoo module dependency: <code>plm</code></li>
+</ul>
+
+<div class="note">
+    <strong>STEP files:</strong> opening a <code>.stp</code> / <code>.step</code> attachment via the
+    <em>3D Web</em> button automatically converts it to 3MF on first access (requires the
+    <code>plm_automated_convertion</code> module). The converted file is cached so subsequent
+    opens are instant.
+</div>
+
+</body>
+</html>

@@ -37,25 +37,41 @@ const transparent_material = new THREE.MeshPhysicalMaterial({
 
 class Loader {
 	constructor(odooCad){
-
 		this.odooCad = odooCad;
-		/*
-		 * Progress Bar taken from document 
-		 */
-		this.progress = document.querySelector('#progress');
+		this.overlay = document.querySelector('#loading_overlay');
 		this.progress_bar = document.querySelector('#progress_bar');
-		this.progress.style.display = "none";
+		this.loading_label = document.querySelector('#loading_label');
+		this.loading_percentage = document.querySelector('#loading_percentage');
 	}
+
+	_showProgress(document_name) {
+		this.progress_bar.style.width = '0%';
+		this.loading_percentage.textContent = '0%';
+		this.loading_label.textContent = 'Loading ' + document_name + '…';
+		this.overlay.style.display = 'flex';
+	}
+
+	_updateProgress(xhr) {
+		if (xhr.total) {
+			const pct = Math.round((xhr.loaded / xhr.total) * 100);
+			this.progress_bar.style.width = pct + '%';
+			this.loading_percentage.textContent = pct + '%';
+		}
+	}
+
+	_hideProgress() {
+		this.overlay.style.display = 'none';
+	}
+
 	/*
 	 * Load document from odoo
 	 */
 	load_document(document_id, document_name){
-		this.progress_bar.style.width = '0%';
-		this.progress.display = 'block';
+		this._showProgress(document_name);
 		var url = '../plm/download_treejs_model?document_id=' + document_id
 		var exte = document_name.split('.').pop();
 		exte = exte.toLowerCase()
-		if (['glb','gltf'].includes(exte)){ 
+		if (['glb','gltf'].includes(exte)){
 			this.loadGltx(document_name, url);
 		}
 		if (['fbx'].includes(exte)){
@@ -84,198 +100,177 @@ class Loader {
         }
 	}
 	loadDxf(document_name, url){
-        var self=this;
-        dxfLoader.load(url,
-            function (objects, textEntities, origin) {
-                for (const obj of objects) {
-                   self.odooCad.addItemToScene(obj)
-                }
-                if (textEntities && textEntities.length > 0) {
-                    self.odooCad.addDxfTextLabels(textEntities, origin)
-                }
-            },
-            (xhr) => {
-                var percentage = (xhr.loaded / xhr.total) * 100;
-                self.progress_bar.style.width = percentage + '%';
-                console.log(self.progress_bar.style.width + ' loaded')
-            },
-            (err) => {
-                alert("Unable to load the " + document_name + " err: " + err);
-         });
+		var self = this;
+		dxfLoader.load(url,
+			function (objects, textEntities, origin) {
+				for (const obj of objects) {
+					self.odooCad.addItemToScene(obj);
+				}
+				if (textEntities && textEntities.length > 0) {
+					self.odooCad.addDxfTextLabels(textEntities, origin);
+				}
+				self._hideProgress();
+			},
+			(xhr) => { self._updateProgress(xhr); },
+			(err) => {
+				self._hideProgress();
+				alert("Unable to load the " + document_name + " err: " + err);
+			}
+		);
 	}
+
 	loadGltx(document_name, url){
-		var self=this;
-		gLTFLoader.load( url, function ( gltf ) {
-			var children = gltf.scene.children; 
-			var i;
-			var out_html_structure;
-			for (i = 0; i < children.length; i++) {
-				out_html_structure+=self.odooCad.addItemToScene(children[i]);
+		var self = this;
+		gLTFLoader.load(url,
+			function (gltf) {
+				var children = gltf.scene.children;
+				var out_html_structure;
+				for (var i = 0; i < children.length; i++) {
+					out_html_structure += self.odooCad.addItemToScene(children[i]);
+				}
+				self.odooCad.create_tree_structure(out_html_structure);
+				self._hideProgress();
+			},
+			(xhr) => { self._updateProgress(xhr); },
+			(err) => {
+				self._hideProgress();
+				alert("Unable to load the " + document_name + " err: " + err);
 			}
-			self.odooCad.create_tree_structure(out_html_structure)
-		},
-		function ( xhr ) {
-	    	var percentage = (xhr.loaded / xhr.total) * 100;
-	    	self.progress_bar.style.width = percentage + '%';
-	        console.log(self.progress_bar.style.width + ' loaded')
-		},
-
-		function ( err ) {
-			alert("Unable to load the " + document_name + " err: " + err);
-		});		
+		);
 	}
-	
+
 	load3mf(document_name, url){
-        var self=this;
-        threeMFLoader.load( url,
-            //load
-            function ( mfArgs ) {
-                mfArgs.traverse( function ( child ) {
-                    child.castShadow = true;
-                } );
-                const out_html_structure = self.odooCad.addItemToScene(mfArgs, false);
-                self.odooCad.create_tree_structure(out_html_structure)
-                
-            },
-            //progress
-            function ( xhr ) {
-                var percentage = (xhr.loaded / xhr.total) * 100;
-                self.progress_bar.style.width = percentage + '%';
-                console.log(self.progress_bar.style.width + ' loaded')
-            },
-            //error
-            
-            function ( err ) {
-                alert("Unable to load the " + document_name + " err: " + err);
-            }
-        );     
-    }
-	
+		var self = this;
+		threeMFLoader.load(url,
+			function (mfArgs) {
+				mfArgs.traverse(function (child) { child.castShadow = true; });
+				const out_html_structure = self.odooCad.addItemToScene(mfArgs, false);
+				self.odooCad.create_tree_structure(out_html_structure);
+				self._hideProgress();
+			},
+			(xhr) => { self._updateProgress(xhr); },
+			(err) => {
+				self._hideProgress();
+				alert("Unable to load the " + document_name + " err: " + err);
+			}
+		);
+	}
+
 	loadfBXLoader(document_name, url){
-	   var self=this;
-		fBXLoader.load( url, function ( gltf ) {
-			var children = gltf.children; 
-			var i;
-			for (i = 0; i < children.length; i++) {
-				self.odooCad.addItemToScene(children[i]);
+		var self = this;
+		fBXLoader.load(url,
+			function (gltf) {
+				var children = gltf.children;
+				for (var i = 0; i < children.length; i++) {
+					self.odooCad.addItemToScene(children[i]);
+				}
+				self._hideProgress();
+			},
+			(xhr) => { self._updateProgress(xhr); },
+			(err) => {
+				self._hideProgress();
+				alert("Unable to load the " + document_name + " err: " + err);
 			}
-		},
-		function ( xhr ) {
-	    	var percentage = (xhr.loaded / xhr.total) * 100;
-	    	self.progress_bar.style.width = percentage + '%';
-	        console.log(self.progress_bar.style.width + ' loaded')
-		},
-
-		function ( err ) {
-			alert("Unable to load the " + document_name + " err: " + err);
-		});	
+		);
 	}
-	
+
 	loadoBJLoader(document_name, file_path){
-	   var self=this;
-		oBJLoader.load(file_path, function ( objArgs ) {
-			var children = objArgs.children; 
-			var i;
-			for (i = 0; i < children.length; i++) {
-				self.odooCad.addItemToScene(children[i]);
+		var self = this;
+		oBJLoader.load(file_path,
+			function (objArgs) {
+				var children = objArgs.children;
+				for (var i = 0; i < children.length; i++) {
+					self.odooCad.addItemToScene(children[i]);
+				}
+				self._hideProgress();
+			},
+			(xhr) => { self._updateProgress(xhr); },
+			(err) => {
+				self._hideProgress();
+				alert("Unable to load the " + document_name + " err: " + err);
 			}
-		}, 
-		function ( xhr ) {
-	    	var percentage = (xhr.loaded / xhr.total) * 100;
-	    	self.progress_bar.style.width = percentage + '%';
-	        console.log(self.progress_bar.style.width + ' loaded')
-		},
-		function ( err ) {
-			alert("Unable to load the " + document_name + " err: " + err);
-		});	
-		
+		);
 	}
+
 	loadoloader(document_name, url){
-	   var self=this;
-		loader.load(
-				url,
-				function ( obj ) {
-					self.odooCad.addItemToScene( obj );
-				},
-
-				function ( xhr ) {
-			    	var percentage = (xhr.loaded / xhr.total) * 100;
-			         self.progress_bar.style.width = percentage + '%';
-			        console.log(self.progress_bar.style.width + ' loaded')
-				},
-
-				function ( err ) {
-					alert("Unable to load the " + document_name + " err: " + err);
-				});	
-	}
-	loadvRMLLoader(document_name, url){
-	   var self=this;
-		vRMLLoader.load( url, function ( gltf ) {
-			var children = gltf.children; 
-			var i;
-			for (i = 0; i < children.length; i++) {
-				self.odooCad.addItemToScene(children[i])
+		var self = this;
+		loader.load(url,
+			function (obj) {
+				self.odooCad.addItemToScene(obj);
+				self._hideProgress();
+			},
+			(xhr) => { self._updateProgress(xhr); },
+			(err) => {
+				self._hideProgress();
+				alert("Unable to load the " + document_name + " err: " + err);
 			}
-		},
-	    (xhr) => {
-	    	var percentage = (xhr.loaded / xhr.total) * 100;
-	    	self.progress_bar.style.width = percentage + '%';
-	        console.log(self.progress_bar.style.width + ' loaded')
-	    },
-	    (err) => {
-	    	alert("Unable to load the " + document_name + " err: " + err);
-	    });	
+		);
 	}
-	loadStlLoader(document_name, url){
-		var self=this;
-		stlLoader.load(url, 
-		    function (geometry) {
-		        const mesh = new THREE.Mesh(geometry, transparent_material)
-		        self.odooCad.addItemToScene(mesh);
-		    },
-		    (xhr) => {
-		    	var percentage = (xhr.loaded / xhr.total) * 100;
-		    	self.progress_bar.style.width = percentage + '%';
-		        console.log(self.progress_bar.style.width + ' loaded')
-		    },
-		    (err) => {
-		    	alert("Unable to load the " + document_name + " err: " + err);
-		 });
-	}
-    loadSvgLoader(document_name, url){
-        var self=this;
-        stlLoader.load(url, 
-            function (data) {
-                const paths = data.paths;
-                const group = new THREE.Group();
 
-                for ( let i = 0; i < paths.length; i ++ ) {
-                    const path = paths[ i ];
-                    const material = new THREE.MeshBasicMaterial( {
-                        color: path.color,
-                        side: THREE.DoubleSide,
-                        depthWrite: false
-                    });
-                    const shapes = SVGLoader.createShapes( path );
-                    for ( let j = 0; j < shapes.length; j ++ ) {
-                        const shape = shapes[ j ];
-                        const geometry = new THREE.ShapeGeometry( shape );
-                        const mesh = new THREE.Mesh( geometry, material );
-                        group.add( mesh );                   
-                    }
-                }
-                scene.add( group );
-            },
-            (xhr) => {
-                var percentage = (xhr.loaded / xhr.total) * 100;
-                self.progress_bar.style.width = percentage + '%';
-                console.log(self.progress_bar.style.width + ' loaded')
-            },
-            (err) => {
-              
-                 alert("Unable to load the " + document_name + " err: " + err);
-            }
-            );
-    }
+	loadvRMLLoader(document_name, url){
+		var self = this;
+		vRMLLoader.load(url,
+			function (gltf) {
+				var children = gltf.children;
+				for (var i = 0; i < children.length; i++) {
+					self.odooCad.addItemToScene(children[i]);
+				}
+				self._hideProgress();
+			},
+			(xhr) => { self._updateProgress(xhr); },
+			(err) => {
+				self._hideProgress();
+				alert("Unable to load the " + document_name + " err: " + err);
+			}
+		);
+	}
+
+	loadStlLoader(document_name, url){
+		var self = this;
+		stlLoader.load(url,
+			function (geometry) {
+				const mesh = new THREE.Mesh(geometry, transparent_material);
+				self.odooCad.addItemToScene(mesh);
+				self._hideProgress();
+			},
+			(xhr) => { self._updateProgress(xhr); },
+			(err) => {
+				self._hideProgress();
+				alert("Unable to load the " + document_name + " err: " + err);
+			}
+		);
+	}
+
+	loadSvgLoader(document_name, url){
+		var self = this;
+		svgloader.load(url,
+			function (data) {
+				const paths = data.paths;
+				const group = new THREE.Group();
+				for (let i = 0; i < paths.length; i++) {
+					const path = paths[i];
+					const material = new THREE.MeshBasicMaterial({
+						color: path.color,
+						side: THREE.DoubleSide,
+						depthWrite: false
+					});
+					const shapes = SVGLoader.createShapes(path);
+					for (let j = 0; j < shapes.length; j++) {
+						const shape = shapes[j];
+						const geometry = new THREE.ShapeGeometry(shape);
+						const mesh = new THREE.Mesh(geometry, material);
+						group.add(mesh);
+					}
+				}
+				self.odooCad.addItemToScene(group);
+				self._hideProgress();
+			},
+			(xhr) => { self._updateProgress(xhr); },
+			(err) => {
+				self._hideProgress();
+				alert("Unable to load the " + document_name + " err: " + err);
+			}
+		);
+	}
 }
 export {Loader}

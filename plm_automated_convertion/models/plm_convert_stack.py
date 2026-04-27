@@ -262,5 +262,7 @@ class PlmConvertStack(models.Model):
                 % (self.start_document_id.id, self.id)
             )
         self.end_document_id = target_attachment.id
+        if self.start_document_id.preview:
+            target_attachment.preview = self.start_document_id.preview
 
     logging.debug("generateConvertedDocuments ended")

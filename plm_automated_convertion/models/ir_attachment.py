@@ -24,12 +24,13 @@ Created on 03/nov/2016
 @author: mboscolo
 """
 import base64
+import io
 import logging
-
-#
 import os
 import shutil
 import tempfile
+import xml.etree.ElementTree as ET
+import zipfile
 
 #
 # conversion
@@ -42,10 +43,199 @@ from odoo.exceptions import UserError
 from .obj2png import ObjFile
 from stl import mesh
 import matplotlib.pyplot as plt
+import matplotlib as mpl
 from mpl_toolkits import mplot3d
 
 try:
     import cadquery as cq
+    from cadquery.occ_impl.importers.assembly import (
+        _get_name, _get_ref_color, _get_material, _get_shape_color,
+    )
+    from OCP.TDF import TDF_Label, TDF_LabelSequence
+    from OCP.TCollection import TCollection_ExtendedString
+    from OCP.IFSelect import IFSelect_RetDone
+    from OCP.TDocStd import TDocStd_Document
+    from OCP.STEPCAFControl import STEPCAFControl_Reader
+    from OCP.XCAFDoc import XCAFDoc_DocumentTool
+    from OCP.Interface import Interface_Static
+    from cadquery.occ_impl.geom import Location
+    from cadquery.occ_impl.shapes import Shape
+    from cadquery.occ_impl.assembly import Color
+
+    def _import_step_preserve_names(path: str) -> cq.Assembly:
+        """Import a STEP file into a cq.Assembly using instance (comp_label) names.
+
+        cadquery's built-in importStep uses the definition/template name (ref_name)
+        for sub-assemblies, causing duplicate-name errors when the same part is placed
+        multiple times. This function uses the instance label name (comp_name) instead,
+        which is the name the CAD tool assigned to each individual placement.
+        """
+        step_reader = STEPCAFControl_Reader()
+        step_reader.SetColorMode(True)
+        step_reader.SetNameMode(True)
+        step_reader.SetLayerMode(True)
+        step_reader.SetSHUOMode(True)
+        Interface_Static.SetIVal_s("read.stepcaf.subshapes.name", 1)
+
+        status = step_reader.ReadFile(path)
+        if status != IFSelect_RetDone:
+            raise ValueError(f"Error reading STEP file: {path}")
+
+        doc = TDocStd_Document(TCollection_ExtendedString("XmXCAF"))
+        step_reader.Transfer(doc)
+
+        shape_tool = XCAFDoc_DocumentTool.ShapeTool_s(doc.Main())
+        color_tool = XCAFDoc_DocumentTool.ColorTool_s(doc.Main())
+
+        def _process(lbl: TDF_Label, parent: cq.Assembly):
+            comp_labels = TDF_LabelSequence()
+            shape_tool.GetComponents_s(lbl, comp_labels)
+
+            name_counter: dict = {}
+
+            for i in range(comp_labels.Length()):
+                comp_label = comp_labels.Value(i + 1)
+
+                loc = shape_tool.GetLocation_s(comp_label)
+                cq_loc = Location(loc) if loc else Location()
+
+                if not shape_tool.IsReference_s(comp_label):
+                    continue
+
+                ref_label = TDF_Label()
+                shape_tool.GetReferredShape_s(comp_label, ref_label)
+                color = _get_ref_color(comp_label)
+                material = _get_material(comp_label)
+
+                # Prefer the instance label name (unique per placement); fall
+                # back to the definition/template name (the actual part name
+                # from the CAD tool) when the instance label has no name.
+                inst_name = (f"{_get_name(ref_label) or _get_name(comp_label)}:{i}")
+                # Guarantee uniqueness within this parent level
+                if inst_name in name_counter:
+                    name_counter[inst_name] += 1
+                    inst_name = f"{inst_name}_{name_counter[inst_name]}"
+                else:
+                    name_counter[inst_name] = 0
+
+                if shape_tool.IsAssembly_s(ref_label):
+                    sub = cq.Assembly(name=inst_name)
+                    _process(ref_label, sub)
+                    parent.add(sub, loc=cq_loc, name=inst_name,
+                               color=color, material=material)
+
+                elif shape_tool.IsSimpleShape_s(ref_label):
+                    final_shape = shape_tool.GetShape_s(ref_label)
+                    cq_shape = Shape.cast(final_shape)
+                    if color is None:
+                        color = _get_shape_color(final_shape, color_tool)
+                    if material is None:
+                        material = _get_material(ref_label)
+                    child = cq.Assembly(cq_shape, loc=cq_loc, name=inst_name,
+                                        color=color, material=material)
+                    parent.add(child, name=inst_name)
+
+        labels = TDF_LabelSequence()
+        shape_tool.GetFreeShapes(labels)
+        top_label = labels.Value(1)
+
+        if shape_tool.IsReference_s(top_label):
+            tmp = TDF_Label()
+            shape_tool.GetReferredShape_s(top_label, tmp)
+            top_label = tmp
+
+        top_name = _get_name(top_label) or "root"
+        assy = cq.Assembly(name=top_name)
+        _process(top_label, assy)
+        return assy
+
+    def _export_assembly_to_3mf(assembly, output_path):
+        """Export a cq.Assembly to 3MF preserving the original component names.
+
+        Traverses the assembly tree, tessellates each named leaf shape (with its
+        accumulated world transform applied), and writes a valid 3MF ZIP with one
+        named <object> per leaf.
+        """
+        parts = []
+
+        def _collect(node, parent_loc):
+            world_loc = parent_loc * node.loc
+            if node.obj is not None:
+                shape = node.obj.val() if isinstance(node.obj, cq.Workplane) else node.obj
+                parts.append((node.name or f"part_{len(parts)}", shape, world_loc))
+            for child in node.children:
+                _collect(child, world_loc)
+
+        _collect(assembly, cq.Location())
+
+        NS = "http://schemas.microsoft.com/3dmanufacturing/core/2015/02"
+        # Register as default namespace so ET writes <model> not <ns0:model>,
+        # which is required for Three.js ThreeMFLoader's querySelectorAll('object').
+        ET.register_namespace('', NS)
+
+        def _tag(local):
+            return f"{{{NS}}}{local}"
+
+        model_elem = ET.Element(_tag("model"), {
+            "unit": "millimeter",
+            "xml:lang": "en-US",
+        })
+        resources_elem = ET.SubElement(model_elem, _tag("resources"))
+        build_elem = ET.SubElement(model_elem, _tag("build"))
+
+        for obj_id, (part_name, shape, world_loc) in enumerate(parts, start=1):
+            try:
+                verts, faces = shape.moved(world_loc).tessellate(0.1, 0.1)
+            except Exception as ex:
+                logging.warning("Skipping shape %r during 3MF tessellation: %s", part_name, ex)
+                continue
+
+            obj_elem = ET.SubElement(resources_elem, _tag("object"), {
+                "id": str(obj_id),
+                "name": part_name,
+                "type": "model",
+            })
+            mesh_elem = ET.SubElement(obj_elem, _tag("mesh"))
+            verts_elem = ET.SubElement(mesh_elem, _tag("vertices"))
+            tris_elem = ET.SubElement(mesh_elem, _tag("triangles"))
+
+            for v in verts:
+                ET.SubElement(verts_elem, _tag("vertex"), {
+                    "x": str(round(v.x, 6)),
+                    "y": str(round(v.y, 6)),
+                    "z": str(round(v.z, 6)),
+                })
+            for tri in faces:
+                ET.SubElement(tris_elem, _tag("triangle"), {
+                    "v1": str(tri[0]),
+                    "v2": str(tri[1]),
+                    "v3": str(tri[2]),
+                })
+
+            ET.SubElement(build_elem, _tag("item"), {"objectid": str(obj_id)})
+
+        content_types = (
+            '<?xml version="1.0" encoding="UTF-8"?>'
+            '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">'
+            '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>'
+            '<Default Extension="model" ContentType="application/vnd.ms-package.3dmanufacturing-3dmodel+xml"/>'
+            '</Types>'
+        )
+        rels_content = (
+            '<?xml version="1.0" encoding="UTF-8"?>'
+            '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'
+            '<Relationship Target="/3D/3dmodel.model" Id="rel0" '
+            'Type="http://schemas.microsoft.com/3dmanufacturing/2013/01/3dmodel"/>'
+            '</Relationships>'
+        )
+        model_bytes = io.BytesIO()
+        ET.ElementTree(model_elem).write(model_bytes, encoding="UTF-8", xml_declaration=True)
+
+        with zipfile.ZipFile(output_path, "w", zipfile.ZIP_DEFLATED) as zf:
+            zf.writestr("[Content_Types].xml", content_types)
+            zf.writestr("_rels/.rels", rels_content)
+            zf.writestr("3D/3dmodel.model", model_bytes.getvalue())
+
 except Exception as ex:
     logging.warning(ex)
 try:
@@ -193,12 +383,26 @@ class ir_attachment(models.Model):
                 "svg",
                 "jpg",
                 "stl",
+                "3mf",
+                "gltf",
+                "glb",
             ]:
                 raise UserError("Format %s not supported" % toFormat)
             store_fname = self._full_path(self.store_fname)
             result = cq.importers.importStep(store_fname)
+            name, exte = os.path.splitext(self.name)
+            if ".3mf".lower() in toFormat:
+                newFileName = os.path.join(tempfile.gettempdir(), "%s.3mf" % name)
+                assembly = _import_step_preserve_names(store_fname)
+                _export_assembly_to_3mf(assembly, newFileName)
+                return newFileName
+            if toFormat.lower() in [".gltf", ".glb"]:
+                newFileName = os.path.join(tempfile.gettempdir(), "%s%s" % (name, toFormat.lower()))
+                assembly = _import_step_preserve_names(store_fname)
+                export_type = "GLB" if toFormat.lower() == ".glb" else "GLTF"
+                assembly.save(newFileName, exportType=export_type)
+                return newFileName
             with tempfile.TemporaryDirectory() as tmpdirname:
-                name, exte = os.path.splitext(self.name)
                 stlName = os.path.join(tmpdirname, "%s.stl" % name)
                 cq.exporters.export(
                     result, stlName, tolerance=1.0, angularTolerance=1.0
