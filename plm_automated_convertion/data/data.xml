@@ -107,6 +107,27 @@
             <field name="start_format">.stp</field>
             <field name="end_format">.stl</field>
         </record>
+        <record id="update_stp_preview_3mf" model="plm.convert.format">
+            <field name="server_id" ref="odoo_local_server"/>
+            <field name="available">True</field>
+            <field name="cad_name">Odoo</field>
+            <field name="start_format">.stp</field>
+            <field name="end_format">.3mf</field>
+        </record>
+        <record id="update_stp_preview_gltf" model="plm.convert.format">
+            <field name="server_id" ref="odoo_local_server"/>
+            <field name="available">True</field>
+            <field name="cad_name">Odoo</field>
+            <field name="start_format">.stp</field>
+            <field name="end_format">.gltf</field>
+        </record>
+        <record id="update_stp_preview_glb" model="plm.convert.format">
+            <field name="server_id" ref="odoo_local_server"/>
+            <field name="available">True</field>
+            <field name="cad_name">Odoo</field>
+            <field name="start_format">.stp</field>
+            <field name="end_format">.glb</field>
+        </record>
         <!-- FROM STEP-->
         <record id="update_step_preview_pdf" model="plm.convert.format">
             <field name="server_id" ref="odoo_local_server"/>
@@ -143,7 +164,35 @@
             <field name="start_format">.step</field>
             <field name="end_format">.stl</field>
         </record>
+        <record id="update_step_preview_3mf" model="plm.convert.format">
+            <field name="server_id" ref="odoo_local_server"/>
+            <field name="available">True</field>
+            <field name="cad_name">Odoo</field>
+            <field name="start_format">.step</field>
+            <field name="end_format">.3mf</field>
+        </record>
+        <record id="update_step_preview_gltf" model="plm.convert.format">
+            <field name="server_id" ref="odoo_local_server"/>
+            <field name="available">True</field>
+            <field name="cad_name">Odoo</field>
+            <field name="start_format">.step</field>
+            <field name="end_format">.gltf</field>
+        </record>
+        <record id="update_step_preview_glb" model="plm.convert.format">
+            <field name="server_id" ref="odoo_local_server"/>
+            <field name="available">True</field>
+            <field name="cad_name">Odoo</field>
+            <field name="start_format">.step</field>
+            <field name="end_format">.glb</field>
+        </record>
         <!-- FROM STL-->
+         <record id="update_stl_preview_3mf" model="plm.convert.format">
+            <field name="server_id" ref="odoo_local_server"/>
+            <field name="available">True</field>
+            <field name="cad_name">Odoo</field>
+            <field name="start_format">.stl</field>
+            <field name="end_format">.3mf</field>
+        </record>
         <record id="update_stl_preview_pdf" model="plm.convert.format">
             <field name="server_id" ref="odoo_local_server"/>
             <field name="available">True</field>
