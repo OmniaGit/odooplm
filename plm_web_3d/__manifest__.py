@@ -21,15 +21,25 @@
 ##############################################################################
 {
     "name": "PLM Web 3d Support",
-    "version": "18.0.3.0.6",
+    "version": "18.0.3.0.7",
     "author": "OmniaSolutions",
     "website": "https://odooplm.omniasolutions.website",
     "category": "Manufacturing/Product Lifecycle Management (PLM)",
     "sequence": 15,
     "license": "AGPL-3",
     "summary": """
-    This Module allows you to view 3D file.
+    This Module allows you to view 3D mode file and 2D documents in odoo.
+    it allows to:
+    * 3d viewer
+    * 3d model viewer
+    * cad viewer
+    * 2d viewer
+    * 2d drawing viewer
+    Made using:
+    * webgl
+    * treejs
     """,
+    "images": ["static/src/img/web_3d.gif"],
     "depends": ["plm"],
     "data": [
         'security/ir.model.access.csv',
