@@ -26,7 +26,7 @@ window.addEventListener("load", () => {
 
 });
 
-window.addEventListener("load", function() {
+window.addEventListener("load", function () {
     const submitBtn = document.getElementById("submit_markup");
     if (submitBtn) submitBtn.addEventListener("click", submitMarkup);
     initExistingMarkups();
@@ -56,10 +56,10 @@ function _positionEditorControls(tRect) {
 
         var origBtns = toolbar.querySelectorAll("button");
         var cloneBtns = tbClone.querySelectorAll("button");
-        cloneBtns.forEach(function(btn, i) {
+        cloneBtns.forEach(function (btn, i) {
             btn.removeAttribute("style");
             btn.className = "mcr-btn";
-            btn.onclick = function(e) {
+            btn.onclick = function (e) {
                 e.stopPropagation();
                 if (origBtns[i]) origBtns[i].click();
             };
@@ -76,7 +76,7 @@ function _positionEditorControls(tRect) {
     commentInput.placeholder = "Write Message...";
     commentInput.className = "mcr-input";
 
-    commentInput.addEventListener("input", function() {
+    commentInput.addEventListener("input", function () {
         _hasChanges = true;
     });
 
@@ -102,25 +102,25 @@ function _positionEditorControls(tRect) {
 
     fetch("/web/dataset/call_kw", {
         method: "POST",
-        headers: {"Content-Type": "application/json"},
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
             jsonrpc: "2.0", method: "call",
             params: {
                 model: "res.users", method: "search_read",
                 args: [[["share", "=", false], ["active", "=", true]]],
-                kwargs: {fields: ["id", "name"], order: "name asc", limit: 100},
+                kwargs: { fields: ["id", "name"], order: "name asc", limit: 100 },
             },
         }),
     })
-        .then(function(r) {
+        .then(function (r) {
             return r.json();
         })
-        .then(function(data) {
+        .then(function (data) {
             var sel = document.getElementById("mcr_user_id");
             if (!sel) return;
             var users = data.result || [];
             sel.innerHTML = "";
-            users.forEach(function(u) {
+            users.forEach(function (u) {
                 var opt = document.createElement("option");
                 opt.value = u.id;
                 opt.textContent = u.name;
@@ -130,7 +130,7 @@ function _positionEditorControls(tRect) {
                 sel.value = odoo.session_info.uid;
             }
         })
-        .catch(function() {
+        .catch(function () {
             var sel = document.getElementById("mcr_user_id");
             if (sel) sel.innerHTML = "<option value=\"\">Error loading users</option>";
         });
@@ -142,7 +142,7 @@ function _positionEditorControls(tRect) {
     var activityCheck = document.createElement("input");
     activityCheck.type = "checkbox";
     activityCheck.className = "mcr-activity-check";
-    activityCheck.onchange = function() {
+    activityCheck.onchange = function () {
         var orig = document.getElementById("activity_view");
         if (orig) {
             orig.checked = this.checked;
@@ -157,7 +157,7 @@ function _positionEditorControls(tRect) {
     var submitBtn = document.createElement("button");
     submitBtn.textContent = "Submit";
     submitBtn.className = "mcr-submit";
-    submitBtn.onclick = function(e) {
+    submitBtn.onclick = function (e) {
         e.stopPropagation();
         var orig = document.getElementById("markup_comment");
         if (orig) orig.value = commentInput.value;
@@ -180,80 +180,84 @@ function _positionEditorControls(tRect) {
         var saveBtn = document.createElement("button");
         saveBtn.id = "mcr_save_existing_btn";
         saveBtn.className = "mcr-btn";
-        saveBtn.textContent = "💾 Save";
-        saveBtn.onclick = function(e) {
+        saveBtn.textContent = "? Save";
+
+        saveBtn.onclick = function (e) {
             e.stopPropagation();
 
             const threeCanvas = document.getElementById("odoo_canvas");
 
+            // ✅ Merge canvas
             const mergedCanvas = document.createElement("canvas");
             mergedCanvas.width = threeCanvas.width;
             mergedCanvas.height = threeCanvas.height;
+
             const ctx = mergedCanvas.getContext("2d");
             ctx.drawImage(threeCanvas, 0, 0);
             ctx.drawImage(fabricCanvas.lowerCanvasEl, 0, 0);
+
             const finalImage = mergedCanvas.toDataURL("image/png");
 
+            // ✅ Clean JSON
             const fabricJsonObj = fabricCanvas.toJSON();
             if (fabricJsonObj.backgroundImage) delete fabricJsonObj.backgroundImage;
             const canvasJsonStr = JSON.stringify(fabricJsonObj);
 
-            fetch("/plm/markup/update", {
+            // ✅ Get original log data
+            const logItem = document.querySelector(`[data-markup-id="${_editingMarkupId}"]`);
+
+            let originalComment = "";
+            if (logItem) {
+                originalComment = logItem.dataset.comment || "";
+            }
+
+            let displayComment = originalComment || "markup";
+            if (!displayComment.startsWith("(Edited)")) {
+                displayComment = "(Edited) " + displayComment;
+            }
+
+            const dateStr = new Date().toLocaleDateString();
+
+            const container = document.getElementById("main_3d_web");
+
+            // ✅ IMPORTANT: create NEW record instead of update
+            fetch("/plm_web_3d/save_markup", {
                 method: "POST",
-                headers: {"Content-Type": "application/json"},
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    jsonrpc: "2.0", method: "call",
+                    jsonrpc: "2.0",
+                    method: "call",
                     params: {
-                        markup_id: _editingMarkupId,
                         image: finalImage,
                         base_image: _currentBaseImage,
+                        comment: displayComment,
+                        filename: "markup_edit.jpg",
                         canvas_json: canvasJsonStr,
+
+                        // REQUIRED
+                        res_model: container.dataset.resModel,
+                        res_id: parseInt(container.dataset.resId),
+
+                        schedule_activity: false,
                     },
                 }),
             })
                 .then(r => r.json())
                 .then(data => {
-                    if (data.result?.success) {
+                    if (data.result) {
                         showToast("Markup saved successfully!", "success");
 
-                        // ← Update log item in UI without page reload
-                        const logItem = document.querySelector(`[data-markup-id="${_editingMarkupId}"]`);
-                        if (logItem) {
-                            // Update snapshot shown in eye/modal
-                            const eye = logItem.querySelector(".markup_log_eye");
-                            const edit = logItem.querySelector(".markup_log_load");
+                        const newId = data.result.markup_id;
 
-                            if (eye && edit) {
-                                const newEye = eye.cloneNode(true);
-                                const newEdit = edit.cloneNode(true);
-
-                                // Capture current values for closure
-                                const savedImage = finalImage;
-                                const savedCanvasJson = canvasJsonStr;
-                                const savedBaseImage = _currentBaseImage;
-                                const savedMarkupId = _editingMarkupId;
-                                const savedComment = logItem.dataset.comment;
-                                const savedDate = logItem.dataset.date;
-
-                                newEye.addEventListener("click", function(e) {
-                                    e.stopPropagation();
-                                    openMarkupLogModal(savedImage, savedComment, savedDate);
-                                });
-
-                                newEdit.addEventListener("click", function(e) {
-                                    e.stopPropagation();
-                                    loadMarkupIntoEditor(savedCanvasJson, savedBaseImage, savedMarkupId);
-                                });
-
-                                eye.replaceWith(newEye);
-                                edit.replaceWith(newEdit);
-
-                                // Update row click too
-                                logItem.onclick = function() {
-                                    openMarkupLogModal(savedImage, savedComment, savedDate);
-                                };
-                            }
-                        }
+                        // ✅ Add REAL log entry (persistent)
+                        addMarkupLog(
+                            finalImage,
+                            _currentBaseImage,
+                            displayComment,
+                            canvasJsonStr,
+                            dateStr,
+                            newId
+                        );
 
                         _hasChanges = false;
                         _closeEditor();
@@ -266,6 +270,7 @@ function _positionEditorControls(tRect) {
                     showToast("Something went wrong while saving.", "danger");
                 });
         };
+
         tbClone.appendChild(saveBtn);
     }
 
@@ -284,7 +289,7 @@ function _resetEditorControls() {
 function _setSidePanelsAbove(above) {
     var container = document.getElementById("main_3d_web");
     if (!container) return;
-    Array.from(container.children).forEach(function(child) {
+    Array.from(container.children).forEach(function (child) {
         if (child.id !== "markup_editor" && child.id !== "odoo_canvas") {
             child.style.zIndex = above ? "200" : "";
         }
@@ -368,20 +373,23 @@ function undo() {
     redoStack.push(JSON.stringify(fabricCanvas));
 
     _isLoadingJSON = true;
-    fabricCanvas.loadFromJSON(undoStack.pop(), function() {
+    fabricCanvas.loadFromJSON(undoStack.pop(), function () {
 
         _isLoadingJSON = false;
         if (_currentBaseImage) {
             _reapplyBaseBackground(() => {
                 isRedoing = false;
+                _hasChanges = true;
             });
         } else if (isSnapshotEditMode && _currentSnapshotUrl) {
             _reapplySnapshotBackground(() => {
                 isRedoing = false;
+                _hasChanges = true;
             });
         } else {
             fabricCanvas.renderAll();
             isRedoing = false;
+            _hasChanges = true;
         }
     });
 }
@@ -394,21 +402,24 @@ function redo() {
 
     _isLoadingJSON = true;
 
-    fabricCanvas.loadFromJSON(redoStack.pop(), function() {
+    fabricCanvas.loadFromJSON(redoStack.pop(), function () {
 
         _isLoadingJSON = false;
 
         if (_currentBaseImage) {
             _reapplyBaseBackground(() => {
                 isRedoing = false;
+                _hasChanges = true;
             });
         } else if (isSnapshotEditMode && _currentSnapshotUrl) {
             _reapplySnapshotBackground(() => {
                 isRedoing = false;
+                _hasChanges = true;
             });
         } else {
             fabricCanvas.renderAll();
             isRedoing = false;
+            _hasChanges = true;
         }
     });
 }
@@ -462,7 +473,7 @@ function initToolbar() {
 
         "undo_btn": () => undo(),
         "redo_btn": () => redo(),
-        "close_btn": () => _closeEditor(),
+        "close_btn": () => _handleCloseAttempt(),
     };
 
     for (const [id, func] of Object.entries(actions)) {
@@ -471,7 +482,7 @@ function initToolbar() {
     }
 }
 
-document.addEventListener("keydown", function(e) {
+document.addEventListener("keydown", function (e) {
     if (e.key === "Delete" || e.key === "Backspace") {
         if (fabricCanvas && fabricCanvas.getActiveObject() &&
             fabricCanvas.getActiveObject().isEditing) {
@@ -491,43 +502,23 @@ document.addEventListener("keydown", function(e) {
         const editor = document.getElementById("markup_editor");
         if (!editor || window.getComputedStyle(editor).display === "none") return;
 
-        if (!_hasChanges) return;
-
-        const modal = document.getElementById("markup_esc_modal");
-        if (!modal) return;
-        modal.style.display = "flex";
-
-        // Wire Save → reuse mcr-submit click logic (sync comment then submitMarkup)
-        document.getElementById("markup_esc_save").onclick = function() {
-            modal.style.display = "none";
-            const commentInner = document.getElementById("markup_comment_inner");
-            const commentOrig = document.getElementById("markup_comment");
-            if (commentInner && commentOrig) commentOrig.value = commentInner.value;
-            submitMarkup();
-        };
-
-        // Wire Close → reuse close_btn logic
-        document.getElementById("markup_esc_close").onclick = function() {
-            modal.style.display = "none";
-            const closeBtn = document.getElementById("close_btn");
-            if (closeBtn) closeBtn.click();
-        };
+        _handleCloseAttempt();
     }
 });
 
 function _reapplySnapshotBackground(callback) {
     if (!_currentSnapshotUrl || !fabricCanvas) return;
-    fabric.Image.fromURL(_currentSnapshotUrl, function(img) {
+    fabric.Image.fromURL(_currentSnapshotUrl, function (img) {
         img.set({
             left: 0, top: 0,
             scaleX: _snapshotScale, scaleY: _snapshotScale,
             selectable: false, evented: false, excludeFromExport: true,
         });
-        fabricCanvas.setBackgroundImage(img, function() {
+        fabricCanvas.setBackgroundImage(img, function () {
             fabricCanvas.renderAll();
             if (callback) callback();
         });
-    }, {crossOrigin: "anonymous"});
+    }, { crossOrigin: "anonymous" });
 }
 
 function _closeEditor() {
@@ -535,8 +526,10 @@ function _closeEditor() {
     _editingMarkupId = null;
     _currentBaseImage = null;
     if (fabricCanvas) {
+        _isLoadingJSON = true;
         fabricCanvas.clear();
         fabricCanvas.setBackgroundImage(null, fabricCanvas.renderAll.bind(fabricCanvas));
+        _isLoadingJSON = false;
     }
     isSnapshotEditMode = false;
     _currentSnapshotUrl = null;
@@ -552,8 +545,37 @@ function _closeEditor() {
     _setSidePanelsAbove(false);
 }
 
+function _handleCloseAttempt() {
+    if (_hasChanges) {
+        const modal = document.getElementById("markup_esc_modal");
+        if (modal) {
+            modal.style.display = "flex";
+
+            document.getElementById("markup_esc_save").onclick = function () {
+                modal.style.display = "none";
+                const saveBtn = document.getElementById("mcr_save_existing_btn");
+                if (_editingMarkupId && saveBtn) {
+                    saveBtn.click();
+                    return;
+                }
+                const commentInner = document.getElementById("markup_comment_inner");
+                const commentOrig = document.getElementById("markup_comment");
+                if (commentInner && commentOrig) commentOrig.value = commentInner.value;
+                submitMarkup();
+            };
+
+            document.getElementById("markup_esc_close").onclick = function () {
+                modal.style.display = "none";
+                _closeEditor();
+            };
+            return;
+        }
+    }
+    _closeEditor();
+}
+
 function initFabricEvents() {
-    fabricCanvas.on("object:added", function() {
+    fabricCanvas.on("object:added", function () {
         if (_isLoadingJSON) return;
         if (!isRedoing) {
             saveState();
@@ -561,13 +583,20 @@ function initFabricEvents() {
         }
     });
 
-    fabricCanvas.on("object:modified", function() {
+    fabricCanvas.on("object:removed", function () {
+        if (_isLoadingJSON) return;
+        if (!isRedoing) {
+            _hasChanges = true;
+        }
+    });
+
+    fabricCanvas.on("object:modified", function () {
         if (_isLoadingJSON) return;
         saveState();
         _hasChanges = true;
     });
 
-    fabricCanvas.on("mouse:down", function(opt) {
+    fabricCanvas.on("mouse:down", function (opt) {
         if (opt.target) return;
         const pointer = fabricCanvas.getPointer(opt.e);
         startX = pointer.x;
@@ -621,7 +650,7 @@ function initFabricEvents() {
         }
     });
 
-    fabricCanvas.on("mouse:move", function(opt) {
+    fabricCanvas.on("mouse:move", function (opt) {
         if (!tempShape) return;
         const pointer = fabricCanvas.getPointer(opt.e);
         const x = pointer.x;
@@ -635,7 +664,7 @@ function initFabricEvents() {
                 top: Math.min(y, startY),
             });
         } else if (currentTool === "circle") {
-            tempShape.set({radius: Math.sqrt(Math.pow(x - startX, 2) + Math.pow(y - startY, 2)) / 2});
+            tempShape.set({ radius: Math.sqrt(Math.pow(x - startX, 2) + Math.pow(y - startY, 2)) / 2 });
         } else if (currentTool === "arrow") {
             const angle = Math.atan2(y - startY, x - startX);
             const headLen = 15; // Adjusted for visual balance
@@ -645,7 +674,7 @@ function initFabricEvents() {
             const lineEndX = x - (headLen / 2) * Math.cos(angle);
             const lineEndY = y - (headLen / 2) * Math.sin(angle);
 
-            tempShape.set({x2: lineEndX, y2: lineEndY});
+            tempShape.set({ x2: lineEndX, y2: lineEndY });
 
             // Update Head position and rotation
             tempShape._arrowHead.set({
@@ -658,7 +687,7 @@ function initFabricEvents() {
         fabricCanvas.requestRenderAll();
     });
 
-    fabricCanvas.on("mouse:up", function() {
+    fabricCanvas.on("mouse:up", function () {
         if (tempShape) {
             if (currentTool === "arrow") {
                 const arrowLine = tempShape;
@@ -673,7 +702,7 @@ function initFabricEvents() {
                 fabricCanvas.add(group);
                 fabricCanvas.setActiveObject(group);
             } else {
-                tempShape.set({selectable: true});
+                tempShape.set({ selectable: true });
                 tempShape.setCoords();
                 fabricCanvas.setActiveObject(tempShape);
             }
@@ -736,7 +765,7 @@ function sendMarkupToBackend(imageData, baseImage, comment, canvasJson) {
 
     fetch("/plm_web_3d/save_markup", {
         method: "POST",
-        headers: {"Content-Type": "application/json"},
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
             jsonrpc: "2.0", method: "call",
             params: {
@@ -762,23 +791,7 @@ function sendMarkupToBackend(imageData, baseImage, comment, canvasJson) {
                 const displayComment = comment || (fileName + " - Markup Logged");
                 addMarkupLog(baseImage, baseImage, displayComment, canvasJson, new Date().toLocaleDateString(), newId);
             }
-
-            const commentTextarea = document.getElementById("markup_comment");
-            if (commentTextarea) commentTextarea.value = "";
-            if (activityCheckbox) activityCheckbox.checked = false;
-            if (fabricCanvas) fabricCanvas.clear();
-
-            undoStack = [];
-            redoStack = [];
-            currentTool = null;
-            isSnapshotEditMode = false;
-            _currentSnapshotUrl = null;
-            _baseScreenshotData = null;
-
-            const editor = document.getElementById("markup_editor");
-            if (editor) editor.style.display = "none";
-            _resetEditorControls();
-            _setSidePanelsAbove(false);
+            _closeEditor();
         })
         .catch(err => console.error("Markup submit error:", err));
 }
@@ -798,10 +811,10 @@ function initExistingMarkups() {
 
     fetch("/plm/markup/load", {
         method: "POST",
-        headers: {"Content-Type": "application/json"},
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
             jsonrpc: "2.0", method: "call",
-            params: {res_id: parseInt(resId), res_model: resModel || ""},
+            params: { res_id: parseInt(resId), res_model: resModel || "" },
         }),
     })
         .then(r => r.json())
@@ -948,12 +961,12 @@ function loadMarkupIntoEditor(canvasJson, bgUrl, markupId = null) {
         }
     }
 
-    fabricCanvas.loadFromJSON(parsed || {}, function() {
+    fabricCanvas.loadFromJSON(parsed || {}, function () {
         if (myGen !== _loadGeneration) return;
 
         fabric.Image.fromURL(
             bgUrl,
-            function(img) {
+            function (img) {
                 if (myGen !== _loadGeneration) return;
 
                 if (!img) {
@@ -988,7 +1001,7 @@ function loadMarkupIntoEditor(canvasJson, bgUrl, markupId = null) {
             },
             {
                 crossOrigin: "anonymous",
-                onError: function() {
+                onError: function () {
                     console.error("Failed to load base image");
                 },
             },
@@ -1007,7 +1020,7 @@ function openMarkupLogModal(imageUrl, commentText, dateStr) {
     modal.classList.add("open");
 }
 
-window.addEventListener("load", function() {
+window.addEventListener("load", function () {
     const modal = document.getElementById("markup_esc_modal");
     const closeIcon = document.getElementById("markup_log_modal_close2");
     if (closeIcon) {
@@ -1017,7 +1030,7 @@ window.addEventListener("load", function() {
     }
 });
 
-window.addEventListener("load", function() {
+window.addEventListener("load", function () {
     const closeBtn = document.getElementById("markup_log_modal_close");
     if (closeBtn) closeBtn.addEventListener("click", () => document.getElementById("markup_log_modal").classList.remove("open"));
     const modal = document.getElementById("markup_log_modal");
@@ -1047,8 +1060,8 @@ function showToast(message, type = "info") {
 
 function deleteMarkup(markupId, itemElement) {
     fetch("/plm/markup/delete", {
-        method: "POST", headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({jsonrpc: "2.0", method: "call", params: {markup_id: markupId}}),
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ jsonrpc: "2.0", method: "call", params: { markup_id: markupId } }),
     })
         .then(r => r.json())
         .then(data => {
@@ -1070,11 +1083,11 @@ function deleteMarkup(markupId, itemElement) {
         });
 }
 
-window.addEventListener("load", function() {
+window.addEventListener("load", function () {
     function rpcCall(model, method, args, kwargs) {
         return fetch("/web/dataset/call_kw", {
-            method: "POST", headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({jsonrpc: "2.0", method: "call", params: {model, method, args, kwargs: kwargs || {}}}),
+            method: "POST", headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ jsonrpc: "2.0", method: "call", params: { model, method, args, kwargs: kwargs || {} } }),
         }).then(r => r.json()).then(data => {
             if (data.error) throw new Error(data.error.data.message || "RPC Error");
             return data.result;
@@ -1140,7 +1153,7 @@ window.addEventListener("load", function() {
     const activityViewBtn = document.getElementById("activity_view");
     const activityPanel = document.getElementById("activity_form_panel");
     if (activityViewBtn && activityPanel) {
-        activityViewBtn.addEventListener("click", function() {
+        activityViewBtn.addEventListener("click", function () {
             const isOpen = activityPanel.style.display !== "none";
             activityPanel.style.display = isOpen ? "none" : "block";
             if (!isOpen) {
@@ -1160,7 +1173,7 @@ window.addEventListener("load", function() {
 
     const submitBtn2 = document.getElementById("activity_submit_btn");
     if (submitBtn2) {
-        submitBtn2.addEventListener("click", function() {
+        submitBtn2.addEventListener("click", function () {
             const container = document.getElementById("main_3d_web");
             const resId = container ? parseInt(container.dataset.resId) : null;
             const dueDate = document.getElementById("activity_due_date")?.value || "";
@@ -1177,7 +1190,7 @@ window.addEventListener("load", function() {
             }
             getToDoActivityTypeId()
                 .then(activityTypeId =>
-                    rpcCall("ir.model", "search_read", [[["model", "=", "ir.attachment"]]], {fields: ["id"], limit: 1})
+                    rpcCall("ir.model", "search_read", [[["model", "=", "ir.attachment"]]], { fields: ["id"], limit: 1 })
                         .then(models => {
                             if (!models?.length) throw new Error("ir.model not found");
                             return rpcCall("mail.activity", "create", [{
@@ -1206,18 +1219,18 @@ window.addEventListener("load", function() {
     }
 });
 
-window.addEventListener("load", function() {
+window.addEventListener("load", function () {
     const params = new URLSearchParams(window.location.search);
     const markupId = params.get("markup_id");
     if (!markupId) return;
 
     fetch("/plm_web_3d/markup/addon", {
         method: "POST",
-        headers: {"Content-Type": "application/json"},
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
             jsonrpc: "2.0",
             method: "call",
-            params: {markup_id: parseInt(markupId)},
+            params: { markup_id: parseInt(markupId) },
         }),
     })
         .then(r => r.json())
@@ -1246,7 +1259,7 @@ window.addEventListener("load", function() {
 function _reapplyBaseBackground(callback) {
     if (!_currentBaseImage || !fabricCanvas) return;
 
-    fabric.Image.fromURL(_currentBaseImage, function(img) {
+    fabric.Image.fromURL(_currentBaseImage, function (img) {
 
         const canvasW = fabricCanvas.getWidth();
         const canvasH = fabricCanvas.getHeight();
@@ -1265,10 +1278,10 @@ function _reapplyBaseBackground(callback) {
             excludeFromExport: true,
         });
 
-        fabricCanvas.setBackgroundImage(img, function() {
+        fabricCanvas.setBackgroundImage(img, function () {
             fabricCanvas.renderAll();
             if (callback) callback();
         });
 
-    }, {crossOrigin: "anonymous"});
+    }, { crossOrigin: "anonymous" });
 }

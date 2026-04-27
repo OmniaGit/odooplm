@@ -221,16 +221,16 @@
                                     <b>Product Information</b>
                                 </div>
                                 <hr class="datacard_line"/>
-                                <lu id="product_info">
-                                </lu>
+                                <ul id="product_info">
+                                </ul>
 
 
                                 <div class="info_header">
                                     <b>Document Information</b>
                                 </div>
                                 <hr class="datacard_line"/>
-                                <lu id="document_info">
-                                </lu>
+                                <ul id="document_info">
+                                </ul>
 
                                 <div class="info_header">
                                     <b>Document Structure</b>
@@ -243,8 +243,8 @@
                                     <button type="button" id="show_all_parts" title="Un-Hide"
                                             class="fa fa-lightbulb-o"></button>
                                 </div>
-                                <lu id="document_tree">
-                                </lu>
+                                <div id="document_tree">
+                                </div>
 
                             </div>
                         </div>

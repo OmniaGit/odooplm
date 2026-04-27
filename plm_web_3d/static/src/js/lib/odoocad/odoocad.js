@@ -219,12 +219,14 @@ class OdooCAD {
     create_tree_structure(out_html_structure) {
         const self = this;
 
-        var html_out = "<div class='tree_structure' style='overflow-y: scroll;min-height: 1px;max-height: 400px;'>";
+        var html_out = "<div class='tree_structure'>";
         html_out += out_html_structure;
         html_out += "</div>";
 
-        var li_document_tree = document.querySelectorAll('#document_tree');
-        li_document_tree[0].innerHTML = html_out;
+        var li_document_tree = document.getElementById('document_tree');
+        if (li_document_tree) {
+            li_document_tree.innerHTML = html_out;
+        }
 
         // ✅ IMPORTANT: use full row instead of span
         var hoverTargets = document.getElementsByClassName("document_tree_line");
