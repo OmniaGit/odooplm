@@ -2084,10 +2084,6 @@ class IrAttachment(models.Model):
                     productsEvaluated.append(prodBrws.id)
                 if linkedDocuments:
                     prodBrws.write({'linkeddocuments': list(linkedDocuments)})
-                if hasattr(prodBrws, 'product_tmpl_id') and hasattr(prodBrws.product_tmpl_id, 'fixName'):
-                    prodBrws.product_tmpl_id.fixName()
-                elif hasattr(prodBrws, 'fixName'):
-                    prodBrws.fixName()
                 productAttribute['id'] = prodBrws.id
             except Exception as ex:
                 logging.error(ex)
