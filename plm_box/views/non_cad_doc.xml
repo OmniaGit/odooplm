@@ -83,10 +83,22 @@
         </field>
     </record>
 
+    <record id="plm_box_search_view" model="ir.ui.view">
+        <field name="name">plm.box.search</field>
+        <field name="model">plm.box</field>
+        <field name="arch" type="xml">
+            <search string="Search Box">
+                <field name="engineering_code"/>
+                <field name="description"/>
+            </search>
+        </field>
+    </record>
+
     <record id="action_non_cad_doc" model="ir.actions.act_window">
         <field name="name">Box</field>
         <field name="res_model">plm.box</field>
         <field name="view_mode">list,form</field>
         <field name="view_id" ref="plm_box_list"/>
+        <field name="search_view_id" ref="plm_box_search_view"/>
     </record>
 </odoo>
