@@ -2,6 +2,8 @@
  * treejs import
  */
 import * as THREE from '../three.js/build/three.module.js';
+import { FontLoader } from '../three.js/examples/jsm/loaders/FontLoader.js';
+import { TextGeometry } from '../three.js/examples/jsm/geometries/TextGeometry.js';
 /*
  * OdooCad import
  */
@@ -70,7 +72,6 @@ class OdooCAD {
         const out_htm_structure = this.create_relation_structure(object);
         // Center the object
         // fit item
-        progress.display = 'none';
         var fitItem = new CustomEvent("OdooCAD_fit_items");
         html_canvas.dispatchEvent(fitItem);
         // recompute the bounding box
@@ -219,14 +220,12 @@ class OdooCAD {
     create_tree_structure(out_html_structure) {
         const self = this;
 
-        var html_out = "<div class='tree_structure'>";
+        var html_out = "<div class='tree_structure' style='overflow-y: scroll;min-height: 1px;max-height: 400px;'>";
         html_out += out_html_structure;
         html_out += "</div>";
 
-        var li_document_tree = document.getElementById('document_tree');
-        if (li_document_tree) {
-            li_document_tree.innerHTML = html_out;
-        }
+        var li_document_tree = document.querySelectorAll('#document_tree');
+        li_document_tree[0].innerHTML = html_out;
 
         // ✅ IMPORTANT: use full row instead of span
         var hoverTargets = document.getElementsByClassName("document_tree_line");
@@ -397,6 +396,50 @@ class OdooCAD {
 
     removeItemToSeen(object) {
         /* TODO: make the remove operation */
+    }
+
+    addDxfTextLabels(textEntities, origin) {
+        if (this._dxfTextGroup) {
+            this.scene.remove(this._dxfTextGroup)
+        }
+        this._dxfTextGroup = new THREE.Group()
+        this.scene.add(this._dxfTextGroup)
+
+        const group = this._dxfTextGroup
+        const material = new THREE.MeshBasicMaterial({ color: 0x000000, side: THREE.DoubleSide })
+        const FONT_URL = '/plm_web_3d/static/src/js/lib/three.js/examples/fonts/helvetiker_regular.typeface.json'
+        // DxfScene subtracts origin from every vertex; apply the same offset here.
+        const ox = origin ? origin.x : 0
+        const oy = origin ? origin.y : 0
+
+        new FontLoader().load(FONT_URL, function (font) {
+            for (const entry of textEntities) {
+                const size = entry.textHeight > 0 ? entry.textHeight : 2.5
+                const rotZ = (entry.rotation || 0) * Math.PI / 180
+                const lines = entry.text.split('\n')
+                const lineHeight = size * 1.4
+
+                for (let i = 0; i < lines.length; i++) {
+                    const line = lines[i].trim()
+                    if (!line) continue
+
+                    const geometry = new TextGeometry(line, {
+                        font: font,
+                        size: size,
+                        height: 0,
+                        curveSegments: 4,
+                        bevelEnabled: false,
+                    })
+
+                    const mesh = new THREE.Mesh(geometry, material)
+                    const dx = -Math.sin(rotZ) * i * lineHeight
+                    const dy = -Math.cos(rotZ) * i * lineHeight
+                    mesh.position.set(entry.x - ox + dx, entry.y - oy - dy, 0)
+                    mesh.rotation.z = rotZ
+                    group.add(mesh)
+                }
+            }
+        })
     }
 }
 

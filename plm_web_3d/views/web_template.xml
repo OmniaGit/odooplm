@@ -44,39 +44,40 @@
                             <img src="../plm_web_3d/static/src/img/threejs_logo.png" alt="ThreeJs"
                                  class="header_image"/>
                         </a>
-                        <div id="progress">
-                            <div id="progress_bar"/>
+                        <div id="loading_overlay" style="display:none;">
+                            <div id="loading_spinner_wrap">
+                                <div id="loading_spinner"></div>
+                                <div id="loading_text">Loading data from Odoo<span class="ldot">.</span><span class="ldot">.</span><span class="ldot">.</span></div>
+                            </div>
                         </div>
                     </div>
-                    <div class='main_command_slide' id="mainCommandSlide">
-                        <div class='activator'>
-                            <div class="img" id="activatorClick">
-                                <hr class="hover_line"/>
-                                <hr class="hover_line"/>
-                                <hr class="hover_line"/>
-                            </div>
+                    <div id="dropdown_menu_left_permenant">
+                        <div class="plm_button_per" id="fit_view_perm" title="Fit View">
+                            <i class="fa fa-home"></i>
                         </div>
 
-                        <div id="dropdown_menu_left_permenant">
-                            <div class="plm_button_per" id="fit_view_perm">
-                                <i class="fa fa-home"></i>
-                            </div>
-                            <div class="plm_button_per" id="save_view_perm">
-                                <i class="fa fa-save"></i>
-                            </div>
-                            <div class="plm_button_per" id="markup_button_perm">
-                                <i class="fa fa-edit"></i>
-                            </div>
+                        <div class="plm_button_per" id="save_view_perm" title="Save Screenshot">
+                            <i class="fa fa-save"></i>
                         </div>
+                        <div class="plm_button_per" id="markup_button_perm" title="Markup">
+                            <i class="fa fa-edit"></i>
+                        </div>
+                        <div class="plm_button_per" id="markup_logs_perm" title="Markup Logs">
+                            <i class="fa fa-history"></i>
+                        </div>
+                        <div class="plm_button_per" id="show_all_perm" title="Show All">
+                            <i class="fa fa-lightbulb-o"></i>
+                        </div>
+                        <div class="plm_button_per" id="measure_btn_perm" title="Measure">
+                            <i class="fa fa-arrows-h"></i>
+                        </div>
+                        <div class="plm_button_per" id="activatorClick" title="Settings">
+                            <i class="fa fa-cog"></i>
+                        </div>
+                    </div>
 
-                        <div class="activatorDiv d-none" id="activatorDiv">
+                    <div class="activatorDiv d-none" id="activatorDiv">
                             <div id="dropdown_menu_left">
-                                <div class="plm_button" id="fit_view"><i class="fa fa-home"></i>Fit
-                                </div>
-                                <div class="plm_button" id="save_view"><i class="fa fa-save"></i>Save
-                                </div>
-                                <div class="plm_button" id="markup_button"><i class="fa fa-edit"></i>Markup
-                                </div>
                                 <div class="plm_button">
                                     <label for="webgl_background">BackGround:</label>
                                     <select name="webgl_background" id="webgl_background">
@@ -137,6 +138,10 @@
                                            value="0"/>
                                 </div>
 
+                            </div>
+                        </div>
+                        <div class="activatorDiv d-none" id="markup_logs_panel">
+                            <div id="dropdown_menu_left">
                                 <div class="info_header">
                                     <b>Markup Logs</b>
                                 </div>
@@ -146,7 +151,6 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
                     <div class="viewer_container">
                         <canvas id="odoo_canvas"></canvas>
 
@@ -221,16 +225,16 @@
                                     <b>Product Information</b>
                                 </div>
                                 <hr class="datacard_line"/>
-                                <ul id="product_info">
-                                </ul>
+                                <lu id="product_info">
+                                </lu>
 
 
                                 <div class="info_header">
                                     <b>Document Information</b>
                                 </div>
                                 <hr class="datacard_line"/>
-                                <ul id="document_info">
-                                </ul>
+                                <lu id="document_info">
+                                </lu>
 
                                 <div class="info_header">
                                     <b>Document Structure</b>
@@ -243,10 +247,50 @@
                                     <button type="button" id="show_all_parts" title="Un-Hide"
                                             class="fa fa-lightbulb-o"></button>
                                 </div>
-                                <div id="document_tree">
-                                </div>
+                                <lu id="document_tree">
+                                </lu>
 
                             </div>
+                        </div>
+                    </div>
+                    <div id="help_btn" title="Keyboard Shortcuts">
+                        <i class="fa fa-question-circle"></i>
+                    </div>
+
+                    <div id="shortcut_modal">
+                        <div id="shortcut_modal_inner">
+                            <span id="shortcut_modal_close">✖</span>
+                            <h3 style="margin-top:0; color:#714B67;">Keyboard Shortcuts</h3>
+                            <table id="shortcut_table">
+                                <thead>
+                                    <tr>
+                                        <th>Key</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><kbd>F</kbd></td>
+                                        <td>Fit all objects to screen</td>
+                                    </tr>
+                                    <tr>
+                                        <td><kbd>H</kbd></td>
+                                        <td>Toggle hide / show hovered object</td>
+                                    </tr>
+                                    <tr>
+                                        <td><kbd>A</kbd></td>
+                                        <td>Show all hidden objects</td>
+                                    </tr>
+                                    <tr>
+                                        <td><kbd>Ctrl</kbd> + Click</td>
+                                        <td>Measure distance between two points</td>
+                                    </tr>
+                                    <tr>
+                                        <td>&#xf07e; Ruler button</td>
+                                        <td>Toggle measure mode on / off</td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                     <ViewCubeContainer>
@@ -289,7 +333,7 @@
                             </div>
                         </div>
                     </ViewCubeContainer>
-                </div>
+               
                 <div id="markup_log_modal">
                     <div id="markup_log_modal_inner">
                         <span id="markup_log_modal_close">✖</span>
@@ -316,6 +360,7 @@
                 </div>
                 <div id="part_tooltip"
                      style="display:none; position:fixed; background:rgba(0,0,0,0.85); color:white; padding:6px 12px; border-radius:5px; z-index:2000; pointer-events:none; font-size:13px; border: 1px solid #714B67; box-shadow: 0 4px 15px rgba(0,0,0,0.3); font-weight: 600; white-space: nowrap;"></div>
+                </div>
             </body>
         </html>
     </template>

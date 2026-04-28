@@ -19,10 +19,12 @@
 #
 ##############################################################################
 import os
+import logging
 import urllib.parse
 
 from odoo import api, fields, models
 
+_logger = logging.getLogger(__name__)
 SUPPORTED_WEBGL_EXTENTION = [
     ".3mf",
     ".gltf",
@@ -34,6 +36,8 @@ SUPPORTED_WEBGL_EXTENTION = [
     ".stl",
     ".svg",
     ".dxf",
+    ".stp",
+    ".step",
 ]
 
 
@@ -87,6 +91,39 @@ class IrAttachment(models.Model):
                     })
             if url_params:
                 return f"{base_url}/plm/show_treejs_model?{url_params}"
+    def _get_or_create_3mf_from_step(self):
+        """Return existing 3MF conversion of this STEP file, creating it if needed."""
+        self.ensure_one()
+        # Look for an already-converted 3MF linked to this STEP
+        if 'source_convert_document' in self._fields:
+            existing = self.env['ir.attachment'].search([
+                ('source_convert_document', '=', self.id),
+                ('name', 'ilike', '.3mf'),
+            ], limit=1)
+            if existing:
+                return existing
+        # Perform conversion
+        try:
+            new_file_path = self.convert_from_step_to('.3mf')
+        except Exception as e:
+            _logger.error("STEP→3MF conversion failed for %s: %s", self.name, e)
+            return self.env['ir.attachment']
+        name_base, _ = os.path.splitext(self.name)
+        with open(new_file_path, 'rb') as fh:
+            data = base64.b64encode(fh.read())
+        vals = {
+            'name': name_base + '.3mf',
+            'datas': data,
+            'res_model': self.res_model,
+            'res_id': self.res_id,
+        }
+        if 'is_converted_document' in self._fields:
+            vals['is_converted_document'] = True
+            vals['source_convert_document'] = self.id
+        new_attachment = self.env['ir.attachment'].create(vals)
+        if self.preview:
+            new_attachment.preview = self.preview
+        return new_attachment
 
     def show_releted_3d(self):
         for ir_attachment in self:

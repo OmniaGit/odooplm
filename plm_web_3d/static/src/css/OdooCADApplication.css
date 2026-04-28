@@ -77,14 +77,13 @@
     overflow: visible;
     position: absolute;
     top: 60px;
-    left: 7px;
+    left: 40px;
     height: 300px !important;
     z-index: 400 !important;
 }
 
 #activatorClick {
     padding: 4px;
-    box-shadow: 2px 2px 5px 1px grey;
     border-radius: 2px;
     cursor: pointer;
     width: 25px;
@@ -101,11 +100,13 @@
 }
 
 .activatorDiv {
+    position: absolute;
+    top: 60px;
+    left: 40px;
     background-color: white;
     border-radius: 10px;
     border: 2px solid #714B67;
     padding: 2px;
-    margin-top: 27px;
     width: 300px;
     visibility: hidden;
     opacity: 0;
@@ -242,17 +243,58 @@ div.snap_lable {
     text-align: center;
 }
 
-/* ── PROGRESS BAR ── */
-#progress {
-    width: 100%;
-    height: 5px;
-    background: #000;
+/* ── LOADING OVERLAY ── */
+#loading_overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
 }
 
-#progress_bar {
-    height: 5px;
-    background: #997992;
-    border: none;
+#loading_spinner_wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 22px;
+}
+
+#loading_spinner {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    border: 6px solid rgba(255, 255, 255, 0.15);
+    border-top-color: #667eea;
+    animation: plm-spin 0.8s linear infinite;
+}
+
+@keyframes plm-spin {
+    to { transform: rotate(360deg); }
+}
+
+#loading_text {
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 13px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    letter-spacing: 0.04em;
+}
+
+.ldot {
+    opacity: 0;
+    animation: ldot-fade 1.5s infinite;
+}
+.ldot:nth-child(1) { animation-delay: 0.0s; }
+.ldot:nth-child(2) { animation-delay: 0.3s; }
+.ldot:nth-child(3) { animation-delay: 0.6s; }
+
+@keyframes ldot-fade {
+    0%, 100% { opacity: 0; }
+    40%       { opacity: 1; }
 }
 
 /* ── HR ── */
@@ -306,14 +348,14 @@ label {
     padding: 2px;
     margin-top: 27px;
     width: 300px;
-    height: 500px;
+    height: 400px;
+    /* REMOVED: visibility: visible !important and opacity: 1 !important */
+    /* These were preventing JS from hiding the panel */
     visibility: hidden;
     opacity: 0;
     transition: visibility 0.2s, opacity 0.2s;
     resize: horizontal;
-    overflow: hidden !important;
-    display: flex;
-    flex-direction: column;
+    overflow: auto;
     direction: rtl;
     min-width: 300px;
 }
@@ -325,12 +367,8 @@ label {
 }
 
 #main_div_hidden {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    min-height: 0;
-    /* ✅ CRITICAL: allows child to shrink */
-    overflow: hidden;
+    padding: 5px;
+    transition: visibility 0.3s linear, opacity 0.3s linear;
 }
 
 div.info_header {
@@ -343,14 +381,24 @@ div.info_header {
 
 #click_show {
     padding: 4px;
-    box-shadow: 2px 2px 5px 1px grey;
     border-radius: 2px;
     cursor: pointer;
     width: 25px;
     position: absolute;
-    right: 7px;
+    top: 0;
+    right: 0;
+    background-color: transparent;
+    border: none;
 }
 
+#tree_structure {
+    margin-left: auto;
+    margin-right: auto;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    width: 100%;
+    height: 500px;
+}
 
 li.attribute_info {
     text-align: left;
@@ -892,9 +940,9 @@ canvas#odoo_canvas {
 
 
     .main_command_slide {
-        left: 5px !important;
-        width: calc(50% - 15px) !important;
-        max-width: calc(50% - 15px) !important;
+        left: 38px !important;
+        width: calc(50% - 48px) !important;
+        max-width: calc(50% - 48px) !important;
     }
 
     .activatorDiv {
@@ -921,7 +969,7 @@ canvas#odoo_canvas {
         font-size: 11px !important;
         box-sizing: border-box !important;
         max-height: 70vh !important;
-        overflow: hidden !important;
+        overflow: auto !important;
     }
 
     .plm_button,
@@ -965,9 +1013,9 @@ canvas#odoo_canvas {
 
 
     .main_command_slide {
-        left: 3px !important;
-        width: calc(50% - 8px) !important;
-        max-width: calc(50% - 8px) !important;
+        left: 36px !important;
+        width: calc(50% - 44px) !important;
+        max-width: calc(50% - 44px) !important;
     }
 
     .activatorDiv {
@@ -1201,6 +1249,20 @@ canvas#odoo_canvas {
     border-radius: 2px;
     text-align: left;
     padding: 5px;
+    cursor: pointer;
+}
+
+.plm_button_per:hover {
+    background-color: rgba(113, 75, 103, 0.15);
+}
+
+.plm_button_per.active {
+    background-color: #714B67;
+    color: white;
+}
+
+.plm_button_per.active i {
+    color: white;
 }
 
 #markup_log_modal_close2 {
@@ -1214,14 +1276,120 @@ canvas#odoo_canvas {
 
 #dropdown_menu_left_permenant {
     display: block;
-    background-color: white;
+    position: absolute;
+    top: 60px;
+    left: 7px;
+    background-color: transparent;
+    border-radius: 10px;
+    border: none;
+    padding: 3px;
+    width: 25px;
+    height: auto;
+    z-index: 400;
+}
+
+/* ── HELP BUTTON ── */
+#help_btn {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    z-index: 500;
+    width: 34px;
+    height: 34px;
+    background: white;
+    border: 2px solid #714B67;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #714B67;
+    font-size: 18px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    transition: background 0.15s, color 0.15s;
+}
+
+#help_btn:hover {
+    background: #714B67;
+    color: white;
+}
+
+/* ── SHORTCUTS MODAL ── */
+#shortcut_modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 10000;
+    justify-content: center;
+    align-items: center;
+}
+
+#shortcut_modal.open {
+    display: flex;
+}
+
+#shortcut_modal_inner {
+    background: white;
     border-radius: 10px;
     border: 2px solid #714B67;
-    padding: 3px;
-    margin-top: 28px;
-    width: 25px;
-    margin-left: 1px;
-    height: 85px;
+    padding: 20px 28px 24px;
+    min-width: 340px;
+    position: relative;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+#shortcut_modal_close {
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    font-size: 18px;
+    cursor: pointer;
+    color: #714B67;
+    font-weight: bold;
+}
+
+#shortcut_modal_close:hover {
+    color: #572649;
+}
+
+#shortcut_table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 12px;
+    font-size: 13px;
+}
+
+#shortcut_table th {
+    text-align: left;
+    padding: 6px 10px;
+    background: #f0e8f0;
+    color: #572649;
+    border-bottom: 2px solid #714B67;
+}
+
+#shortcut_table td {
+    padding: 8px 10px;
+    border-bottom: 1px solid #e0d0e0;
+    vertical-align: middle;
+}
+
+#shortcut_table tr:last-child td {
+    border-bottom: none;
+}
+
+#shortcut_table kbd {
+    display: inline-block;
+    padding: 2px 6px;
+    background: #f5f5f5;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    font-family: monospace;
+    font-size: 12px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
 }
 
 .document_tree_line.hovered {

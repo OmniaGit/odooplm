@@ -273,6 +273,7 @@ class DXFLoader extends THREE.Loader {
                     this.origin = scene.origin;
                     this.bounds = scene.bounds;
                     this.hasMissingChars = scene.hasMissingChars;
+                    this.textEntities = scene.textEntities || [];
                     //
                     for (const layer of scene.layers) {
                         this.layers.set(layer.name, new Layer(layer.name, layer.color));
@@ -308,7 +309,7 @@ class DXFLoader extends THREE.Loader {
                             }
                     }
                     //this._Emit("loaded")
-				    onLoad(objects);
+				    onLoad(objects, this.textEntities, this.origin);
 				    
 				} catch ( e ) {
 

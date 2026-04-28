@@ -108,7 +108,7 @@ class Web3DView(Controller):
         return src_name
 
 
-    @http.route('/plm_web_3d/save_markup', type='json', auth='user')
+    @http.route('/plm/save_markup', type='json', auth='user')
     def save_markup(self, image=None, base_image=None, filename=None, comment=None,
                     res_model=None, res_id=None, canvas_json=None,
                     schedule_activity=False,
@@ -264,7 +264,7 @@ class Web3DView(Controller):
 
         return {'success': True}
 
-    @http.route('/plm_web_3d/markup/addon', type='json', auth='user')
+    @http.route('/plm/markup/addon', type='json', auth='user')
     def load_markup_addon(self, markup_id=None):
         if not markup_id:
             return {'markup': False}
