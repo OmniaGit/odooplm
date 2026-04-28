@@ -58,7 +58,7 @@ class Plm_box_document(models.Model):
     name = fields.Char(string="Attachment Name", required=False)
     is_plm_box = fields.Boolean("Is Plm Box document")
     plm_box_id = fields.Many2one("plm.box")
-
+ 
     @api.model_create_multi
     def create(self, vals):
         for val in vals:

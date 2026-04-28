@@ -3,11 +3,55 @@
     <record id="view_attachment_form_plm_box" model="ir.ui.view">
         <field name="name">ir.attachment.form.box</field>
         <field name="model">ir.attachment</field>
-        <field name="inherit_id" ref="plm.view_attachment_form_plm_hinerit"/>
+        <field name="inherit_id" eval="False"/>
+        <field name="priority" eval="20"/>
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='is_plm']" position="after">
-                <field name="is_plm_box" readonly="1"/>
-            </xpath>
+            <form string="Box Document">
+                <header>
+                    <field name="engineering_state"
+                           widget="statusbar"
+                           statusbar_visible="draft,confirmed,released"
+                           readonly="1"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <field name="is_checkout" invisible="1"/>
+                        <button name="toggle_check_out"
+                                class="oe_stat_button"
+                                icon="fa-lock"
+                                type="object"
+                                invisible="is_checkout == True">
+                            <div class="o_field_widget o_stat_info o_readonly_modifier">
+                                <span>Check-Out</span>
+                            </div>
+                        </button>
+                        <button name="toggle_check_out"
+                                class="oe_stat_button"
+                                icon="fa-unlock"
+                                type="object"
+                                invisible="is_checkout == False">
+                            <div class="o_field_widget o_stat_info o_readonly_modifier">
+                                <span>Check-In</span>
+                            </div>
+                        </button>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="engineering_code" string="Document Code" readonly="id > 0"/>
+                            <field name="name" string="Name"/>
+                            <field name="datas" string="File" filename="name" groups="plm.group_plm_admin"/>
+                        </group>
+                        <group>
+                            <field name="preview"
+                                   widget="image"
+                                   options="{'zoom': true, 'zoom_delay': 800}"
+                                   nolabel="1"
+                                   invisible="preview == False"
+                                   readonly="1"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
         </field>
     </record>
 
@@ -62,13 +106,13 @@
     <record id="action_plm_box_documents_custom" model="ir.actions.act_window">
         <field name="name">Box Documents</field>
         <field name="res_model">ir.attachment</field>
-        <field name="view_mode">kanban,list,form</field>
+        <field name="view_mode">list,form</field>
         <field name="domain">[('is_plm_box', '=', True)]</field>
         <field name="search_view_id" ref="view_plm_box_document_search_custom"/>
         <field name="view_ids" eval="[
-        (5, 0, 0),
-        (0, 0, {'view_mode': 'list', 'view_id': ref('plm_box.plm_box_attachment_list')}),
-        (0, 0, {'view_mode': 'form', 'view_id': ref('plm_box.view_attachment_form_plm_box')})
+            (5, 0, 0),
+            (0, 0, {'view_mode': 'list', 'view_id': ref('plm_box.plm_box_attachment_list')}),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('plm_box.view_attachment_form_plm_box')}),
         ]"/>
     </record>
 
