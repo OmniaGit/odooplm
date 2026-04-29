@@ -27,7 +27,8 @@ import logging
 import os
 import urllib.parse
 
-from odoo import api, fields, models
+from odoo import _, api, fields, models
+from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
 
@@ -110,12 +111,17 @@ class IrAttachment(models.Model):
             if existing:
                 return existing
         # Perform conversion
+        if not hasattr(self, 'convert_from_step_to'):
+            raise UserError(_(
+                "STEP to 3MF conversion requires the 'plm_automated_convertion' "
+                "module to be installed."
+            ))
         try:
             new_file_path = self.convert_from_step_to('.3mf')
         except Exception as e:
             _logger.error("STEP→3MF conversion failed for %s: %s", self.name, e)
-            return self.env['ir.attachment']
-        name_base, _ = os.path.splitext(self.name)
+            raise UserError(_("STEP to 3MF conversion failed: %s") % e)
+        name_base, _ext = os.path.splitext(self.name)
         with open(new_file_path, 'rb') as fh:
             data = base64.b64encode(fh.read())
         vals = {

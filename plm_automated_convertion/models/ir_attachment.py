@@ -145,8 +145,40 @@ try:
             top_label = tmp
 
         top_name = _get_name(top_label) or "root"
+
+        # Simple part (no sub-components): create the assembly with the shape
+        # directly so _collect finds it via node.obj, avoiding any name conflict.
+        if not shape_tool.IsAssembly_s(top_label):
+            occ_shape = shape_tool.GetShape_s(top_label)
+            if not occ_shape.IsNull():
+                cq_shape = Shape.cast(occ_shape)
+                color = _get_shape_color(occ_shape, color_tool)
+                return cq.Assembly(cq_shape, name=top_name, color=color)
+            return cq.Assembly(name=top_name)
+
         assy = cq.Assembly(name=top_name)
         _process(top_label, assy)
+
+        # Handle additional free shapes present in the same STEP file.
+        for i in range(1, labels.Length()):
+            lbl = labels.Value(i + 1)
+            if shape_tool.IsReference_s(lbl):
+                tmp = TDF_Label()
+                shape_tool.GetReferredShape_s(lbl, tmp)
+                lbl = tmp
+            lbl_name = _get_name(lbl) or f"part_{i}"
+            if shape_tool.IsAssembly_s(lbl):
+                sub = cq.Assembly(name=f"{lbl_name}:{i}")
+                _process(lbl, sub)
+                assy.add(sub, name=f"{lbl_name}:{i}")
+            else:
+                occ_shape = shape_tool.GetShape_s(lbl)
+                if not occ_shape.IsNull():
+                    cq_shape = Shape.cast(occ_shape)
+                    color = _get_shape_color(occ_shape, color_tool)
+                    child = cq.Assembly(cq_shape, name=f"{lbl_name}:{i}", color=color)
+                    assy.add(child, name=f"{lbl_name}:{i}")
+
         return assy
 
     def _export_assembly_to_3mf(assembly, output_path):
@@ -403,6 +435,7 @@ class ir_attachment(models.Model):
                 assembly.save(newFileName, exportType=export_type)
                 return newFileName
             with tempfile.TemporaryDirectory() as tmpdirname:
+                name, exte = os.path.splitext(self.name)
                 stlName = os.path.join(tmpdirname, "%s.stl" % name)
                 cq.exporters.export(
                     result, stlName, tolerance=1.0, angularTolerance=1.0

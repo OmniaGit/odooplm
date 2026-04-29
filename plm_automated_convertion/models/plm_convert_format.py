@@ -22,7 +22,7 @@
 Created on Sep 7, 2019
 @author: mboscolo
 """
-from odoo import fields, models
+from odoo import fields, models, api
 
 
 class PlmConvertFormat(models.Model):
@@ -31,13 +31,14 @@ class PlmConvertFormat(models.Model):
     _order = "sequence ASC"
 
     sequence = fields.Integer("Sequence", default="1")
-    name = fields.Char("Format Name", compute="_compute_name")
+    name = fields.Char("Format Name", compute="_compute_name", store=True)
     available = fields.Boolean("Available for conversion")
     start_format = fields.Char("Start Format", required=True)
     end_format = fields.Char("End Format", required=True)
     cad_name = fields.Char("Cad Name", required=True)
     server_id = fields.Many2one("plm.convert.servers", string="Server", required=True)
 
+    @api.depends('start_format', 'end_format')
     def _compute_name(self):
         for plm_convert_format in self:
             plm_convert_format.name = f"[{plm_convert_format.cad_name}] {plm_convert_format.server_id.name or ''}  {plm_convert_format.end_format}"

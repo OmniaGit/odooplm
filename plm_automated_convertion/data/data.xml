@@ -263,7 +263,7 @@
                     <field name="start_format">.pdf</field>
                     <field name="end_format">.fbx</field>
                 </record>
-                <record id="update_pdf_preview_gltf" model="plm.convert.format">
+<record id="update_pdf_preview_gltf" model="plm.convert.format">
                     <field name="server_id" ref="odoo_local_server"/>
                     <field name="available">Odoo</field>
                     <field name="cad_name">CadExcange</field>

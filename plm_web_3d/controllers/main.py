@@ -85,6 +85,7 @@ class Web3DView(Controller):
                     )
                     components = self.component_extra(components)
                     out["component"] = components
+        return json.dumps(out)
 
     @route("/plm/get_3d_web_document_info", type="http", auth="user")
     def get_3d_web_document_info(self, src_name, parent_id=None):
