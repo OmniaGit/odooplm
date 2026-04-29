@@ -41,11 +41,19 @@ class ProductTemplate(models.Model):
         ctx["active_id"] = self.product_variant_id.id
         ctx["active_model"] = "product.product"
         ctx["wf_action"] = "before"
+        # Map custom states to standard states for workflow action matching
+        search_from_state = from_state
+        search_to_state = to_state
+        if search_from_state == 'SD':
+            search_from_state = 'draft'
+        if search_to_state == 'confirm':
+            search_to_state = 'confirmed'
+            
         for action in self.env["plm.automatedwfaction"].search(
             [
                 ("apply_to", "=", "product.product"),
-                ("from_state", "=", from_state),
-                ("to_state", "=", to_state),
+                ("from_state", "=", search_from_state),
+                ("to_state", "=", search_to_state),
                 ("before_after", "=", "before"),
             ]
         ):
@@ -62,11 +70,19 @@ class ProductTemplate(models.Model):
         ctx["active_id"] = self.product_variant_id.id
         ctx["active_model"] = "product.product"
         ctx["wf_action"] = "after"
+        # Map custom states to standard states for workflow action matching
+        search_from_state = from_state
+        search_to_state = to_state
+        if search_from_state == 'SD':
+            search_from_state = 'draft'
+        if search_to_state == 'confirm':
+            search_to_state = 'confirmed'
+            
         for action in self.env["plm.automatedwfaction"].search(
             [
                 ("apply_to", "=", "product.product"),
-                ("from_state", "=", from_state),
-                ("to_state", "=", to_state),
+                ("from_state", "=", search_from_state),
+                ("to_state", "=", search_to_state),
                 ("before_after", "=", "after"),
             ]
         ):
