@@ -33,7 +33,7 @@ class ProductProductExtension(models.Model):
         for val_dict in vals:
             new_default_code = self.compute_default_code(val_dict)
             if new_default_code:
-                logging.info("OdooPLM: Default Code set to %s ", new_default_code)
+                logging.info(f"OdooPLM: Default Code set to {new_default_code} ")
                 val_dict["default_code"] = new_default_code
         return super().create(vals)
 
@@ -47,12 +47,13 @@ class ProductProductExtension(models.Model):
         :vals dict like with all the value that be updated
         :objBrowse product.product or product.template in case of write operation
         """
-
         out = False
         in_revision = self.env.context.get("new_revision", False)
-        engineering_code = vals.get("engineering_code", "")
-        engineering_revision = vals.get("engineering_revision", 0)
-        default_code = vals.get("default_code")
+        #
+        engineering_code=""
+        engineering_revision=""
+        default_code=""
+        #
         if objBrowse:  # suppose write operation
             if not engineering_code:
                 engineering_code = objBrowse.engineering_code
@@ -60,13 +61,20 @@ class ProductProductExtension(models.Model):
                 engineering_revision = objBrowse.engineering_revision
             if not default_code:
                 default_code = objBrowse.default_code
+        else:
+            engineering_code = vals.get("engineering_code", "")
+            engineering_revision = vals.get("engineering_revision", 0)
+            default_code = vals.get("default_code")
+        #
+        if not engineering_code:
+            return ""
         if in_revision and engineering_code and engineering_code != "-":
             out = self.getDefaultCodeTemplate % (engineering_code, engineering_revision)
         if engineering_code and not default_code and engineering_code != "-":
             out = self.getDefaultCodeTemplate % (engineering_code, engineering_revision)
         if default_code == out:
             return False
-        if default_code:
+        if default_code and engineering_code:
             out = f"{engineering_code}_{engineering_revision}"
         return out
 
@@ -74,8 +82,8 @@ class ProductProductExtension(models.Model):
         ret = False
         for product in self:
             new_default_code = product.compute_default_code(vals, product)
-            if product.default_code!=product.compute_default_code(vals, product):
-                logging.info("OdooPLM: Default Code set to %s ",new_default_code)
+            if product.engineering_code and product.default_code!=new_default_code:
+                logging.info(f"OdooPLM: Default Code set to {new_default_code}")
                 vals["default_code"] = new_default_code
             ret = super(models.Model, product).write(vals)
         return ret
