@@ -9,8 +9,6 @@
                     <page string="Products">
                         <label for="activity_product_ids"/>
                         <field name="activity_product_ids"/>
-                        <label for="plm_product_ids"/>
-                        <field name="plm_product_ids"/>
                     </page>
             </xpath>
         </field>
