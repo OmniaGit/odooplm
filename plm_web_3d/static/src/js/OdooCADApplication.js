@@ -377,42 +377,31 @@ function epsilon(value) {
 }
 
 function initcommand() {
-	var selector = document.getElementById("webgl_background");
-	selector.onchange = function (event) {
-		change_background();
+	function bindEl(id, event, fn) {
+		const el = document.getElementById(id);
+		if (el) el[event] = fn;
+	}
+	function bindElEvent(id, event, fn) {
+		const el = document.getElementById(id);
+		if (el) el.addEventListener(event, fn);
 	}
 
-	let click_show = document.getElementById("click_show");
-	let activatorClick = document.getElementById("activatorClick");
-	activatorClick.addEventListener("click", onActivatorClick);
+	bindEl("webgl_background", "onchange", function (event) { change_background(); });
 
-	click_show.addEventListener("click", on_data_card_button_click);
+	bindElEvent("activatorClick", "click", onActivatorClick);
+	bindElEvent("click_show", "click", on_data_card_button_click);
 
-	// document.addEventListener('mousemove', onDocumentMousemove, false);
 	document.addEventListener('pointerdown', onClick, false);
 	document.addEventListener('pointermove', window.onPointerMove);
-	// if (canvas) {
-	// 	canvas.addEventListener('pointermove', window.onPointerMove);
-	// }
 	document.addEventListener('keydown', onKeyDone);
 	document.addEventListener('keyup', onKeyup);
 
-
 	// Permanent menu delegates → real buttons
-	document.getElementById("fit_view_perm").onclick = function () {
-		fitCameraToSelectionEvent();
-	};
-	document.getElementById("save_view_perm").onclick = function () {
-		saveAsImage();
-	};
-	document.getElementById("markup_button_perm").onclick = function () {
-		// markup lives in markup_system.js — call directly
-		openMarkupEditor();
-	};
-	document.getElementById("show_all_perm").onclick = function () {
-		show_all_scene_item();
-	};
-	document.getElementById("measure_btn_perm").onclick = function () {
+	bindEl("fit_view_perm", "onclick", function () { fitCameraToSelectionEvent(); });
+	bindEl("save_view_perm", "onclick", function () { saveAsImage(); });
+	bindEl("markup_button_perm", "onclick", function () { openMarkupEditor(); });
+	bindEl("show_all_perm", "onclick", function () { show_all_scene_item(); });
+	bindEl("measure_btn_perm", "onclick", function () {
 		ctrlDown = !ctrlDown;
 		drawingLine = ctrlDown;
 		renderer.domElement.style.cursor = ctrlDown ? "crosshair" : "pointer";
@@ -424,46 +413,36 @@ function initcommand() {
 			scene.remove(lines[lineId]);
 			lineId++;
 		}
-	};
-
-	const helpBtn = document.getElementById("help_btn");
-	const shortcutModal = document.getElementById("shortcut_modal");
-	const shortcutClose = document.getElementById("shortcut_modal_close");
-	helpBtn.onclick = function () {
-		shortcutModal.classList.add("open");
-	};
-	shortcutClose.onclick = function () {
-		shortcutModal.classList.remove("open");
-	};
-	shortcutModal.addEventListener("click", function (e) {
-		if (e.target === shortcutModal) shortcutModal.classList.remove("open");
 	});
 
-	const html_canvas = document.getElementById('odoo_canvas');
-	html_canvas.addEventListener("OdooCAD_fit_items", fitCameraToSelectionEvent, false);
-	// light
-	var object_light_distance = document.getElementById("object_distance")
-	object_light_distance.oninput = chenge_light_distance;
-	var object_light1 = document.getElementById("object_light1");
-	object_light1.oninput = chenge_light1;
-	var object_light2 = document.getElementById("object_light2");
-	object_light2.oninput = chenge_light2;
-	var object_light3 = document.getElementById("object_light3");
-	object_light3.oninput = chenge_light3;
-	var object_light_camera = document.getElementById("object_light_camera");
-	object_light_camera.oninput = chenge_light_camera;
-	var object_light_ambient = document.getElementById("object_light_ambient");
-	object_light_ambient.oninput = chenge_light_ambient;
+	const shortcutModal = document.getElementById("shortcut_modal");
+	bindEl("help_btn", "onclick", function () {
+		if (shortcutModal) shortcutModal.classList.add("open");
+	});
+	bindEl("shortcut_modal_close", "onclick", function () {
+		if (shortcutModal) shortcutModal.classList.remove("open");
+	});
+	if (shortcutModal) {
+		shortcutModal.addEventListener("click", function (e) {
+			if (e.target === shortcutModal) shortcutModal.classList.remove("open");
+		});
+	}
 
-	var object_transparency = document.getElementById("object_transparency");
-	object_transparency.oninput = change_object_transparency;
+	bindElEvent("odoo_canvas", "OdooCAD_fit_items", fitCameraToSelectionEvent);
 
-	var object_explosion = document.getElementById("object_explosion");
-	object_explosion.oninput = change_object_explosion;
-	/*
-	 * Load datacard
-	 */
-	var document_id = document.querySelector('#active_model').getAttribute('active_model');
+	// light controls
+	bindEl("object_distance", "oninput", chenge_light_distance);
+	bindEl("object_light1", "oninput", chenge_light1);
+	bindEl("object_light2", "oninput", chenge_light2);
+	bindEl("object_light3", "oninput", chenge_light3);
+	bindEl("object_light_camera", "oninput", chenge_light_camera);
+	bindEl("object_light_ambient", "oninput", chenge_light_ambient);
+	bindEl("object_transparency", "oninput", change_object_transparency);
+	bindEl("object_explosion", "oninput", change_object_explosion);
+
+	const activeModel = document.querySelector('#active_model');
+	if (!activeModel) return;
+	var document_id = activeModel.getAttribute('active_model');
 	var xmlhttp = new XMLHttpRequest();
 	var url = "../plm/get_product_info/?document_id=" + document_id;
 
@@ -471,9 +450,9 @@ function initcommand() {
 		if (this.readyState == 4 && this.status == 200) {
 			var result = JSON.parse(this.responseText);
 			var product_info = document.getElementById("product_info");
-			product_info.innerHTML = result['component'];
+			if (product_info) product_info.innerHTML = result['component'];
 			var document_info = document.getElementById("document_info");
-			document_info.innerHTML = result['document'];
+			if (document_info) document_info.innerHTML = result['document'];
 		}
 	};
 	xmlhttp.open("GET", url, true);
