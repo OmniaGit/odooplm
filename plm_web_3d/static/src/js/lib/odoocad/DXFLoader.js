@@ -101,18 +101,17 @@ class Batch {
         const color = instanceBatch ?
             instanceBatch._GetInstanceColor(this.key.color) : this.key.color
 
-        //XXX line type
-        const materialFactory =
-            this.key.geometryType === BatchingKey.GeometryType.POINTS ||
-            this.key.geometryType === BatchingKey.GeometryType.POINT_INSTANCE ?
-                this.viewer._GetSimplePointMaterial : this.viewer._GetSimpleColorMaterial
-
-        const material = new THREE.MeshPhongMaterial();
-        material.color.setHSL(0, 1, .5);  // red
-        material.flatShading = true; 
-        
-        //materialFactory.call(this.viewer, this.viewer._TransformColor(color),
-        //                                      instanceBatch?.GetInstanceType() ?? InstanceType.NONE)
+        const geomType = this.key.geometryType
+        let material
+        if (geomType === BatchingKey.GeometryType.POINTS ||
+            geomType === BatchingKey.GeometryType.POINT_INSTANCE) {
+            material = new THREE.PointsMaterial({ color: color || 0xffffff, size: 2, sizeAttenuation: false })
+        } else if (geomType === BatchingKey.GeometryType.LINES ||
+                   geomType === BatchingKey.GeometryType.INDEXED_LINES) {
+            material = new THREE.LineBasicMaterial({ color: color || 0xffffff })
+        } else {
+            material = new THREE.MeshBasicMaterial({ color: color || 0xffffff, side: THREE.DoubleSide })
+        }
 
         let objConstructor
         switch (this.key.geometryType) {
