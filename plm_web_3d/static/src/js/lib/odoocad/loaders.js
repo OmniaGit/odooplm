@@ -38,6 +38,9 @@ const transparent_material = new THREE.MeshPhysicalMaterial({
 class Loader {
 	constructor(odooCad){
 		this.odooCad = odooCad;
+	}
+
+	_getOverlayElements() {
 		this.overlay = document.querySelector('#loading_overlay');
 		this.progress_bar = document.querySelector('#progress_bar');
 		this.loading_label = document.querySelector('#loading_label');
@@ -45,6 +48,10 @@ class Loader {
 	}
 
 	_showProgress(document_name) {
+		this._getOverlayElements();
+		if (!this.overlay || !this.progress_bar || !this.loading_label || !this.loading_percentage) {
+			return;
+		}
 		this.progress_bar.style.width = '0%';
 		this.loading_percentage.textContent = '0%';
 		this.loading_label.textContent = 'Loading ' + document_name + '…';
@@ -52,7 +59,7 @@ class Loader {
 	}
 
 	_updateProgress(xhr) {
-		if (xhr.total) {
+		if (xhr.total && this.progress_bar && this.loading_percentage) {
 			const pct = Math.round((xhr.loaded / xhr.total) * 100);
 			this.progress_bar.style.width = pct + '%';
 			this.loading_percentage.textContent = pct + '%';
@@ -60,7 +67,9 @@ class Loader {
 	}
 
 	_hideProgress() {
-		this.overlay.style.display = 'none';
+		if (this.overlay) {
+			this.overlay.style.display = 'none';
+		}
 	}
 
 	/*
