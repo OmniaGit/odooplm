@@ -3,7 +3,6 @@
  */
 import * as THREE from '../three.js/build/three.module.js';
 import { FontLoader } from '../three.js/examples/jsm/loaders/FontLoader.js';
-import { TextGeometry } from '../three.js/examples/jsm/geometries/TextGeometry.js';
 /*
  * OdooCad import
  */
@@ -424,13 +423,9 @@ class OdooCAD {
                     const line = lines[i].trim()
                     if (!line) continue
 
-                    const geometry = new TextGeometry(line, {
-                        font: font,
-                        size: size,
-                        height: 0,
-                        curveSegments: 4,
-                        bevelEnabled: false,
-                    })
+                    const shapes = font.generateShapes(line, size)
+                    const geometry = new THREE.ShapeGeometry(shapes)
+                    geometry.computeBoundingBox()
 
                     const mesh = new THREE.Mesh(geometry, material)
                     const dx = -Math.sin(rotZ) * i * lineHeight
