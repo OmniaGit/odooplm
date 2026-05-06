@@ -708,7 +708,7 @@ class MrpBomExtension(models.Model):
     def unlink(self):
         for mrp_bom in self:
             if mrp_bom.product_tmpl_id.engineering_code:
-                if mrp_bom.product_tmpl_id.engineering_state!=START_STATUS: 
+                if mrp_bom.product_tmpl_id.engineering_state!=START_STATUS:
                     raise UserError(f"the bom {mrp_bom.product_tmpl_id.engineering_code} must be in state {START_STATUS} to be delated")
         return super(MrpBomExtension, self).unlink()
 
@@ -771,7 +771,15 @@ class MrpBomExtension(models.Model):
                     }
 
     def open_related_bom_revisions(self):
-        bom_ids = self.search([('product_tmpl_id', 'in', self.product_tmpl_id.getAllVersionTemplate().ids)])
+        bom_ids = self.search(
+            [
+                (
+                    "product_tmpl_id",
+                    "in",
+                    self.product_tmpl_id.get_all_revision().ids,
+                )
+            ]
+        )
         return {'name': _('B.O.M.S'),
                 'res_model': 'mrp.bom',
                 'view_type': 'form',
@@ -780,21 +788,21 @@ class MrpBomExtension(models.Model):
                 'domain': [('id', 'in', bom_ids.ids)],
                 'context': {}}
 
-    def saveRelationNewGetBom(self, 
-                              product_tmpl_id, 
-                              bomType, 
+    def saveRelationNewGetBom(self,
+                              product_tmpl_id,
+                              bomType,
                               parent_product_product_id,
                               n_child_row = 1, # default is 1 for back compatibility
-                              ): 
-        return self._saveRelationNewGetBom(product_tmpl_id, 
-                                           bomType, 
+                              ):
+        return self._saveRelationNewGetBom(product_tmpl_id,
+                                           bomType,
                                            parent_product_product_id,
                                            n_child_row)
 
-    def _saveRelationNewGetBom(self, 
-                               product_tmpl_id, 
-                               bomType, 
-                               parent_product_product_id, 
+    def _saveRelationNewGetBom(self,
+                               product_tmpl_id,
+                               bomType,
+                               parent_product_product_id,
                                n_child_row = 1, # default is 1 for back compatibility
                                ):
         prod_template = self.env['product.template'].browse(product_tmpl_id)
@@ -832,7 +840,7 @@ class MrpBomExtension(models.Model):
     def saveRelationNew(self,
                         clientArgs):
         return self.with_context(from_cad=True)._saveRelationNew(clientArgs)
-     
+
     def _saveRelationNew(self,
                         clientArgs):
 
@@ -843,7 +851,7 @@ class MrpBomExtension(models.Model):
             #
             # check module installation for setting the default bom type creation
             #
-            domain = [('state', 'in', ['installed', 'to upgrade', 'to remove']), 
+            domain = [('state', 'in', ['installed', 'to upgrade', 'to remove']),
                       ('name', '=', 'plm_engineering')]
             apps = self.env['ir.module.module'].sudo().search_read(domain, ['name'])
             bomType = 'normal'
@@ -864,8 +872,8 @@ class MrpBomExtension(models.Model):
             #
             # start bom creation
             #
-            mrp_bom_found_id = self.saveRelationNewGetBom(product_tmpl_id, 
-                                                          bomType, 
+            mrp_bom_found_id = self.saveRelationNewGetBom(product_tmpl_id,
+                                                          bomType,
                                                           parent_product_product_id,
                                                           len(childrenOdooTuple))
             if mrp_bom_found_id:
@@ -876,9 +884,9 @@ class MrpBomExtension(models.Model):
             summarize_bom = self.env.context.get('SUMMARIZE_BOM', False)
             cache_row = {}
             for child_product_product_id, child_ir_attachment_id, relationAttributes in childrenOdooTuple:
-                if self.custom_exclude(child_product_product_id, 
-                                       child_ir_attachment_id, 
-                                       relationAttributes, 
+                if self.custom_exclude(child_product_product_id,
+                                       child_ir_attachment_id,
+                                       relationAttributes,
                                        mrp_bom_found_id):
                     continue
                 #
