@@ -112,13 +112,9 @@ class Loader {
 		var self = this;
 		dxfLoader.load(url,
 			function (objects, textEntities, origin) {
-				const group = new THREE.Group();
-				// DXF data lives in the XY plane; rotate so it faces the camera like a 2D drawing
-				group.rotation.x = -Math.PI / 2;
 				for (const obj of objects) {
-					group.add(obj);
+					self.odooCad.addItemToScene(obj);
 				}
-				self.odooCad.addItemToScene(group);
 				if (textEntities && textEntities.length > 0) {
 					self.odooCad.addDxfTextLabels(textEntities, origin);
 				}
