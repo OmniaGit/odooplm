@@ -418,6 +418,9 @@ class OdooCAD {
                 const rotZ = (entry.rotation || 0) * Math.PI / 180
                 const lines = entry.text.split('\n')
                 const lineHeight = size * 1.4
+                // MTEXT attachment point: 1-3=top, 4-6=middle, 7-9=bottom
+                //                         1,4,7=left  2,5,8=center  3,6,9=right
+                const ap = entry.attachmentPoint || 1
 
                 for (let i = 0; i < lines.length; i++) {
                     const line = lines[i].trim()
@@ -426,11 +429,26 @@ class OdooCAD {
                     const shapes = font.generateShapes(line, size)
                     const geometry = new THREE.ShapeGeometry(shapes)
                     geometry.computeBoundingBox()
+                    const bb = geometry.boundingBox
+
+                    // Shift so the DXF attachment point aligns with entry position.
+                    // ShapeGeometry origin is baseline-left; bb gives the actual extents.
+                    let anchorX = bb ? bb.min.x : 0
+                    let anchorY = bb ? bb.min.y : 0
+                    if (bb) {
+                        const cx = (bb.min.x + bb.max.x) / 2
+                        const cy = (bb.min.y + bb.max.y) / 2
+                        if (ap === 2 || ap === 5 || ap === 8) anchorX = cx
+                        else if (ap === 3 || ap === 6 || ap === 9) anchorX = bb.max.x
+                        if (ap <= 3) anchorY = bb.max.y
+                        else if (ap <= 6) anchorY = cy
+                        // ap 7-9: anchorY stays at bb.min.y
+                    }
 
                     const mesh = new THREE.Mesh(geometry, material)
-                    const dx = -Math.sin(rotZ) * i * lineHeight
-                    const dy = -Math.cos(rotZ) * i * lineHeight
-                    mesh.position.set(entry.x - ox + dx, entry.y - oy - dy, 0)
+                    const dx = Math.sin(rotZ) * i * lineHeight
+                    const dy = Math.cos(rotZ) * i * lineHeight
+                    mesh.position.set(entry.x - ox + dx - anchorX, entry.y - oy - dy - anchorY, 0)
                     mesh.rotation.z = rotZ
                     group.add(mesh)
                 }
