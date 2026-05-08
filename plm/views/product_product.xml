@@ -19,6 +19,9 @@
                     string="Last Week"
                     domain="[('create_date','&gt;=',(datetime.date.today() - datetime.timedelta(weeks=2)).strftime('%%Y-%%m-%%d'))]"/>
                 <separator orientation="vertical"/>
+                                                                                                                                                            
+                <field name="name" filter_domain="['|', ('engineering_code', 'ilike', self), ('name', 'ilike', self)]"/>
+          
                 <field name="engineering_code"/>
                 <field name="name"/>
                 <field name="description" invisible="1"/>
