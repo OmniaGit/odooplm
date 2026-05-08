@@ -108,7 +108,7 @@ class Web3DView(Controller):
         return src_name
 
 
-    @http.route('/plm/save_markup', type='json', auth='user')
+    @http.route('/plm/save_markup', type='jsonrpc', auth='user')
     def save_markup(self, image=None, base_image=None, filename=None, comment=None,
                     res_model=None, res_id=None, canvas_json=None,
                     schedule_activity=False,
@@ -220,7 +220,7 @@ class Web3DView(Controller):
 
         return {"status": "ok"}
 
-    @http.route('/plm/markup/load', type='json', auth='user')
+    @http.route('/plm/markup/load', type='jsonrpc', auth='user')
     def load_markup(self, res_id=None, res_model=None):
         domain = []
         if res_id:
@@ -242,7 +242,7 @@ class Web3DView(Controller):
             } for l in logs]
         }
 
-    @http.route('/plm/markup/delete', type='json', auth='user')
+    @http.route('/plm/markup/delete', type='jsonrpc', auth='user')
     def delete_markup(self, markup_id=None):
         if not markup_id:
             return {'success': False}
@@ -264,7 +264,7 @@ class Web3DView(Controller):
 
         return {'success': True}
 
-    @http.route('/plm/markup/addon', type='json', auth='user')
+    @http.route('/plm/markup/addon', type='jsonrpc', auth='user')
     def load_markup_addon(self, markup_id=None):
         if not markup_id:
             return {'markup': False}
@@ -283,7 +283,7 @@ class Web3DView(Controller):
             }
         }
 
-    @http.route('/plm/markup/update', type='json', auth='user')
+    @http.route('/plm/markup/update', type='jsonrpc', auth='user')
     def update_markup(self, markup_id, image, base_image, canvas_json, **kwargs):
         if not markup_id:
             return {'success': False}
