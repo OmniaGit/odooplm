@@ -56,7 +56,9 @@ class Web3DView(Controller):
 
     @route("/plm/get_product_info", type="http", auth="user")
     @webservice
-    def getProductInfo(self, document_id):
+    def getProductInfo(self, document_id=None):
+        if not document_id:
+            return json.dumps({})
         out = {}
         for ir_attachment in (
             request.env["ir.attachment"].sudo().search([("id", "=", int(document_id))])
@@ -97,14 +99,24 @@ class Web3DView(Controller):
         if not parent_doc.exists():
             return src_name
 
-        if parent_doc.linkedcomponents:
-            p = parent_doc.linkedcomponents[0]
-            code = p.engineering_code or ''
-            name = p.name or ''
+        for p in parent_doc.linkedcomponents:
+            if p.engineering_code == src_name or p.name == src_name or p.default_code == src_name:
+                code = p.engineering_code or p.default_code or ''
+                name = p.name or ''
+                if code:
+                    return f"{code} - {name}"
+                return name
+
+        prod = request.env['product.product'].sudo().search([
+            '|', '|', ('engineering_code', '=', src_name), ('default_code', '=', src_name), ('name', '=', src_name)
+        ], limit=1)
+        if prod:
+            code = prod.engineering_code or prod.default_code or ''
+            name = prod.name or ''
             if code:
                 return f"{code} - {name}"
             return name
-        # we can here manage the name of the document by parent_doc.
+
         return src_name
 
 

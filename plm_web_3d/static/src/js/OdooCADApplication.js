@@ -460,6 +460,8 @@ function initcommand() {
 	var object_transparency = document.getElementById("object_transparency");
 	object_transparency.oninput = change_object_transparency;
 
+	var object_color = document.getElementById("object_color");
+
 	var object_explosion = document.getElementById("object_explosion");
 	object_explosion.oninput = change_object_explosion;
 	/*
@@ -467,15 +469,24 @@ function initcommand() {
 	 */
 	var document_id = document.querySelector('#active_model').getAttribute('active_model');
 	var xmlhttp = new XMLHttpRequest();
-	var url = "../plm/get_product_info/?document_id=" + document_id;
+	var url = "/plm/get_product_info?document_id=" + document_id;
 
 	xmlhttp.onreadystatechange = function () {
 		if (this.readyState == 4 && this.status == 200) {
-			var result = JSON.parse(this.responseText);
-			var product_info = document.getElementById("product_info");
-			product_info.innerHTML = result['component'];
-			var document_info = document.getElementById("document_info");
-			document_info.innerHTML = result['document'];
+			var responseText = this.responseText.trim();
+			if (responseText.startsWith("<!DOCTYPE") || responseText.startsWith("<html")) {
+				console.error("Received HTML instead of JSON. Session might be expired.");
+				return;
+			}
+			try {
+				var result = JSON.parse(responseText);
+				var product_info = document.getElementById("product_info");
+				if (product_info) product_info.innerHTML = result['component'];
+				var document_info = document.getElementById("document_info");
+				if (document_info) document_info.innerHTML = result['document'];
+			} catch (e) {
+				console.error("Error parsing product info JSON:", e);
+			}
 		}
 	};
 	xmlhttp.open("GET", url, true);
@@ -551,14 +562,6 @@ var saveFile = function (strData, filename) {
 		document.body.removeChild(link); // remove the link when done
 	} else {
 		location.replace(uri);
-	}
-}
-
-var change_object_color = function (event) {
-	var items = OdooCad.items;
-	for (let i = 0; i < items.length; i = i + 1) {
-		var material = items[i].material;
-		material.color.setStyle(this.value);
 	}
 }
 
@@ -719,6 +722,27 @@ var onClick = function (e) {
 			drawingLine = false;
 			lineId++;
 		}
+	} else {
+		// 3D part color Feature
+		if (window.last_highlighted_li) {
+			const guid = window.last_highlighted_li;
+			const part = OdooCad.tree_ref_elements[guid];
+			if (part) {
+				const colorInput = document.getElementById("object_color");
+				if (colorInput) {
+					const selectedColor = colorInput.value;
+					part.traverse(function (child) {
+						if (child instanceof THREE.Mesh && child.material) {
+							child.material.color.setStyle(selectedColor);
+							// Update persistence for highlighting systems
+							child.material.userData.originalColor = child.material.color.clone();
+							child.material.userData.oldColor = child.material.color.clone();
+						}
+					});
+					render();
+				}
+			}
+		}
 	}
 
 }
@@ -774,7 +798,7 @@ window.highlight3D = function (guid, enable = true) {
 				const edgeMat = new THREE.LineBasicMaterial({ color: 0x714B67 });
 				const wireframe = new THREE.LineSegments(edges, edgeMat);
 				wireframe.name = '__highlight_edges__';
-				wireframe.raycast = () => {};
+				wireframe.raycast = () => { };
 				child.add(wireframe);
 			}
 		} else {
@@ -856,11 +880,17 @@ window.onPointerMove = function (event) {
 					} else {
 						tooltip.innerText = srcName;
 						const parentId = document.getElementById('main_3d_web')?.getAttribute('data-res-id') || document.getElementById('active_model')?.getAttribute('active_model') || "";
-						const url = `/plm/get_3d_web_document_info/?src_name=${encodeURIComponent(srcName)}&parent_id=${parentId}`;
+						const url = `/plm/get_3d_web_document_info?src_name=${encodeURIComponent(srcName)}&parent_id=${parentId}`;
 						fetch(url)
 							.then(response => response.text())
 							.then(data => {
-								const finalMsg = data.trim() || srcName;
+								const trimmedData = data.trim();
+								if (trimmedData.startsWith("<!DOCTYPE") || trimmedData.startsWith("<html")) {
+									// Session lost or error page — don't show HTML in tooltip
+									window.tooltipCache[srcName] = srcName;
+									return;
+								}
+								const finalMsg = trimmedData || srcName;
 								window.tooltipCache[srcName] = finalMsg;
 								if (window.tooltipPendingGuid === guid) {
 									tooltip.innerText = finalMsg;
@@ -1186,11 +1216,11 @@ function render() {
 	updateOrientationCube(camera);
 	labelRenderer.render(scene, camera);
 	renderer.render(scene, camera);
-    Object.values(measurementLabels).forEach(label => {
-    if (label) {
-        label.lookAt(camera.position);
-    }
-});
+	Object.values(measurementLabels).forEach(label => {
+		if (label) {
+			label.lookAt(camera.position);
+		}
+	});
 }
 
 function tweenCamera(position) {
