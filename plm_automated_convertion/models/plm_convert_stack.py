@@ -295,7 +295,8 @@ class PlmConvertStack(models.Model):
     def _attach_to_stack(self, file_name):
         attachment = self.env["ir.attachment"]
         target_attachment = self.env["ir.attachment"]
-        attachment_ids = attachment.search([("name", "=", file_name)])
+        engineering_code = os.path.basename(file_name)
+        attachment_ids = attachment.search([("engineering_code", "=", engineering_code)])
         content = ""
         logging.info("Reading converted file %r" % (file_name))
         if not os.path.exists(file_name):
@@ -319,11 +320,11 @@ class PlmConvertStack(models.Model):
                         "linkedcomponents": [
                             (6, False, self.start_document_id.linkedcomponents.ids)
                         ],
-                        "name": os.path.basename(file_name),
+                        "name": engineering_code,
                         "datas": encoded_content,
                         "engineering_state": self.start_document_id.engineering_state,
                         "is_plm": True,
-                        "engineering_code": file_name,
+                        "engineering_code": engineering_code,
                         "is_converted_document": True,
                         "source_convert_document": self.start_document_id.id,
                     }
