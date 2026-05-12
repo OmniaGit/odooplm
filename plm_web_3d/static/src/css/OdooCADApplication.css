@@ -274,7 +274,9 @@ div.snap_lable {
 }
 
 @keyframes plm-spin {
-    to { transform: rotate(360deg); }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 #loading_text {
@@ -288,13 +290,29 @@ div.snap_lable {
     opacity: 0;
     animation: ldot-fade 1.5s infinite;
 }
-.ldot:nth-child(1) { animation-delay: 0.0s; }
-.ldot:nth-child(2) { animation-delay: 0.3s; }
-.ldot:nth-child(3) { animation-delay: 0.6s; }
+
+.ldot:nth-child(1) {
+    animation-delay: 0.0s;
+}
+
+.ldot:nth-child(2) {
+    animation-delay: 0.3s;
+}
+
+.ldot:nth-child(3) {
+    animation-delay: 0.6s;
+}
 
 @keyframes ldot-fade {
-    0%, 100% { opacity: 0; }
-    40%       { opacity: 1; }
+
+    0%,
+    100% {
+        opacity: 0;
+    }
+
+    40% {
+        opacity: 1;
+    }
 }
 
 /* ── HR ── */
@@ -1395,4 +1413,70 @@ canvas#odoo_canvas {
 .document_tree_line.hovered {
     background-color: #eda3da;
     border-radius: 6px;
+}
+
+/* tree item color picker */
+.tree_item_color {
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    border: none;
+    background: none !important;
+    cursor: pointer;
+    vertical-align: middle;
+    margin-right: 2px;
+    margin-left: 2px;
+}
+
+/* Global color picker in tree header */
+#global_object_color {
+    width: 25px;
+    height: 25px;
+    padding: 0;
+    border: 1px solid #714B67;
+    border-radius: 4px;
+    background: none !important;
+    cursor: pointer;
+    vertical-align: middle;
+    margin-right: 5px;
+}
+
+/* Layout for search and global controls in tree header */
+.search_document_list {
+    display: flex;
+    flex-direction: row;
+    direction: ltr;
+    align-items: center;
+    padding: 5px;
+    gap: 8px;
+    background: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+}
+
+#input_search_document_list {
+    flex: 1;
+    min-width: 0;
+    padding: 4px 8px;
+    border: 1px solid #714B67;
+    border-radius: 4px;
+    font-size: 13px;
+}
+
+.search_document_list button {
+    background: white;
+    border: 1px solid #714B67;
+    border-radius: 4px;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #714B67;
+    transition: all 0.2s;
+}
+
+.search_document_list button:hover {
+    background: #eda3da;
+    color: #4a1942;
 }

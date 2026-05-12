@@ -125,12 +125,7 @@
                                     <input name="transparency_slider" id="object_transparency" type="range" min="0"
                                            max="100" value="90"/>
                                 </div>
-                                <div class="plm_button">
-                                    <div id="color_object_grp">
-                                        <label for="object_color">Color:</label>
-                                        <input type="color" id="object_color" name="object_color" value="#b2ffc8"/>
-                                    </div>
-                                </div>
+
 
                                 <div id="plm_button1">
                                     <label for="explosion_slider">Explosion:</label>
@@ -241,11 +236,12 @@
                                 </div>
                                 <hr class="datacard_line"/>
                                 <div class="search_document_list">
-                                    <input type="text" id="input_search_document_list" placeholder="Search Here !!"/>
-                                    <button type="button" id="hide_all_parts" title="Hide"
-                                            class="fa fa-moon-o"></button>
+                                    <input type="color" id="global_object_color" title="Change Whole Product Color" style="display: none;"/>
                                     <button type="button" id="show_all_parts" title="Un-Hide"
                                             class="fa fa-lightbulb-o"></button>
+                                    <button type="button" id="hide_all_parts" title="Hide"
+                                            class="fa fa-moon-o"></button>
+                                    <input type="text" id="input_search_document_list" placeholder="Search Here !!"/>
                                 </div>
                                 <lu id="document_tree">
                                 </lu>

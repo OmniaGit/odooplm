@@ -24,19 +24,19 @@ const loader = new THREE.ObjectLoader();
 
 
 const transparent_material = new THREE.MeshPhysicalMaterial({
-    color: 0xb2ffc8,
-    // envMap: envTexture,
-    metalness: 0.25,
-    roughness: 0.1,
-    opacity: 1.0,
-    transparent: true,
-    transmission: 0.50,
-    clearcoat: 1.0,
-    clearcoatRoughness: 0.25
+	color: 0xb2ffc8,
+	// envMap: envTexture,
+	metalness: 0.25,
+	roughness: 0.1,
+	opacity: 1.0,
+	transparent: true,
+	transmission: 0.50,
+	clearcoat: 1.0,
+	clearcoatRoughness: 0.25
 })
 
 class Loader {
-	constructor(odooCad){
+	constructor(odooCad) {
 		this.odooCad = odooCad;
 		this.overlay = document.querySelector('#loading_overlay');
 	}
@@ -45,7 +45,7 @@ class Loader {
 		this.overlay.style.display = 'flex';
 	}
 
-	_updateProgress(xhr) {}
+	_updateProgress(xhr) { }
 
 	_hideProgress() {
 		this.overlay.style.display = 'none';
@@ -56,40 +56,40 @@ class Loader {
 	/*
 	 * Load document from odoo
 	 */
-	load_document(document_id, document_name){
+	load_document(document_id, document_name) {
 		this._showProgress(document_name);
 		var url = '../plm/download_treejs_model?document_id=' + document_id
 		var exte = document_name.split('.').pop();
 		exte = exte.toLowerCase()
-		if (['glb','gltf'].includes(exte)){ 
+		if (['glb', 'gltf'].includes(exte)) {
 			this.loadGltx(document_name, url);
 		}
-		if (['fbx'].includes(exte)){
+		if (['fbx'].includes(exte)) {
 			this.loadfBXLoader(document_name, url);
 		}
-		if (['obj'].includes(exte)){
+		if (['obj'].includes(exte)) {
 			this.loadoBJLoader(document_name, url);
 		}
-		if (['wrl'].includes(exte)){
+		if (['wrl'].includes(exte)) {
 			this.loadvRMLLoader(document_name, url);
 		}
-		if (['json'].includes(exte)){
+		if (['json'].includes(exte)) {
 			this.loadoloader(document_name, url);
 		}
-		if (['stl'].includes(exte)){
+		if (['stl'].includes(exte)) {
 			this.loadStlLoader(document_name, url);
-		}	
-        if (['svg'].includes(exte)){
-            this.loadSvgLoader(document_name, url);
-        }   
-        if (['dxf'].includes(exte)){
-            this.loadDxf(document_name, url);
-        }
-        if (['3mf'].includes(exte)){
-            this.load3mf(document_name, url);
-        }
+		}
+		if (['svg'].includes(exte)) {
+			this.loadSvgLoader(document_name, url);
+		}
+		if (['dxf'].includes(exte)) {
+			this.loadDxf(document_name, url);
+		}
+		if (['3mf'].includes(exte)) {
+			this.load3mf(document_name, url);
+		}
 	}
-	loadDxf(document_name, url){
+	loadDxf(document_name, url) {
 		var self = this;
 		dxfLoader.load(url,
 			function (objects, textEntities, origin) {
@@ -99,6 +99,7 @@ class Loader {
 				if (textEntities && textEntities.length > 0) {
 					self.odooCad.addDxfTextLabels(textEntities, origin);
 				}
+				self.odooCad.create_tree_structure("");
 				self._hideProgress();
 			},
 			(xhr) => { self._updateProgress(xhr); },
@@ -108,7 +109,7 @@ class Loader {
 			}
 		);
 	}
-	loadGltx(document_name, url){
+	loadGltx(document_name, url) {
 		var self = this;
 		gLTFLoader.load(url,
 			function (gltf) {
@@ -127,8 +128,8 @@ class Loader {
 			}
 		);
 	}
-	
-	load3mf(document_name, url){
+
+	load3mf(document_name, url) {
 		var self = this;
 		threeMFLoader.load(url,
 			function (mfArgs) {
@@ -145,14 +146,16 @@ class Loader {
 		);
 	}
 
-	loadfBXLoader(document_name, url){
+	loadfBXLoader(document_name, url) {
 		var self = this;
 		fBXLoader.load(url,
 			function (gltf) {
+				var out_html_structure = "";
 				var children = gltf.children;
 				for (var i = 0; i < children.length; i++) {
-					self.odooCad.addItemToScene(children[i]);
+					out_html_structure += self.odooCad.addItemToScene(children[i]);
 				}
+				self.odooCad.create_tree_structure(out_html_structure);
 				self._hideProgress();
 			},
 			(xhr) => { self._updateProgress(xhr); },
@@ -162,15 +165,17 @@ class Loader {
 			}
 		);
 	}
-	
-	loadoBJLoader(document_name, file_path){
+
+	loadoBJLoader(document_name, file_path) {
 		var self = this;
 		oBJLoader.load(file_path,
 			function (objArgs) {
+				var out_html_structure = "";
 				var children = objArgs.children;
 				for (var i = 0; i < children.length; i++) {
-					self.odooCad.addItemToScene(children[i]);
+					out_html_structure += self.odooCad.addItemToScene(children[i]);
 				}
+				self.odooCad.create_tree_structure(out_html_structure);
 				self._hideProgress();
 			},
 			(xhr) => { self._updateProgress(xhr); },
@@ -182,11 +187,12 @@ class Loader {
 	}
 
 
-	loadoloader(document_name, url){
+	loadoloader(document_name, url) {
 		var self = this;
 		loader.load(url,
 			function (obj) {
-				self.odooCad.addItemToScene(obj);
+				const out_html_structure = self.odooCad.addItemToScene(obj);
+				self.odooCad.create_tree_structure(out_html_structure);
 				self._hideProgress();
 			},
 			(xhr) => { self._updateProgress(xhr); },
@@ -196,14 +202,16 @@ class Loader {
 			}
 		);
 	}
-	loadvRMLLoader(document_name, url){
+	loadvRMLLoader(document_name, url) {
 		var self = this;
 		vRMLLoader.load(url,
 			function (gltf) {
+				var out_html_structure = "";
 				var children = gltf.children;
 				for (var i = 0; i < children.length; i++) {
-					self.odooCad.addItemToScene(children[i]);
+					out_html_structure += self.odooCad.addItemToScene(children[i]);
 				}
+				self.odooCad.create_tree_structure(out_html_structure);
 				self._hideProgress();
 			},
 			(xhr) => { self._updateProgress(xhr); },
@@ -213,12 +221,13 @@ class Loader {
 			}
 		);
 	}
-	loadStlLoader(document_name, url){
+	loadStlLoader(document_name, url) {
 		var self = this;
 		stlLoader.load(url,
 			function (geometry) {
 				const mesh = new THREE.Mesh(geometry, transparent_material);
 				self.odooCad.addItemToScene(mesh);
+				self.odooCad.create_tree_structure("");
 				self._hideProgress();
 			},
 			(xhr) => { self._updateProgress(xhr); },
@@ -230,7 +239,7 @@ class Loader {
 	}
 
 
-	loadSvgLoader(document_name, url){
+	loadSvgLoader(document_name, url) {
 		var self = this;
 		svgloader.load(url,
 			function (data) {
@@ -252,6 +261,7 @@ class Loader {
 					}
 				}
 				self.odooCad.addItemToScene(group);
+				self.odooCad.create_tree_structure("");
 				self._hideProgress();
 			},
 			(xhr) => { self._updateProgress(xhr); },
@@ -262,4 +272,4 @@ class Loader {
 		);
 	}
 }
-export {Loader}
+export { Loader }

@@ -123,6 +123,15 @@ class OdooCAD {
             var internal_obj_name = guid();
             var span_lable = "<span class='document_tree_span' webgl_ref_name='" + internal_obj_name + "'>" + obj_name + "</span>";
 
+            // Get initial color
+            var initialColor = "#b2ffc8"; // Default
+            child.traverse(function (c) {
+                if (c instanceof THREE.Mesh && c.material && c.material.color) {
+                    initialColor = "#" + c.material.color.getHexString();
+                }
+            });
+            var color_picker = "<input type='color' class='tree_item_color' webgl_ref_name='" + internal_obj_name + "' value='" + initialColor + "' title='Change Color'>";
+
             // Add item if it has children or a meaningful name
             if (children_found || child.name !== '') {
                 self.tree_ref_elements[internal_obj_name] = child;
@@ -136,10 +145,10 @@ class OdooCAD {
                 // Only push to HTML if it's not a geometry body
                 if (!(child.name || '').toLowerCase().startsWith('body')) {
                     if (has_visible_children) {
-                        out_lis += "<li class='document_tree_line' webgl_ref_name='" + internal_obj_name + "'><i class='tree_item_visibility fa fa-eye' aria-hidden='true'></i><span class='caret'>" + span_lable + "</span>" + inner_html + "</li>";
+                        out_lis += "<li class='document_tree_line' webgl_ref_name='" + internal_obj_name + "'><i class='tree_item_visibility fa fa-eye' aria-hidden='true'></i>" + color_picker + "<span class='caret'>" + span_lable + "</span>" + inner_html + "</li>";
                     } else {
                         // Render as a leaf node without caret and without empty sub list
-                        out_lis += "<li class='document_tree_line' webgl_ref_name='" + internal_obj_name + "'><i class='tree_item_visibility fa fa-eye' aria-hidden='true'></i> " + span_lable + "</li>";
+                        out_lis += "<li class='document_tree_line' webgl_ref_name='" + internal_obj_name + "'><i class='tree_item_visibility fa fa-eye' aria-hidden='true'></i>" + color_picker + " " + span_lable + "</li>";
                     }
                 }
             }
@@ -149,7 +158,7 @@ class OdooCAD {
                 child.userData.engineering_code = clean_code;
                 // Only push to HTML if it's not a geometry body
                 if (!(child.name || '').toLowerCase().startsWith('body')) {
-                    out_lis += "<li class='document_tree_line' webgl_ref_name='" + internal_obj_name + "'>" + span_lable + "</li>";
+                    out_lis += "<li class='document_tree_line' webgl_ref_name='" + internal_obj_name + "'>" + color_picker + " " + span_lable + "</li>";
                 }
             }
 
@@ -220,12 +229,61 @@ class OdooCAD {
     create_tree_structure(out_html_structure) {
         const self = this;
 
+        // Handle global color picker visibility (only if no structure)
+        var globalColorPicker = document.getElementById("global_object_color");
+        if (globalColorPicker) {
+            // If structure is empty or just contains empty tags, show global picker
+            if (!out_html_structure || out_html_structure.trim() === "" || out_html_structure === "<ul></ul>") {
+                globalColorPicker.style.display = "inline-block";
+                
+                // Apply initial color if possible
+                if (self.items.length > 0) {
+                    self.items[0].traverse(function (c) {
+                        if (c instanceof THREE.Mesh && c.material && c.material.color) {
+                            globalColorPicker.value = "#" + c.material.color.getHexString();
+                        }
+                    });
+                }
+
+                // Add listener once (avoid duplicates if called multiple times)
+                if (!globalColorPicker._listenerAdded) {
+                    globalColorPicker.addEventListener("input", function (event) {
+                        var selectedColor = this.value;
+                        self.items.forEach(item => {
+                            item.traverse(function (child) {
+                                if (child instanceof THREE.Mesh && child.material) {
+                                    child.material.color.setStyle(selectedColor);
+                                    child.material.userData.originalColor = child.material.color.clone();
+                                    child.material.userData.oldColor = child.material.color.clone();
+                                }
+                            });
+                        });
+                        
+                        // Also update individual pickers in the tree if they exist
+                        var itemPickers = document.getElementsByClassName("tree_item_color");
+                        for (let picker of itemPickers) {
+                            picker.value = selectedColor;
+                        }
+
+                        // Trigger render
+                        var renderEvent = new CustomEvent("OdooCAD_render");
+                        html_canvas.dispatchEvent(renderEvent);
+                    });
+                    globalColorPicker._listenerAdded = true;
+                }
+            } else {
+                globalColorPicker.style.display = "none";
+            }
+        }
+
         var html_out = "<div class='tree_structure' style='overflow-y: scroll;min-height: 1px;max-height: 400px;'>";
         html_out += out_html_structure;
         html_out += "</div>";
 
         var li_document_tree = document.querySelectorAll('#document_tree');
-        li_document_tree[0].innerHTML = html_out;
+        if (li_document_tree.length > 0) {
+            li_document_tree[0].innerHTML = html_out;
+        }
 
         // ✅ IMPORTANT: use full row instead of span
         var hoverTargets = document.getElementsByClassName("document_tree_line");
@@ -283,7 +341,7 @@ class OdooCAD {
             // CLICK
             // =========================
             hoverTargets[i].addEventListener("click", function (event) {
-                if (event.target.tagName != 'I') {
+                if (event.target.tagName != 'I' && event.target.tagName != 'INPUT') {
                     let url = location.origin;
                     let product_tag = document.getElementById('linked_component_id');
 
@@ -344,6 +402,32 @@ class OdooCAD {
                 icon.classList.toggle('fa-eye-slash', isVisible);
 
                 objectsVisibility(webglRefNames, !isVisible, currentAttrValue);
+            });
+        }
+
+        // =========================
+        // COLOR CHANGE
+        // =========================
+        var tree_item_color = document.getElementsByClassName("tree_item_color");
+        for (let i = 0; i < tree_item_color.length; i++) {
+            tree_item_color[i].addEventListener("input", function (event) {
+                event.stopPropagation();
+                var webgl_name = this.getAttribute('webgl_ref_name');
+                var selectedColor = this.value;
+                var groupObj = self.tree_ref_elements[webgl_name];
+                if (groupObj) {
+                    groupObj.traverse(function (child) {
+                        if (child instanceof THREE.Mesh && child.material) {
+                            child.material.color.setStyle(selectedColor);
+                            child.material.userData.originalColor = child.material.color.clone();
+                            child.material.userData.oldColor = child.material.color.clone();
+                        }
+                    });
+
+                    // Trigger render
+                    var renderEvent = new CustomEvent("OdooCAD_render");
+                    html_canvas.dispatchEvent(renderEvent);
+                }
             });
         }
 

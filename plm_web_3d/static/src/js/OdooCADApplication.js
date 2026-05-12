@@ -443,6 +443,7 @@ function initcommand() {
 
 	const html_canvas = document.getElementById('odoo_canvas');
 	html_canvas.addEventListener("OdooCAD_fit_items", fitCameraToSelectionEvent, false);
+	html_canvas.addEventListener("OdooCAD_render", () => { render(); }, false);
 	// light
 	var object_light_distance = document.getElementById("object_distance")
 	object_light_distance.oninput = chenge_light_distance;
@@ -459,8 +460,6 @@ function initcommand() {
 
 	var object_transparency = document.getElementById("object_transparency");
 	object_transparency.oninput = change_object_transparency;
-
-	var object_color = document.getElementById("object_color");
 
 	var object_explosion = document.getElementById("object_explosion");
 	object_explosion.oninput = change_object_explosion;
@@ -728,6 +727,8 @@ var onClick = function (e) {
 			const guid = window.last_highlighted_li;
 			const part = OdooCad.tree_ref_elements[guid];
 			if (part) {
+				// Global color picker removed in favor of tree-based pickers
+				/*
 				const colorInput = document.getElementById("object_color");
 				if (colorInput) {
 					const selectedColor = colorInput.value;
@@ -741,6 +742,7 @@ var onClick = function (e) {
 					});
 					render();
 				}
+				*/
 			}
 		}
 	}
