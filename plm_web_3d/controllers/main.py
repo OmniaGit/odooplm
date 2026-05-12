@@ -56,7 +56,9 @@ class Web3DView(Controller):
 
     @route("/plm/get_product_info", type="http", auth="user")
     @webservice
-    def getProductInfo(self, document_id):
+    def getProductInfo(self, document_id=None):
+        if not document_id:
+            return json.dumps({})
         out = {}
         for ir_attachment in (
             request.env["ir.attachment"].sudo().search([("id", "=", int(document_id))])
@@ -97,18 +99,28 @@ class Web3DView(Controller):
         if not parent_doc.exists():
             return src_name
 
-        if parent_doc.linkedcomponents:
-            p = parent_doc.linkedcomponents[0]
-            code = p.engineering_code or ''
-            name = p.name or ''
+        for p in parent_doc.linkedcomponents:
+            if p.engineering_code == src_name or p.name == src_name or p.default_code == src_name:
+                code = p.engineering_code or p.default_code or ''
+                name = p.name or ''
+                if code:
+                    return f"{code} - {name}"
+                return name
+
+        prod = request.env['product.product'].sudo().search([
+            '|', '|', ('engineering_code', '=', src_name), ('default_code', '=', src_name), ('name', '=', src_name)
+        ], limit=1)
+        if prod:
+            code = prod.engineering_code or prod.default_code or ''
+            name = prod.name or ''
             if code:
                 return f"{code} - {name}"
             return name
-        # we can here manage the name of the document by parent_doc.
+
         return src_name
 
 
-    @http.route('/plm/save_markup', type='json', auth='user')
+    @http.route('/plm/save_markup', type='jsonrpc', auth='user')
     def save_markup(self, image=None, base_image=None, filename=None, comment=None,
                     res_model=None, res_id=None, canvas_json=None,
                     schedule_activity=False,
@@ -220,7 +232,7 @@ class Web3DView(Controller):
 
         return {"status": "ok"}
 
-    @http.route('/plm/markup/load', type='json', auth='user')
+    @http.route('/plm/markup/load', type='jsonrpc', auth='user')
     def load_markup(self, res_id=None, res_model=None):
         domain = []
         if res_id:
@@ -242,7 +254,7 @@ class Web3DView(Controller):
             } for l in logs]
         }
 
-    @http.route('/plm/markup/delete', type='json', auth='user')
+    @http.route('/plm/markup/delete', type='jsonrpc', auth='user')
     def delete_markup(self, markup_id=None):
         if not markup_id:
             return {'success': False}
@@ -264,7 +276,7 @@ class Web3DView(Controller):
 
         return {'success': True}
 
-    @http.route('/plm/markup/addon', type='json', auth='user')
+    @http.route('/plm/markup/addon', type='jsonrpc', auth='user')
     def load_markup_addon(self, markup_id=None):
         if not markup_id:
             return {'markup': False}
@@ -283,7 +295,7 @@ class Web3DView(Controller):
             }
         }
 
-    @http.route('/plm/markup/update', type='json', auth='user')
+    @http.route('/plm/markup/update', type='jsonrpc', auth='user')
     def update_markup(self, markup_id, image, base_image, canvas_json, **kwargs):
         if not markup_id:
             return {'success': False}

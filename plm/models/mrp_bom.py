@@ -918,7 +918,7 @@ class MrpBomExtension(models.Model):
                 (
                     "product_tmpl_id",
                     "in",
-                    self.product_tmpl_id.getAllVersionTemplate().ids,
+                    self.product_tmpl_id.get_all_revision().ids,
                 )
             ]
         )

@@ -184,6 +184,13 @@ function _positionEditorControls(tRect) {
         saveBtn.onclick = function(e) {
             e.stopPropagation();
 
+            const container = document.getElementById("main_3d_web");
+            const logItem = document.querySelector(`[data-markup-id="${_editingMarkupId}"]`);
+
+            const displayComment = logItem && logItem.dataset.comment
+                ? logItem.dataset.comment
+                : "Markup updated";
+
             const threeCanvas = document.getElementById("odoo_canvas");
 
             // ✅ Merge canvas
@@ -1260,7 +1267,7 @@ window.addEventListener("load", function() {
     const markupId = params.get("markup_id");
     if (!markupId) return;
 
-    fetch("/plm_web_3d/markup/addon", {
+    fetch("/plm/markup/addon", {
         method: "POST",
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify({
