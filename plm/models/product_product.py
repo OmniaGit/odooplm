@@ -87,6 +87,25 @@ class ProductProduct(models.Model):
             "context": localCtx,
         }
 
+    def action_print_bom_report(self):
+        self.ensure_one()
+        boms = self.env["mrp.bom"]._get_bom(self.product_tmpl_id.id)
+        if not boms:
+            raise UserError(_("No BoM found for this product."))
+
+        return {
+            "name": _("Select BoM to Print"),
+            "type": "ir.actions.act_window",
+            "res_model": "plm.bom.report.wizard",
+            "view_mode": "form",
+            "target": "new",
+            "context": {
+                "default_product_id": self.id,
+                "default_product_tmpl_id": self.product_tmpl_id.id,
+                "default_bom_id": boms[0].id,
+            },
+        }
+
     def _father_part_compute(self, name="", arg={}):
         """Gets father bom.
         @param self: The object pointer

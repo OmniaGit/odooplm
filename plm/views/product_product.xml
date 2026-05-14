@@ -315,6 +315,12 @@
                         class="oe_stat_button"
                         icon="fa-tag">
                 </button>
+                <button name="action_print_bom_report"
+                        type="object"
+                        string="Print BoM"
+                        class="oe_stat_button"
+                        icon="fa-print">
+                </button>
             </xpath>
             <xpath expr="//div[@name='options']" position="attributes">
                 <attribute name="margin-left">0</attribute>

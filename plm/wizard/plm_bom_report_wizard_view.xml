@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_plm_bom_report_wizard_form" model="ir.ui.view">
+        <field name="name">plm.bom.report.wizard.form</field>
+        <field name="model">plm.bom.report.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Select BoM to Print">
+                <group>
+                    <field name="product_id"/>
+                    <field name="bom_type"/>
+                    <field name="available_bom_ids" invisible="1"/>
+                    <field name="bom_id" domain="[('id', 'in', available_bom_ids)]" options="{'no_create': True}"/>
+                    <field name="report_id"/>
+                    <field name="product_tmpl_id" invisible="1"/>
+                </group>
+                <footer>
+                    <button name="action_print_bom" string="Print BoM" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>
