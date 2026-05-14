@@ -72,7 +72,8 @@ class ProductTemplate(models.Model):
         """
         Create a new Spare Bom if doesn't exist (action callable from code)
         """
-        self._create_spare_bom()
+        for product in self:
+            product._create_spare_bom()
         return False
 
     def _create_spare_bom(self):

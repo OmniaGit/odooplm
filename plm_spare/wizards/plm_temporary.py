@@ -55,8 +55,8 @@ class PlmTemporary(models.TransientModel):
             )
             if obj_boms:
                 raise UserError(
-                    _("Creating a new Spare Bom Error."),
-                    _("BoM for Part %s already exists.") % prod_prod_obj.name,
+                    _("Creating a new Spare Bom Error.\nBoM for Part %s already exists.")
+                    % prod_prod_obj.name
                 )
 
         product_type.browse(active_ids).action_create_spare_bom_wf()
