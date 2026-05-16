@@ -48,6 +48,10 @@
                             <div id="loading_spinner_wrap">
                                 <div id="loading_spinner"></div>
                                 <div id="loading_text">Loading data from Odoo<span class="ldot">.</span><span class="ldot">.</span><span class="ldot">.</span></div>
+                                <div id="loading_progress_container">
+                                    <div id="loading_progress_bar"></div>
+                                </div>
+                                <div id="loading_percent">0%</div>
                             </div>
                         </div>
                     </div>

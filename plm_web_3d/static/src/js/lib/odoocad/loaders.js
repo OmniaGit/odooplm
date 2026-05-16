@@ -42,12 +42,38 @@ class Loader {
 	}
 
 	_showProgress(document_name) {
+		if (!this.overlay) return;
 		this.overlay.style.display = 'flex';
+		// Reset bar to 0 for each new load
+		const bar = document.getElementById('loading_progress_bar');
+		const pct = document.getElementById('loading_percent');
+		if (bar) bar.style.width = '0%';
+		if (pct) pct.textContent = '0%';
 	}
 
-	_updateProgress(xhr) { }
+	_updateProgress(xhr) {
+		const bar = document.getElementById('loading_progress_bar');
+		const pct = document.getElementById('loading_percent');
+		if (!bar || !pct) return;
+		if (xhr && xhr.lengthComputable && xhr.total > 0) {
+			// Real percentage — Content-Length is set by download_treejs_model
+			const percent = Math.min(100, Math.round((xhr.loaded / xhr.total) * 100));
+			bar.style.width = percent + '%';
+			pct.textContent = percent + '%';
+		} else if (xhr && xhr.loaded > 0) {
+			// Content-Length unknown — show bytes received as fallback
+			const mb = (xhr.loaded / (1024 * 1024)).toFixed(1);
+			pct.textContent = mb + ' MB received';
+		}
+	}
 
 	_hideProgress() {
+		if (!this.overlay) return;
+		// Snap bar to 100% before hiding so the user sees completion
+		const bar = document.getElementById('loading_progress_bar');
+		const pct = document.getElementById('loading_percent');
+		if (bar) bar.style.width = '100%';
+		if (pct) pct.textContent = '100%';
 		this.overlay.style.display = 'none';
 		const canvas = document.getElementById('odoo_canvas');
 		if (canvas) canvas.dispatchEvent(new Event('OdooCAD_fit_items'));

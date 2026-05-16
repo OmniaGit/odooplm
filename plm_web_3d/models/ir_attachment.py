@@ -18,6 +18,7 @@
 #    along with this prograIf not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
+import base64
 import os
 import logging
 import urllib.parse
@@ -127,7 +128,15 @@ class IrAttachment(models.Model):
 
     def show_releted_3d(self):
         for ir_attachment in self:
-            url = ir_attachment.get_url_for_3dWebModel()
+            _name, exte = os.path.splitext(ir_attachment.name or "")
+            if exte.lower() in (".stp", ".step"):
+                # Three.js cannot render STEP natively; convert to 3MF first
+                target = ir_attachment._get_or_create_3mf_from_step()
+            else:
+                target = ir_attachment
+            if not target:
+                continue
+            url = target.get_url_for_3dWebModel()
             if url:
                 return {
                     "name": "Odoo TreeJs View",

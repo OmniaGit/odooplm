@@ -27,6 +27,8 @@ import base64
 import io
 import logging
 
+_logger = logging.getLogger(__name__)
+
 import os
 import shutil
 import tempfile
@@ -641,6 +643,139 @@ class ir_attachment(models.Model):
                     format_model = format
                     break
         return format_model
+
+    def split_step_assembly(self):
+        """
+        Split a STEP assembly into one ir.attachment per unique direct child.
+
+        For each unique child (identified by its STEP instance name, duplicate
+        placements of the same part are skipped):
+        - Exports the child geometry to a new STEP file.
+        - Creates (or reuses by engineering_code) an ir.attachment.
+        - Establishes an HiTree document relation: assembly → child part.
+        - Finds a product.product matching the engineering_code, or creates one.
+        - Links the child attachment to the product via linkedcomponents.
+        """
+        self.ensure_one()
+        if not any(ext in self.name.lower() for ext in [".stp", ".step"]):
+            raise UserError(_("Split is only available for STEP (.step / .stp) files."))
+
+        store_fname = self._full_path(self.store_fname)
+        if not store_fname or not os.path.exists(store_fname):
+            raise UserError(_("The STEP file cannot be found in the file store."))
+
+        try:
+            assembly = _import_step_preserve_names(store_fname)
+        except Exception as ex:
+            raise UserError(_("Cannot read the STEP assembly: %s") % ex)
+
+        IrAttachmentRelation = self.env["ir.attachment.relation"]
+        ProductTemplate = self.env["product.template"]
+        ProductProduct = self.env["product.product"]
+
+        seen_names = set()
+        created_attachments = self.env["ir.attachment"]
+
+        for child_node in assembly.children:
+            # _import_step_preserve_names appends ":N" for uniqueness; strip it
+            raw_name = child_node.name or ""
+            clean_name = raw_name.rsplit(":", 1)[0] if ":" in raw_name else raw_name
+            if not clean_name:
+                continue
+
+            # Process each unique part definition only once
+            if clean_name in seen_names:
+                continue
+            seen_names.add(clean_name)
+
+            # Export child geometry to a temporary STEP file
+            tmp_path = None
+            step_b64 = None
+            try:
+                fd, tmp_path = tempfile.mkstemp(suffix=".step")
+                os.close(fd)
+
+                # Build a fresh assembly without the parent placement transform
+                new_assy = cq.Assembly(name=clean_name)
+                if child_node.obj is not None:
+                    # Leaf shape: add the raw geometry (no parent loc applied)
+                    new_assy.add(child_node.obj, name=clean_name, color=child_node.color)
+                else:
+                    # Sub-assembly: copy all grandchildren preserving internal structure
+                    for grandchild in child_node.children:
+                        new_assy.add(grandchild)
+                new_assy.save(tmp_path, exportType="STEP")
+
+                with open(tmp_path, "rb") as f:
+                    step_b64 = base64.b64encode(f.read())
+            except Exception as ex:
+                _logger.warning("Skipping child %r — could not export STEP: %s", clean_name, ex)
+                continue
+            finally:
+                if tmp_path and os.path.exists(tmp_path):
+                    os.remove(tmp_path)
+
+            # Reuse an existing attachment with the same engineering_code, or create one
+            child_attachment = self.search(
+                [("engineering_code", "=", clean_name), ("id", "!=", self.id)],
+                order="engineering_revision DESC",
+                limit=1,
+            )
+            if child_attachment:
+                child_attachment.write({"datas": step_b64})
+            else:
+                child_attachment = self.create(
+                    {
+                        "name": f"{clean_name}.step",
+                        "datas": step_b64,
+                        "engineering_code": clean_name,
+                        "is_plm": True,
+                        "is_converted_document": True,
+                        "source_convert_document": self.id,
+                    }
+                )
+
+            # Document relation: parent assembly → child part (HiTree)
+            IrAttachmentRelation.saveDocumentRelationNew(
+                self.id, child_attachment.id, "HiTree"
+            )
+
+            # Find an existing product with matching engineering_code
+            product = ProductProduct.search(
+                [("engineering_code", "=", clean_name)],
+                order="engineering_revision DESC",
+                limit=1,
+            )
+            if not product:
+                # Create a minimal product.template; Odoo auto-creates product.product
+                tmpl = ProductTemplate.create(
+                    {
+                        "name": clean_name,
+                        "engineering_code": clean_name,
+                    }
+                )
+                product = ProductProduct.search(
+                    [("product_tmpl_id", "=", tmpl.id)],
+                    limit=1,
+                )
+
+            if product:
+                child_attachment.write({"linkedcomponents": [(4, product.id)]})
+
+            created_attachments |= child_attachment
+
+        if not created_attachments:
+            raise UserError(
+                _("No splittable children were found in the STEP assembly.")
+            )
+
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("STEP Assembly Children"),
+            "res_model": "ir.attachment",
+            "view_mode": "list,form",
+            "domain": [("id", "in", created_attachments.ids)],
+        }
 
     @api.model_create_multi
     def create(self, vals):
