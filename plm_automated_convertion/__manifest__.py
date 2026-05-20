@@ -21,7 +21,7 @@
 ##############################################################################
 {
     "name": "Product Lifecycle Management Batch conversion",
-    "version": "19.0.1.0.2",
+    "version": "19.0.1.0.3",
     "author": "OmniaSolutions",
     "website": "https://odooplm.omniasolutions.website",
     "category": "Manufacturing/Product Lifecycle Management (PLM)",
@@ -44,9 +44,9 @@
 
     ],
     "external_dependencies": {
-        "python": ["ezdxf", 
-                   "matplotlib", 
-                   "cadquery", 
+        "python": ["ezdxf",
+                   "matplotlib",
+                   "cadquery",
                    "numpy-stl",
                    "to-3mf"]
 
