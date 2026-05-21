@@ -1338,6 +1338,23 @@ class IrAttachment(models.Model):
                             attachment_id.must_update_from_cad = False
                         else:
                             attachment_id.must_update_from_cad = True
+                #
+                # RfTree: if any referenced child was saved in CAD more recently than the parent,
+                # the parent document is out of date and must be updated from CAD.
+                #
+                rf_children = self.env['ir.attachment.relation'].search([
+                    ('parent_id', '=', attachment_id.id),
+                    ('link_kind', '=', 'RfTree'),
+                ])
+                for relation in rf_children:
+                    child_plm_cad_open = cad_open_obj.getLastCadSave(relation.child_id)
+                    child_db_thread = child_plm_cad_open.dbThread
+                    if db_thread not in ['', False] and child_db_thread not in ['', False]:
+                        if db_thread == child_db_thread:
+                            continue
+                    if child_plm_cad_open and source_date and child_plm_cad_open.write_date > source_date:
+                        attachment_id.must_update_from_cad = True
+                        break
 
     def getRelatedModels(self):
         out = self.env['ir.attachment']
