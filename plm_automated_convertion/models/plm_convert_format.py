@@ -23,6 +23,7 @@ Created on Sep 7, 2019
 @author: mboscolo
 """
 from odoo import fields, models, api
+import os
 
 
 class PlmConvertFormat(models.Model):
@@ -42,3 +43,15 @@ class PlmConvertFormat(models.Model):
     def _compute_name(self):
         for plm_convert_format in self:
             plm_convert_format.name = f"[{plm_convert_format.cad_name}] {plm_convert_format.server_id.name or ''}  {plm_convert_format.end_format}"
+
+    def _register_hook(self):
+        super()._register_hook()
+        self._update_cad_ex_availability()
+
+    def _update_cad_ex_availability(self):
+        cad_ex_path = self.env['ir.config_parameter'].sudo().get_param('Cad Excange Cli')
+        is_cad_ex_available = bool(cad_ex_path and os.path.exists(cad_ex_path))
+
+        self.sudo().search([('cad_name', '=', 'CadExcange')]).write({
+            'available': is_cad_ex_available
+        })
