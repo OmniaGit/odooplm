@@ -84,6 +84,9 @@
                         <div class="plm_button_per" id="save_preview_btn" title="Save Preview Image">
                             <i class="fa fa-camera"></i>
                         </div>
+                        <div class="plm_button_per" id="transparency_btn_perm" title="Part Transparency (T)">
+                            <i class="fa fa-adjust"></i>
+                        </div>
                         <div class="plm_button_per" id="section_plane_btn" title="Section Plane">
                             <i class="fa fa-scissors"></i>
                         </div>
@@ -101,6 +104,7 @@
                                     <label for="webgl_background">BackGround:</label>
                                     <select name="webgl_background" id="webgl_background">
                                         <option value="tecnical">Tecnical</option>
+                                        <option value="clean">Clean</option>
                                         <option value="room1">Room 1</option>
                                         <option value="room2">Room 2</option>
                                         <option value="outdoor">Outdoor 1</option>
@@ -305,6 +309,10 @@
                                         <td>Pick color for hovered part</td>
                                     </tr>
                                     <tr>
+                                        <td><kbd>T</kbd></td>
+                                        <td>Pick transparency for hovered part</td>
+                                    </tr>
+                                    <tr>
                                         <td><kbd>Ctrl</kbd></td>
                                         <td>Toggle measure mode on / off</td>
                                     </tr>
@@ -388,6 +396,18 @@
                 <!-- Zoom window selection rectangle -->
                 <div id="zoom_window_rect"
                      style="display:none; position:fixed; border:2px dashed #714B67; background:rgba(113,75,103,0.08); pointer-events:none; z-index:9000;"></div>
+
+                <!-- Part transparency picker (shown on T key hover) -->
+                <div id="part_transparency_popup"
+                     style="display:none; position:fixed; z-index:9999; background:#2a2a2a; border:1px solid #555; border-radius:8px; padding:10px 14px; box-shadow:0 4px 18px rgba(0,0,0,0.55); user-select:none; min-width:180px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                        <label style="color:#ccc; font-size:12px;">Transparency</label>
+                        <span id="part_transparency_label" style="color:#fff; font-size:12px; font-weight:bold;">100%</span>
+                    </div>
+                    <input type="range" id="part_transparency_slider"
+                           min="0" max="100" value="100"
+                           style="width:100%; accent-color:#714B67; cursor:pointer;"/>
+                </div>
 
                 <!-- Part color picker (shown on C key hover) -->
                 <div id="part_color_popup"

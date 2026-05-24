@@ -63,6 +63,7 @@ const sectionStencilMeshes = [];
 let _lastPointerX = 0, _lastPointerY = 0;
 const _recentColors = [];
 const _partColors = {};
+const _partOpacity = {};
 let _partColorsDocId = null;
 let last_highlighted_li = null;
 let last_highlighted_part = null;
@@ -180,34 +181,61 @@ function _renderRecentColors() {
 	row.style.display = _recentColors.length ? 'flex' : 'none';
 }
 
-function _applyPartColors(colorsMap) {
-	// tree_ref_elements keys are session-random GUIDs; match by the stable obj.name
+function _applyPartAppearance(stored) {
+	// Support both old flat format {"name":"#hex"} and new {"colors":{...},"opacities":{...}}
+	let colorsMap = {};
+	let opacityMap = {};
+	if (stored && (stored.colors || stored.opacities)) {
+		colorsMap = stored.colors || {};
+		opacityMap = stored.opacities || {};
+	} else {
+		colorsMap = stored || {};
+	}
+	// tree_ref_elements keys are session-random GUIDs; match by stable obj.name
 	Object.entries(OdooCad.tree_ref_elements).forEach(([sessionGuid, obj]) => {
 		const partName = obj.name;
-		if (!partName || !colorsMap[partName]) return;
+		if (!partName) return;
 		const hex = colorsMap[partName];
-		_partColors[partName] = hex;
+		const opacity = opacityMap[partName];
+		if (!hex && opacity === undefined) return;
+		if (hex) _partColors[partName] = hex;
+		if (opacity !== undefined) _partOpacity[partName] = opacity;
 		obj.traverse(child => {
-			if (child instanceof THREE.Mesh && child.material) {
+			if (!(child instanceof THREE.Mesh && child.material)) return;
+			if (hex) {
 				child.material.color.setStyle(hex);
 				child.material.userData.originalColor = child.material.color.clone();
 				child.material.userData.oldColor = child.material.color.clone();
 			}
+			if (opacity !== undefined) {
+				const wasTransparent = child.material.transparent;
+				child.material.transparent = opacity < 1.0;
+				child.material.opacity = opacity;
+				child.material.userData.originalOpacity = opacity;
+				if (child.material.transparent !== wasTransparent) {
+					child.material.needsUpdate = true;
+				}
+			}
 		});
-		const treeInput = document.querySelector(`.tree_item_color[webgl_ref_name="${sessionGuid}"]`);
-		if (treeInput) treeInput.value = hex;
+		if (hex) {
+			const treeInput = document.querySelector(`.tree_item_color[webgl_ref_name="${sessionGuid}"]`);
+			if (treeInput) treeInput.value = hex;
+		}
 	});
 }
 
 function _savePartColors() {
-	if (!_partColorsDocId || Object.keys(_partColors).length === 0) return;
+	const hasColors = Object.keys(_partColors).length > 0;
+	const hasOpacity = Object.keys(_partOpacity).length > 0;
+	if (!_partColorsDocId || (!hasColors && !hasOpacity)) return;
 	const btn = document.getElementById('save_part_colors_btn');
+	const payload = { colors: _partColors, opacities: _partOpacity };
 	fetch('/plm/part_colors/save', {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
 		body: JSON.stringify({
 			jsonrpc: '2.0', method: 'call', id: 1,
-			params: { document_id: _partColorsDocId, colors: _partColors },
+			params: { document_id: _partColorsDocId, colors: payload },
 		}),
 	})
 		.then(r => r.json())
@@ -235,6 +263,44 @@ function _savePartColors() {
 function _hidePartColorPicker() {
 	const popup = document.getElementById('part_color_popup');
 	if (popup) popup.style.display = 'none';
+}
+
+function _hidePartTransparencyPicker() {
+	const popup = document.getElementById('part_transparency_popup');
+	if (popup) popup.style.display = 'none';
+}
+
+function _showPartTransparencyPicker(guid) {
+	const popup = document.getElementById('part_transparency_popup');
+	const slider = document.getElementById('part_transparency_slider');
+	const label = document.getElementById('part_transparency_label');
+	if (!popup || !slider) return;
+
+	// Read current opacity from first found mesh
+	let currentOpacity = 1.0;
+	const groupObj = OdooCad.tree_ref_elements[guid];
+	if (groupObj) {
+		let found = false;
+		groupObj.traverse(child => {
+			if (!found && child instanceof THREE.Mesh && child.material) {
+				currentOpacity = child.material.opacity !== undefined ? child.material.opacity : 1.0;
+				found = true;
+			}
+		});
+	}
+	slider.value = Math.round(currentOpacity * 100);
+	if (label) label.textContent = slider.value + '%';
+	slider._guid = guid;
+
+	const pw = 190, ph = 80;
+	const vw = window.innerWidth, vh = window.innerHeight;
+	let left = _lastPointerX + 14;
+	let top = _lastPointerY + 14;
+	if (left + pw > vw) left = _lastPointerX - pw - 8;
+	if (top + ph > vh) top = _lastPointerY - ph - 8;
+	popup.style.left = left + 'px';
+	popup.style.top = top + 'px';
+	popup.style.display = 'block';
 }
 
 function _showPartColorPicker(guid) {
@@ -638,10 +704,21 @@ var change_background = function () {
 		case 'outdoor':
 			imageBckground('/plm_web_3d/static/src/img/bakgroung_360/outdoor.png');
 			break;
+		case 'clean':
+			cleanBackground();
+			break;
 		default:
 			tecnicalBckground();
 
 	}
+}
+
+function cleanBackground() {
+	objectAxesHelper.visible = false;
+	planeGrid.visible = false;
+	planeMeshFloar.visible = false;
+	scene.background = new THREE.Color(0xf5f5f5);
+	render();
 }
 
 function imageBckground(path_to_load) {
@@ -885,6 +962,11 @@ function initcommand() {
 		if (colorPopup && colorPopup.style.display !== 'none' && !colorPopup.contains(e.target)) {
 			_hidePartColorPicker();
 		}
+		// Close transparency picker if click is outside it
+		const transPopup = document.getElementById('part_transparency_popup');
+		if (transPopup && transPopup.style.display !== 'none' && !transPopup.contains(e.target)) {
+			_hidePartTransparencyPicker();
+		}
 		if (zoomWindowActive) {
 			_zoomDragging = true;
 			_zoomStartX = e.clientX;
@@ -994,6 +1076,40 @@ function initcommand() {
 		});
 	}
 
+	// Transparency slider — live apply, update in-memory opacity map
+	const transparencySlider = document.getElementById('part_transparency_slider');
+	if (transparencySlider) {
+		transparencySlider.addEventListener('input', function () {
+			const guid = this._guid;
+			if (!guid) return;
+			const opacity = parseInt(this.value, 10) / 100;
+			const label = document.getElementById('part_transparency_label');
+			if (label) label.textContent = this.value + '%';
+			const groupObj = OdooCad.tree_ref_elements[guid];
+			if (groupObj) {
+				groupObj.traverse(child => {
+					if (child instanceof THREE.Mesh && child.material) {
+						const wasTransparent = child.material.transparent;
+						child.material.transparent = opacity < 1.0;
+						child.material.opacity = opacity;
+						child.material.userData.originalOpacity = opacity;
+						if (child.material.transparent !== wasTransparent) {
+							child.material.needsUpdate = true;
+						}
+					}
+				});
+				const partName = groupObj.name;
+				if (partName) _partOpacity[partName] = opacity;
+				render();
+			}
+		});
+	}
+
+	document.getElementById('transparency_btn_perm')?.addEventListener('click', () => {
+		const guid = window.last_highlighted_li;
+		if (guid && OdooCad?.tree_ref_elements?.[guid]) _showPartTransparencyPicker(guid);
+	});
+
 	document.getElementById("section_plane_btn").onclick = function () {
 		sectionPlaneActive = !sectionPlaneActive;
 		this.classList.toggle("active", sectionPlaneActive);
@@ -1034,13 +1150,13 @@ function initcommand() {
 		if (!_partColorsDocId) return;
 		fetch(`/plm/part_colors/load?document_id=${_partColorsDocId}`)
 			.then(r => r.json())
-			.then(colorsMap => {
-				if (colorsMap && Object.keys(colorsMap).length > 0) {
-					_applyPartColors(colorsMap);
+			.then(stored => {
+				if (stored && Object.keys(stored).length > 0) {
+					_applyPartAppearance(stored);
 					render();
 				}
 			})
-			.catch(e => _logger.warn && console.warn('part_colors load failed', e));
+			.catch(e => console.warn('part_colors load failed', e));
 	}, false);
 	html_canvas.addEventListener("OdooCAD_render", () => { render(); }, false);
 
@@ -1161,8 +1277,18 @@ function saveAsImage() {
 function savePreviewToOdoo() {
 	if (!_partColorsDocId) return;
 	const btn = document.getElementById('save_preview_btn');
-	const dataUrl = renderer.domElement.toDataURL('image/jpeg', 0.85);
-	const base64 = dataUrl.split(',')[1];
+
+	// Center-square crop so the preview thumbnail is not stretched
+	const src = renderer.domElement;
+	const w = src.width, h = src.height;
+	const side = Math.min(w, h);
+	const offsetX = Math.floor((w - side) / 2);
+	const offsetY = Math.floor((h - side) / 2);
+	const squareCanvas = document.createElement('canvas');
+	squareCanvas.width = side;
+	squareCanvas.height = side;
+	squareCanvas.getContext('2d').drawImage(src, offsetX, offsetY, side, side, 0, 0, side, side);
+	const base64 = squareCanvas.toDataURL('image/jpeg', 0.85).split(',')[1];
 	fetch('/plm/save_preview', {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
@@ -1655,6 +1781,11 @@ function onKeyDone(event) {
 			_hidePartColorPicker();
 			return;
 		}
+		const transPopup = document.getElementById('part_transparency_popup');
+		if (transPopup && transPopup.style.display !== 'none') {
+			_hidePartTransparencyPicker();
+			return;
+		}
 		if (zoomWindowActive) _deactivateZoomWindow();
 		else if (ctrlDown) _deactivateMeasure();
 		return;
@@ -1668,9 +1799,12 @@ function onKeyDone(event) {
 	if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
 	if (event.key === 'c' || event.key === 'C') {
 		const guid = window.last_highlighted_li;
-		if (guid && OdooCad?.tree_ref_elements?.[guid]) {
-			_showPartColorPicker(guid);
-		}
+		if (guid && OdooCad?.tree_ref_elements?.[guid]) _showPartColorPicker(guid);
+		return;
+	}
+	if (event.key === 't' || event.key === 'T') {
+		const guid = window.last_highlighted_li;
+		if (guid && OdooCad?.tree_ref_elements?.[guid]) _showPartTransparencyPicker(guid);
 		return;
 	}
 	if (event.key === 'f' || event.key === 'F') {
