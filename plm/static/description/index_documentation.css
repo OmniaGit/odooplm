@@ -45,7 +45,7 @@
 }
 
 .text {
-  background-color: #875A7B;
+  background-color: #CC0000;
   color: white;
   font-size: 20px;
   padding: 10px;
@@ -90,7 +90,7 @@
 .kanban_slogan {
 	text-align: center;
 	font-size: 30px;
-	color: #875A7B;
+	color: #CC0000;
 	margin-top: 5px; 
 }
 
@@ -113,7 +113,7 @@
   left: 0;
 	right: 0;
 	margin: auto;
-  background-color: #875A7B;
+  background-color: #CC0000;
   overflow: hidden;
   width: 1000px;
   height: 0;
@@ -203,7 +203,7 @@
 }
 
 .parts_list li {
-	background-color: #875A7B;
+	background-color: #CC0000;
   color: white;
   margin: 40px 0;
   border-radius: 10px;

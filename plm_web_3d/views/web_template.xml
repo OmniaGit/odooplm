@@ -75,6 +75,21 @@
                         <div class="plm_button_per" id="measure_btn_perm" title="Measure">
                             <i class="fa fa-arrows-h"></i>
                         </div>
+                        <div class="plm_button_per" id="zoom_window_btn" title="Zoom Window (W)">
+                            <i class="fa fa-search-plus"></i>
+                        </div>
+                        <div class="plm_button_per" id="save_part_colors_btn" title="Save Part Colors">
+                            <i class="fa fa-paint-brush"></i>
+                        </div>
+                        <div class="plm_button_per" id="save_preview_btn" title="Save Preview Image">
+                            <i class="fa fa-camera"></i>
+                        </div>
+                        <div class="plm_button_per" id="section_plane_btn" title="Section Plane">
+                            <i class="fa fa-scissors"></i>
+                        </div>
+                        <div class="plm_button_per" id="section_plane_mode_btn" title="Section: Move" style="display:none;">
+                            <i class="fa fa-arrows"></i>
+                        </div>
                         <div class="plm_button_per" id="activatorClick" title="Settings">
                             <i class="fa fa-cog"></i>
                         </div>
@@ -282,8 +297,20 @@
                                         <td>Show all hidden objects</td>
                                     </tr>
                                     <tr>
-                                        <td><kbd>Ctrl</kbd> + Click</td>
-                                        <td>Measure distance between two points</td>
+                                        <td><kbd>W</kbd></td>
+                                        <td>Zoom window — drag to zoom into a region</td>
+                                    </tr>
+                                    <tr>
+                                        <td><kbd>C</kbd></td>
+                                        <td>Pick color for hovered part</td>
+                                    </tr>
+                                    <tr>
+                                        <td><kbd>Ctrl</kbd></td>
+                                        <td>Toggle measure mode on / off</td>
+                                    </tr>
+                                    <tr>
+                                        <td><kbd>Esc</kbd></td>
+                                        <td>Cancel active tool (measure / zoom window / color picker)</td>
                                     </tr>
                                     <tr>
                                         <td>&#xf07e; Ruler button</td>
@@ -358,8 +385,24 @@
                         </div>
                     </div>
                 </div>
+                <!-- Zoom window selection rectangle -->
+                <div id="zoom_window_rect"
+                     style="display:none; position:fixed; border:2px dashed #714B67; background:rgba(113,75,103,0.08); pointer-events:none; z-index:9000;"></div>
+
+                <!-- Part color picker (shown on C key hover) -->
+                <div id="part_color_popup"
+                     style="display:none; position:fixed; z-index:9999; background:#2a2a2a; border:1px solid #555; border-radius:8px; padding:10px 14px; box-shadow:0 4px 18px rgba(0,0,0,0.55); user-select:none;">
+                    <label for="part_color_input"
+                           style="color:#ccc; font-size:12px; display:block; margin-bottom:6px;">Part Color</label>
+                    <input type="color" id="part_color_input"
+                           style="width:80px; height:32px; border:none; cursor:pointer; background:none; padding:0;"/>
+                    <div id="part_color_recents"
+                         style="display:none; gap:6px; margin-top:8px; flex-wrap:wrap;"></div>
+                </div>
+
                 <div id="part_tooltip"
                      style="display:none; position:fixed; background:rgba(0,0,0,0.85); color:white; padding:6px 12px; border-radius:5px; z-index:2000; pointer-events:none; font-size:13px; border: 1px solid #714B67; box-shadow: 0 4px 15px rgba(0,0,0,0.3); font-weight: 600; white-space: nowrap;"></div>
+
                 </div>
             </body>
         </html>

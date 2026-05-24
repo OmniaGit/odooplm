@@ -25,6 +25,7 @@ Created on 03/nov/2016
 """
 import base64
 import io
+import json
 import logging
 
 _logger = logging.getLogger(__name__)
@@ -45,8 +46,9 @@ from odoo.exceptions import UserError
 
 from .obj2png import ObjFile
 from stl import mesh
-import matplotlib.pyplot as plt
 import matplotlib as mpl
+mpl.use("Agg")  # non-interactive backend — required when running in Odoo worker threads
+import matplotlib.pyplot as plt
 from mpl_toolkits import mplot3d
 
 try:
@@ -249,11 +251,37 @@ from .cad_excenge import convert as exConvert
 from .cad_excenge import FORMAT_FROM as ex_from_format
 from .cad_excenge import FORMAT_TO as ex_from_to
 
-ALLOW_CONVERSION_FORMAT = [".dxf", 
-                           ".obj", 
-                           ".stp", 
-                           ".step", 
+ALLOW_CONVERSION_FORMAT = [".dxf",
+                           ".obj",
+                           ".stp",
+                           ".step",
                            ".stl"]
+
+
+def _render_stl_to_png(stl_path: str, png_path: str, dpi: int = 150) -> None:
+    """Render an STL mesh to a PNG thumbnail.
+
+    Uses matplotlib's 3D backend with explicit face/edge colours so the mesh
+    is visible against a white background.  All callers should use this instead
+    of inlining the Poly3DCollection logic to keep rendering consistent.
+    """
+    your_mesh = mesh.Mesh.from_file(stl_path)
+    figure = plt.figure(figsize=(6, 6), facecolor="white")
+    axes = figure.add_subplot(111, projection="3d")
+    collection = mplot3d.art3d.Poly3DCollection(
+        your_mesh.vectors,
+        facecolor="#b0c4de",   # light steel-blue — neutral CAD-like colour
+        edgecolor="none",
+        alpha=1.0,
+    )
+    axes.add_collection3d(collection)
+    scale = your_mesh.points.flatten()
+    axes.auto_scale_xyz(scale, scale, scale)
+    axes.set_facecolor("white")
+    axes.view_init(elev=25, azim=45)
+    axes.set_axis_off()
+    plt.savefig(png_path, dpi=dpi, bbox_inches="tight", facecolor="white")
+    plt.close(figure)
 
 
 class ir_attachment(models.Model):
@@ -347,6 +375,8 @@ class ir_attachment(models.Model):
         """
         convert using the exdxf library
         """
+        if not self.store_fname:
+            raise UserError(_("Cannot convert %s: no file content available.") % self.name)
         if toFormat.replace(".", "") not in ["png", "pdf", "svg", "jpg"]:
             raise UserError("Format %s not supported" % toFormat)
 
@@ -367,6 +397,8 @@ class ir_attachment(models.Model):
         """
         convert using the exdxf library
         """
+        if not self.store_fname:
+            raise UserError(_("Cannot convert %s: no file content available.") % self.name)
         if toFormat.replace(".", "") not in ["png", "pdf", "svg", "jpg"]:
             raise UserError("Format %s not supported" % toFormat)
 
@@ -381,6 +413,10 @@ class ir_attachment(models.Model):
     def convert_from_step_to(self, toFormat):
         newFileName = ""
         try:
+            if not self.store_fname:
+                raise UserError(
+                    _("Cannot convert %s: no file content available.") % self.name
+                )
             if toFormat.replace(".", "").lower() not in [
                 "png",
                 "pdf",
@@ -418,27 +454,7 @@ class ir_attachment(models.Model):
                 if ".stl".lower() in toFormat:
                     shutil.copy(stlName, newFileName)
                     return newFileName
-                #
-                # Create a new plot
-                #
-                figure = plt.figure()
-                axes = mplot3d.Axes3D(figure)
-                #
-                # Load the STL files and add the vectors to the plot
-                #
-                your_mesh = mesh.Mesh.from_file(stlName)
-                axes.add_collection3d(mplot3d.art3d.Poly3DCollection(your_mesh.vectors))
-                #
-                # Auto scale to the mesh size
-                #
-                scale = your_mesh.points.flatten()
-                axes.auto_scale_xyz(scale, scale, scale)
-                #
-
-                plt.savefig(newFileName, 
-                            dpi=100, 
-                            transparent=True)
-                plt.close()
+                _render_stl_to_png(stlName, newFileName)
         except Exception as ex:
             raise UserError(f"Cannot convert due to error {ex}" )
         return newFileName
@@ -459,28 +475,7 @@ class ir_attachment(models.Model):
                 stl_to_3mf([store_fname], 
                            newFileName)
             else:
-                #
-                # Create a new plot
-                #
-                figure = plt.figure()
-                axes = mplot3d.Axes3D(figure)
-                #
-                # Load the STL files and add the vectors to the plot
-                #
-                your_mesh = mesh.Mesh.from_file(store_fname)
-                axes.add_collection3d(mplot3d.art3d.Poly3DCollection(your_mesh.vectors))
-                #
-                # Auto scale to the mesh size
-                #
-                scale = your_mesh.points.flatten()
-                axes.auto_scale_xyz(scale, scale, scale)
-                #
-
-    
-                plt.savefig(newFileName, 
-                            dpi=300, 
-                            transparent=True)
-                plt.close()
+                _render_stl_to_png(store_fname, newFileName)
         return newFileName
 
     def convert_to_format(self, toFormat, excangePath=None):
@@ -534,20 +529,67 @@ class ir_attachment(models.Model):
                             raise UserError(_("Format %s not supported") % toFormat)
             raise UserError(_("Format %s not supported") % toFormat)
 
+    def _generate_step_preview_b64(self):
+        """Render this STEP/STP attachment as a PNG thumbnail and return base64 bytes.
+
+        Uses cadquery to load the geometry, tessellates to STL, then renders with
+        matplotlib + numpy-stl.  Returns None on any failure so callers can fall
+        back gracefully.
+        """
+        self.ensure_one()
+        store_fname = self._full_path(self.store_fname)
+        if not store_fname or not os.path.exists(store_fname):
+            return None
+        try:
+            result = cq.importers.importStep(store_fname)
+            with tempfile.TemporaryDirectory() as tmp:
+                stl_path = os.path.join(tmp, "preview.stl")
+                png_path = os.path.join(tmp, "preview.png")
+                cq.exporters.export(result, stl_path, tolerance=1.0, angularTolerance=1.0)
+                _render_stl_to_png(stl_path, png_path)
+                with open(png_path, "rb") as f:
+                    return base64.b64encode(f.read())
+        except Exception as ex:
+            _logger.warning("STEP preview generation failed for %r: %s", self.name, ex)
+            plt.close("all")
+            return None
+
+    def action_update_preview(self):
+        """Public action for the 'Update Preview' button on the form/list view."""
+        self._updatePreview()
+        return {
+            "type": "ir.actions.client",
+            "tag": "display_notification",
+            "params": {
+                "title": _("Preview Updated"),
+                "message": _("Preview image has been regenerated."),
+                "type": "success",
+                "sticky": False,
+            },
+        }
+
     def _updatePreview(self):
         for ir_attachment in self:
+            if not ir_attachment.store_fname:
+                continue
+            lower_name = ir_attachment.name.lower() if ir_attachment.name else ""
             store_fname = ir_attachment._full_path(ir_attachment.store_fname)
-            if ".dxf" in ir_attachment.name.lower():
+            if ".dxf" in lower_name:
                 ir_attachment._updatePreviewFromDxf(store_fname)
-            if ".obj" in ir_attachment.name.lower():
+            if ".obj" in lower_name:
                 ir_attachment._updatePreviewFromObj(store_fname)
-            if (
-                ".stp" in ir_attachment.name.lower()
-                or "step" in ir_attachment.name.lower()
-            ):
+            if ".stp" in lower_name or ".step" in lower_name:
                 ir_attachment._updatePreviewFromStp(store_fname)
-            if ".stl" in ir_attachment.name.lower():
+            if ".stl" in lower_name:
                 ir_attachment._updatePreviewFromStl(store_fname)
+            if any(ext in lower_name for ext in (".3mf", ".gltf", ".glb")):
+                source = ir_attachment.source_convert_document
+                if source and any(
+                    ext in (source.name or "").lower() for ext in (".stp", ".step")
+                ):
+                    preview = source._generate_step_preview_b64()
+                    if preview:
+                        ir_attachment.preview = preview
 
     def _updatePreviewFromStl(self, fromFile):
         with tempfile.TemporaryDirectory() as tmpdirname:
@@ -648,13 +690,18 @@ class ir_attachment(models.Model):
         """
         Split a STEP assembly into one ir.attachment per unique direct child.
 
-        For each unique child (identified by its STEP instance name, duplicate
-        placements of the same part are skipped):
+        For each unique child (identified by its STEP instance name):
+        - Counts occurrences across all placements (used as BOM line qty).
         - Exports the child geometry to a new STEP file.
         - Creates (or reuses by engineering_code) an ir.attachment.
         - Establishes an HiTree document relation: assembly → child part.
         - Finds a product.product matching the engineering_code, or creates one.
         - Links the child attachment to the product via linkedcomponents.
+
+        After processing all children:
+        - Finds or creates a product for the assembly itself.
+        - Finds or creates a manufacturing BOM (type "normal") for that product.
+        - Creates BOM lines for each child product with the correct quantity.
         """
         self.ensure_one()
         if not any(ext in self.name.lower() for ext in [".stp", ".step"]):
@@ -672,21 +719,28 @@ class ir_attachment(models.Model):
         IrAttachmentRelation = self.env["ir.attachment.relation"]
         ProductTemplate = self.env["product.template"]
         ProductProduct = self.env["product.product"]
+        MrpBom = self.env["mrp.bom"]
+        MrpBomLine = self.env["mrp.bom.line"]
 
-        seen_names = set()
-        created_attachments = self.env["ir.attachment"]
-
+        # Build an ordered map: clean_name → (first_node, occurrence_count)
+        # _import_step_preserve_names appends ":N" for duplicate placements.
+        child_info = {}
         for child_node in assembly.children:
-            # _import_step_preserve_names appends ":N" for uniqueness; strip it
             raw_name = child_node.name or ""
             clean_name = raw_name.rsplit(":", 1)[0] if ":" in raw_name else raw_name
             if not clean_name:
                 continue
+            if clean_name not in child_info:
+                child_info[clean_name] = {"node": child_node, "qty": 1}
+            else:
+                child_info[clean_name]["qty"] += 1
 
-            # Process each unique part definition only once
-            if clean_name in seen_names:
-                continue
-            seen_names.add(clean_name)
+        created_attachments = self.env["ir.attachment"]
+        child_products = []  # [(product, qty), ...]
+
+        for clean_name, info in child_info.items():
+            child_node = info["node"]
+            qty = info["qty"]
 
             # Export child geometry to a temporary STEP file
             tmp_path = None
@@ -695,16 +749,18 @@ class ir_attachment(models.Model):
                 fd, tmp_path = tempfile.mkstemp(suffix=".step")
                 os.close(fd)
 
-                # Build a fresh assembly without the parent placement transform
-                new_assy = cq.Assembly(name=clean_name)
                 if child_node.obj is not None:
-                    # Leaf shape: add the raw geometry (no parent loc applied)
+                    # Leaf shape: wrap in a neutral-named root so the child name
+                    # does not collide with the assembly's own entry in _query.
+                    new_assy = cq.Assembly(name="root")
                     new_assy.add(child_node.obj, name=clean_name, color=child_node.color)
+                    new_assy.save(tmp_path, exportType="STEP")
                 else:
-                    # Sub-assembly: copy all grandchildren preserving internal structure
-                    for grandchild in child_node.children:
-                        new_assy.add(grandchild)
-                new_assy.save(tmp_path, exportType="STEP")
+                    # Sub-assembly: save directly to avoid the "Unique name required"
+                    # error that occurs when iterating .children and re-adding them —
+                    # .children yields objects whose .name is the definition name
+                    # (shared across all placements), not the unique instance name.
+                    child_node.save(tmp_path, exportType="STEP")
 
                 with open(tmp_path, "rb") as f:
                     step_b64 = base64.b64encode(f.read())
@@ -740,7 +796,7 @@ class ir_attachment(models.Model):
                 self.id, child_attachment.id, "HiTree"
             )
 
-            # Find an existing product with matching engineering_code
+            # Find or create a product for this child
             product = ProductProduct.search(
                 [("engineering_code", "=", clean_name)],
                 order="engineering_revision DESC",
@@ -761,6 +817,7 @@ class ir_attachment(models.Model):
 
             if product:
                 child_attachment.write({"linkedcomponents": [(4, product.id)]})
+                child_products.append((product, qty))
 
             created_attachments |= child_attachment
 
@@ -769,12 +826,276 @@ class ir_attachment(models.Model):
                 _("No splittable children were found in the STEP assembly.")
             )
 
+        # --- BOM creation ---
+        # Find or create a product for the assembly (self) if not already linked.
+        assy_product = self.linkedcomponents[:1]
+        if not assy_product and self.engineering_code:
+            assy_product = ProductProduct.search(
+                [("engineering_code", "=", self.engineering_code)],
+                order="engineering_revision DESC",
+                limit=1,
+            )
+        if not assy_product:
+            assy_name = os.path.splitext(self.name)[0]
+            eng_code = self.engineering_code or assy_name
+            tmpl = ProductTemplate.create(
+                {
+                    "name": assy_name,
+                    "engineering_code": eng_code,
+                }
+            )
+            assy_product = ProductProduct.search(
+                [("product_tmpl_id", "=", tmpl.id)],
+                limit=1,
+            )
+            if assy_product:
+                self.write({"linkedcomponents": [(4, assy_product.id)]})
+
+        if assy_product and child_products:
+            bom = MrpBom.search(
+                [
+                    ("product_tmpl_id", "=", assy_product.product_tmpl_id.id),
+                    ("type", "=", "normal"),
+                ],
+                limit=1,
+            )
+            if not bom:
+                bom = MrpBom.create(
+                    {
+                        "product_tmpl_id": assy_product.product_tmpl_id.id,
+                        "product_id": assy_product.id,
+                        "type": "normal",
+                        "product_qty": 1.0,
+                    }
+                )
+
+            # Replace BOM lines for the children being imported
+            imported_product_ids = {p.id for p, _ in child_products}
+            bom.bom_line_ids.filtered(
+                lambda l: l.product_id.id in imported_product_ids
+            ).unlink()
+            for child_product, qty in child_products:
+                MrpBomLine.create(
+                    {
+                        "bom_id": bom.id,
+                        "product_id": child_product.id,
+                        "product_qty": float(qty),
+                    }
+                )
+
         return {
             "type": "ir.actions.act_window",
             "name": _("STEP Assembly Children"),
             "res_model": "ir.attachment",
             "view_mode": "list,form",
             "domain": [("id", "in", created_attachments.ids)],
+        }
+
+    def _build_step_json_tree(self, assembly, split=False, is_root=False,
+                               datas_map=None, tmp_dir=None, parent_name="", child_index=0,
+                               ancestor_codes=frozenset(), selected_clean_names=None):
+        """Recursively convert a cq.Assembly node into a saveStructure JSON node.
+
+        engineering_code  ← clean instance name (no :N suffix)
+        product name      ← same (STEP rarely carries a separate description)
+        When split=True the node's geometry is exported to a temp file inside
+        tmp_dir.  The path is stored in datas_map[eng_code] so the caller can
+        read and write it to the attachment just-in-time, avoiding keeping the
+        entire base64 payload in memory across all nodes simultaneously.
+        datas is intentionally NOT put into DOCUMENT_ATTRIBUTES / the JSON tree.
+        """
+        raw_name = assembly.name or ""
+        clean_name = raw_name.rsplit(":", 1)[0] if ":" in raw_name else raw_name
+        if not clean_name:
+            if is_root:
+                clean_name = os.path.splitext(self.name)[0]
+            else:
+                clean_name = f"{parent_name}_{child_index}"
+        elif not is_root and clean_name in ancestor_codes:
+            # Non-empty name that collides with an ancestor's engineering_code.
+            # The parent already assigned an unnamed_idx counter; use it to
+            # build a unique name so this node doesn't map to the same DB
+            # record as its ancestor and trigger a self-referencing relation.
+            base = child_index or 1
+            while f"{parent_name}_{base}" in ancestor_codes:
+                base += 1
+            clean_name = f"{parent_name}_{base}"
+
+        if not is_root and selected_clean_names is not None and clean_name not in selected_clean_names:
+            return None
+
+        if is_root:
+            # Prefer engineering_code/revision from the already-linked product so
+            # saveStructure finds the right record without a revision mismatch.
+            linked = self.linkedcomponents[:1]
+            if linked:
+                eng_code = linked.engineering_code or self.engineering_code or clean_name
+                eng_rev = linked.engineering_revision
+            else:
+                eng_code = self.engineering_code or clean_name
+                eng_rev = 0
+        else:
+            eng_code = clean_name
+            eng_rev = 0
+
+        if split and not is_root and tmp_dir is not None and datas_map is not None:
+            tmp_path = os.path.join(tmp_dir, f"{clean_name}.step")
+            try:
+                if assembly.obj is not None:
+                    # Leaf shape: wrap in a neutral-named root so the child name
+                    # does not collide with the assembly's own entry in _query.
+                    wrapper = cq.Assembly(name="root")
+                    wrapper.add(assembly.obj, name=clean_name, color=assembly.color)
+                    wrapper.save(tmp_path, exportType="STEP")
+                else:
+                    # Sub-assembly: save the node directly.
+                    # Copying children via assembly.children would use each child's
+                    # definition .name (shared by all placements of the same part)
+                    # instead of the unique instance name stored in the parent
+                    # _query, causing "Unique name is required" errors.
+                    assembly.save(tmp_path, exportType="STEP")
+                datas_map[eng_code] = tmp_path
+            except Exception as ex:
+                _logger.warning("Could not export STEP for %r: %s", clean_name, ex)
+
+        # Root document is intentionally excluded from the tree: saveStructure
+        # runs canBeSaved(raiseError=True) on the root DOCUMENT_ATTRIBUTES, which
+        # requires a live checkout.  We don't want to check out/in the source
+        # document during BOM recovery, so we only pass PRODUCT_ATTRIBUTES for
+        # the root.  BOM lines use child document IDs as source_id.
+        doc_attrs = None if is_root else {
+            "engineering_code": eng_code,
+            "engineering_revision": eng_rev,
+            "name": f"{clean_name}.step",
+            "is_plm": True,
+            "SKIP_CHECKOUT": True,
+        }
+
+        product_attrs = {
+            "engineering_code": eng_code,
+            "name": eng_code,
+            "engineering_revision": eng_rev,
+        }
+
+        # Deduplicate children by clean name, counting occurrences for qty.
+        # Unnamed children (empty clean name) or children whose name collides with
+        # an ancestor's engineering_code get a unique key; their real name is
+        # resolved during the recursive call using parent_name + child_index,
+        # which prevents saveStructure from mapping them to the same DB record as
+        # the ancestor and triggering the ir_attachment_relation self-reference check.
+        child_info = {}
+        unnamed_idx = 0
+        blocked_codes = ancestor_codes | {eng_code}
+        for child in assembly.children:
+            child_raw = child.name or ""
+            child_clean = child_raw.rsplit(":", 1)[0] if ":" in child_raw else child_raw
+            if not child_clean or child_clean in blocked_codes:
+                unnamed_idx += 1
+                child_info[f"__unnamed_{unnamed_idx}"] = {
+                    "node": child, "qty": 1, "unnamed_idx": unnamed_idx,
+                }
+                continue
+            if child_clean not in child_info:
+                child_info[child_clean] = {"node": child, "qty": 1}
+            else:
+                child_info[child_clean]["qty"] += 1
+
+        relations = []
+        for info in child_info.values():
+            child_tree = self._build_step_json_tree(
+                info["node"], split=split, is_root=False,
+                datas_map=datas_map, tmp_dir=tmp_dir,
+                parent_name=clean_name, child_index=info.get("unnamed_idx", 0),
+                ancestor_codes=blocked_codes,
+                selected_clean_names=selected_clean_names,
+            )
+            if child_tree:
+                child_tree["FORCE_QTY"] = info["qty"]
+                child_tree["MRP_ATTRIBUTES"] = {"product_qty": info["qty"]}
+                relations.append(child_tree)
+
+        node = {
+            "PRODUCT_ATTRIBUTES": product_attrs,
+            "CREATE_BOM": bool(relations),
+            "RELATIONS": relations,
+            "DOC_TYPE": "3D",
+        }
+        if doc_attrs:
+            node["FILE_PATH"] = "virtual"
+            node["DOCUMENT_ATTRIBUTES"] = doc_attrs
+        return node
+
+    def recover_bom_from_step(self, split=False, generate_preview=False, selected_clean_names=None):
+        """Parse this STEP attachment and create/update products + multi-level BOM.
+
+        Uses saveStructure so find-or-create logic for documents, products,
+        document relations and BOM lines is handled in one consistent pass.
+        split=True exports every assembly node as a child STEP file inside a
+        temporary directory.  After saveStructure the files are read one at a
+        time and written to the attachment, so only one file is in memory at
+        a time regardless of assembly size.
+        generate_preview=True regenerates PNG previews for all affected documents.
+        """
+        self.ensure_one()
+        lower_name = (self.name or "").lower()
+        if not any(ext in lower_name for ext in [".stp", ".step"]):
+            raise UserError(_("BOM recovery is only available for STEP files."))
+
+        store_fname = self._full_path(self.store_fname)
+        if not store_fname or not os.path.exists(store_fname):
+            raise UserError(_("The STEP file cannot be found in the file store."))
+
+        try:
+            assembly = _import_step_preserve_names(store_fname)
+        except Exception as ex:
+            raise UserError(_("Cannot read STEP assembly: %s") % ex)
+
+        if selected_clean_names is not None:
+            selected_clean_names = set(selected_clean_names)
+
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            datas_map = {} if split else None
+            tree = self._build_step_json_tree(
+                assembly, split=split, is_root=True,
+                datas_map=datas_map, tmp_dir=tmp_dir,
+                selected_clean_names=selected_clean_names,
+            )
+            self.env["ir.attachment"].saveStructure([json.dumps(tree), "", "", True])
+
+            # Write STEP content to child attachments one file at a time.
+            # saveStructure creates new records without file content (datas is not
+            # in the tree) and skips existing ones (no checkout → needUpdate=False),
+            # so we force-write here for both cases.
+            if datas_map:
+                for eng_code, tmp_path in datas_map.items():
+                    if not os.path.exists(tmp_path):
+                        continue
+                    child_docs = self.search([("engineering_code", "=", eng_code)])
+                    if not child_docs:
+                        continue
+                    with open(tmp_path, "rb") as fh:
+                        child_docs.write({"datas": base64.b64encode(fh.read())})
+            # tmp_dir and all exported STEP files are deleted here
+
+        if generate_preview:
+            self._updatePreview()
+            if split and datas_map:
+                child_docs = self.search([
+                    ("engineering_code", "in", list(datas_map.keys())),
+                    ("id", "!=", self.id),
+                    ("store_fname", "!=", False),
+                ])
+                child_docs._updatePreview()
+
+        return True
+
+    def action_view_step_tree(self):
+        """Open the interactive STEP structure viewer in a new browser tab."""
+        self.ensure_one()
+        return {
+            "type": "ir.actions.act_url",
+            "url": f"/plm/step_tree/{self.id}",
+            "target": "new",
         }
 
     @api.model_create_multi

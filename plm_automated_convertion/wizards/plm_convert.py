@@ -96,11 +96,10 @@ class plm_temporary_batch_converter(models.TransientModel):
         plm_stack = self._convert("CONVERT")
         return {
             "name": _("File Converted"),
-            "res_model": "plm.convert.stack",
-            "view_type": "form",
             "view_mode": "form",
             "res_model": "plm.convert.stack",
             "res_id": plm_stack.id,
             "type": "ir.actions.act_window",
             "context": {},
         }
+

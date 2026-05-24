@@ -1287,15 +1287,19 @@ canvas#odoo_canvas {
 }
 
 .plm_button_per {
-    border-bottom: 1px solid black;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
     border-radius: 2px;
     text-align: left;
     padding: 5px;
     cursor: pointer;
+    color: #333;
+    transition: transform 0.15s ease, background-color 0.15s ease;
+    transform-origin: center;
 }
 
 .plm_button_per:hover {
     background-color: rgba(113, 75, 103, 0.15);
+    transform: scale(1.5);
 }
 
 .plm_button_per.active {
@@ -1321,13 +1325,15 @@ canvas#odoo_canvas {
     position: absolute;
     top: 60px;
     left: 7px;
-    background-color: transparent;
+    background-color: rgba(255, 255, 255, 0.75);
     border-radius: 10px;
     border: none;
     padding: 3px;
     width: 25px;
     height: auto;
     z-index: 400;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(4px);
 }
 
 /* ── HELP BUTTON ── */
@@ -1504,3 +1510,27 @@ canvas#odoo_canvas {
     background: #eda3da;
     color: #4a1942;
 }
+
+/* ── PLM object hyperlinks in data panel ── */
+.plm_link {
+    color: #714B67;
+    text-decoration: underline;
+    cursor: pointer;
+    font-weight: 600;
+}
+.plm_link:hover {
+    color: #4a1942;
+}
+
+.plm_button_per.color-save-ok {
+    background-color: #2e7d32 !important;
+    color: #fff !important;
+    transition: background-color 0.2s;
+}
+
+.plm_button_per.color-save-err {
+    background-color: #c62828 !important;
+    color: #fff !important;
+    transition: background-color 0.2s;
+}
+

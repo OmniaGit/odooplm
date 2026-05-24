@@ -2314,8 +2314,11 @@ class IrAttachment(models.Model):
         alreadyEvaluated = []
         for documentAttribute in list(documentAttributes.values()):
             try:
+                skipCheckOut = documentAttribute.pop("SKIP_CHECKOUT", False)
+                # Strip internal sentinel keys so write()/create() never sees them.
+                ormVals = {k: v for k, v in documentAttribute.items()
+                           if k in self._fields}
                 documentAttribute["TO_UPDATE"] = False
-                skipCheckOut = documentAttribute.get("SKIP_CHECKOUT", False)
                 docBrws = False
                 for brwItem in self.search(
                     [
@@ -2342,12 +2345,12 @@ class IrAttachment(models.Model):
                         OBSOLATED_STATUS,
                     ]:
                         if brwItem.needUpdate():
-                            brwItem.write(documentAttribute)
+                            brwItem.write(ormVals)
                             documentAttribute["TO_UPDATE"] = True
                     docBrws = brwItem
                     alreadyEvaluated.append(docBrws.id)
                 if not docBrws:
-                    docBrws = self.create(documentAttribute)
+                    docBrws = self.create(ormVals)
                     alreadyEvaluated.append(docBrws.id)
                     if not skipCheckOut:
                         docBrws.checkout(hostName, hostPws)
@@ -2442,6 +2445,11 @@ class IrAttachment(models.Model):
                         objBrw.unlink()
                 for childId, relationType in childrenRelations:
                     trueChildId = documentAttributes.get(childId, {}).get("id", 0)
+                    if not trueParentId or not trueChildId or trueParentId == trueChildId:
+                        raise UserError(
+                            "Cannot create a document relation where parent and child are the same document (id=%s)."
+                            % trueParentId
+                        )
                     key = "%s_%s_%s" % (trueParentId, trueChildId, relationType)
                     if key in createdDocRels:
                         continue
@@ -2458,7 +2466,7 @@ class IrAttachment(models.Model):
                 raise ex
         # Save the product relation
         domain = [
-            ("engineering_state", "in", ["installed", "to upgrade", "to remove"]),
+            ("state", "in", ["installed", "to upgrade", "to remove"]),
             ("name", "=", "plm_engineering"),
         ]
         apps = self.env["ir.module.module"].sudo().search_read(domain, ["name"])
@@ -2516,7 +2524,7 @@ class IrAttachment(models.Model):
             except Exception as ex:
                 logging.error(ex)
                 raise ex
-        jsonify = json.dumps(objStructure)
+        jsonify = json.dumps(objStructure, default=tools.json_default)
         end = time.time()
         logging.info("Time Spend For save structure is: %s" % (str(end - start)))
         return jsonify

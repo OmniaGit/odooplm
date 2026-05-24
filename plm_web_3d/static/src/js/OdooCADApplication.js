@@ -6,6 +6,7 @@ import * as THREE from './lib/three.js/build/three.module.js';
 import * as ODOOCAD from './lib/odoocad/odoocad.js';
 // controls
 import { OrbitControls } from './lib/three.js/examples/jsm/controls/OrbitControls.js';
+import { TransformControls } from './lib/three.js/examples/jsm/controls/TransformControls.js';
 import Stats from './lib/three.js/examples/jsm/libs/stats.module.js';
 import {
 	CSS2DRenderer,
@@ -24,6 +25,10 @@ const measurementLabels = {};
 const endPoint = {};
 const startPoint = {};
 const lines = {};
+const startSnapTypes = {};
+const endSnapTypes = {};
+const startArrow = {};
+const endArrow = {};
 let camera, scene, canvas, renderer, labelRenderer, controls, mouse;
 let planeMeshFloar, planeGrid;
 let objectAxesHelper;
@@ -45,20 +50,484 @@ var sphereHelper;
 var sphereHelperDiv;
 let ctrlDown = false;
 const pointer = new THREE.Vector2();
+let zoomWindowActive = false;
+let _zoomDragging = false;
+let _zoomStartX = 0, _zoomStartY = 0;
+let sectionPlaneActive = false;
+let sectionPlane = null;
+let sectionPlaneMesh = null;
+let sectionTransformCtrl = null;
+let sectionPlaneMode = 'translate';
+let sectionCapPlane = null;
+const sectionStencilMeshes = [];
+let _lastPointerX = 0, _lastPointerY = 0;
+const _recentColors = [];
+const _partColors = {};
+let _partColorsDocId = null;
 let last_highlighted_li = null;
 let last_highlighted_part = null;
 const ODOO_HILIGHT_COLOR = new THREE.Color("#eda3da");
 
+function createSpriteTexture(hexColor) {
+	const size = 64;
+	const canvas = document.createElement('canvas');
+	canvas.width = size;
+	canvas.height = size;
+	const ctx = canvas.getContext('2d');
+	ctx.beginPath();
+	ctx.arc(size / 2, size / 2, size / 2 - 2, 0, Math.PI * 2);
+	ctx.fillStyle = hexColor;
+	ctx.fill();
+	ctx.strokeStyle = 'rgba(0,0,0,0.45)';
+	ctx.lineWidth = 2;
+	ctx.stroke();
+	return new THREE.CanvasTexture(canvas);
+}
+
+const SNAP_ARROW_COLOR = { vertex: '#ffff88', face: '#88eeff' };
+
+function createArrowSpriteTexture(hexColor) {
+	const size = 64;
+	const cv = document.createElement('canvas');
+	cv.width = size; cv.height = size;
+	const ctx = cv.getContext('2d');
+	// Outline first (drawn slightly larger, gives contrast on any background)
+	ctx.beginPath();
+	ctx.moveTo(size - 2, size / 2);
+	ctx.lineTo(2, 6);
+	ctx.lineTo(2, size - 6);
+	ctx.closePath();
+	ctx.strokeStyle = 'rgba(0,0,0,0.55)';
+	ctx.lineWidth = 4;
+	ctx.lineJoin = 'round';
+	ctx.stroke();
+	// Filled arrow on top
+	ctx.beginPath();
+	ctx.moveTo(size - 4, size / 2);
+	ctx.lineTo(5, 10);
+	ctx.lineTo(5, size - 10);
+	ctx.closePath();
+	ctx.fillStyle = hexColor;
+	ctx.fill();
+	return new THREE.CanvasTexture(cv);
+}
+
+function createArrowSprite(hexColor) {
+	const mat = new THREE.SpriteMaterial({
+		map: createArrowSpriteTexture(hexColor),
+		depthTest: false,
+		transparent: true,
+		sizeAttenuation: true,
+	});
+	const sprite = new THREE.Sprite(mat);
+	scene.add(sprite);
+	return sprite;
+}
+
 function createSphereHelper() {
-	var sphere = new THREE.SphereGeometry(snapDistance,
-		snapDistance,
-		snapDistance);
-	sphere.widthSegments = 32;
-	sphere.heightSegments = 32;
-	const material = new THREE.MeshBasicMaterial({ color: 0xffff00 });
-	sphereHelper = new THREE.Mesh(sphere, material);
+	const material = new THREE.SpriteMaterial({
+		map: createSpriteTexture('#ffff00'),
+		depthTest: false,
+		transparent: true,
+	});
+	sphereHelper = new THREE.Sprite(material);
 	sphereHelper.visible = false;
 	scene.add(sphereHelper);
+}
+
+function _scaleSpriteToPixels(sprite, pixelSize) {
+	const dist = camera.position.distanceTo(sprite.position);
+	const vFov = camera.fov * Math.PI / 180;
+	const worldPerPx = (2 * dist * Math.tan(vFov / 2)) / renderer.domElement.clientHeight;
+	const s = pixelSize * worldPerPx;
+	sprite.scale.set(s, s, 1);
+}
+
+function openOdooPopup(model, id) {
+	window.open(
+		`/web#model=${model}&id=${id}&view_type=form`,
+		"_blank",
+		"width=1200,height=800,resizable=yes,scrollbars=yes,noopener=yes"
+	);
+}
+window.openOdooPopup = openOdooPopup;
+
+function _addRecentColor(hex) {
+	const h = hex.toLowerCase();
+	const idx = _recentColors.indexOf(h);
+	if (idx !== -1) _recentColors.splice(idx, 1);
+	_recentColors.unshift(h);
+	if (_recentColors.length > 4) _recentColors.length = 4;
+}
+
+function _renderRecentColors() {
+	const row = document.getElementById('part_color_recents');
+	if (!row) return;
+	row.innerHTML = '';
+	_recentColors.forEach(hex => {
+		const btn = document.createElement('button');
+		btn.style.cssText = `width:24px;height:24px;background:${hex};border:1px solid #888;border-radius:3px;cursor:pointer;padding:0;flex-shrink:0;`;
+		btn.title = hex;
+		btn.addEventListener('click', () => {
+			const input = document.getElementById('part_color_input');
+			if (input && input._guid) {
+				input.value = hex;
+				input.dispatchEvent(new Event('input'));
+			}
+		});
+		row.appendChild(btn);
+	});
+	row.style.display = _recentColors.length ? 'flex' : 'none';
+}
+
+function _applyPartColors(colorsMap) {
+	// tree_ref_elements keys are session-random GUIDs; match by the stable obj.name
+	Object.entries(OdooCad.tree_ref_elements).forEach(([sessionGuid, obj]) => {
+		const partName = obj.name;
+		if (!partName || !colorsMap[partName]) return;
+		const hex = colorsMap[partName];
+		_partColors[partName] = hex;
+		obj.traverse(child => {
+			if (child instanceof THREE.Mesh && child.material) {
+				child.material.color.setStyle(hex);
+				child.material.userData.originalColor = child.material.color.clone();
+				child.material.userData.oldColor = child.material.color.clone();
+			}
+		});
+		const treeInput = document.querySelector(`.tree_item_color[webgl_ref_name="${sessionGuid}"]`);
+		if (treeInput) treeInput.value = hex;
+	});
+}
+
+function _savePartColors() {
+	if (!_partColorsDocId || Object.keys(_partColors).length === 0) return;
+	const btn = document.getElementById('save_part_colors_btn');
+	fetch('/plm/part_colors/save', {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify({
+			jsonrpc: '2.0', method: 'call', id: 1,
+			params: { document_id: _partColorsDocId, colors: _partColors },
+		}),
+	})
+		.then(r => r.json())
+		.then(data => {
+			if (data.result && data.result.success) {
+				if (btn) {
+					btn.classList.add('color-save-ok');
+					setTimeout(() => btn.classList.remove('color-save-ok'), 1500);
+				}
+			} else {
+				if (btn) {
+					btn.classList.add('color-save-err');
+					setTimeout(() => btn.classList.remove('color-save-err'), 1500);
+				}
+			}
+		})
+		.catch(() => {
+			if (btn) {
+				btn.classList.add('color-save-err');
+				setTimeout(() => btn.classList.remove('color-save-err'), 1500);
+			}
+		});
+}
+
+function _hidePartColorPicker() {
+	const popup = document.getElementById('part_color_popup');
+	if (popup) popup.style.display = 'none';
+}
+
+function _showPartColorPicker(guid) {
+	const popup = document.getElementById('part_color_popup');
+	const input = document.getElementById('part_color_input');
+	if (!popup || !input) return;
+
+	// Read current color from first found mesh
+	let currentHex = '#ffffff';
+	const groupObj = OdooCad.tree_ref_elements[guid];
+	if (groupObj) {
+		let found = false;
+		groupObj.traverse(child => {
+			if (!found && child instanceof THREE.Mesh && child.material) {
+				currentHex = '#' + child.material.color.getHexString();
+				found = true;
+			}
+		});
+	}
+	input.value = currentHex;
+	input._guid = guid;
+
+	// Position near cursor, clamped to viewport
+	const pw = 140, ph = 72;
+	const vw = window.innerWidth, vh = window.innerHeight;
+	let left = _lastPointerX + 14;
+	let top = _lastPointerY + 14;
+	if (left + pw > vw) left = _lastPointerX - pw - 8;
+	if (top + ph > vh) top = _lastPointerY - ph - 8;
+	_renderRecentColors();
+	popup.style.left = left + 'px';
+	popup.style.top = top + 'px';
+	popup.style.display = 'block';
+}
+
+function _activateMeasure() {
+	ctrlDown = true;
+	drawingLine = true;
+	renderer.domElement.style.cursor = "crosshair";
+	document.getElementById("measure_btn_perm")?.classList.add("active");
+}
+
+function _removeArrow(sprite) {
+	if (!sprite) return;
+	scene.remove(sprite);
+	sprite.material.map?.dispose();
+	sprite.material.dispose();
+}
+
+function _deactivateMeasure() {
+	ctrlDown = false;
+	drawingLine = false;
+	renderer.domElement.style.cursor = "pointer";
+	document.getElementById("measure_btn_perm")?.classList.remove("active");
+	scene.remove(measurementLabels[lineId]);
+	scene.remove(startPoint[lineId]);
+	scene.remove(endPoint[lineId]);
+	scene.remove(lines[lineId]);
+	_removeArrow(startArrow[lineId]);
+	_removeArrow(endArrow[lineId]);
+	delete startArrow[lineId];
+	delete endArrow[lineId];
+	lineId++;
+}
+
+function _activateZoomWindow() {
+	zoomWindowActive = true;
+	renderer.domElement.style.cursor = "crosshair";
+	document.getElementById("zoom_window_btn")?.classList.add("active");
+}
+
+function _deactivateZoomWindow() {
+	zoomWindowActive = false;
+	_zoomDragging = false;
+	controls.enabled = true;
+	renderer.domElement.style.cursor = "pointer";
+	document.getElementById("zoom_window_btn")?.classList.remove("active");
+	const rectEl = document.getElementById("zoom_window_rect");
+	if (rectEl) rectEl.style.display = "none";
+}
+
+function zoomToWindow(canvasX, canvasY, selW, selH) {
+	const cw = renderer.domElement.clientWidth;
+	const ch = renderer.domElement.clientHeight;
+
+	// NDC centre of the selection rectangle
+	const ndcX = (canvasX + selW / 2) / cw * 2 - 1;
+	const ndcY = -((canvasY + selH / 2) / ch * 2 - 1);
+
+	// Ray through the selection centre
+	const ray = new THREE.Raycaster();
+	ray.setFromCamera(new THREE.Vector2(ndcX, ndcY), camera);
+
+	// Find new orbit target: hit scene geometry, else current focal plane
+	let newTarget;
+	const hits = ray.intersectObjects(OdooCad.items, true);
+	if (hits.length > 0) {
+		newTarget = hits[0].point.clone();
+	} else {
+		const focalDist = camera.position.distanceTo(controls.target);
+		newTarget = ray.ray.at(focalDist, new THREE.Vector3());
+	}
+
+	// Zoom factor: selection fills the viewport
+	const zoomFactor = Math.min(cw / selW, ch / selH);
+	const currentDist = camera.position.distanceTo(controls.target);
+	const newDist = Math.max(currentDist / zoomFactor, 0.01);
+
+	// Move camera along the same look direction at new distance from new target
+	const dir = camera.position.clone().sub(controls.target).normalize();
+	camera.position.copy(newTarget).addScaledVector(dir, newDist);
+	controls.target.copy(newTarget);
+	controls.minDistance = 0.01;
+	controls.maxDistance = newDist * 10;
+	camera.near = newDist / 100;
+	camera.far = newDist * 100;
+	camera.updateProjectionMatrix();
+	controls.update();
+	render();
+}
+
+function createSectionPlane() {
+	// Compute bounding box from loaded scene objects
+	const box = new THREE.Box3();
+	const refItems = Object.values(OdooCad.tree_ref_elements);
+	const targets = refItems.length > 0 ? refItems : OdooCad.items;
+	for (const obj of targets) box.expandByObject(obj);
+	const center = box.getCenter(new THREE.Vector3());
+	const size = box.getSize(new THREE.Vector3());
+	const planeSize = Math.max(size.x, size.z) * 1.5 || 100;
+
+	// Horizontal plane at bbox center, normal pointing up (+Y clips below)
+	sectionPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), -center.y);
+	renderer.clippingPlanes = [sectionPlane];
+
+	// Visible plane mesh — PlaneGeometry lies in XY, rotate to XZ (horizontal)
+	const geo = new THREE.PlaneGeometry(planeSize, planeSize);
+	const mat = new THREE.MeshBasicMaterial({
+		color: 0x714B67,
+		side: THREE.DoubleSide,
+		transparent: true,
+		opacity: 0.18,
+		depthWrite: false,
+	});
+	sectionPlaneMesh = new THREE.Mesh(geo, mat);
+	sectionPlaneMesh.rotation.x = -Math.PI / 2;
+	sectionPlaneMesh.position.copy(center);
+	sectionPlaneMesh.add(new THREE.LineSegments(
+		new THREE.EdgesGeometry(geo),
+		new THREE.LineBasicMaterial({ color: 0x714B67 })
+	));
+	scene.add(sectionPlaneMesh);
+
+	// TransformControls gizmo
+	sectionTransformCtrl = new TransformControls(camera, renderer.domElement);
+	sectionTransformCtrl.setMode('translate');
+	sectionTransformCtrl.attach(sectionPlaneMesh);
+	scene.add(sectionTransformCtrl);
+
+	sectionTransformCtrl.addEventListener('dragging-changed', function (e) {
+		controls.enabled = !e.value;
+	});
+	sectionTransformCtrl.addEventListener('objectChange', _syncSectionPlane);
+	sectionTransformCtrl.addEventListener('change', render);
+
+	const modeBtn = document.getElementById('section_plane_mode_btn');
+	if (modeBtn) modeBtn.style.display = '';
+	createSectionCap();
+	render();
+}
+
+function _syncSectionPlane() {
+	if (!sectionPlaneMesh || !sectionPlane) return;
+	sectionPlaneMesh.updateMatrixWorld();
+	// PlaneGeometry local normal is (0,0,1); transformDirection gives world-space normal
+	const normal = new THREE.Vector3(0, 0, 1).transformDirection(sectionPlaneMesh.matrixWorld);
+	const pos = new THREE.Vector3();
+	sectionPlaneMesh.getWorldPosition(pos);
+	sectionPlane.setFromNormalAndCoplanarPoint(normal, pos);
+	updateSectionCap();
+}
+
+function destroySectionPlane() {
+	destroySectionCap();
+	if (sectionTransformCtrl) {
+		sectionTransformCtrl.detach();
+		scene.remove(sectionTransformCtrl);
+		sectionTransformCtrl.dispose();
+		sectionTransformCtrl = null;
+	}
+	if (sectionPlaneMesh) {
+		sectionPlaneMesh.geometry.dispose();
+		sectionPlaneMesh.material.dispose();
+		scene.remove(sectionPlaneMesh);
+		sectionPlaneMesh = null;
+	}
+	sectionPlane = null;
+	renderer.clippingPlanes = [];
+	sectionPlaneMode = 'translate';
+	const modeBtn = document.getElementById('section_plane_mode_btn');
+	if (modeBtn) {
+		modeBtn.style.display = 'none';
+		modeBtn.title = 'Section: Move';
+		const icon = modeBtn.querySelector('i');
+		if (icon) icon.className = 'fa fa-arrows';
+	}
+	render();
+}
+
+function createSectionCap() {
+	const baseMat = new THREE.MeshBasicMaterial({
+		depthWrite: false,
+		depthTest: false,
+		colorWrite: false,
+		stencilWrite: true,
+		stencilFunc: THREE.AlwaysStencilFunc,
+	});
+
+	OdooCad.items.forEach(item => {
+		item.traverse(child => {
+			if (!(child instanceof THREE.Mesh)) return;
+			child.updateMatrixWorld(true);
+
+			// Back faces — increment stencil where geometry exits the clip plane
+			const backMat = baseMat.clone();
+			backMat.side = THREE.BackSide;
+			backMat.clippingPlanes = [sectionPlane];
+			backMat.stencilFail = THREE.IncrementWrapStencilOp;
+			backMat.stencilZFail = THREE.IncrementWrapStencilOp;
+			backMat.stencilZPass = THREE.IncrementWrapStencilOp;
+			const backMesh = new THREE.Mesh(child.geometry, backMat);
+			backMesh.matrixAutoUpdate = false;
+			backMesh.matrix.copy(child.matrixWorld);
+			backMesh.renderOrder = 1;
+			scene.add(backMesh);
+			sectionStencilMeshes.push(backMesh);
+
+			// Front faces — decrement stencil where geometry enters the clip plane
+			const frontMat = baseMat.clone();
+			frontMat.side = THREE.FrontSide;
+			frontMat.clippingPlanes = [sectionPlane];
+			frontMat.stencilFail = THREE.DecrementWrapStencilOp;
+			frontMat.stencilZFail = THREE.DecrementWrapStencilOp;
+			frontMat.stencilZPass = THREE.DecrementWrapStencilOp;
+			const frontMesh = new THREE.Mesh(child.geometry, frontMat);
+			frontMesh.matrixAutoUpdate = false;
+			frontMesh.matrix.copy(child.matrixWorld);
+			frontMesh.renderOrder = 1;
+			scene.add(frontMesh);
+			sectionStencilMeshes.push(frontMesh);
+		});
+	});
+
+	// Cap plane — rendered only where stencil ≠ 0 (the open cut surface)
+	const w = sectionPlaneMesh.geometry.parameters.width;
+	const h = sectionPlaneMesh.geometry.parameters.height;
+	const capMat = new THREE.MeshBasicMaterial({
+		color: 0xcccccc,
+		stencilWrite: true,
+		stencilRef: 0,
+		stencilFunc: THREE.NotEqualStencilFunc,
+		stencilFail: THREE.ReplaceStencilOp,
+		stencilZFail: THREE.ReplaceStencilOp,
+		stencilZPass: THREE.ReplaceStencilOp,
+		depthWrite: false,
+		depthTest: false,
+	});
+	sectionCapPlane = new THREE.Mesh(new THREE.PlaneGeometry(w, h), capMat);
+	sectionCapPlane.renderOrder = 2;
+	sectionCapPlane.position.copy(sectionPlaneMesh.position);
+	sectionCapPlane.quaternion.copy(sectionPlaneMesh.quaternion);
+	scene.add(sectionCapPlane);
+}
+
+function updateSectionCap() {
+	if (!sectionCapPlane || !sectionPlaneMesh) return;
+	sectionPlaneMesh.updateMatrixWorld();
+	sectionCapPlane.position.copy(sectionPlaneMesh.position);
+	sectionCapPlane.quaternion.copy(sectionPlaneMesh.quaternion);
+}
+
+function destroySectionCap() {
+	for (const m of sectionStencilMeshes) {
+		scene.remove(m);
+		m.material.dispose();
+	}
+	sectionStencilMeshes.length = 0;
+	if (sectionCapPlane) {
+		scene.remove(sectionCapPlane);
+		sectionCapPlane.geometry.dispose();
+		sectionCapPlane.material.dispose();
+		sectionCapPlane = null;
+	}
 }
 
 document.getElementById("toggle_light_settings").onclick = function () {
@@ -101,7 +570,7 @@ function fitCameraToSelection(selection, fitOffset = 1.2) {
 	camera.updateProjectionMatrix();
 	camera.position.copy(controls.target).sub(direction);
 	resetLight(box, maxSize);
-	sphereHelper.scale.set(maxSize / 100, maxSize / 100, maxSize / 100)
+	// sprite scale is now maintained per-frame in render()
 	controls.update();
 	render();
 };
@@ -213,22 +682,33 @@ function mesuraments() {
 	measurementDiv.appendChild(close_button);
 	// remove the lable from scene
 	close_button.addEventListener('pointerdown', function () {
-		console.log("remove");
-		scene.remove(measurementLabels[close_button.id]);
-		scene.remove(endPoint[close_button.id]);
-		scene.remove(startPoint[close_button.id]);
-		scene.remove(lines[close_button.id]);
+		const id = close_button.id;
+		scene.remove(measurementLabels[id]);
+		scene.remove(endPoint[id]);
+		scene.remove(startPoint[id]);
+		scene.remove(lines[id]);
+		_removeArrow(startArrow[id]);
+		_removeArrow(endArrow[id]);
+		delete startArrow[id];
+		delete endArrow[id];
 	});
 	return measurementDiv;
 }
 
 function createMarker() {
-	var new_point = sphereHelper.clone();
-	var new_material = new_point.material.clone();
-	new_material.color.setHex('#000000');
-	new_point.material = new_material;
-	scene.add(new_point);
-	return new_point
+	const snapType = (sphereHelper.userData && sphereHelper.userData.snapType) || 'vertex';
+	const color = snapType === 'vertex' ? '#ffff00' : '#00ccff';
+	const material = new THREE.SpriteMaterial({
+		map: createSpriteTexture(color),
+		depthTest: false,
+		transparent: true,
+	});
+	const marker = new THREE.Sprite(material);
+	marker.position.copy(sphereHelper.position);
+	marker.scale.copy(sphereHelper.scale);
+	marker.userData.snapType = snapType;
+	scene.add(marker);
+	return marker;
 }
 
 function show_all_scene_item() {
@@ -266,6 +746,7 @@ function init() {
 	});
 	renderer.gammaInput = true;
 	renderer.gammaOutput = true;
+	renderer.localClippingEnabled = true;
 	renderer.shadowMap.enabled = true;
 	renderer.shadowMap.type = THREE.PCFSoftShadowMap; // default
 	// THREE.PCFShadowMap
@@ -391,7 +872,51 @@ function initcommand() {
 	click_show.addEventListener("click", on_data_card_button_click);
 
 	// document.addEventListener('mousemove', onDocumentMousemove, false);
-	document.addEventListener('pointerdown', onClick, false);
+	// Fire onClick only for genuine clicks, not orbit drags.
+	// Track pointer-down position and only call onClick on pointer-up when
+	// the pointer has moved less than 6 px (i.e. it was not a drag/rotate).
+	let _clickOriginX = 0, _clickOriginY = 0;
+	const _zoomRectEl = document.getElementById("zoom_window_rect");
+	document.addEventListener('pointerdown', (e) => {
+		_clickOriginX = e.clientX;
+		_clickOriginY = e.clientY;
+		// Close part color picker if click is outside it
+		const colorPopup = document.getElementById('part_color_popup');
+		if (colorPopup && colorPopup.style.display !== 'none' && !colorPopup.contains(e.target)) {
+			_hidePartColorPicker();
+		}
+		if (zoomWindowActive) {
+			_zoomDragging = true;
+			_zoomStartX = e.clientX;
+			_zoomStartY = e.clientY;
+			controls.enabled = false;
+			if (_zoomRectEl) {
+				_zoomRectEl.style.left = e.clientX + 'px';
+				_zoomRectEl.style.top = e.clientY + 'px';
+				_zoomRectEl.style.width = '0px';
+				_zoomRectEl.style.height = '0px';
+				_zoomRectEl.style.display = 'block';
+			}
+		}
+	}, false);
+	document.addEventListener('pointerup', (e) => {
+		if (zoomWindowActive && _zoomDragging) {
+			_zoomDragging = false;
+			controls.enabled = true;
+			if (_zoomRectEl) _zoomRectEl.style.display = 'none';
+			const canvasRect = renderer.domElement.getBoundingClientRect();
+			const x1 = Math.min(_zoomStartX, e.clientX) - canvasRect.left;
+			const y1 = Math.min(_zoomStartY, e.clientY) - canvasRect.top;
+			const selW = Math.abs(e.clientX - _zoomStartX);
+			const selH = Math.abs(e.clientY - _zoomStartY);
+			if (selW > 10 && selH > 10) zoomToWindow(x1, y1, selW, selH);
+			_deactivateZoomWindow();
+			return;
+		}
+		const dx = e.clientX - _clickOriginX;
+		const dy = e.clientY - _clickOriginY;
+		if (dx * dx + dy * dy < 36) onClick(e);
+	}, false);
 	document.addEventListener('pointermove', window.onPointerMove);
 	// if (canvas) {
 	// 	canvas.addEventListener('pointermove', window.onPointerMove);
@@ -415,17 +940,74 @@ function initcommand() {
 		show_all_scene_item();
 	};
 	document.getElementById("measure_btn_perm").onclick = function () {
-		ctrlDown = !ctrlDown;
-		drawingLine = ctrlDown;
-		renderer.domElement.style.cursor = ctrlDown ? "crosshair" : "pointer";
-		this.classList.toggle("active", ctrlDown);
-		if (!ctrlDown) {
-			scene.remove(measurementLabels[lineId]);
-			scene.remove(startPoint[lineId]);
-			scene.remove(endPoint[lineId]);
-			scene.remove(lines[lineId]);
-			lineId++;
-		}
+		if (ctrlDown) _deactivateMeasure();
+		else _activateMeasure();
+	};
+
+	// PLM object popup — event delegation on the data panel
+	document.getElementById("main_div_hidden").addEventListener("click", function (e) {
+		const el = e.target.closest(".plm_link");
+		if (!el) return;
+		const docId = el.dataset.docId;
+		const prodId = el.dataset.prodId;
+		if (docId) openOdooPopup("ir.attachment", docId);
+		else if (prodId) openOdooPopup("product.product", prodId);
+	});
+
+	document.getElementById("zoom_window_btn").onclick = function () {
+		if (zoomWindowActive) _deactivateZoomWindow();
+		else _activateZoomWindow();
+	};
+
+	// Part color picker — apply color on change, sync tree input
+	const partColorInput = document.getElementById('part_color_input');
+	if (partColorInput) {
+		partColorInput.addEventListener('input', function () {
+			const guid = this._guid;
+			if (!guid) return;
+			const selectedColor = this.value;
+			const groupObj = OdooCad.tree_ref_elements[guid];
+			if (groupObj) {
+				groupObj.traverse(child => {
+					if (child instanceof THREE.Mesh && child.material) {
+						child.material.color.setStyle(selectedColor);
+						child.material.userData.originalColor = child.material.color.clone();
+						child.material.userData.oldColor = child.material.color.clone();
+					}
+				});
+				// Keep tree color swatch in sync
+				const treeInput = document.querySelector(`.tree_item_color[webgl_ref_name="${guid}"]`);
+				if (treeInput) treeInput.value = selectedColor;
+				render();
+			}
+		});
+		// Add to recents and update in-memory color map when user commits
+		partColorInput.addEventListener('change', function () {
+			_addRecentColor(this.value);
+			_renderRecentColors();
+			if (this._guid) {
+				const groupObj = OdooCad.tree_ref_elements[this._guid];
+				// Key by stable part name, not the session-random GUID
+				const partName = groupObj && groupObj.name;
+				if (partName) _partColors[partName] = this.value;
+			}
+		});
+	}
+
+	document.getElementById("section_plane_btn").onclick = function () {
+		sectionPlaneActive = !sectionPlaneActive;
+		this.classList.toggle("active", sectionPlaneActive);
+		if (sectionPlaneActive) createSectionPlane();
+		else destroySectionPlane();
+	};
+
+	document.getElementById("section_plane_mode_btn").onclick = function () {
+		if (!sectionTransformCtrl) return;
+		sectionPlaneMode = sectionPlaneMode === 'translate' ? 'rotate' : 'translate';
+		sectionTransformCtrl.setMode(sectionPlaneMode);
+		const icon = this.querySelector('i');
+		if (icon) icon.className = sectionPlaneMode === 'translate' ? 'fa fa-arrows' : 'fa fa-repeat';
+		this.title = sectionPlaneMode === 'translate' ? 'Section: Move' : 'Section: Rotate';
 	};
 
 	const helpBtn = document.getElementById("help_btn");
@@ -441,9 +1023,29 @@ function initcommand() {
 		if (e.target === shortcutModal) shortcutModal.classList.remove("open");
 	});
 
+	_partColorsDocId = parseInt(
+		document.querySelector('#active_model')?.getAttribute('active_model') || '0', 10
+	) || null;
+
 	const html_canvas = document.getElementById('odoo_canvas');
 	html_canvas.addEventListener("OdooCAD_fit_items", fitCameraToSelectionEvent, false);
+	html_canvas.addEventListener("OdooCAD_fit_items", function _loadSavedColors() {
+		html_canvas.removeEventListener("OdooCAD_fit_items", _loadSavedColors);
+		if (!_partColorsDocId) return;
+		fetch(`/plm/part_colors/load?document_id=${_partColorsDocId}`)
+			.then(r => r.json())
+			.then(colorsMap => {
+				if (colorsMap && Object.keys(colorsMap).length > 0) {
+					_applyPartColors(colorsMap);
+					render();
+				}
+			})
+			.catch(e => _logger.warn && console.warn('part_colors load failed', e));
+	}, false);
 	html_canvas.addEventListener("OdooCAD_render", () => { render(); }, false);
+
+	document.getElementById('save_part_colors_btn').addEventListener('click', _savePartColors);
+	document.getElementById('save_preview_btn').addEventListener('click', savePreviewToOdoo);
 	// light
 	var object_light_distance = document.getElementById("object_distance")
 	object_light_distance.oninput = chenge_light_distance;
@@ -493,30 +1095,36 @@ function initcommand() {
 }
 function onActivatorClick(event) {
 	const activatorDiv = document.getElementById("activatorDiv");
+	const btn = document.getElementById("activatorClick");
 	const isOpen = !activatorDiv.classList.contains('d-none');
 	if (isOpen) {
 		activatorDiv.style.visibility = 'hidden';
 		activatorDiv.style.opacity = 0;
 		activatorDiv.classList.add('d-none');
+		btn?.classList.remove('active');
 	} else {
 		activatorDiv.style.visibility = 'visible';
 		activatorDiv.style.opacity = 0.95;
 		activatorDiv.classList.remove('d-none');
+		btn?.classList.add('active');
 	}
 }
 
 function onMarkupLogsClick(event) {
 	const panel = document.getElementById("markup_logs_panel");
+	const btn = document.getElementById("markup_logs_perm");
 	if (!panel) return;
 	const isOpen = !panel.classList.contains('d-none');
 	if (isOpen) {
 		panel.style.visibility = 'hidden';
 		panel.style.opacity = 0;
 		panel.classList.add('d-none');
+		btn?.classList.remove('active');
 	} else {
 		panel.style.visibility = 'visible';
 		panel.style.opacity = 0.95;
 		panel.classList.remove('d-none');
+		btn?.classList.add('active');
 	}
 }
 
@@ -548,6 +1156,35 @@ function saveAsImage() {
 		return;
 	}
 
+}
+
+function savePreviewToOdoo() {
+	if (!_partColorsDocId) return;
+	const btn = document.getElementById('save_preview_btn');
+	const dataUrl = renderer.domElement.toDataURL('image/jpeg', 0.85);
+	const base64 = dataUrl.split(',')[1];
+	fetch('/plm/save_preview', {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify({
+			jsonrpc: '2.0', method: 'call', id: 1,
+			params: { document_id: _partColorsDocId, image_data: base64 },
+		}),
+	})
+		.then(r => r.json())
+		.then(data => {
+			const ok = data.result && data.result.success;
+			if (btn) {
+				btn.classList.add(ok ? 'color-save-ok' : 'color-save-err');
+				setTimeout(() => btn.classList.remove('color-save-ok', 'color-save-err'), 1500);
+			}
+		})
+		.catch(() => {
+			if (btn) {
+				btn.classList.add('color-save-err');
+				setTimeout(() => btn.classList.remove('color-save-err'), 1500);
+			}
+		});
 }
 
 var saveFile = function (strData, filename) {
@@ -686,15 +1323,18 @@ var onClick = function (e) {
 			points.push(sphereHelper.position.clone());
 			const geometry = new THREE.BufferGeometry().setFromPoints(points);
 			lines[lineId] = new THREE.LineSegments(geometry, new THREE.LineBasicMaterial({
-				color: 0x714B67,  // ODOO COLOR
+				color: 0x714B67,
 				transparent: true,
 				linewidth: 2,
-				opacity: 0.75
+				opacity: 0.9,
+				depthTest: false,
+				depthWrite: false,
 			}));
 			lines[lineId].frustumCulled = false;
 			const measurementLabel = new CSS2DObject(mesuraments());
 			measurementLabel.position.copy(sphereHelper.position);
 			measurementLabels[lineId] = measurementLabel;
+			startSnapTypes[lineId] = (sphereHelper.userData && sphereHelper.userData.snapType) || 'vertex';
 			startPoint[lineId] = createMarker();
 			scene.add(measurementLabels[lineId]);
 			scene.add(lines[lineId]);
@@ -709,15 +1349,24 @@ var onClick = function (e) {
 			positions[4] = endVec.y;
 			positions[5] = endVec.z;
 			lines[lineId].geometry.attributes.position.needsUpdate = true;
+			endSnapTypes[lineId] = (sphereHelper.userData && sphereHelper.userData.snapType) || 'vertex';
+			endPoint[lineId] = createMarker();
+			startArrow[lineId] = createArrowSprite(SNAP_ARROW_COLOR[startSnapTypes[lineId]] || '#ffff88');
+			startArrow[lineId].position.copy(startVec);
+			endArrow[lineId] = createArrowSprite(SNAP_ARROW_COLOR[endSnapTypes[lineId]] || '#88eeff');
+			endArrow[lineId].position.copy(endVec);
 			// update label with final distance at midpoint
 			const dist = startVec.distanceTo(endVec);
 			const mid = new THREE.Vector3().addVectors(startVec, endVec).multiplyScalar(0.5);
 			if (measurementLabels[lineId]) {
 				measurementLabels[lineId].position.copy(mid);
 				const lbl = measurementLabels[lineId].element.querySelector('.measurementLabel');
-				if (lbl) lbl.innerText = dist.toFixed(2) + ' mm';
+				if (lbl) {
+					const sType = startSnapTypes[lineId] === 'vertex' ? 'P' : 'F';
+					const eType = endSnapTypes[lineId] === 'vertex' ? 'P' : 'F';
+					lbl.innerText = `${sType}→${eType}: ${dist.toFixed(2)} mm`;
+				}
 			}
-			endPoint[lineId] = createMarker();
 			drawingLine = false;
 			lineId++;
 		}
@@ -822,6 +1471,23 @@ window.highlight3D = function (guid, enable = true) {
 window.onPointerMove = function (event) {
 	if (typeof canvas === 'undefined' || !canvas) return;
 	if (typeof raycaster === 'undefined' || typeof camera === 'undefined') return;
+
+	_lastPointerX = event.clientX;
+	_lastPointerY = event.clientY;
+
+	// While drawing the zoom rectangle, update its size and skip everything else
+	if (zoomWindowActive && _zoomDragging) {
+		const rectEl = document.getElementById("zoom_window_rect");
+		if (rectEl) {
+			const x = Math.min(_zoomStartX, event.clientX);
+			const y = Math.min(_zoomStartY, event.clientY);
+			rectEl.style.left = x + 'px';
+			rectEl.style.top = y + 'px';
+			rectEl.style.width = Math.abs(event.clientX - _zoomStartX) + 'px';
+			rectEl.style.height = Math.abs(event.clientY - _zoomStartY) + 'px';
+		}
+		return;
+	}
 
 	const rect = canvas.getBoundingClientRect();
 	const x = event.clientX - rect.left;
@@ -979,13 +1645,34 @@ document.addEventListener('pointermove', window.onPointerMove);
 
 function onKeyDone(event) {
 	if (event.key === "Control") {
-		ctrlDown = true;
-		drawingLine = true;
-		renderer.domElement.style.cursor = "crosshair";
-		document.getElementById("measure_btn_perm")?.classList.add("active");
+		if (ctrlDown) _deactivateMeasure();
+		else _activateMeasure();
+		return;
+	}
+	if (event.key === "Escape") {
+		const colorPopup = document.getElementById('part_color_popup');
+		if (colorPopup && colorPopup.style.display !== 'none') {
+			_hidePartColorPicker();
+			return;
+		}
+		if (zoomWindowActive) _deactivateZoomWindow();
+		else if (ctrlDown) _deactivateMeasure();
+		return;
+	}
+	if (event.key === 'w' || event.key === 'W') {
+		if (zoomWindowActive) _deactivateZoomWindow();
+		else _activateZoomWindow();
+		return;
 	}
 	const tag = (event.target || document.activeElement || {}).tagName || '';
 	if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+	if (event.key === 'c' || event.key === 'C') {
+		const guid = window.last_highlighted_li;
+		if (guid && OdooCad?.tree_ref_elements?.[guid]) {
+			_showPartColorPicker(guid);
+		}
+		return;
+	}
 	if (event.key === 'f' || event.key === 'F') {
 		fitCameraToSelectionEvent();
 	}
@@ -1024,17 +1711,8 @@ function onKeyDone(event) {
 
 
 function onKeyup(event) {
-	if (event.key === "Control") {
-		ctrlDown = false;
-		drawingLine = false;
-		renderer.domElement.style.cursor = "pointer";
-		document.getElementById("measure_btn_perm")?.classList.remove("active");
-		scene.remove(measurementLabels[lineId]);
-		scene.remove(startPoint[lineId]);
-		scene.remove(endPoint[lineId]);
-		scene.remove(lines[lineId]);
-		lineId++;
-	}
+	// Control key release is intentionally ignored — measure mode is toggled
+	// by pressing Ctrl (or the toolbar button) and closed with Esc.
 }
 
 function inIframe() {
@@ -1141,61 +1819,66 @@ function addLight() {
 }
 
 function showSnapPoint() {
-	if (sphereHelper) {
-		raycaster.setFromCamera(pointer, camera);
-		const intersections = raycaster.intersectObjects(OdooCad.items, true);
-		var intersection = (intersections.length) > 0 ? intersections[0] : null;
-		if (intersection !== null) {
-			var first = true;
-			var nearestPoint = new THREE.Vector3();
-			var check_distance;
-			var distance;
-			var vertices = intersection.object.geometry.attributes.position.array;
-			for (let i = 0; i < vertices.length; i = i + 3) {
-				var spoolVector = new THREE.Vector3();
-				spoolVector.x = vertices[i] + intersection.object.position.x;
-				spoolVector.y = vertices[i + 1] + intersection.object.position.y;
-				spoolVector.z = vertices[i + 2] + intersection.object.position.z;
-				check_distance = intersection.point.distanceTo(spoolVector)
-				if (first) {
-					distance = check_distance;
-					nearestPoint = spoolVector;
-					first = false;
-				} else {
-					if (check_distance < distance) {
-						distance = check_distance;
-						nearestPoint = spoolVector;
-						/*
-						 * console.log(distance); console.log("IP",
-						 * intersection.point); console.log("SV", spoolVector);
-						 * console.log("NP", nearestPoint);
-						 */
-					}
-				}
-			}
-			sphereHelper.position.copy(nearestPoint);
-			sphereHelper.visible = true;
-			// live preview while drawing a measurement line
-			if (drawingLine && lines[lineId]) {
-				const pos = lines[lineId].geometry.attributes.position.array;
-				pos[3] = nearestPoint.x;
-				pos[4] = nearestPoint.y;
-				pos[5] = nearestPoint.z;
-				lines[lineId].geometry.attributes.position.needsUpdate = true;
-				const startVec = new THREE.Vector3(pos[0], pos[1], pos[2]);
-				const liveDist = startVec.distanceTo(nearestPoint);
-				const liveMid = new THREE.Vector3().addVectors(startVec, nearestPoint).multiplyScalar(0.5);
-				if (measurementLabels[lineId]) {
-					measurementLabels[lineId].position.copy(liveMid);
-					const lbl = measurementLabels[lineId].element.querySelector('.measurementLabel');
-					if (lbl) lbl.innerText = liveDist.toFixed(2) + ' mm';
-				}
-			}
-		} else {
-			sphereHelper.visible = false;
-		}
+	if (!sphereHelper) return;
+	raycaster.setFromCamera(pointer, camera);
+	const intersections = raycaster.intersectObjects(OdooCad.items, true);
+	const intersection = intersections.length > 0 ? intersections[0] : null;
+	if (!intersection) {
+		sphereHelper.visible = false;
+		return;
 	}
 
+	// Find nearest vertex in correct world space (handles rotation + scale)
+	const matWorld = intersection.object.matrixWorld;
+	const verts = intersection.object.geometry.attributes.position.array;
+	let nearestVertex = null;
+	let minDist = Infinity;
+	const tmp = new THREE.Vector3();
+	for (let i = 0; i < verts.length; i += 3) {
+		tmp.set(verts[i], verts[i + 1], verts[i + 2]).applyMatrix4(matWorld);
+		const d = intersection.point.distanceTo(tmp);
+		if (d < minDist) { minDist = d; nearestVertex = tmp.clone(); }
+	}
+
+	// Pixel-space snap threshold — scale-independent
+	const distCam = camera.position.distanceTo(intersection.point);
+	const vFovRad = camera.fov * Math.PI / 180;
+	const worldPerPx = (2 * distCam * Math.tan(vFovRad / 2)) / renderer.domElement.clientHeight;
+	const snapThreshold = 20 * worldPerPx;
+
+	const isVertex = nearestVertex !== null && minDist < snapThreshold;
+	const snapPoint = isVertex ? nearestVertex : intersection.point.clone();
+	const snapType = isVertex ? 'vertex' : 'face';
+	const snapColor = isVertex ? '#ffff00' : '#00ccff';
+
+	// Update sphere texture only when snap type changes (avoid per-frame alloc)
+	if (sphereHelper.userData.snapType !== snapType) {
+		sphereHelper.userData.snapType = snapType;
+		sphereHelper.material.map = createSpriteTexture(snapColor);
+		sphereHelper.material.needsUpdate = true;
+	}
+	sphereHelper.position.copy(snapPoint);
+	sphereHelper.visible = true;
+
+	// Live preview while drawing a measurement line
+	if (drawingLine && lines[lineId]) {
+		const pos = lines[lineId].geometry.attributes.position.array;
+		pos[3] = snapPoint.x;
+		pos[4] = snapPoint.y;
+		pos[5] = snapPoint.z;
+		lines[lineId].geometry.attributes.position.needsUpdate = true;
+		const startVec = new THREE.Vector3(pos[0], pos[1], pos[2]);
+		const liveDist = startVec.distanceTo(snapPoint);
+		const liveMid = new THREE.Vector3().addVectors(startVec, snapPoint).multiplyScalar(0.5);
+		if (measurementLabels[lineId]) {
+			measurementLabels[lineId].position.copy(liveMid);
+			const lbl = measurementLabels[lineId].element.querySelector('.measurementLabel');
+			if (lbl) {
+				const sType = startSnapTypes[lineId] === 'vertex' ? 'P' : 'F';
+				lbl.innerText = `${sType}→${snapType === 'vertex' ? 'P' : 'F'}: ${liveDist.toFixed(2)} mm`;
+			}
+		}
+	}
 }
 
 function updateOrientationCube(camera) {
@@ -1215,6 +1898,26 @@ function render() {
 	}
 	resizeCanvasToDisplaySize();
 	showSnapPoint();
+	// Keep all measurement sprites at a constant screen-space size.
+	const MARKER_PX = 14;
+	if (sphereHelper && sphereHelper.visible) {
+		_scaleSpriteToPixels(sphereHelper, MARKER_PX);
+	}
+	Object.values(startPoint).forEach(s => { if (s) _scaleSpriteToPixels(s, MARKER_PX); });
+	Object.values(endPoint).forEach(s => { if (s) _scaleSpriteToPixels(s, MARKER_PX); });
+	// Update arrow sprites: align rotation to projected line direction each frame
+	Object.keys(startArrow).forEach(id => {
+		const sa = startArrow[id];
+		const ea = endArrow[id];
+		if (!sa || !ea) return;
+		const sp = sa.position.clone().project(camera);
+		const ep = ea.position.clone().project(camera);
+		const angle = Math.atan2(ep.y - sp.y, ep.x - sp.x);
+		sa.material.rotation = angle + Math.PI; // points away from end
+		ea.material.rotation = angle;            // points toward end
+		_scaleSpriteToPixels(sa, 22);
+		_scaleSpriteToPixels(ea, 22);
+	});
 	updateOrientationCube(camera);
 	labelRenderer.render(scene, camera);
 	renderer.render(scene, camera);

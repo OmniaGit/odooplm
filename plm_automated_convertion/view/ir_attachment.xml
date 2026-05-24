@@ -34,6 +34,29 @@
                     type="object"
                     invisible="not name or ('.step' not in name.lower() and '.stp' not in name.lower())"
                 />
+                <button
+                    icon="fa-tree"
+                    string="STEP Structure"
+                    name="action_view_step_tree"
+                    type="object"
+                    invisible="not name or ('.step' not in name.lower() and '.stp' not in name.lower())"
+                />
+                <button
+                    icon="fa-image"
+                    string="Update Preview"
+                    name="action_update_preview"
+                    type="object"
+                    invisible="not name or (
+                        '.step' not in name.lower() and
+                        '.stp' not in name.lower() and
+                        '.stl' not in name.lower() and
+                        '.obj' not in name.lower() and
+                        '.dxf' not in name.lower() and
+                        '.3mf' not in name.lower() and
+                        '.gltf' not in name.lower() and
+                        '.glb' not in name.lower()
+                    )"
+                />
             </field>
         </field>
     </record>
@@ -72,6 +95,33 @@
                 >
                     <i class="fa fa-sitemap"></i>
                     Split Assembly
+                </button>
+                <button
+                    name="action_view_step_tree"
+                    type="object"
+                    class="btn btn-secondary"
+                    invisible="not name or ('.step' not in name.lower() and '.stp' not in name.lower())"
+                >
+                    <i class="fa fa-tree"></i>
+                    STEP Structure
+                </button>
+                <button
+                    name="action_update_preview"
+                    type="object"
+                    class="btn btn-secondary"
+                    invisible="not name or (
+                        '.step' not in name.lower() and
+                        '.stp' not in name.lower() and
+                        '.stl' not in name.lower() and
+                        '.obj' not in name.lower() and
+                        '.dxf' not in name.lower() and
+                        '.3mf' not in name.lower() and
+                        '.gltf' not in name.lower() and
+                        '.glb' not in name.lower()
+                    )"
+                >
+                    <i class="fa fa-image"></i>
+                    Update Preview
                 </button>
             </xpath>
         </field>

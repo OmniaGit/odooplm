@@ -29,19 +29,29 @@ class ProductProduct(models.Model):
         "# Breakages", compute="_compute_breakages_count", compute_sudo=False
     )
 
+    def _get_bom_product_ids(self):
+        """Return IDs of self plus all components found in related BOMs."""
+        boms = self.env["mrp.bom"].search([("product_id", "in", self.ids)])
+        product_ids = set(self.ids)
+        for bom in boms:
+            product_ids.update(bom.bom_line_ids.mapped("product_id").ids)
+        return list(product_ids)
+
     def open_breakages(self):
+        product_ids = self._get_bom_product_ids()
         return {
             "name": _("Products"),
             "res_model": "plm.breakages",
             "view_type": "form",
             "view_mode": "list,form",
             "type": "ir.actions.act_window",
-            "domain": [("product_id", "=", self.id)],
+            "domain": [("product_id", "in", product_ids)],
             "context": {"default_product_id": self.id},
         }
 
     def _compute_breakages_count(self):
         for product in self:
+            product_ids = product._get_bom_product_ids()
             product.breakages_count = self.env["plm.breakages"].search_count(
-                [("product_id", "=", product.id)]
+                [("product_id", "in", product_ids)]
             )

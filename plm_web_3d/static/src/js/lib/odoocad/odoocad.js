@@ -341,16 +341,22 @@ class OdooCAD {
             // CLICK
             // =========================
             hoverTargets[i].addEventListener("click", function (event) {
-                if (event.target.tagName != 'I' && event.target.tagName != 'INPUT') {
-                    let url = location.origin;
-                    let product_tag = document.getElementById('linked_component_id');
-
-                    if (product_tag && product_tag.dataset.id) {
-                        let product_id = product_tag.dataset.id;
-                        url = url + '/odoo/product.product/' + product_id;
-                        window.open(url);
-                    }
-                }
+                if (event.target.tagName === 'I' || event.target.tagName === 'INPUT') return;
+                const webgl_name = this.getAttribute('webgl_ref_name');
+                const obj = self.tree_ref_elements[webgl_name];
+                if (!obj) return;
+                const eng_code = obj.userData && obj.userData.engineering_code;
+                if (!eng_code) return;
+                const parent_id = document.getElementById('active_model')
+                    ? document.getElementById('active_model').getAttribute('active_model')
+                    : '';
+                fetch(`/plm/get_product_id?src_name=${encodeURIComponent(eng_code)}&parent_id=${parent_id}`)
+                    .then(function (r) { return r.json(); })
+                    .then(function (data) {
+                        if (data.product_id && window.openOdooPopup) {
+                            window.openOdooPopup('product.product', data.product_id);
+                        }
+                    });
             });
         }
 

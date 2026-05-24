@@ -813,7 +813,12 @@ function sendMarkupToBackend(imageData, baseImage, comment, canvasJson) {
     })
         .then(r => r.json())
         .then(data => {
-            const newId = data.result?.markup_id || null;
+            if (!data.result?.success) {
+                console.error("Markup save failed:", data.error || data.result);
+                showToast("Failed to save markup to Odoo.", "danger");
+                return;
+            }
+            const newId = data.result.markup_id || null;
 
             if (!scheduleActivity) {
                 const displayComment = comment || (fileName + " - Markup Logged");

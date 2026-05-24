@@ -2,9 +2,36 @@
 import base64
 import functools
 import json
+import logging
 from odoo import http
 from odoo.http import Controller, route, request, Response
 from markupsafe import Markup
+
+_logger = logging.getLogger(__name__)
+
+
+def _resolve_components(record):
+    """Return linked product.product records for a document.
+
+    Walks the source chain so converted files (e.g. 3MF from STEP) still
+    find the products attached to the original engineering document:
+      1. direct linkedcomponents on the record
+      2. linkedcomponents of source_convert_document (conversion source)
+      3. linkedcomponents of the Web3DTree parent relation
+    """
+    if hasattr(record, 'linkedcomponents') and record.linkedcomponents:
+        return record.linkedcomponents
+    if hasattr(record, 'source_convert_document') and record.source_convert_document:
+        src = record.source_convert_document
+        if hasattr(src, 'linkedcomponents') and src.linkedcomponents:
+            return src.linkedcomponents
+    parent_rel = record.env['ir.attachment.relation'].search([
+        ('child_id', '=', record.id),
+        ('link_kind', '=', 'Web3DTree'),
+    ], limit=1)
+    if parent_rel and hasattr(parent_rel.parent_id, 'linkedcomponents'):
+        return parent_rel.parent_id.linkedcomponents
+    return record.env['product.product']
 
 
 def webservice(f):
@@ -60,35 +87,65 @@ class Web3DView(Controller):
         if not document_id:
             return json.dumps({})
         out = {}
-        for ir_attachment in (
-            request.env["ir.attachment"].sudo().search([("id", "=", int(document_id))])
-        ):
-            if ir_attachment.has_web3d:
-                document = """
-                <li class="attribute_info"><b>Name:</b> %s</li>
-                <li class="attribute_info"><b>Revision:</b> %s</li>
+        ir_attachment = request.env["ir.attachment"].sudo().browse(int(document_id))
+        if not ir_attachment.exists():
+            return json.dumps(out)
+        if ir_attachment.has_web3d:
+            # For 3mf conversions, follow source document for PLM metadata and linked product
+            info_doc = ir_attachment
+            if (
+                ir_attachment.name
+                and ir_attachment.name.lower().endswith(".3mf")
+                and ir_attachment.source_convert_document
+            ):
+                info_doc = ir_attachment.source_convert_document
+            doc_name = info_doc.engineering_code or info_doc.name
+            document = """
+            <li class="attribute_info"><b>Name:</b> <span class="plm_link" data-doc-id="%s">%s</span></li>
+            <li class="attribute_info"><b>Revision:</b> %s</li>
+            <li class="attribute_info"><b>Description:</b> %s</li>
+            """ % (
+                info_doc.id,
+                doc_name,
+                info_doc.engineering_revision,
+                info_doc.engineering_state,
+            )
+            document = self.document_extra(document)
+            out["document"] = document
+            for component in info_doc.linkedcomponents:
+                components = """
+                <li class="attribute_info" id="linked_component_id" data-id="%s"><b>Product Name:</b> <span class="plm_link" data-prod-id="%s">%s</span></li>
+                <li class="attribute_info"><b>Product Revision:</b> %s</li>
                 <li class="attribute_info"><b>Description:</b> %s</li>
                 """ % (
-                    ir_attachment.engineering_code or ir_attachment.name,
-                    ir_attachment.engineering_revision,
-                    ir_attachment.engineering_state,
+                    component.id,
+                    component.id,
+                    component.engineering_code or component.name,
+                    component.engineering_revision,
+                    component.name,
                 )
-                document = self.document_extra(document)
-                out["document"] = document
-                for component in ir_attachment.linkedcomponents:
-                    components = """
-                    <li class="attribute_info" id="linked_component_id" data-id=%s><b>Product Name:</b> %s</li>
-                    <li class="attribute_info"><b>Product Revision:</b> %s</li>
-                    <li class="attribute_info"><b>Description:</b> %s</li>
-                    """ % (
-                        component.id,
-                        component.engineering_code,
-                        component.engineering_revision,
-                        component.name,
-                    )
-                    components = self.component_extra(components)
-                    out["component"] = components
+                components = self.component_extra(components)
+                out["component"] = components
         return json.dumps(out)
+
+    @route("/plm/get_product_id", type="http", auth="user")
+    def get_product_id(self, src_name, parent_id=None):
+        """Return JSON {product_id: N} for the product matching src_name."""
+        env = request.env
+        if parent_id and str(parent_id).isdigit():
+            parent_doc = env["ir.attachment"].sudo().browse(int(parent_id))
+            if parent_doc.exists():
+                for p in parent_doc.linkedcomponents:
+                    if p.engineering_code == src_name or p.name == src_name or p.default_code == src_name:
+                        return json.dumps({"product_id": p.id})
+        prod = env["product.product"].sudo().search(
+            ["|", "|",
+             ("engineering_code", "=", src_name),
+             ("default_code", "=", src_name),
+             ("name", "=", src_name)],
+            limit=1,
+        )
+        return json.dumps({"product_id": prod.id if prod else None})
 
     @route("/plm/get_3d_web_document_info", type="http", auth="user")
     def get_3d_web_document_info(self, src_name, parent_id=None):
@@ -119,6 +176,57 @@ class Web3DView(Controller):
 
         return src_name
 
+
+    @http.route('/plm/save_preview', type='jsonrpc', auth='user')
+    def save_preview(self, document_id=None, image_data=None):
+        if not document_id or not image_data:
+            return {'success': False}
+        doc = request.env['ir.attachment'].sudo().browse(int(document_id))
+        if not doc.exists():
+            return {'success': False}
+        try:
+            image_bytes = base64.b64decode(image_data)
+            image_b64 = base64.b64encode(image_bytes)
+            doc.sudo().write({'preview': image_b64})
+            components = _resolve_components(doc)
+            updated = 0
+            seen_tmpl = set()
+            for comp in components:
+                tmpl = comp.product_tmpl_id
+                if tmpl and tmpl.id not in seen_tmpl:
+                    seen_tmpl.add(tmpl.id)
+                    tmpl.sudo().write({'image_1920': image_b64})
+                    updated += 1
+            return {'success': True, 'products_updated': updated}
+        except Exception as e:
+            _logger.warning("Failed to save preview: %s", e)
+            return {'success': False, 'error': str(e)}
+
+    @http.route('/plm/part_colors/load', type='http', auth='user')
+    def part_colors_load(self, document_id=None):
+        if not document_id or not str(document_id).isdigit():
+            return json.dumps({})
+        doc = request.env['ir.attachment'].sudo().browse(int(document_id))
+        if not doc.exists() or not doc.web3d_part_colors:
+            return json.dumps({})
+        try:
+            return doc.web3d_part_colors
+        except Exception:
+            return json.dumps({})
+
+    @http.route('/plm/part_colors/save', type='jsonrpc', auth='user')
+    def part_colors_save(self, document_id=None, colors=None):
+        if not document_id or not colors:
+            return {'success': False}
+        doc = request.env['ir.attachment'].sudo().browse(int(document_id))
+        if not doc.exists():
+            return {'success': False}
+        try:
+            doc.sudo().write({'web3d_part_colors': json.dumps(colors)})
+            return {'success': True}
+        except Exception as e:
+            _logger.warning("Failed to save part colors: %s", e)
+            return {'success': False, 'error': str(e)}
 
     @http.route('/plm/save_markup', type='jsonrpc', auth='user')
     def save_markup(self, image=None, base_image=None, filename=None, comment=None,
@@ -163,7 +271,7 @@ class Web3DView(Controller):
                 )
                 hyperlink = f'<p><a href="{viewer_url}" target="_blank">🔗 click here to View document in 3D Viewer</a></p>'
 
-                has_components = hasattr(record, 'linkedcomponents') and record.linkedcomponents
+                components = _resolve_components(record)
 
                 if schedule_activity:
                     attachment = request.env['ir.attachment'].sudo().create({
@@ -202,35 +310,32 @@ class Web3DView(Controller):
                                 'date_deadline': activity_due_date or False,
                             })
 
-                    if has_components:
-                        for component in record.linkedcomponents:
-                            target = component
-                            if component._name == 'product.product' and component.product_tmpl_id:
-                                target = component.product_tmpl_id
-                            create_activity(target)
-                    else:
-                        create_activity(record)
+                    create_activity(record)
+                    for component in components:
+                        target = component
+                        if component._name == 'product.product' and component.product_tmpl_id:
+                            target = component.product_tmpl_id
+                        create_activity(target)
 
                 else:
                     chatter_body = f'<p>{comment if comment else default_note}</p>'
                     chatter_body += hyperlink
 
-                    if has_components:
-                        for component in record.linkedcomponents:
-                            msg = component.message_post(
-                                body=Markup(chatter_body),
-                                attachments=[(filename, image_binary)],
-                            )
-                            if not markup_log.message_id:
-                                markup_log.sudo().write({'message_id': msg.id})
-                    else:
+                    try:
                         msg = record.message_post(
                             body=Markup(chatter_body),
                             attachments=[(filename, image_binary)]
                         )
                         markup_log.sudo().write({'message_id': msg.id})
+                        for component in components:
+                            component.message_post(
+                                body=Markup(chatter_body),
+                                attachments=[(filename, image_binary)],
+                            )
+                    except Exception as e:
+                        _logger.warning("Failed to post markup chatter message: %s", e)
 
-        return {"status": "ok"}
+        return {"success": True, "markup_id": markup_log.id}
 
     @http.route('/plm/markup/load', type='jsonrpc', auth='user')
     def load_markup(self, res_id=None, res_model=None):
@@ -335,18 +440,19 @@ class Web3DView(Controller):
                 )
                 chatter_body += f'<p><a href="{viewer_url}" target="_blank">🔗 Click here to view updated markup in 3D Viewer</a></p>'
 
-                has_components = hasattr(record, 'linkedcomponents') and record.linkedcomponents
+                components = _resolve_components(record)
 
-                if has_components:
-                    for component in record.linkedcomponents:
-                        component.message_post(
-                            body=Markup(chatter_body),
-                            attachments=[(filename, image_binary)],
-                        )
-                else:
+                try:
                     record.message_post(
                         body=Markup(chatter_body),
                         attachments=[(filename, image_binary)],
                     )
+                    for component in components:
+                        component.message_post(
+                            body=Markup(chatter_body),
+                            attachments=[(filename, image_binary)],
+                        )
+                except Exception as e:
+                    _logger.warning("Failed to post update_markup chatter message: %s", e)
 
         return {'success': True}

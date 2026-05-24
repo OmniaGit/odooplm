@@ -51,6 +51,10 @@ class IrAttachment(models.Model):
         # store=True,
         help="Check if this document has related 3d web document",
     )
+    web3d_part_colors = fields.Text(
+        string="3D Part Colors",
+        help="JSON map of part GUID to hex color, saved from the 3D viewer.",
+    )
 
     def isWebGl(self):
         for ir_attachment in self:

@@ -341,7 +341,18 @@ class PlmConvertStack(models.Model):
                 % (self.start_document_id.id, self.id)
             )
         self.end_document_id = target_attachment.id
-        if self.start_document_id.preview:
+        _, target_ext = os.path.splitext(file_name)
+        if target_ext.lower() in (".3mf", ".gltf", ".glb"):
+            # Generate a fresh PNG thumbnail from the STEP source for 3D output formats
+            source = self.start_document_id
+            if any(ext in source.name.lower() for ext in (".stp", ".step")):
+                preview = source._generate_step_preview_b64()
+                if preview:
+                    target_attachment.write({"preview": preview})
+                    source.write({"preview": preview})
+                elif source.preview:
+                    target_attachment.write({"preview": source.preview})
+        elif self.start_document_id.preview:
             target_attachment.preview = self.start_document_id.preview
 
     logging.debug("generateConvertedDocuments ended")
