@@ -22,6 +22,12 @@
                 <field name="engineering_code"/>
                 <field name="name"/>
                 <field name="description" invisible="1"/>
+                <field name="document_checkout_user_ids" string="Checked-Out By"/>
+                <separator orientation="vertical"/>
+                <filter
+                    name="checked_out"
+                    string="Checked Out"
+                    domain="[('document_checkout_user_ids', '!=', False)]"/>
                 <separator orientation="vertical"/>
                 <filter
                     name="string"
