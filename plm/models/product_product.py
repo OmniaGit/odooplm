@@ -184,6 +184,32 @@ class ProductProduct(models.Model):
 
     configuration_name = fields.Char("Configuration Name")
 
+    document_checkout_user_ids = fields.Many2many(
+        'res.users',
+        compute='_compute_document_checkout_user_ids',
+        search='_search_document_checkout_user_ids',
+        string='Documents Checked-Out By',
+    )
+
+    @api.depends('linkeddocuments')
+    def _compute_document_checkout_user_ids(self):
+        checkout_model = self.env['plm.checkout']
+        for product in self:
+            doc_ids = product.linkeddocuments.ids
+            if doc_ids:
+                checkouts = checkout_model.search([('documentid', 'in', doc_ids)])
+                product.document_checkout_user_ids = checkouts.mapped('userid')
+            else:
+                product.document_checkout_user_ids = self.env['res.users']
+
+    def _search_document_checkout_user_ids(self, operator, value):
+        checkouts = self.env['plm.checkout'].search([('userid', operator, value)])
+        doc_ids = checkouts.mapped('documentid').ids
+        if not doc_ids:
+            return [('id', '=', False)]
+        product_ids = self.search([('linkeddocuments', 'in', doc_ids)]).ids
+        return [('id', 'in', product_ids)]
+
     def _computeStd(self):
         for product_product_id in self:
             product_product_id.show_std_field1 = False
