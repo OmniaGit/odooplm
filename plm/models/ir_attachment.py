@@ -2139,7 +2139,7 @@ class IrAttachment(models.Model):
                 logging.error(ex)
                 raise ex
         # Save the product relation
-        domain = [('engineering_state', 'in', ['installed', 'to upgrade', 'to remove']),
+        domain = [('state', 'in', ['installed', 'to upgrade', 'to remove']),
                   ('name', '=', 'plm_engineering')]
         apps = self.env['ir.module.module'].sudo().search_read(domain, ['name'])
         bomType = 'normal'
@@ -2183,7 +2183,7 @@ class IrAttachment(models.Model):
             except Exception as ex:
                 logging.error(ex)
                 raise ex
-        jsonify = json.dumps(objStructure)
+        jsonify = json.dumps(objStructure, default=tools.json_default)
         end = time.time()
         logging.info("Time Spend For save structure is: %s" % (str(end - start)))
         return jsonify
