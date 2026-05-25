@@ -242,6 +242,7 @@ function _savePartColors() {
 		.then(data => {
 			if (data.result && data.result.success) {
 				if (btn) {
+					btn.classList.remove('color-unsaved');
 					btn.classList.add('color-save-ok');
 					setTimeout(() => btn.classList.remove('color-save-ok'), 1500);
 				}
@@ -258,6 +259,10 @@ function _savePartColors() {
 				setTimeout(() => btn.classList.remove('color-save-err'), 1500);
 			}
 		});
+}
+
+function _markAppearanceDirty() {
+	document.getElementById('save_part_colors_btn')?.classList.add('color-unsaved');
 }
 
 function _hidePartColorPicker() {
@@ -1069,9 +1074,11 @@ function initcommand() {
 			_renderRecentColors();
 			if (this._guid) {
 				const groupObj = OdooCad.tree_ref_elements[this._guid];
-				// Key by stable part name, not the session-random GUID
 				const partName = groupObj && groupObj.name;
-				if (partName) _partColors[partName] = this.value;
+				if (partName) {
+					_partColors[partName] = this.value;
+					_markAppearanceDirty();
+				}
 			}
 		});
 	}
@@ -1099,7 +1106,10 @@ function initcommand() {
 					}
 				});
 				const partName = groupObj.name;
-				if (partName) _partOpacity[partName] = opacity;
+				if (partName) {
+					_partOpacity[partName] = opacity;
+					_markAppearanceDirty();
+				}
 				render();
 			}
 		});

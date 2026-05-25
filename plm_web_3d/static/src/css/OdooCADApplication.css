@@ -1522,6 +1522,17 @@ canvas#odoo_canvas {
     color: #4a1942;
 }
 
+@keyframes plm-unsaved-pulse {
+    0%   { background-color: rgba(230, 120, 0, 0.85); }
+    50%  { background-color: rgba(230, 120, 0, 0.30); }
+    100% { background-color: rgba(230, 120, 0, 0.85); }
+}
+
+.plm_button_per.color-unsaved {
+    animation: plm-unsaved-pulse 1.2s ease-in-out infinite;
+    color: #fff !important;
+}
+
 .plm_button_per.color-save-ok {
     background-color: #2e7d32 !important;
     color: #fff !important;
