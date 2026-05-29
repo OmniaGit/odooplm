@@ -1,5 +1,5 @@
 ezdxf
 matplotlib
-cadquery
+git+https://github.com/CadQuery/cadquery.git
 numpy-stl
 --pre cadquery
