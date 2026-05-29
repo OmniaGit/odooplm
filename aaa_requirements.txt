@@ -2,4 +2,6 @@ ezdxf
 matplotlib
 git+https://github.com/CadQuery/cadquery.git
 numpy-stl
+base64io
+to-3mf
 --pre cadquery
