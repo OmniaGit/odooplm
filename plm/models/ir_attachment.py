@@ -1105,7 +1105,8 @@ class IrAttachment(models.Model):
         #
         self.check_unique()
         #
-        self.assign_must_update_flag(only_layout=True)
+        if 'must_update_from_cad' not in vals:
+            self.assign_must_update_flag(only_layout=True)
         #
         return res
 
@@ -3790,6 +3791,12 @@ class IrAttachment(models.Model):
             out_attachment_value["name"] = (
                 f"{out_attachment_value['engineering_code']}{exte}"
             )
+        #
+        if 'created' not in out_attachment_value:
+            out_attachment_value['created'] = datetime.now().strftime(DEFAULT_SERVER_DATETIME_FORMAT)
+        
+        if 'creator' not in out_attachment_value:
+            out_attachment_value['creator'] = self.env.user.display_name
         #
         if "id" in out_attachment_value: del out_attachment_value["id"]
         #
