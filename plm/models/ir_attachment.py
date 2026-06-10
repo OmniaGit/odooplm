@@ -2902,16 +2902,19 @@ class IrAttachment(models.Model):
             Evaluate documents to return
         """
         involved_docs_dict = json.loads(involved_docs_dict)
+        force = kargs.get('force', False)
+        doc_ids_to_unlock = []
         for doc_vals in involved_docs_dict.get('to_check_in', []):
             docId = self.getDocId(doc_vals)
-            checked = doc_vals.get('checked', False)
             if not docId:
                 raise UserError(f'Cannot check-in document with id False. Vals {doc_vals}')
-            if checked or kargs.get('force', False):
-                checkoutId = self.env['plm.checkout'].search(
-                    [('documentid', '=', docId.id), ('userid', '=', self.env.user.id)])
-                if checkoutId:
-                    checkoutId.unlink()
+            if doc_vals.get('checked', False) or force:
+                doc_ids_to_unlock.append(docId.id)
+        if doc_ids_to_unlock:
+            self.env['plm.checkout'].search([
+                ('documentid', 'in', doc_ids_to_unlock),
+                ('userid', '=', self.env.user.id),
+            ]).unlink()
         return True
 
     def getLastCadSave(self):
@@ -2921,28 +2924,158 @@ class IrAttachment(models.Model):
             return cad_open_id.write_date
         return self.write_date
 
-    def getDefaulValueDict(self, docBrws, PLM_DT_DELTA, is_root):
+    def _bulk_prefetch_check_in_data(self, doc_ids):
+        """
+        Fetch all data needed by fill_up_check_in_status for a set of documents
+        using 3 bulk queries instead of N×5 individual queries.
+
+        Returns a prefetch dict consumed by getDefaulValueDict and
+        fill_up_check_in_status when their prefetch= kwarg is supplied.
+        """
+        # --- Q1: checkout state for all candidate docs ---------------------
+        checkout_records = self.env['plm.checkout'].search_read(
+            [('documentid', 'in', doc_ids)],
+            ['documentid', 'userid'],
+        )
+        checked_out_ids = set()
+        checked_out_by_me_ids = set()
+        checkout_user_name = {}
+        for co in checkout_records:
+            doc_id = co['documentid'][0]
+            checked_out_ids.add(doc_id)
+            if co['userid'] and co['userid'][0] == self.env.uid:
+                checked_out_by_me_ids.add(doc_id)
+            else:
+                checkout_user_name[doc_id] = co['userid'][1] if co['userid'] else ''
+
+        # --- Q2: latest CAD save date per doc (DESC order → first entry wins) --
+        cad_saves = self.env['plm.cad.open'].search_read(
+            [('document_id', 'in', doc_ids), ('operation_type', '=', 'save')],
+            ['document_id', 'write_date'],
+            order='create_date DESC',
+        )
+        cad_save_date = {}
+        for cs in cad_saves:
+            doc_id = cs['document_id'][0]
+            if doc_id not in cad_save_date:
+                cad_save_date[doc_id] = cs['write_date']
+
+        # --- Q3: ir.attachment fields + latest revision flag per doc ----------
+        # Read all fields needed by getDefaulValueDict in one shot so the
+        # status loop never has to touch ORM descriptors per record.
+        doc_data = self.browse(doc_ids).read([
+            'engineering_code', 'engineering_revision',
+            'name', 'document_type', 'must_update_from_cad', 'write_date',
+        ])
+        unique_codes = list({d['engineering_code'] for d in doc_data if d['engineering_code']})
+        latest_id_by_code = {}
+        if unique_codes:
+            all_revs = self.search_read(
+                [('engineering_code', 'in', unique_codes)],
+                ['id', 'engineering_code'],
+                order='engineering_revision DESC',
+            )
+            for rev in all_revs:
+                code = rev['engineering_code']
+                if code not in latest_id_by_code:
+                    latest_id_by_code[code] = rev['id']
+        is_latest_rev = {
+            d['id']: (d['id'] == latest_id_by_code.get(d['engineering_code']))
+            for d in doc_data
+        }
+        doc_fields = {d['id']: d for d in doc_data}
+
+        return {
+            'checked_out_ids': checked_out_ids,
+            'checked_out_by_me_ids': checked_out_by_me_ids,
+            'checkout_user_name': checkout_user_name,
+            'cad_save_date': cad_save_date,
+            'is_latest_rev': is_latest_rev,
+            'doc_fields': doc_fields,
+        }
+
+    def getDefaulValueDict(self, docBrws, PLM_DT_DELTA, is_root, timing=None, prefetch=None):
         tmp_dict = {}
         tmp_dict['id'] = docBrws.id
-        tmp_dict['datas_fname'] = docBrws.name
-        tmp_dict['name'] = docBrws.name
-        tmp_dict['document_type'] = docBrws.document_type.upper()
-        tmp_dict['write_date'] = docBrws.getLastCadSave().strftime(DEFAULT_SERVER_DATETIME_FORMAT)
-        tmp_dict['check_in'] = docBrws.ischecked_in()
-        tmp_dict['check_out_by_me'] = docBrws.isCheckedOutByMe()
-        tmp_dict['is_latest_rev'] = docBrws.isLatestRevision()
+
+        if prefetch is not None and 'doc_fields' in prefetch:
+            _f = prefetch['doc_fields'][docBrws.id]
+            tmp_dict['datas_fname'] = _f['name']
+            tmp_dict['name'] = _f['name']
+            tmp_dict['document_type'] = (_f['document_type'] or '').upper()
+            tmp_dict['must_update_from_cad'] = _f['must_update_from_cad']
+            _write_date = _f['write_date']
+        else:
+            tmp_dict['datas_fname'] = docBrws.name
+            tmp_dict['name'] = docBrws.name
+            tmp_dict['document_type'] = docBrws.document_type.upper()
+            tmp_dict['must_update_from_cad'] = docBrws.must_update_from_cad
+            _write_date = None
+
+        _t = time.perf_counter()
+        if prefetch is not None:
+            cad_date = prefetch['cad_save_date'].get(docBrws.id)
+            effective_date = cad_date or _write_date or docBrws.write_date
+            tmp_dict['write_date'] = effective_date.strftime(DEFAULT_SERVER_DATETIME_FORMAT)
+        else:
+            tmp_dict['write_date'] = docBrws.getLastCadSave().strftime(DEFAULT_SERVER_DATETIME_FORMAT)
+        if timing is not None:
+            timing['_t_last_cad_save'] += time.perf_counter() - _t
+
+        _t = time.perf_counter()
+        if prefetch is not None:
+            tmp_dict['check_in'] = docBrws.id not in prefetch['checked_out_ids']
+        else:
+            tmp_dict['check_in'] = docBrws.ischecked_in()
+        if timing is not None:
+            timing['_t_is_checked_in'] += time.perf_counter() - _t
+
+        _t = time.perf_counter()
+        if prefetch is not None:
+            tmp_dict['check_out_by_me'] = docBrws.id in prefetch['checked_out_by_me_ids']
+        else:
+            tmp_dict['check_out_by_me'] = docBrws.isCheckedOutByMe()
+        if timing is not None:
+            timing['_t_checked_out_by_me'] += time.perf_counter() - _t
+
+        _t = time.perf_counter()
+        if prefetch is not None:
+            tmp_dict['is_latest_rev'] = prefetch['is_latest_rev'].get(docBrws.id, False)
+        else:
+            tmp_dict['is_latest_rev'] = docBrws.isLatestRevision()
+        if timing is not None:
+            timing['_t_latest_rev'] += time.perf_counter() - _t
+
         tmp_dict['PLM_DT_DELTA'] = PLM_DT_DELTA
         tmp_dict['is_root'] = is_root
-        tmp_dict['must_update_from_cad'] = docBrws.must_update_from_cad
         tmp_dict['msg'] = ''
         return tmp_dict
 
-    def fill_up_check_in_status(self, docBrws, PLM_DT_DELTA, is_root):
+    def fill_up_check_in_status(self, docBrws, PLM_DT_DELTA, is_root, timing=None, prefetch=None):
         out_status = ''
-        data_info = self.getDefaulValueDict(docBrws, PLM_DT_DELTA, is_root)
-        docBrws._is_checkout()
-        if docBrws.is_checkout:
-            if docBrws.isCheckedOutByMe():
+        data_info = self.getDefaulValueDict(docBrws, PLM_DT_DELTA, is_root, timing=timing, prefetch=prefetch)
+
+        _t = time.perf_counter()
+        if prefetch is not None:
+            is_checkout = docBrws.id in prefetch['checked_out_ids']
+        else:
+            docBrws._is_checkout()
+            is_checkout = docBrws.is_checkout
+        if timing is not None:
+            timing['_t_is_checkout_user'] += time.perf_counter() - _t
+
+        if is_checkout:
+            _t = time.perf_counter()
+            if prefetch is not None:
+                is_checked_out_by_me = docBrws.id in prefetch['checked_out_by_me_ids']
+                checkout_user = prefetch['checkout_user_name'].get(docBrws.id, '')
+            else:
+                is_checked_out_by_me = docBrws.isCheckedOutByMe()
+                checkout_user = docBrws.checkout_user
+            if timing is not None:
+                timing['_t_checked_out_by_me'] += time.perf_counter() - _t
+                timing['_t_is_checkout_user'] += time.perf_counter() - _t
+            if is_checked_out_by_me:
                 data_info['options'] = {'save_and_check_in': _('Save and check-in'),
                                         'keep_and_go': _('Keep check-out'),
                                         'discard': _('Dangerous !! Discard and check-in'),
@@ -2950,12 +3083,70 @@ class IrAttachment(models.Model):
                 data_info['msg'] = _('Check-Out by me')
                 out_status = 'to_check'
             else:
-                data_info['msg'] = _(f'Check-Out by {docBrws.checkout_user}')
+                data_info['msg'] = _(f'Check-Out by {checkout_user}')
                 out_status = 'to_info'
         else:
             data_info['msg'] = _('Checked-IN')
             out_status = 'already_checkin'
         return data_info, out_status
+
+    def _batch_traverse_hi_ly_tree(self, root_doc):
+        """
+        BFS traversal of HiTree descendants + LyTree 2D drawings in O(depth) queries.
+
+        Replaces the recursive getRelatedHiTree + getRelatedLyTree-per-node pattern
+        (which costs one query per node) with:
+          - one query per depth level for HiTree  → depth+1 queries total
+          - two queries for LyTree across all 3D docs at once
+          - one read to confirm document_type of candidates
+
+        root_doc must be a 3D document.
+        Returns (all_3d_ids, all_2d_ids) as lists of integer IDs.
+        """
+        Relation = self.env['ir.attachment.relation']
+
+        # Phase 1: BFS through HiTree — O(depth) queries
+        all_3d_ids = [root_doc.id]
+        visited = {root_doc.id}
+        frontier = [root_doc.id]
+        n_levels = 0
+        while frontier:
+            rels = Relation.search_read(
+                [('link_kind', '=', 'HiTree'), ('parent_id', 'in', frontier)],
+                ['child_id'])
+            frontier = []
+            for rel in rels:
+                cid = rel['child_id'][0]
+                if cid not in visited:
+                    visited.add(cid)
+                    frontier.append(cid)
+                    all_3d_ids.append(cid)
+            n_levels += 1
+
+        # Phase 2: Batch LyTree for all 3D docs — 2 queries + 1 read
+        candidate_2d = set()
+        for rel in Relation.search_read(
+                [('link_kind', '=', 'LyTree'), ('parent_id', 'in', all_3d_ids)],
+                ['child_id']):
+            cid = rel['child_id'][0]
+            if cid not in visited:
+                candidate_2d.add(cid)
+        for rel in Relation.search_read(
+                [('link_kind', '=', 'LyTree'), ('child_id', 'in', all_3d_ids)],
+                ['parent_id']):
+            pid = rel['parent_id'][0]
+            if pid not in visited:
+                candidate_2d.add(pid)
+
+        all_2d_ids = []
+        if candidate_2d:
+            doc_data = self.browse(list(candidate_2d)).read(['document_type'])
+            all_2d_ids = [d['id'] for d in doc_data if d['document_type'] in ('2d', 'pr')]
+
+        logging.warning(
+            '[preCheckInRecursive_all] tree_batch: 3d=%d  2d=%d  hi_levels=%d',
+            len(all_3d_ids), len(all_2d_ids), n_levels)
+        return all_3d_ids, all_2d_ids
 
     @api.model
     def preCheckInRecursive_all(self,
@@ -2981,43 +3172,47 @@ class IrAttachment(models.Model):
                'root_ent': False
                }
         PLM_DT_DELTA = self.getPlmDTDelta()
+        if not root_id.isCheckedOutByMe():
+            data_info, _out_status = self.fill_up_check_in_status(root_id, PLM_DT_DELTA, is_root=True)
+            out['info'].append(data_info)
+            return out
         doc_2d_ids = self.env[self._name]
         doc_3d_ids = self.env[self._name]
         #
-        for doc_id in self.browse(list(set(self.getRelatedLyTree(root_id.id,
-                                                                 getOnyChkOut=True) + \
-                                           self.getRelatedPrTree(root_id.id,
-                                                                 recursion=True,
-                                                                 getOnyChkOut=True)))):
-            if doc_id.is3D():
-                doc_3d_ids += doc_id
-            else:
-                doc_2d_ids += doc_id
-
         if root_id.is3D():
-            doc_3d_ids += root_id
-            doc_3d_ids += self.browse(self.getRelatedHiTree(root_id.id,
-                                                            recursion=True,
-                                                            getRftree=True,
-                                                            getOnyChkOut=True))
+            # Fast path: BFS traversal, O(depth) queries for HiTree + 2 for LyTree
+            all_3d_ids, all_2d_ids = self._batch_traverse_hi_ly_tree(root_id)
+            doc_3d_ids = self.browse(all_3d_ids)
+            doc_2d_ids = self.browse(all_2d_ids)
         else:
-            doc_2d_ids += root_id
-            for doc_id in doc_3d_ids:
-                doc_3d_ids += self.browse(self.getRelatedHiTree(doc_id.id,
-                                                                recursion=True,
-                                                                getRftree=True,
-                                                                getOnyChkOut=True))
-        for doc_3d_id in doc_3d_ids:
-            doc_2d_ids+= self.browse(list(set(self.getRelatedLyTree(doc_3d_id.id,
-                                                                    getOnyChkOut=True))))
-        done = []
+            # 2D root (uncommon): find parent 3D via LyTree/PrTree, then batch-traverse each
+            doc_2d_ids = root_id
+            initial_ids = list(set(
+                self.getRelatedLyTree(root_id.id, getOnyChkOut=True) +
+                self.getRelatedPrTree(root_id.id, recursion=True, getOnyChkOut=True)
+            ))
+            for doc_id in self.browse(initial_ids):
+                if doc_id.is3D():
+                    add_3d_ids, add_2d_ids = self._batch_traverse_hi_ly_tree(doc_id)
+                    doc_3d_ids |= self.browse(add_3d_ids)
+                    doc_2d_ids |= self.browse(add_2d_ids)
+                else:
+                    doc_2d_ids |= doc_id
+
+        all_candidate_ids = list(set((doc_3d_ids + doc_2d_ids).ids))
+        prefetch = self._bulk_prefetch_check_in_data(all_candidate_ids)
+
+        done = set()
         for s_doc_id in doc_3d_ids + doc_2d_ids:
             if s_doc_id.id in done:
                 continue
-            done.append(s_doc_id.id)
-            data_info, out_status = self.fill_up_check_in_status(s_doc_id,
-                                                                 PLM_DT_DELTA,
-                                                                 is_root=s_doc_id.id == root_id.id)
+            done.add(s_doc_id.id)
+            data_info, out_status = self.fill_up_check_in_status(
+                s_doc_id,
+                PLM_DT_DELTA,
+                is_root=s_doc_id.id == root_id.id,
+                timing=timing,
+                prefetch=prefetch)
             if out_status == 'to_check':
                 if data_info['document_type'] in ['2D', 'PR']:
                     out['to_check_2d'].append(data_info)

@@ -95,8 +95,9 @@ class PlmCheckout(models.Model):
                 raise UserError(msg)
             self._adjustRelations([docBrws.id])
         newCheckoutBrws = super().create(vals)
-        newCheckoutBrws.documentid.assign_must_update_flag()
-        docBrws.message_post(body=_(f'Checked-Out ID {newCheckoutBrws.id}' ))
+        for checkout_brws in newCheckoutBrws:
+            checkout_brws.documentid.assign_must_update_flag()
+            checkout_brws.documentid.message_post(body=_(f'Checked-Out ID {checkout_brws.id}'))
         return newCheckoutBrws
 
     def unlink(self):
