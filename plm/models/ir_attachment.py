@@ -3211,7 +3211,6 @@ class IrAttachment(models.Model):
                 s_doc_id,
                 PLM_DT_DELTA,
                 is_root=s_doc_id.id == root_id.id,
-                timing=timing,
                 prefetch=prefetch)
             if out_status == 'to_check':
                 if data_info['document_type'] in ['2D', 'PR']:
