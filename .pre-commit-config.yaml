@@ -40,8 +40,8 @@ repos:
       - id: oca-update-pre-commit-excluded-addons
       - id: oca-fix-manifest-website
         args: ["https://github.com/OmniaGit/odooplm"]
-  - repo: https://github.com/myint/autoflake
-    rev: v1.4
+  - repo: https://github.com/PyCQA/autoflake
+    rev: v2.3.1
     hooks:
       - id: autoflake
         args:
@@ -52,7 +52,7 @@ repos:
           - --remove-duplicate-keys
           - --remove-unused-variables
   - repo: https://github.com/psf/black
-    rev: 20.8b1
+    rev: 24.4.2
     hooks:
       - id: black
   - repo: https://github.com/pre-commit/mirrors-prettier
@@ -97,7 +97,7 @@ repos:
       - id: mixed-line-ending
         args: ["--fix=lf"]
   - repo: https://github.com/asottile/pyupgrade
-    rev: v2.7.2
+    rev: v3.15.2
     hooks:
       - id: pyupgrade
         args: ["--keep-percent-format"]
@@ -126,7 +126,7 @@ repos:
         name: flake8
         additional_dependencies: ["flake8-bugbear==24.2.6"]
   - repo: https://github.com/PyCQA/pylint
-    rev: pylint-2.5.3
+    rev: v3.2.7
     hooks:
       - id: pylint
         name: pylint with optional checks
@@ -135,7 +135,7 @@ repos:
           - --exit-zero
         verbose: true
         additional_dependencies: &pylint_deps
-          - pylint-odoo==3.5.0
+          - pylint-odoo==9.0.0
       - id: pylint
         name: pylint with mandatory checks
         args:
