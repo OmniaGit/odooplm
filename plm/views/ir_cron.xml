@@ -1,25 +1,25 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo noupdate="1">
 
         <record id="ir_update_preview_cron" model="ir.cron">
             <field name="name">Update Preview</field>
-            <field name="active" eval="False"/>
+            <field name="active" eval="False" />
             <field name="interval_number">1</field>
             <field name="interval_type">hours</field>
-            <field name="model_id" ref="model_ir_attachment"/>
+            <field name="model_id" ref="model_ir_attachment" />
             <field name="code">env['ir.attachment'].updatePreviews()</field>
             <field name="state">code</field>
         </record>
 
         <record id="ir_cron_scheduler_bck_cad_open" model="ir.cron">
             <field name="name">Plm Cad Open Bck</field>
-            <field name="model_id" ref="model_plm_cad_open"/>
+            <field name="model_id" ref="model_plm_cad_open" />
             <field name="state">code</field>
             <field name="code">model.run_clean_cad_open_bck_scheduler()</field>
             <field name="interval_number">1</field>
             <field name="interval_type">days</field>
             <!-- Active flag is set on fetchmail_server.create/write -->
-            <field name="active" eval="False"/>
+            <field name="active" eval="False" />
         </record>
 
 </odoo>

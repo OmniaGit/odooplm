@@ -1,19 +1,22 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <record id="plm_edit_project" model="ir.ui.view">
         <field name="name">plm.edit.project</field>
         <field name="model">project.project</field>
-        <field name="inherit_id" ref="project.edit_project"/>
-        <field name="priority" eval="3"/>
+        <field name="inherit_id" ref="project.edit_project" />
+        <field name="priority" eval="3" />
         <field name="arch" type="xml">
             <field name="partner_id" position="after">
-                <field string="PLM" name="plm_use_plm"/>
-                <field name="plm_completed" widget="progressbar"
-                       invisible="plm_use_plm==False"/>
+                <field string="PLM" name="plm_use_plm" />
+                <field
+                    name="plm_completed"
+                    widget="progressbar"
+                    invisible="plm_use_plm==False"
+                />
             </field>
             <xpath expr="//notebook" position="inside">
                 <page string="PLM" invisible="plm_use_plm==False">
-                      <field name="plm_product_ids" nolabel="1"/>
+                      <field name="plm_product_ids" nolabel="1" />
                 </page>
             </xpath>
         </field>
@@ -22,20 +25,27 @@
     <record id="plm_project_kanban_view_inherit" model="ir.ui.view">
         <field name="name">plm.project.kanban.view.inherit</field>
         <field name="model">project.project</field>
-        <field name="inherit_id" ref="project.view_project_kanban"/>
+        <field name="inherit_id" ref="project.view_project_kanban" />
         <field name="priority">24</field>
         <field name="arch" type="xml">
             <xpath expr="//templates" position="before">
-                <field name="plm_use_plm"/>
-                <field name="total_components"/>
-                <field name="released_components"/>
+                <field name="plm_use_plm" />
+                <field name="total_components" />
+                <field name="released_components" />
             </xpath>
-            <xpath expr="//div[hasclass('d-flex', 'align-items-center')]" position="after">
+            <xpath
+                expr="//div[hasclass('d-flex', 'align-items-center')]"
+                position="after"
+            >
                 <t t-if="record.plm_use_plm.raw_value">
-                    <a class="d-inline-block btn-link text-dark small me-1" role="button"
-                       name="action_get_product_variant_list_view" type="object"
-                       t-attf-title="#{record.released_components.value} out of #{record.total_components.value} components released">
-                        <i class="fa fa-tags fa-fw"></i>
+                    <a
+                        class="d-inline-block btn-link text-dark small me-1"
+                        role="button"
+                        name="action_get_product_variant_list_view"
+                        type="object"
+                        t-attf-title="#{record.released_components.value} out of #{record.total_components.value} components released"
+                    >
+                        <i class="fa fa-tags fa-fw" />
                     </a>
                 </t>
             </xpath>

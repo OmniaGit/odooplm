@@ -1,15 +1,15 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
 <data>
     <record model="ir.ui.view" id="plm_view_material_list">
         <field name="name">plm.view.material.list</field>
         <field name="model">plm.material</field>
-        <field name="priority" eval="10"/>
+        <field name="priority" eval="10" />
         <field name="arch" type="xml">
-            <list string="Materials"  editable="bottom">
-                   <field name="name"/>
-                   <field name="description"/>
-                   <field name="sequence"/>
+            <list string="Materials" editable="bottom">
+                   <field name="name" />
+                   <field name="description" />
+                   <field name="sequence" />
             </list>
         </field>
     </record>
@@ -19,9 +19,8 @@
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">plm.material</field>
         <field name="view_mode">list</field>
-        <field name="view_id" ref="plm_view_material_list"/>
+        <field name="view_id" ref="plm_view_material_list" />
     </record>
 
 </data>
 </odoo>
-

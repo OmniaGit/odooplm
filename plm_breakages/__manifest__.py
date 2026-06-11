@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Your own solutions
@@ -27,7 +26,7 @@
     "name": "PLM Breakages",
     "version": "18.0.1.0.0",
     "author": "OmniaSolutions",
-    "website": "https://www.omniasolutions.website",
+    "website": "https://github.com/OmniaGit/odooplm",
     "category": "Manufacturing/Product Lifecycle Management (PLM)",
     "license": "AGPL-3",
     "summary": "PLM Breakages",

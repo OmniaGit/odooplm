@@ -1,8 +1,7 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
+<?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
 	<template id="report_doc_bom">
-        <t t-set="record_browse" t-value="data['id']"/>
+        <t t-set="record_browse" t-value="data['id']" />
 		<div class="container document_report_page">
 			<div class="row">
 				<div class="col-lg-12">
@@ -21,47 +20,69 @@
 								</tr>
 							</thead>
 							<tbody>
-								<tr onmouseover="this.style.backgroundColor='#e1e5f4'" onmouseout="this.style.backgroundColor=''">
+								<tr
+                                    onmouseover="this.style.backgroundColor='#e1e5f4'"
+                                    onmouseout="this.style.backgroundColor=''"
+                                >
 									<td class="text-center">
-		                          		<t t-esc="data['level']"/>
+		                          		<t t-esc="data['level']" />
 		                         	</td>
 									<td>
 				                        <div t-attf-class="d-inline-block">
-				                             <a t-attf-href="/web#id={{record_browse.id}}&amp;model={{record_browse._name}}&amp;view_type=form" t-esc="record_browse.name"
-				                                target="_blank"></a>
+				                             <a
+                                                t-attf-href="/web#id={{record_browse.id}}&amp;model={{record_browse._name}}&amp;view_type=form"
+                                                t-esc="record_browse.name"
+                                                target="_blank"
+                                            />
 				                        </div>
 		                           	</td>
 		                     		<td>
-		                            	<t t-esc="record_browse.engineering_code"/>
+		                            	<t t-esc="record_browse.engineering_code" />
 		                        	</td>
 		                        	<td style="padding-right: 10px;">
-		                            	<span t-esc="record_browse.engineering_revision" style="padding-right: 10px;"/>
+		                            	<span
+                                            t-esc="record_browse.engineering_revision"
+                                            style="padding-right: 10px;"
+                                        />
 		                        	</td>
-		                        	<t t-set="state" t-value="record_browse.engineering_state"/>
-		                        	<t t-call="plm.docuemnt_state_row"/>
+		                        	<t t-set="state" t-value="record_browse.engineering_state" />
+		                        	<t t-call="plm.docuemnt_state_row" />
 		                        	<td>
 		                            	<t t-if="record_browse.linkedcomponents">
-		                                	<t t-set="linked_product" t-value="record_browse.linkedcomponents[0]"/>
+		                                	<t
+                                                t-set="linked_product"
+                                                t-value="record_browse.linkedcomponents[0]"
+                                            />
 	                                        <div t-attf-class="d-inline-block">
-	                                             <a t-attf-href="/web#id={{linked_product.id}}&amp;model={{linked_product._name}}&amp;view_type=form" t-esc="linked_product.engineering_code"
-	                                                target="_blank"></a>
+	                                             <a
+                                                    t-attf-href="/web#id={{linked_product.id}}&amp;model={{linked_product._name}}&amp;view_type=form"
+                                                    t-esc="linked_product.engineering_code"
+                                                    target="_blank"
+                                                />
 	                                        </div>
-	                                        <div t-esc="linked_product.name"/>
+	                                        <div t-esc="linked_product.name" />
 		                          		</t>
 		                        	</td>
                                     <td class="text-center" style="color:red;">
 					                    <t t-if="record_browse.checkout_user">
-					                        <div class="fa fa-lock" t-esc="record_browse.checkout_user"/>
+					                        <div class="fa fa-lock" t-esc="record_browse.checkout_user" />
 					                    </t>
 					                    <t t-else="">
-					                       <div class="fa fa-unlock" style="color:green;"/>
+					                       <div class="fa fa-unlock" style="color:green;" />
 					                    </t>
                                     </td>
-		                         	<td class="text-center" style="padding-top: 5px; padding-bottom: 5px;">
-					                	<img t-att-src="'/plm/ir_attachment_preview/%s' % record_browse.id" t-att-alt="record_browse.display_name" class="image_document_report"/>
+		                         	<td
+                                        class="text-center"
+                                        style="padding-top: 5px; padding-bottom: 5px;"
+                                    >
+					                	<img
+                                            t-att-src="'/plm/ir_attachment_preview/%s' % record_browse.id"
+                                            t-att-alt="record_browse.display_name"
+                                            class="image_document_report"
+                                        />
 		                         	</td>
 								</tr>
-								<t t-call="plm.report_doc_bom_line"/>
+								<t t-call="plm.report_doc_bom_line" />
 							</tbody>
 						</table>
 					</div>
@@ -72,81 +93,120 @@
 
 	<template id="report_doc_bom_line">
 		<t t-foreach="data['children']" t-as="child_dict">
-		    <t t-set="record_child" t-value="child_dict['id']"/>
-		    <t t-set="record_child_level" t-value="child_dict['level']"/>
-		    <t t-set="state" t-value="record_child.engineering_state"/>
+		    <t t-set="record_child" t-value="child_dict['id']" />
+		    <t t-set="record_child_level" t-value="child_dict['level']" />
+		    <t t-set="state" t-value="record_child.engineering_state" />
 			<!-- <t t-set="space_td" t-value="'margin-left: '+ str(record_child_level * 20) + 'px; display: flex; font-weight:bold; color: #008b8b;'"/> -->
-			<tr class="document_report_line" t-att-data-level="record_child_level" onmouseover="this.style.backgroundColor='#e1e5f4'" onmouseout="this.style.backgroundColor=''">
+			<tr
+                class="document_report_line"
+                t-att-data-level="record_child_level"
+                onmouseover="this.style.backgroundColor='#e1e5f4'"
+                onmouseout="this.style.backgroundColor=''"
+            >
 				<td class="text-center">
-                	<t t-esc="record_child_level"/>
+                	<t t-esc="record_child_level" />
                 </td>
 				<td>
 					<div t-att-style="None">
-						<t t-set="spaces" t-value="range(record_child_level)"/>
+						<t t-set="spaces" t-value="range(record_child_level)" />
 						<t t-foreach="spaces" t-as="level">
 							<t t-if="level != spaces[-1]">
-						    	<label class="" style="width:20px;"/>
+						    	<label class="" style="width:20px;" />
 						  	</t>
 						  	<t t-if="level == spaces[-1]">
-						    	<label class="o_mrp_bom_unfoldable fa fa-fw fa-chevron-left" style="color: #a5c7c7; padding-top: 4px; transform: rotate(-45deg); position: relative; left: 6px;"/>
-						    	<label class="o_mrp_bom_unfoldable fa fa-fw fa-arrow-right" style="color: #008b8b; padding-top: 4px; position: relative; right: 8px;"/>
+						    	<label
+                                    class="o_mrp_bom_unfoldable fa fa-fw fa-chevron-left"
+                                    style="color: #a5c7c7; padding-top: 4px; transform: rotate(-45deg); position: relative; left: 6px;"
+                                />
+						    	<label
+                                    class="o_mrp_bom_unfoldable fa fa-fw fa-arrow-right"
+                                    style="color: #008b8b; padding-top: 4px; position: relative; right: 8px;"
+                                />
 						  	</t>
 						</t>
 		                <div t-attf-class="d-inline-block">
-		                     <a t-attf-href="/web#id={{record_child.id}}&amp;model={{record_child._name}}&amp;view_type=form" t-esc="record_child.name"
-		                        target="_blank"></a>
+		                     <a
+                                t-attf-href="/web#id={{record_child.id}}&amp;model={{record_child._name}}&amp;view_type=form"
+                                t-esc="record_child.name"
+                                target="_blank"
+                            />
 		                </div>
 					</div>
 				</td>
 				<td>
-					<t t-esc="record_child.engineering_code"/>
+					<t t-esc="record_child.engineering_code" />
 				</td>
-				<td >
-					<span t-esc="record_child.engineering_revision" style="text-align:center;padding-right: 10px;"/>
+				<td>
+					<span
+                        t-esc="record_child.engineering_revision"
+                        style="text-align:center;padding-right: 10px;"
+                    />
 				</td>
-                <t t-call="plm.docuemnt_state_row"/>
+                <t t-call="plm.docuemnt_state_row" />
 				<td>
 					<t t-if="record_child.linkedcomponents">
-	                    <t t-set="linked_product" t-value="record_child.linkedcomponents[0]"/>
+	                    <t
+                            t-set="linked_product"
+                            t-value="record_child.linkedcomponents[0]"
+                        />
 	                    <div t-attf-class="d-inline-block">
-	                         <a t-attf-href="/web#id={{linked_product.id}}&amp;model={{linked_product._name}}&amp;view_type=form" t-esc="linked_product.engineering_code"
-	                            target="_blank"></a>
+	                         <a
+                                t-attf-href="/web#id={{linked_product.id}}&amp;model={{linked_product._name}}&amp;view_type=form"
+                                t-esc="linked_product.engineering_code"
+                                target="_blank"
+                            />
 	                    </div>
-	                    <div t-esc="linked_product.name"/>
+	                    <div t-esc="linked_product.name" />
                  	</t>
 				</td>
                 <td class="text-center" style="color:red;">
                     <t t-if="record_child.checkout_user">
-                        <div class="fa fa-lock" t-esc="record_child.checkout_user"/>
+                        <div class="fa fa-lock" t-esc="record_child.checkout_user" />
                     </t>
                     <t t-else="">
-                        <div class="fa fa-unlock" style="color:green;"/>
+                        <div class="fa fa-unlock" style="color:green;" />
                     </t>
                 </td>
                	<td class="text-center" style="padding-top: 5px; padding-bottom: 5px;">
-               		<img t-att-src="'/plm/ir_attachment_preview/%s' % record_child.id" class="image_document_report" loading="lazy"/>
+               		<img
+                        t-att-src="'/plm/ir_attachment_preview/%s' % record_child.id"
+                        class="image_document_report"
+                        loading="lazy"
+                    />
                	</td>
 			</tr>
-			<div t-esc="child_dict['report_obj'].get_doc_bom(record_child, record_child_level)"/>
+			<div t-esc="child_dict['report_obj'].get_doc_bom(record_child, record_child_level)" />
 		</t>
 	</template>
 
 	<template id="docuemnt_state_row">
           <td class="text-center">
               <b>
-                  <t t-if="state == 'draft'"><span style="color: rgb(110, 51, 197);padding-left: 5px;"><t t-esc="state"/></span></t>
-                  <t t-elif="state == 'confirmed'"><span style="color: blue;padding-left: 5px;"><t t-esc="state"/></span></t>
-                  <t t-elif="state == 'released'"><span style="color: rgba(0, 170, 34, 0.66);padding-left: 5px;"><t t-esc="state"/></span></t>
-                  <t t-elif="state == 'undermodify'"><span style="color: rgb(218, 159, 34);padding-left: 5px;"><t t-esc="state"/></span></t>
-                  <t t-elif="state == 'obsoleted'"><span style="color: rgb(231, 43, 26);padding-left: 5px;"><t t-esc="state"/></span></t>
-                  <t t-else=""><span style="color: black;padding-left: 5px;"><t t-esc="state"/></span></t>
+                  <t t-if="state == 'draft'"><span
+                        style="color: rgb(110, 51, 197);padding-left: 5px;"
+                    ><t t-esc="state" /></span></t>
+                  <t t-elif="state == 'confirmed'"><span
+                        style="color: blue;padding-left: 5px;"
+                    ><t t-esc="state" /></span></t>
+                  <t t-elif="state == 'released'"><span
+                        style="color: rgba(0, 170, 34, 0.66);padding-left: 5px;"
+                    ><t t-esc="state" /></span></t>
+                  <t t-elif="state == 'undermodify'"><span
+                        style="color: rgb(218, 159, 34);padding-left: 5px;"
+                    ><t t-esc="state" /></span></t>
+                  <t t-elif="state == 'obsoleted'"><span
+                        style="color: rgb(231, 43, 26);padding-left: 5px;"
+                    ><t t-esc="state" /></span></t>
+                  <t t-else=""><span style="color: black;padding-left: 5px;"><t
+                            t-esc="state"
+                        /></span></t>
               </b>
           </td>
 	</template>
 
 	<record id="paperformat_doc_structure" model="report.paperformat">
         <field name="name">Paperformat Doc Structure</field>
-        <field name="default" eval="True"/>
+        <field name="default" eval="True" />
         <field name="format">A4</field>
         <field name="page_height">0</field>
         <field name="page_width">0</field>
@@ -155,20 +215,20 @@
         <field name="margin_bottom">0</field>
         <field name="margin_left">0</field>
         <field name="margin_right">0</field>
-        <field name="header_line" eval="False"/>
+        <field name="header_line" eval="False" />
         <field name="header_spacing">0</field>
         <field name="dpi">90</field>
     </record>
 
     <template id="report_doc_structure">
-	        <t t-set="data_report_landscape" t-value="True"/>
+	        <t t-set="data_report_landscape" t-value="True" />
 	        <t t-call="web.basic_layout">
-	            <t t-call-assets="mrp.assets_common" t-js="False"/>
+	            <t t-call-assets="mrp.assets_common" t-js="False" />
 	            <t t-foreach="docs" t-as="data">
 	            	<style>head, body, foot{ background-color: #f6f7fa;}</style>
-					<div class="head body foot"></div>
-           			<div class="page"><t t-call="plm.report_doc_bom"/></div>
-            		<p style="page-break-before:always;"></p>
+					<div class="head body foot" />
+           			<div class="page"><t t-call="plm.report_doc_bom" /></div>
+            		<p style="page-break-before:always;" />
 	            </t>
 			</t>
     </template>
@@ -176,12 +236,14 @@
 	<record id="action_report_doc_structure" model="ir.actions.report">
     	<field name="name">Document structure</field>
         <field name="model">ir.attachment</field>
-        <field name="paperformat_id" ref="plm.paperformat_doc_structure"/>
+        <field name="paperformat_id" ref="plm.paperformat_doc_structure" />
         <field name="report_type">qweb-html</field>
         <field name="report_name">plm.report_doc_structure</field>
         <field name="report_file">plm.report_doc_structure</field>
-        <field name="print_report_name">'Bom Doc Structure - %s' % object.display_name</field>
-        <field name="binding_model_id" ref="model_ir_attachment"/>
+        <field
+            name="print_report_name"
+        >'Bom Doc Structure - %s' % object.display_name</field>
+        <field name="binding_model_id" ref="model_ir_attachment" />
         <field name="binding_type">report</field>
   	</record>
 

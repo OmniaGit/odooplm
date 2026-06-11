@@ -1,4 +1,3 @@
-# -*- encoding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Your own solutions
@@ -31,13 +30,13 @@ class ProductProductExtension(models.Model):
 
     @api.model_create_multi
     def create(self, vals):
-        product_product_ids = super(ProductProductExtension, self).create(vals)
+        product_product_ids = super().create(vals)
         for product_product_id in product_product_ids:
             product_product_id.update_name_lang(vals)
         return product_product_ids
 
     def write(self, vals):
-        res = super(ProductProductExtension, self).write(vals)
+        res = super().write(vals)
         self.update_name_lang(vals)
         return res
 

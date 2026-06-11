@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, ERP-PLM-CAD Open Source Solutions
@@ -18,21 +17,18 @@
 #    along with this prograIf not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-'''
+"""
 Created on Nov 16, 2019
 
 @author: mboscolo
-'''
-from odoo import models
-from odoo import fields
-from odoo import _
+"""
+from odoo import fields, models
 
 
 class MailActivityType(models.Model):
-    _inherit = 'mail.activity.type'
+    _inherit = "mail.activity.type"
 
-    change_activity_type = fields.Selection(selection=[('request', 'Request'),
-                                                       ('plm_activity', 'Order')
-                                                       ], 
-                                            string='Change Activity Type')
-    
+    change_activity_type = fields.Selection(
+        selection=[("request", "Request"), ("plm_activity", "Order")],
+        string="Change Activity Type",
+    )

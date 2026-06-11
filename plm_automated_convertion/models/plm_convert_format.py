@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, ERP-PLM-CAD Open Source Solutions
@@ -22,8 +21,9 @@
 Created on Sep 7, 2019
 @author: mboscolo
 """
-from odoo import fields, models, api
 import os
+
+from odoo import api, fields, models
 
 
 class PlmConvertFormat(models.Model):
@@ -39,7 +39,7 @@ class PlmConvertFormat(models.Model):
     cad_name = fields.Char("Cad Name", required=True)
     server_id = fields.Many2one("plm.convert.servers", string="Server", required=True)
 
-    @api.depends('start_format', 'end_format')
+    @api.depends("start_format", "end_format")
     def _compute_name(self):
         for plm_convert_format in self:
             plm_convert_format.name = f"[{plm_convert_format.cad_name}] {plm_convert_format.server_id.name or ''}  {plm_convert_format.end_format}"
@@ -49,9 +49,11 @@ class PlmConvertFormat(models.Model):
         self._update_cad_ex_availability()
 
     def _update_cad_ex_availability(self):
-        cad_ex_path = self.env['ir.config_parameter'].sudo().get_param('Cad Excange Cli')
+        cad_ex_path = (
+            self.env["ir.config_parameter"].sudo().get_param("Cad Excange Cli")
+        )
         is_cad_ex_available = bool(cad_ex_path and os.path.exists(cad_ex_path))
 
-        self.sudo().search([('cad_name', '=', 'CadExcange')]).write({
-            'available': is_cad_ex_available
-        })
+        self.sudo().search([("cad_name", "=", "CadExcange")]).write(
+            {"available": is_cad_ex_available}
+        )

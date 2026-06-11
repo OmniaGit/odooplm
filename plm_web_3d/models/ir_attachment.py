@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, ERP-PLM-CAD Open Source Solutions
@@ -72,10 +71,9 @@ class IrAttachment(models.Model):
             if ir_attachment.isWebGl():
                 ir_attachment.has_web3d = True
                 continue
-            ir_attachment.has_web3d = attach_relations.search_count([
-                ("parent_id", "=", ir_attachment.id),
-                ("link_kind", "=", "Web3DTree")
-            ])
+            ir_attachment.has_web3d = attach_relations.search_count(
+                [("parent_id", "=", ir_attachment.id), ("link_kind", "=", "Web3DTree")]
+            )
 
     def get_url_for_3dWebModel(self):
         attach_relations = self.env["ir.attachment.relation"]
@@ -83,19 +81,25 @@ class IrAttachment(models.Model):
             base_url = self.env["ir.config_parameter"].sudo().get_param("web.base.url")
             url_params = None
             if ir_attachment.isWebGl():
-                url_params = urllib.parse.urlencode({
-                    "document_id": ir_attachment.id,
-                    "document_name": ir_attachment.name
-                })
+                url_params = urllib.parse.urlencode(
+                    {
+                        "document_id": ir_attachment.id,
+                        "document_name": ir_attachment.name,
+                    }
+                )
             else:
-                for rel in attach_relations.search([
-                    ("parent_id", "=", ir_attachment.id),
-                    ("link_kind", "=", "Web3DTree")
-                ]):
-                    url_params = urllib.parse.urlencode({
-                        "document_id": rel.child_id.id,
-                        "document_name": rel.child_id.name
-                    })
+                for rel in attach_relations.search(
+                    [
+                        ("parent_id", "=", ir_attachment.id),
+                        ("link_kind", "=", "Web3DTree"),
+                    ]
+                ):
+                    url_params = urllib.parse.urlencode(
+                        {
+                            "document_id": rel.child_id.id,
+                            "document_name": rel.child_id.name,
+                        }
+                    )
             if url_params:
                 return f"{base_url}/plm/show_treejs_model?{url_params}"
 
@@ -103,45 +107,50 @@ class IrAttachment(models.Model):
         """Return existing 3MF conversion of this STEP file, creating it if needed."""
         self.ensure_one()
         # Look for an already-converted 3MF linked to this STEP
-        if 'source_convert_document' in self._fields:
-            existing = self.env['ir.attachment'].search([
-                ('source_convert_document', '=', self.id),
-                ('name', 'ilike', '.3mf'),
-            ], limit=1)
+        if "source_convert_document" in self._fields:
+            existing = self.env["ir.attachment"].search(
+                [
+                    ("source_convert_document", "=", self.id),
+                    ("name", "ilike", ".3mf"),
+                ],
+                limit=1,
+            )
             if existing:
                 return existing
         # Perform conversion
-        if not hasattr(self, 'convert_from_step_to'):
-            raise UserError(_(
-                "STEP to 3MF conversion requires the 'plm_automated_convertion' "
-                "module to be installed."
-            ))
+        if not hasattr(self, "convert_from_step_to"):
+            raise UserError(
+                _(
+                    "STEP to 3MF conversion requires the 'plm_automated_convertion' "
+                    "module to be installed."
+                )
+            )
         try:
-            new_file_path = self.convert_from_step_to('.3mf')
+            new_file_path = self.convert_from_step_to(".3mf")
         except Exception as e:
             _logger.error("STEP→3MF conversion failed for %s: %s", self.name, e)
             raise UserError(_("STEP to 3MF conversion failed: %s") % e)
         name_base, _ext = os.path.splitext(self.name)
-        with open(new_file_path, 'rb') as fh:
+        with open(new_file_path, "rb") as fh:
             data = base64.b64encode(fh.read())
         vals = {
-            'name': name_base + '.3mf',
-            'datas': data,
-            'res_model': self.res_model,
-            'res_id': self.res_id,
+            "name": name_base + ".3mf",
+            "datas": data,
+            "res_model": self.res_model,
+            "res_id": self.res_id,
         }
-        if 'is_converted_document' in self._fields:
-            vals['is_converted_document'] = True
-            vals['source_convert_document'] = self.id
-        new_attachment = self.env['ir.attachment'].create(vals)
+        if "is_converted_document" in self._fields:
+            vals["is_converted_document"] = True
+            vals["source_convert_document"] = self.id
+        new_attachment = self.env["ir.attachment"].create(vals)
         if self.preview:
             new_attachment.preview = self.preview
         return new_attachment
 
     def show_releted_3d(self):
         for ir_attachment in self:
-            _name, exte = os.path.splitext(ir_attachment.name or '')
-            if exte.lower() in ('.stp', '.step'):
+            _name, exte = os.path.splitext(ir_attachment.name or "")
+            if exte.lower() in (".stp", ".step"):
                 target = ir_attachment._get_or_create_3mf_from_step()
             else:
                 target = ir_attachment

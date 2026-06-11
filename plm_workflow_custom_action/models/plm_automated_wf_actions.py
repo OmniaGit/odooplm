@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, ERP-PLM-CAD Open Source Solutions
@@ -24,7 +23,7 @@ Created on 24 Apr 2023
 """
 import json
 
-from odoo import fields, models, api
+from odoo import api, fields, models
 
 
 class PlmAutomatedWFAction(models.Model):
@@ -34,41 +33,43 @@ class PlmAutomatedWFAction(models.Model):
     name = fields.Char("Action Name")
 
     def get_selection_attachment(self):
-        attach = self.env["ir.attachment"] 
-        sel = attach._fields['engineering_state'].selection
+        attach = self.env["ir.attachment"]
+        sel = attach._fields["engineering_state"].selection
         return sel if isinstance(sel, list) else sel(attach)
-    
+
     def get_selection_product(self):
         pp = self.env["product.product"]
-        sel = pp._fields['engineering_state'].selection
+        sel = pp._fields["engineering_state"].selection
         return sel if isinstance(sel, list) else sel(pp)
+
     #
-    attachment_from_state = fields.Selection(get_selection_attachment,
-                                             string="From Stare")
-    attachment_to_state = fields.Selection(get_selection_attachment,
-                                           string="To State")
-    product_from_state = fields.Selection(get_selection_product,
-                                             string="From Stare")
-    product_to_state = fields.Selection(get_selection_product,
-                                           string="To State")
+    attachment_from_state = fields.Selection(
+        get_selection_attachment, string="From Stare"
+    )
+    attachment_to_state = fields.Selection(get_selection_attachment, string="To State")
+    product_from_state = fields.Selection(get_selection_product, string="From Stare")
+    product_to_state = fields.Selection(get_selection_product, string="To State")
+
     #
-    @api.onchange("attachment_from_state","attachment_to_state")
+    @api.onchange("attachment_from_state", "attachment_to_state")
     def update_state_from_attachment(self):
         self.from_state = self.attachment_from_state
         self.to_state = self.attachment_to_state
+
     #
-    @api.onchange("product_from_state","product_to_state")
+    @api.onchange("product_from_state", "product_to_state")
     def update_state_from_product(self):
         self.from_state = self.product_from_state
-        self.to_state = self.product_to_state 
+        self.to_state = self.product_to_state
+
     #
     from_state = fields.Char(string="From Stare")
     to_state = fields.Char(string="To State")
 
-    before_after = fields.Selection([
-        ("before", "Before"),
-        ("after", "After")], string="Perform",
-        help="you can choose to perform the action before or after the workflow action"
+    before_after = fields.Selection(
+        [("before", "Before"), ("after", "After")],
+        string="Perform",
+        help="you can choose to perform the action before or after the workflow action",
     )
 
     apply_to = fields.Selection(
@@ -77,8 +78,7 @@ class PlmAutomatedWFAction(models.Model):
         help="Apply this action to the workflow model",
     )
 
-    domain = fields.Char("Domain", 
-                         help="""specifie the domain of the action""")
+    domain = fields.Char("Domain", help="""specifie the domain of the action""")
 
     child_ids = fields.Many2many(
         "ir.actions.server",
@@ -87,8 +87,8 @@ class PlmAutomatedWFAction(models.Model):
         "action_id",
         string="Child Actions",
         help="Child server actions that will be executed."
-             "Note that the last return returned action value"
-             " will be used as global return value.",
+        "Note that the last return returned action value"
+        " will be used as global return value.",
     )
 
     def name_get(self):

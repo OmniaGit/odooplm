@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Open Source Management Solution
@@ -23,7 +22,7 @@
     "name": "PLM Web 3d Support",
     "version": "18.0.3.0.14",
     "author": "OmniaSolutions",
-    "website": "https://odooplm.omniasolutions.website",
+    "website": "https://github.com/OmniaGit/odooplm",
     "category": "Manufacturing/Product Lifecycle Management (PLM)",
     "sequence": 15,
     "license": "AGPL-3",
@@ -42,7 +41,7 @@
     "images": ["static/src/img/web_3d.gif"],
     "depends": ["plm"],
     "data": [
-        'security/ir.model.access.csv',
+        "security/ir.model.access.csv",
         "views/ir_attachment.xml",
         "views/web_template.xml",
     ],

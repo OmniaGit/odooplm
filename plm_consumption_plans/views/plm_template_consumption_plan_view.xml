@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <data>
         <!-- List View -->
@@ -7,11 +7,11 @@
             <field name="model">template.consumption.plan</field>
             <field name="arch" type="xml">
                 <list>
-                    <field name="name"/>
-                    <field name="time_span" widget="float_time"/>
-                    <field name="consumption_state_id"/>
-                    <field name="product_template_ids"/>
-                    <field name="product_ids"/>
+                    <field name="name" />
+                    <field name="time_span" widget="float_time" />
+                    <field name="consumption_state_id" />
+                    <field name="product_template_ids" />
+                    <field name="product_ids" />
                 </list>
             </field>
         </record>
@@ -24,11 +24,14 @@
                 <form>
                     <sheet>
                         <group>
-                            <field name="name" required="1"/>
-                            <field name="time_span" widget="float_time"/>
-                            <field name="consumption_state_id"/>
-                            <field name="product_template_ids" widget="many2many_tags"/>
-                            <field name="product_ids" widget="many2many_tags"/>
+                            <field name="name" required="1" />
+                            <field name="time_span" widget="float_time" />
+                            <field name="consumption_state_id" />
+                            <field
+                                name="product_template_ids"
+                                widget="many2many_tags"
+                            />
+                            <field name="product_ids" widget="many2many_tags" />
                         </group>
                     </sheet>
                 </form>

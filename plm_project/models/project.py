@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Your own solutions
@@ -25,7 +24,7 @@ Created on 30 Aug 2016
 
 @author: Daniel Smerghetto
 """
-from odoo import _, api, fields, models
+from odoo import api, fields, models
 
 
 class ProjectExtension(models.Model):
@@ -56,11 +55,9 @@ class ProjectExtension(models.Model):
         default=False,
         help="Check this box to manage plm data into project",
         compute="_compute_plm_use_plm",
-        store=True
+        store=True,
     )
-    plm_completed = fields.Float(
-        string="Plm Complete", compute="_compute_plm_complete"
-    )
+    plm_completed = fields.Float(string="Plm Complete", compute="_compute_plm_complete")
     plm_product_ids = fields.Many2many(
         "product.product",
         "project_product_rel",
@@ -72,10 +69,14 @@ class ProjectExtension(models.Model):
         compute="_compute_product_count", string="Number of product related"
     )
 
-    total_components = fields.Integer(string="Total Components", compute="_compute_component_stats")
-    released_components = fields.Integer(string="Released Components", compute="_compute_component_stats")
+    total_components = fields.Integer(
+        string="Total Components", compute="_compute_component_stats"
+    )
+    released_components = fields.Integer(
+        string="Released Components", compute="_compute_component_stats"
+    )
 
-    @api.depends('plm_product_ids')
+    @api.depends("plm_product_ids")
     def _compute_plm_use_plm(self):
         for rec in self:
             if rec.plm_product_ids:
@@ -83,27 +84,30 @@ class ProjectExtension(models.Model):
             else:
                 rec.plm_use_plm = False
 
-
     def action_get_product_variant_list_view(self):
         self.ensure_one()
-        list_view_id = self.env.ref('plm_project.view_product_product_list_plm_colored').id
+        list_view_id = self.env.ref(
+            "plm_project.view_product_product_list_plm_colored"
+        ).id
         return {
-            'name': self.name,
-            'type': 'ir.actions.act_window',
-            'res_model': 'product.product',
-            'view_mode': 'list,form',
-            'views': [(list_view_id, 'list'), (False, 'form')],
-            'domain': [('id', 'in', self.plm_product_ids.ids)],
-            'context': {
-                'create': False,
-                'group_by': 'engineering_state',
+            "name": self.name,
+            "type": "ir.actions.act_window",
+            "res_model": "product.product",
+            "view_mode": "list,form",
+            "views": [(list_view_id, "list"), (False, "form")],
+            "domain": [("id", "in", self.plm_product_ids.ids)],
+            "context": {
+                "create": False,
+                "group_by": "engineering_state",
             },
-            'target': 'current',
+            "target": "current",
         }
 
-    @api.depends('plm_product_ids')  # Update this field name to actual relation
+    @api.depends("plm_product_ids")  # Update this field name to actual relation
     def _compute_component_stats(self):
         for project in self:
             components = project.plm_product_ids
             project.total_components = len(components)
-            project.released_components = len(components.filtered(lambda x: x.engineering_state == 'released'))
+            project.released_components = len(
+                components.filtered(lambda x: x.engineering_state == "released")
+            )

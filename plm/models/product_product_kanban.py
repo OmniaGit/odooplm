@@ -18,12 +18,10 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-from odoo import models
-from odoo import api
-from odoo import _
-from odoo import fields
 import json
 import logging
+
+from odoo import _, fields, models
 
 
 class ProductProductKanban(models.Model):
@@ -32,9 +30,8 @@ class ProductProductKanban(models.Model):
     def _kanban_dashboard(self):
         self.kanban_dashboard = json.dumps(self.get_bom_dashboard_datas())
 
-    kanban_dashboard = fields.Text(compute='_kanban_dashboard')
+    kanban_dashboard = fields.Text(compute="_kanban_dashboard")
 
-    
     def get_bom_dashboard_datas(self):
         number_documents = 0
         number_boms = 0
@@ -44,27 +41,27 @@ class ProductProductKanban(models.Model):
             boms = self.get_related_boms()
             number_boms = len(boms)
         return {
-            'number_boms': number_boms,
-            'number_documents': number_documents,
+            "number_boms": number_boms,
+            "number_documents": number_documents,
         }
 
-    
     def get_related_boms(self):
         try:
             product_tmpl_id = False
             for prodBrws in self.ids:
                 if isinstance(prodBrws, int):
                     prodBrws = self.browse(prodBrws)
-                for dictElem in prodBrws.read(['product_tmpl_id']):
-                    tmplTuple = dictElem.get('product_tmpl_id', ())
+                for dictElem in prodBrws.read(["product_tmpl_id"]):
+                    tmplTuple = dictElem.get("product_tmpl_id", ())
                     if tmplTuple:
                         product_tmpl_id = tmplTuple[0]
-            return self.env['mrp.bom'].search([('product_tmpl_id', '=', product_tmpl_id)])
+            return self.env["mrp.bom"].search(
+                [("product_tmpl_id", "=", product_tmpl_id)]
+            )
         except Exception as ex:
             logging.warning(ex)
-            return self.env['mrp.bom'].browse()
+            return self.env["mrp.bom"].browse()
 
-    
     def get_related_docs(self):
         try:
             out = []
@@ -77,75 +74,119 @@ class ProductProductKanban(models.Model):
             logging.warning(ex)
             return []
 
-    
-    def common_open(self, name, model, view_mode='form', view_type='form', res_id=False, ctx={}, domain=[]):
+    def common_open(
+        self,
+        name,
+        model,
+        view_mode="form",
+        view_type="form",
+        res_id=False,
+        ctx={},
+        domain=[],
+    ):
         # <field name="domain">[('account_id','=', active_id)]</field>
         return {
-            'name': _(name),
-            'type': 'ir.actions.act_window',
-            'view_type': view_type,
-            'view_mode': view_mode,
-            'res_model': model,
-            'res_id': res_id,
-            'context': ctx,
-            'domain': domain
+            "name": _(name),
+            "type": "ir.actions.act_window",
+            "view_type": view_type,
+            "view_mode": view_mode,
+            "res_model": model,
+            "res_id": res_id,
+            "context": ctx,
+            "domain": domain,
         }
 
-    
     def toggle_favorite(self):
-        self.write(
-            {'show_on_dashboard': False if self.show_on_dashboard else True})
+        self.write({"show_on_dashboard": False if self.show_on_dashboard else True})
         return False
 
-    
     def open_action(self):
-        return self.common_open(_('New Component'), 'product.product', 'form', 'form', self.ids[0], self.env.context)
+        return self.common_open(
+            _("New Component"),
+            "product.product",
+            "form",
+            "form",
+            self.ids[0],
+            self.env.context,
+        )
 
-    
     def create_component(self):
-        return self.common_open(_('New Component'), 'product.product', 'form', 'form', False, self.env.context)
+        return self.common_open(
+            _("New Component"),
+            "product.product",
+            "form",
+            "form",
+            False,
+            self.env.context,
+        )
 
-    
     def open_normal_bom(self):
         boms = self.get_related_boms()
-        domain = [('id', 'in', boms.ids), ('type', '=', 'normal')]
-        return self.common_open(_('Related Boms'), 'mrp.bom', 'list,form', 'form', boms.ids, self.env.context, domain)
+        domain = [("id", "in", boms.ids), ("type", "=", "normal")]
+        return self.common_open(
+            _("Related Boms"),
+            "mrp.bom",
+            "list,form",
+            "form",
+            boms.ids,
+            self.env.context,
+            domain,
+        )
 
-    
     def open_new_component(self):
-        return self.common_open(_('New Component'), 'product.product', 'form', 'form', False, self.env.context)
+        return self.common_open(
+            _("New Component"),
+            "product.product",
+            "form",
+            "form",
+            False,
+            self.env.context,
+        )
 
-    
     def open_related_docs_action(self):
         docIds = self.get_related_docs()
-        domain = [('id', 'in', docIds)]
-        return self.common_open(_('Related Documents'), 'ir.attachment', 'list,form', 'form', docIds, self.env.context, domain)
+        domain = [("id", "in", docIds)]
+        return self.common_open(
+            _("Related Documents"),
+            "ir.attachment",
+            "list,form",
+            "form",
+            docIds,
+            self.env.context,
+            domain,
+        )
 
-    
     def open_related_boms_action(self):
         boms = self.get_related_boms()
-        domain = [('id', 'in', boms.ids)]
-        return self.common_open(_('Related Boms'), 'mrp.bom', 'list,form', 'form', boms.ids, self.env.context, domain)
+        domain = [("id", "in", boms.ids)]
+        return self.common_open(
+            _("Related Boms"),
+            "mrp.bom",
+            "list,form",
+            "form",
+            boms.ids,
+            self.env.context,
+            domain,
+        )
 
-    
     def create_normal_bom(self):
         context = self.env.context.copy()
-        context.update({'default_type': 'normal'})
+        context.update({"default_type": "normal"})
         docIds = self.get_related_docs()
         if docIds:
-            context.update(
-                {'default_product_tmpl_id': self.product_tmpl_id.id})
-        return self.common_open(_('Related Boms'), 'mrp.bom', 'form', 'form', False, context)
+            context.update({"default_product_tmpl_id": self.product_tmpl_id.id})
+        return self.common_open(
+            _("Related Boms"), "mrp.bom", "form", "form", False, context
+        )
 
-    
     def openDocument(self, vals=False):
-        print('Open document')
+        print("Open document")
 
-    
     def report_components(self):
         pass
 
     def computePrevious(self, linkeddocs):
         pass
+
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

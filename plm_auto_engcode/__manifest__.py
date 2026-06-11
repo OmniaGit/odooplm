@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Open Source Management Solution
@@ -23,7 +22,7 @@
     "name": "PLM Automatic Engineering Code",
     "version": "18.0.1.0.0",
     "author": "OmniaSolutions",
-    "website": "https://odooplm.omniasolutions.website",
+    "website": "https://github.com/OmniaGit/odooplm",
     "category": "Manufacturing/Product Lifecycle Management (PLM)",
     "sequence": 15,
     "summary": """
@@ -34,7 +33,7 @@
     "data": [
         "data/ir_sequence.xml",
         "views/product_category.xml",
-        "views/product_product.xml"
+        "views/product_product.xml",
     ],
     "installable": True,
     "application": False,

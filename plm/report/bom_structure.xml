@@ -1,19 +1,19 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <data>
         <record id="report_plm_bom_structure_all" model="ir.actions.report">
             <field name="name">BOM All Levels</field>
             <field name="model">mrp.bom</field>
-            <field name="binding_model_id" ref="model_mrp_bom"/>
+            <field name="binding_model_id" ref="model_mrp_bom" />
             <field name="report_type">qweb-html</field>
             <field name="report_name">plm.bom_structure_all</field>
             <field name="binding_type">report</field>
         </record>
-        
+
         <record id="report_plm_bom_structure_one" model="ir.actions.report">
             <field name="name">BOM One Level</field>
             <field name="model">mrp.bom</field>
-            <field name="binding_model_id" ref="model_mrp_bom"/>
+            <field name="binding_model_id" ref="model_mrp_bom" />
             <field name="report_type">qweb-html</field>
             <field name="report_name">plm.bom_structure_one</field>
             <field name="binding_type">report</field>
@@ -22,38 +22,38 @@
         <record id="report_plm_bom_structure_all_sum" model="ir.actions.report">
             <field name="name">BOM All Levels Summarized</field>
             <field name="model">mrp.bom</field>
-            <field name="binding_model_id" ref="model_mrp_bom"/>
+            <field name="binding_model_id" ref="model_mrp_bom" />
             <field name="report_type">qweb-html</field>
             <field name="report_name">plm.bom_structure_all_sum</field>
             <field name="binding_type">report</field>
-        </record>  
-        
+        </record>
+
         <record id="report_plm_bom_structure_one_sum" model="ir.actions.report">
             <field name="name">BOM One Level Summarized</field>
             <field name="model">mrp.bom</field>
-            <field name="binding_model_id" ref="model_mrp_bom"/>
+            <field name="binding_model_id" ref="model_mrp_bom" />
             <field name="report_type">qweb-html</field>
             <field name="report_name">plm.bom_structure_one_sum</field>
             <field name="binding_type">report</field>
-        </record>                 	
+        </record>
 
         <record id="report_plm_bom_structure_leaves" model="ir.actions.report">
             <field name="name">BOM Only Leaves Summarize</field>
             <field name="model">mrp.bom</field>
-            <field name="binding_model_id" ref="model_mrp_bom"/>
+            <field name="binding_model_id" ref="model_mrp_bom" />
             <field name="report_type">qweb-html</field>
             <field name="report_name">plm.bom_structure_leaves</field>
             <field name="binding_type">report</field>
         </record>
-                 
+
         <record id="report_plm_bom_structure_flat" model="ir.actions.report">
             <field name="name">BOM Flat Summarized</field>
             <field name="model">mrp.bom</field>
-            <field name="binding_model_id" ref="model_mrp_bom"/>
+            <field name="binding_model_id" ref="model_mrp_bom" />
             <field name="report_type">qweb-html</field>
             <field name="report_name">plm.bom_structure_flat</field>
             <field name="binding_type">report</field>
         </record>
-                
+
     </data>
 </odoo>

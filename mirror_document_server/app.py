@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, ERP-PLM-CAD Open Source Solution
@@ -18,18 +17,18 @@
 #    along with this prograIf not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-'''
+"""
 Created on Aug 30, 2019
 
 @author: mboscolo
-'''
+"""
 from flask import Flask
 
-UPLOAD_FOLDER = '/tmp'
+UPLOAD_FOLDER = "/tmp"
 
 app = Flask(__name__)
 app.secret_key = "secret key"
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-#app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
-app.config['USER_NAME'] = 'OMNIA_USER'
-app.config['PASSWORD'] = 'OMNIA_PASSWORD'
+app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+# app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
+app.config["USER_NAME"] = "OMNIA_USER"
+app.config["PASSWORD"] = "OMNIA_PASSWORD"

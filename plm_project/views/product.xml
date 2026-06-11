@@ -1,30 +1,38 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <record id="plm_project_product_extend" model="ir.ui.view">
         <field name="name">plm.project.product.extend</field>
         <field name="model">product.product</field>
-        <field name="inherit_id" ref="plm.plm_component_base_form"/>
-        <field name="priority" eval="6"/>
+        <field name="inherit_id" ref="plm.plm_component_base_form" />
+        <field name="priority" eval="6" />
         <field name="arch" type="xml">
             <page name="technical_infos" position="after">
                 <page name="project_infos" string="Project">
                     <group name="project_infos">
-                    	<field name="activity_task_id" colspan="4"/>
-                    	<label for="project_ids"/>
-                        <field name="project_ids" nolabel="1" colspan="4"/>
-                        <label for="tasks_ids"/>
-                        <field name="tasks_ids" nolabel="1" colspan="4"/>
+                    	<field name="activity_task_id" colspan="4" />
+                    	<label for="project_ids" />
+                        <field name="project_ids" nolabel="1" colspan="4" />
+                        <label for="tasks_ids" />
+                        <field name="tasks_ids" nolabel="1" colspan="4" />
                     </group>
                 </page>
             </page>
         </field>
     </record>
 
-    <record id="plm_product_product_normal_form_view_inherit_plm_project" model="ir.ui.view">
-        <field name="name">plm.product.product.normal.form.view.inherit.form.plm.project</field>
+    <record
+        id="plm_product_product_normal_form_view_inherit_plm_project"
+        model="ir.ui.view"
+    >
+        <field
+            name="name"
+        >plm.product.product.normal.form.view.inherit.form.plm.project</field>
         <field name="model">product.product</field>
-        <field name="inherit_id" ref="plm.plm_product_product_normal_form_view_inherit"/>
-        <field name="priority" eval="6"/>
+        <field
+            name="inherit_id"
+            ref="plm.plm_product_product_normal_form_view_inherit"
+        />
+        <field name="priority" eval="6" />
         <field name="arch" type="xml">
             <page name="technical_infos" position="after">
                 <page name="project_infos" string="Project">
@@ -32,7 +40,10 @@
                         <field name="activity_task_id" />
                     </group>
                     <group name="project_infos">
-                        <field name="project_ids" context="{'default_plm_use_plm': True}" />
+                        <field
+                            name="project_ids"
+                            context="{'default_plm_use_plm': True}"
+                        />
                         <field name="tasks_ids" />
                     </group>
                 </page>
@@ -44,17 +55,28 @@
         <field name="name">product.product.list.plm.colored</field>
         <field name="model">product.product</field>
         <field name="arch" type="xml">
-            <list string="PLM Products" decoration-danger="engineering_state in ('draft','obsolated')" decoration-success="engineering_state == 'released'" decoration-warning="engineering_state == 'confirmed'" decoration-info="engineering_state == 'undermodify'">
-                <field name="image_1920" widget="image" class="oe_avatar" options="{'zoom': true, 'preview_image':'image_128'}"/>
-                <field name="name"/>
-                <field name="engineering_code"/>
-                <field name="default_code"/>
-                <field name="engineering_revision"/>
-                <field name="engineering_state"/>
-                <field name="engineering_material"/>
-                <field name="engineering_surface"/>
-                <field name="write_date"/>
-                <field name="create_date"/>
+            <list
+                string="PLM Products"
+                decoration-danger="engineering_state in ('draft','obsolated')"
+                decoration-success="engineering_state == 'released'"
+                decoration-warning="engineering_state == 'confirmed'"
+                decoration-info="engineering_state == 'undermodify'"
+            >
+                <field
+                    name="image_1920"
+                    widget="image"
+                    class="oe_avatar"
+                    options="{'zoom': true, 'preview_image':'image_128'}"
+                />
+                <field name="name" />
+                <field name="engineering_code" />
+                <field name="default_code" />
+                <field name="engineering_revision" />
+                <field name="engineering_state" />
+                <field name="engineering_material" />
+                <field name="engineering_surface" />
+                <field name="write_date" />
+                <field name="create_date" />
             </list>
         </field>
     </record>

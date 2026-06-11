@@ -1,16 +1,19 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <template id="plm_cutted_parts.bom_structure_all_cutted">
         <t t-foreach="docs" t-as="o">
             <t t-call="web.html_container">
-                <t t-set="data_report_margin_top" t-value="12"/>
-                <t t-set="data_report_header_spacing" t-value="9"/>
-                <t t-set="data_report_dpi" t-value="110"/>
+                <t t-set="data_report_margin_top" t-value="12" />
+                <t t-set="data_report_header_spacing" t-value="9" />
+                <t t-set="data_report_dpi" t-value="110" />
 
                 <t t-call="web.internal_layout">
-                    <div style="border-bottom: 1px solid black;"></div>
+                    <div style="border-bottom: 1px solid black;" />
                     <div class="page" align="center">
-                        <table style="width: 100%; border: 1px solid rgb(202, 202, 202);" class="table">
+                        <table
+                            style="width: 100%; border: 1px solid rgb(202, 202, 202);"
+                            class="table"
+                        >
                             <tr>
                                 <th>Name</th>
                                 <th>Revision</th>
@@ -25,25 +28,25 @@
                                 <t t-foreach="childDicts" t-as="childDict">
                                     <tr>
                                         <td name="bom_prod_name_value">
-                                            <span t-esc="childDict.get('code')"/>
+                                            <span t-esc="childDict.get('code')" />
                                         </td>
                                         <td name="bom_rev_value">
-                                            <span t-esc="childDict.get('p_rev')"/>
+                                            <span t-esc="childDict.get('p_rev')" />
                                         </td>
                                         <td name="bom_description_value">
-                                            <span t-esc="childDict.get('p_desc')"/>
+                                            <span t-esc="childDict.get('p_desc')" />
                                         </td>
                                         <td name="bom_qty_value">
-                                            <span t-esc="childDict.get('p_qty')"/>
+                                            <span t-esc="childDict.get('p_qty')" />
                                         </td>
                                         <td name="bom_x_length">
-                                            <span t-esc="childDict.get('x_length')"/>
+                                            <span t-esc="childDict.get('x_length')" />
                                         </td>
                                         <td name="bom_y_length">
-                                            <span t-esc="childDict.get('y_length')"/>
+                                            <span t-esc="childDict.get('y_length')" />
                                         </td>
                                         <td name="bom_uom_value">
-                                            <span t-esc="childDict.get('u_name')"/>
+                                            <span t-esc="childDict.get('u_name')" />
                                         </td>
                                     </tr>
                                 </t>
@@ -59,7 +62,7 @@
     <record id="report_bom_structure_all_cutted" model="ir.actions.report">
         <field name="name">Cutted Parts</field>
         <field name="model">mrp.bom</field>
-        <field name="binding_model_id" ref="mrp.model_mrp_bom"/>
+        <field name="binding_model_id" ref="mrp.model_mrp_bom" />
         <field name="report_type">qweb-html</field>
         <field name="report_name">plm_cutted_parts.bom_structure_all_cutted</field>
         <field name="binding_type">report</field>

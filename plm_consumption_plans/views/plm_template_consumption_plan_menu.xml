@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <!-- Action -->
     <record id="action_template_consumption_plan" model="ir.actions.act_window">
@@ -26,18 +26,20 @@
 
     <!-- Template consumption plans menu -->
     <menuitem
-            name="Template Consumption Plans"
-            action="action_template_consumption_plan"
-            id="menu_template_consumption_plans"
-            sequence="5"
-            parent="plm.plm_menu_dictionaries"/>
+        name="Template Consumption Plans"
+        action="action_template_consumption_plan"
+        id="menu_template_consumption_plans"
+        sequence="5"
+        parent="plm.plm_menu_dictionaries"
+    />
 
      <!-- consumption state menu -->
     <menuitem
-            name="Consumption States"
-            action="action_consumption_states"
-            id="menu_consumption_states"
-            sequence="6"
-            parent="plm.plm_menu_dictionaries"/>
+        name="Consumption States"
+        action="action_consumption_states"
+        id="menu_consumption_states"
+        sequence="6"
+        parent="plm.plm_menu_dictionaries"
+    />
 
 </odoo>

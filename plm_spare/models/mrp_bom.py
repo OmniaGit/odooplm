@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Your own solutions
@@ -37,7 +36,7 @@ class MrpBomExtension(models.Model):
 
 
 class MrpBomLine(models.Model):
-    _inherit = 'mrp.bom.line'
+    _inherit = "mrp.bom.line"
 
     is_spare_part = fields.Boolean(related="product_id.is_spare_part")
 

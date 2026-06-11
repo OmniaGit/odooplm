@@ -1,4 +1,3 @@
-# -*- encoding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Your own solutions
@@ -24,18 +23,14 @@ Created on 25/mag/2016
 
 @author: mboscolo
 """
-from odoo import _, api, fields, models
+from odoo import api, fields, models
 
 
 class MrpBomLineTemplateCuttedParts(models.Model):
     _inherit = "mrp.bom.line"
 
-    x_length = fields.Float(
-        compute="compute_x_length", string="X Length", default=0.0
-    )
-    y_length = fields.Float(
-        compute="compute_y_length", string="Y Length", default=0.0
-    )
+    x_length = fields.Float(compute="compute_x_length", string="X Length", default=0.0)
+    y_length = fields.Float(compute="compute_y_length", string="Y Length", default=0.0)
     client_x_length = fields.Float("X Cutted Qty", default=0)
     client_y_length = fields.Float("Y Cutted Qty", default=0)
     cutted_qty = fields.Float("Cutted Qty", default=0)
@@ -82,14 +77,14 @@ class MrpBomLineTemplateCuttedParts(models.Model):
         return new_qty
 
     def write(self, vals):
-        res = super(MrpBomLineTemplateCuttedParts, self).write(vals)
+        res = super().write(vals)
         if not self.env.context.get("skip_cutted_recompute"):
             self.recomputeCuttedQty()
         return res
 
     @api.model_create_multi
     def create(self, vals):
-        res = super(MrpBomLineTemplateCuttedParts, self).create(vals)
+        res = super().create(vals)
         res.recomputeCuttedQty()
         return res
 
@@ -97,9 +92,9 @@ class MrpBomLineTemplateCuttedParts(models.Model):
         ctx = self.env.context.copy()
         ctx["skip_cutted_recompute"] = True
         for bom_line_id in self:
-            bom_line_id.with_context(
-                ctx
-            ).product_qty = bom_line_id.computeCuttedTotalQty()
+            bom_line_id.with_context(ctx).product_qty = (
+                bom_line_id.computeCuttedTotalQty()
+            )
 
     def computeCuttedTotalQty(self):
         for bom_line_id in self:

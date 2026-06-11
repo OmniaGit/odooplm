@@ -1,4 +1,3 @@
-# -*- encoding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Open Source Management Solution
@@ -29,8 +28,8 @@ import datetime
 import json
 import logging
 import os
-import pytz
 
+import pytz
 from dateutil import parser
 
 from odoo import _, api, fields, models
@@ -45,6 +44,7 @@ DEFAULT_SERVER_DATETIME_FORMAT = "%s %s" % (
     DEFAULT_SERVER_TIME_FORMAT,
 )
 
+
 def correctDate(fromTimeStr, context):
     serverUtcTime = parser.parse(fromTimeStr.strftime(DEFAULT_SERVER_DATETIME_FORMAT))
     utcDate = serverUtcTime.replace(tzinfo=pytz.utc).astimezone(
@@ -52,20 +52,21 @@ def correctDate(fromTimeStr, context):
     )
     return utcDate.replace(tzinfo=None)
 
+
 class Plm_box_document(models.Model):
     _inherit = "ir.attachment"
 
     name = fields.Char(string="Attachment Name", required=False)
     is_plm_box = fields.Boolean("Is Plm Box document")
     plm_box_id = fields.Many2one("plm.box")
- 
+
     @api.model_create_multi
     def create(self, vals):
         for val in vals:
             if not val.get("name", False):
                 name = self.getNewSequencedName()
                 val["name"] = name
-        return super(Plm_box_document, self).create(vals)
+        return super().create(vals)
 
     def getCheckOutUser(self):
         for checkOutBrws in self._getCheckOutUser():
@@ -264,8 +265,9 @@ class Plm_box_document(models.Model):
             box_id = self.env["plm.box"].browse(box_id)
             product_details = self.parse_file_name(attachment_id.name)
             if product_details and product_details.get("prefix") == "IMP_BOM":
-                product_id = self.product_by_engcode(product_details.get("part_number"),
-                                                     product_details.get("revision"))
+                product_id = self.product_by_engcode(
+                    product_details.get("part_number"), product_details.get("revision")
+                )
                 csv_column_mapping = json.loads(box_id.csv_structure)
                 file_content = base64.b64decode(attachment_id.datas)
                 csv_reader = csv.reader(file_content.decode("utf-8").splitlines())
@@ -277,11 +279,13 @@ class Plm_box_document(models.Model):
                         if csv_column in headers:
                             index = headers.index(csv_column)
                             bom_line_data[odoo_field] = row[index]
-                    child_data.append(self.create_bom_line_data(bom_line_data,
-                                                                product_id,
-                                                                attachment_id))
+                    child_data.append(
+                        self.create_bom_line_data(
+                            bom_line_data, product_id, attachment_id
+                        )
+                    )
                 clientArgs = ((False, product_id.id, attachment_id.id), child_data)
-                self.env['mrp.bom'].saveRelationNew(clientArgs)
+                self.env["mrp.bom"].saveRelationNew(clientArgs)
 
             return True
 
@@ -292,7 +296,7 @@ class Plm_box_document(models.Model):
         updated data which will directly use to create BoM line recode.
         """
 
-        if bom_line_data  and product_id and attachment_id:
+        if bom_line_data and product_id and attachment_id:
             line_product_id = self.product_by_engcode(
                 engcode=bom_line_data.get("engineering_code"),
                 revision=bom_line_data.get("engineering_revision"),
@@ -301,7 +305,7 @@ class Plm_box_document(models.Model):
             return [
                 line_product_id.id,
                 False,
-                {'product_qty': bom_line_data.get("qty", 1), 'link_kind': 'HiTree'}
+                {"product_qty": bom_line_data.get("qty", 1), "link_kind": "HiTree"},
             ]
 
     @api.model

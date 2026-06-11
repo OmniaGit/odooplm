@@ -1,4 +1,3 @@
-# -*- encoding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Open Source Management Solution
@@ -25,11 +24,8 @@ Created on Mar 30, 2016
 """
 import base64
 import logging
-from email.policy import default
 
-from odoo import (_, 
-                  fields, 
-                  models)
+from odoo import _, fields, models
 from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
@@ -38,9 +34,10 @@ _logger = logging.getLogger(__name__)
 #  ************************** SPARE REPORTS *****************
 class plm_spareChoseLanguage(models.TransientModel):
     _name = "plm.sparechoselanguage"
-    _description = ("Module for extending the functionality of printing"
-                    "spare_bom reports in a multi language environment")
-
+    _description = (
+        "Module for extending the functionality of printing"
+        "spare_bom reports in a multi language environment"
+    )
 
     def getInstalledLanguage(self):
         """
@@ -56,7 +53,7 @@ class plm_spareChoseLanguage(models.TransientModel):
     onelevel = fields.Boolean(
         string="One Level",
         default=False,
-        help="If you check this box, the report will be made in one level"
+        help="If you check this box, the report will be made in one level",
     )
     datas = fields.Binary("Download", readonly=True)
     datas_name = fields.Char("Download file name ", size=255, readonly=True)
@@ -68,7 +65,7 @@ class plm_spareChoseLanguage(models.TransientModel):
             modobj = self.env["ir.module.module"]
             mids = modobj.search([("state", "=", "installed")])
             if not mids:
-                raise UserError("Language not Installed")
+                raise UserError(_("Language not Installed"))
             reportName = "report.plm_spare.pdf_all"
             # 'plm_spare.report_product_product_spare_parts_pdf'
             if self.onelevel:
@@ -113,8 +110,10 @@ AVAILABLE_REPORT = [
 
 class plm_bomChoseLanguage(models.TransientModel):
     _name = "plm.bomchoselanguage"
-    _description = ("Module for extending the functionality of printing bom reports"
-                    "in a multi language environment")
+    _description = (
+        "Module for extending the functionality of printing bom reports"
+        "in a multi language environment"
+    )
 
     def getInstalledLanguage(self):
         """
@@ -133,7 +132,7 @@ class plm_bomChoseLanguage(models.TransientModel):
             modobj = self.env["ir.module.module"]
             mids = modobj.search([("state", "=", "installed")])
             if not mids:
-                raise UserError("Language not Installed")
+                raise UserError(_("Language not Installed"))
             reportName = self.bom_type
             newContext = self.env.context.copy()  # Used to update and generate pdf
             newContext["lang"] = lang
@@ -162,7 +161,7 @@ class plm_bomChoseLanguage(models.TransientModel):
                 "type": "ir.actions.act_window",
                 "target": "new",
             }
-        raise UserError("Select a language")
+        raise UserError(_("Select a language"))
 
     lang = fields.Selection(getInstalledLanguage, "Language", required=True)
 
@@ -175,7 +174,5 @@ class plm_bomChoseLanguage(models.TransientModel):
 
     datas = fields.Binary("Download", readonly=True)
 
-    datas_name = fields.Char("Download file name ", 
-                             size=255, 
-                             readonly=True)
+    datas_name = fields.Char("Download file name ", size=255, readonly=True)
     _defaults = {"bom_type": False}

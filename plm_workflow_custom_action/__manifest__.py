@@ -1,4 +1,3 @@
-# -*- encoding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Open Source Management Solution
@@ -23,7 +22,7 @@
     "name": "Workflow Custom Actions",
     "version": "18.0.4.0.0",
     "author": "OmniaSolutions",
-    "website": "https://odooplm.omniasolutions.website",
+    "website": "https://github.com/OmniaGit/odooplm",
     "category": "Manufacturing/Product Lifecycle Management (PLM)",
     "sequence": 1,
     "summary": "",

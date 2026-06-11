@@ -1,4 +1,3 @@
-# -*- encoding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Open Source Management Solution
@@ -23,7 +22,7 @@
     "name": "PLM Report PDF Workorder Enterprise",
     "version": "18.0.2.0.0",
     "author": "OmniaSolutions",
-    "website": "https://odooplm.omniasolutions.website",
+    "website": "https://github.com/OmniaGit/odooplm",
     "category": "Manufacturing/Product Lifecycle Management (PLM)",
     "sequence": 15,
     "summary": """
@@ -31,8 +30,7 @@
     available into the workorder workscheet.
     """,
     "license": "LGPL-3",
-    "depends": ["plm_pdf_workorder", 
-                "mrp_workorder"],
+    "depends": ["plm_pdf_workorder", "mrp_workorder"],
     "assets": {
         "web.assets_backend": [
             "plm_pdf_workorder_enterprise/static/src/mrpWorksheet.js",

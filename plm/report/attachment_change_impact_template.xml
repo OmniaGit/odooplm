@@ -1,7 +1,7 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <template id="attachment_change_impact_report_template">
-        <t t-set="data_report_landscape" t-value="True"/>
+        <t t-set="data_report_landscape" t-value="True" />
         <t t-call="web.basic_layout">
             <div class="container document_report_page">
                 <div class="row">
@@ -25,516 +25,916 @@
                                     <t t-foreach="product_data" t-as="product_lvl_0">
                                         <tr>
                                             <td class="text-center">
-                                                <t t-out="product_lvl_0.get('level')"/>
+                                                <t t-out="product_lvl_0.get('level')" />
                                             </td>
                                             <td class="text-left">
-                                                <span style='font-size:20px; color:rgb(1 88 92);'>
+                                                <span
+                                                    style='font-size:20px; color:rgb(1 88 92);'
+                                                >
                                                     &#8627;
                                                 </span>
-                                                <a t-attf-href="/web#id={{product_lvl_0.get('product').id}}&amp;model={{product_lvl_0.get('product')._name}}&amp;view_type=form"
-                                                   t-out="product_lvl_0.get('product').name" target="_blank"/>
+                                                <a
+                                                    t-attf-href="/web#id={{product_lvl_0.get('product').id}}&amp;model={{product_lvl_0.get('product')._name}}&amp;view_type=form"
+                                                    t-out="product_lvl_0.get('product').name"
+                                                    target="_blank"
+                                                />
                                             </td>
                                             <td class="text-center">
-                                                <t t-out="product_lvl_0.get('product').engineering_code"/>
+                                                <t
+                                                    t-out="product_lvl_0.get('product').engineering_code"
+                                                />
                                             </td>
                                             <td class="text-center">
-                                                <t t-out="product_lvl_0.get('product').engineering_revision"/>
+                                                <t
+                                                    t-out="product_lvl_0.get('product').engineering_revision"
+                                                />
                                             </td>
                                             <td class="text-center">
                                                 <strong>
-                                                    <t t-if="product_lvl_0.get('product').engineering_state == 'draft'">
-                                                        <span style="color: grey;padding-left: 5px;">
-                                                            <t t-out="product_lvl_0.get('product').engineering_state"/>
+                                                    <t
+                                                        t-if="product_lvl_0.get('product').engineering_state == 'draft'"
+                                                    >
+                                                        <span
+                                                            style="color: grey;padding-left: 5px;"
+                                                        >
+                                                            <t
+                                                                t-out="product_lvl_0.get('product').engineering_state"
+                                                            />
                                                         </span>
                                                     </t>
-                                                    <t t-elif="product_lvl_0.get('product').engineering_state == 'confirmed'">
-                                                        <span style="color: blue;padding-left: 5px;">
-                                                            <t t-out="product_lvl_0.get('product').engineering_state"/>
+                                                    <t
+                                                        t-elif="product_lvl_0.get('product').engineering_state == 'confirmed'"
+                                                    >
+                                                        <span
+                                                            style="color: blue;padding-left: 5px;"
+                                                        >
+                                                            <t
+                                                                t-out="product_lvl_0.get('product').engineering_state"
+                                                            />
                                                         </span>
                                                     </t>
-                                                    <t t-elif="product_lvl_0.get('product').engineering_state == 'released'">
-                                                        <span style="color: green;padding-left: 5px;">
-                                                            <t t-out="product_lvl_0.get('product').engineering_state"/>
+                                                    <t
+                                                        t-elif="product_lvl_0.get('product').engineering_state == 'released'"
+                                                    >
+                                                        <span
+                                                            style="color: green;padding-left: 5px;"
+                                                        >
+                                                            <t
+                                                                t-out="product_lvl_0.get('product').engineering_state"
+                                                            />
                                                         </span>
                                                     </t>
-                                                    <t t-elif="product_lvl_0.get('product').engineering_state == 'undermodify'">
-                                                        <span style="color: orange;padding-left: 5px;">
-                                                            <t t-out="product_lvl_0.get('product').engineering_state"/>
+                                                    <t
+                                                        t-elif="product_lvl_0.get('product').engineering_state == 'undermodify'"
+                                                    >
+                                                        <span
+                                                            style="color: orange;padding-left: 5px;"
+                                                        >
+                                                            <t
+                                                                t-out="product_lvl_0.get('product').engineering_state"
+                                                            />
                                                         </span>
                                                     </t>
-                                                    <t t-elif="product_lvl_0.get('product').engineering_state == 'obsoleted'">
-                                                        <span style="color: red;padding-left: 5px;">
-                                                            <t t-out="product_lvl_0.get('product').engineering_state"/>
+                                                    <t
+                                                        t-elif="product_lvl_0.get('product').engineering_state == 'obsoleted'"
+                                                    >
+                                                        <span
+                                                            style="color: red;padding-left: 5px;"
+                                                        >
+                                                            <t
+                                                                t-out="product_lvl_0.get('product').engineering_state"
+                                                            />
                                                         </span>
                                                     </t>
                                                     <t t-else="">
-                                                        <span style="color: black;padding-left: 5px;">
-                                                            <t t-out="product_lvl_0.get('product').engineering_state"/>
+                                                        <span
+                                                            style="color: black;padding-left: 5px;"
+                                                        >
+                                                            <t
+                                                                t-out="product_lvl_0.get('product').engineering_state"
+                                                            />
                                                         </span>
                                                     </t>
                                                 </strong>
                                             </td>
-                                            <td class="text-center" style="padding-top: 5px; padding-bottom: 5px;">
+                                            <td
+                                                class="text-center"
+                                                style="padding-top: 5px; padding-bottom: 5px;"
+                                            >
                                                 <img
                                                     t-att-src="'/plm/product_product_image_1920/%s' % product_lvl_0.get('product').id"
                                                     t-att-alt="product_lvl_0.get('product').display_name"
                                                     class="image_document_report"
-                                                    style="margin: auto; border: none;"/>
+                                                    style="margin: auto; border: none;"
+                                                />
                                             </td>
                                         </tr>
-                                        <t t-foreach="product_lvl_0['children']" t-as="product_lvl_1">
+                                        <t
+                                            t-foreach="product_lvl_0['children']"
+                                            t-as="product_lvl_1"
+                                        >
                                             <tr>
                                                 <td class="text-center">
-                                                    <t t-out="product_lvl_1.get('level')"/>
+                                                    <t
+                                                        t-out="product_lvl_1.get('level')"
+                                                    />
                                                 </td>
                                                 <td class="text-left">
                                                     <span
-                                                        style='font-size:20px; color:rgb(1 88 92); padding-left: 20px;'>
+                                                        style='font-size:20px; color:rgb(1 88 92); padding-left: 20px;'
+                                                    >
                                                         &#8627;
                                                     </span>
-                                                    <a t-attf-href="/web#id={{product_lvl_1.get('product').id}}&amp;model={{product_lvl_1.get('product')._name}}&amp;view_type=form"
-                                                       t-out="product_lvl_1.get('product').name" target="_blank"/>
+                                                    <a
+                                                        t-attf-href="/web#id={{product_lvl_1.get('product').id}}&amp;model={{product_lvl_1.get('product')._name}}&amp;view_type=form"
+                                                        t-out="product_lvl_1.get('product').name"
+                                                        target="_blank"
+                                                    />
                                                 </td>
                                                 <td class="text-center">
-                                                    <t t-out="product_lvl_1.get('product').engineering_code"/>
+                                                    <t
+                                                        t-out="product_lvl_1.get('product').engineering_code"
+                                                    />
                                                 </td>
                                                 <td class="text-center">
-                                                    <t t-out="product_lvl_1.get('product').engineering_revision"/>
+                                                    <t
+                                                        t-out="product_lvl_1.get('product').engineering_revision"
+                                                    />
                                                 </td>
                                                 <td class="text-center">
                                                     <strong>
-                                                        <t t-if="product_lvl_1.get('product').engineering_state == 'draft'">
-                                                            <span style="color: grey;padding-left: 5px;">
-                                                                <t t-out="product_lvl_1.get('product').engineering_state"/>
+                                                        <t
+                                                            t-if="product_lvl_1.get('product').engineering_state == 'draft'"
+                                                        >
+                                                            <span
+                                                                style="color: grey;padding-left: 5px;"
+                                                            >
+                                                                <t
+                                                                    t-out="product_lvl_1.get('product').engineering_state"
+                                                                />
                                                             </span>
                                                         </t>
-                                                        <t t-elif="product_lvl_1.get('product').engineering_state == 'confirmed'">
-                                                            <span style="color: blue;padding-left: 5px;">
-                                                                <t t-out="product_lvl_1.get('product').engineering_state"/>
+                                                        <t
+                                                            t-elif="product_lvl_1.get('product').engineering_state == 'confirmed'"
+                                                        >
+                                                            <span
+                                                                style="color: blue;padding-left: 5px;"
+                                                            >
+                                                                <t
+                                                                    t-out="product_lvl_1.get('product').engineering_state"
+                                                                />
                                                             </span>
                                                         </t>
-                                                        <t t-elif="product_lvl_1.get('product').engineering_state == 'released'">
-                                                            <span style="color: green;padding-left: 5px;">
-                                                                <t t-out="product_lvl_1.get('product').engineering_state"/>
+                                                        <t
+                                                            t-elif="product_lvl_1.get('product').engineering_state == 'released'"
+                                                        >
+                                                            <span
+                                                                style="color: green;padding-left: 5px;"
+                                                            >
+                                                                <t
+                                                                    t-out="product_lvl_1.get('product').engineering_state"
+                                                                />
                                                             </span>
                                                         </t>
-                                                        <t t-elif="product_lvl_1.get('product').engineering_state == 'undermodify'">
-                                                            <span style="color: orange;padding-left: 5px;">
-                                                                <t t-out="product_lvl_1.get('product').engineering_state"/>
+                                                        <t
+                                                            t-elif="product_lvl_1.get('product').engineering_state == 'undermodify'"
+                                                        >
+                                                            <span
+                                                                style="color: orange;padding-left: 5px;"
+                                                            >
+                                                                <t
+                                                                    t-out="product_lvl_1.get('product').engineering_state"
+                                                                />
                                                             </span>
                                                         </t>
-                                                        <t t-elif="product_lvl_1.get('product').engineering_state == 'obsoleted'">
-                                                            <span style="color: red;padding-left: 5px;">
-                                                                <t t-out="product_lvl_1.get('product').engineering_state"/>
+                                                        <t
+                                                            t-elif="product_lvl_1.get('product').engineering_state == 'obsoleted'"
+                                                        >
+                                                            <span
+                                                                style="color: red;padding-left: 5px;"
+                                                            >
+                                                                <t
+                                                                    t-out="product_lvl_1.get('product').engineering_state"
+                                                                />
                                                             </span>
                                                         </t>
                                                         <t t-else="">
-                                                            <span style="color: black;padding-left: 5px;">
-                                                                <t t-out="product_lvl_1.get('product').engineering_state"/>
+                                                            <span
+                                                                style="color: black;padding-left: 5px;"
+                                                            >
+                                                                <t
+                                                                    t-out="product_lvl_1.get('product').engineering_state"
+                                                                />
                                                             </span>
                                                         </t>
                                                     </strong>
                                                 </td>
-                                                <td class="text-center" style="padding-top: 5px; padding-bottom: 5px;">
+                                                <td
+                                                    class="text-center"
+                                                    style="padding-top: 5px; padding-bottom: 5px;"
+                                                >
                                                     <img
                                                         t-att-src="'/plm/product_product_image_1920/%s' % product_lvl_1.get('product').id"
                                                         t-att-alt="product_lvl_1.get('product').display_name"
                                                         class="image_document_report"
-                                                        style="margin: auto; border: none;"/>
+                                                        style="margin: auto; border: none;"
+                                                    />
                                                 </td>
                                             </tr>
-                                            <t t-foreach="product_lvl_1['children']" t-as="product_lvl_2">
+                                            <t
+                                                t-foreach="product_lvl_1['children']"
+                                                t-as="product_lvl_2"
+                                            >
                                                 <tr>
                                                     <td class="text-center">
-                                                        <t t-out="product_lvl_2.get('level')"/>
+                                                        <t
+                                                            t-out="product_lvl_2.get('level')"
+                                                        />
                                                     </td>
                                                     <td class="text-left">
                                                         <span
-                                                            style='font-size:20px; color:rgb(1 88 92); padding-left: 40px;'>
+                                                            style='font-size:20px; color:rgb(1 88 92); padding-left: 40px;'
+                                                        >
                                                             &#8627;
                                                         </span>
-                                                        <a t-attf-href="/web#id={{product_lvl_2.get('product').id}}&amp;model={{product_lvl_2.get('product')._name}}&amp;view_type=form"
-                                                           t-out="product_lvl_2.get('product').name" target="_blank"/>
+                                                        <a
+                                                            t-attf-href="/web#id={{product_lvl_2.get('product').id}}&amp;model={{product_lvl_2.get('product')._name}}&amp;view_type=form"
+                                                            t-out="product_lvl_2.get('product').name"
+                                                            target="_blank"
+                                                        />
                                                     </td>
                                                     <td class="text-center">
-                                                        <t t-out="product_lvl_2.get('product').engineering_code"/>
+                                                        <t
+                                                            t-out="product_lvl_2.get('product').engineering_code"
+                                                        />
                                                     </td>
                                                     <td class="text-center">
-                                                        <t t-out="product_lvl_2.get('product').engineering_revision"/>
+                                                        <t
+                                                            t-out="product_lvl_2.get('product').engineering_revision"
+                                                        />
                                                     </td>
                                                     <td class="text-center">
                                                         <strong>
-                                                            <t t-if="product_lvl_2.get('product').engineering_state == 'draft'">
-                                                                <span style="color: grey;padding-left: 5px;">
-                                                                    <t t-out="product_lvl_2.get('product').engineering_state"/>
+                                                            <t
+                                                                t-if="product_lvl_2.get('product').engineering_state == 'draft'"
+                                                            >
+                                                                <span
+                                                                    style="color: grey;padding-left: 5px;"
+                                                                >
+                                                                    <t
+                                                                        t-out="product_lvl_2.get('product').engineering_state"
+                                                                    />
                                                                 </span>
                                                             </t>
-                                                            <t t-elif="product_lvl_2.get('product').engineering_state == 'confirmed'">
-                                                                <span style="color: blue;padding-left: 5px;">
-                                                                    <t t-out="product_lvl_2.get('product').engineering_state"/>
+                                                            <t
+                                                                t-elif="product_lvl_2.get('product').engineering_state == 'confirmed'"
+                                                            >
+                                                                <span
+                                                                    style="color: blue;padding-left: 5px;"
+                                                                >
+                                                                    <t
+                                                                        t-out="product_lvl_2.get('product').engineering_state"
+                                                                    />
                                                                 </span>
                                                             </t>
-                                                            <t t-elif="product_lvl_2.get('product').engineering_state == 'released'">
-                                                                <span style="color: green;padding-left: 5px;">
-                                                                    <t t-out="product_lvl_2.get('product').engineering_state"/>
+                                                            <t
+                                                                t-elif="product_lvl_2.get('product').engineering_state == 'released'"
+                                                            >
+                                                                <span
+                                                                    style="color: green;padding-left: 5px;"
+                                                                >
+                                                                    <t
+                                                                        t-out="product_lvl_2.get('product').engineering_state"
+                                                                    />
                                                                 </span>
                                                             </t>
-                                                            <t t-elif="product_lvl_2.get('product').engineering_state == 'undermodify'">
-                                                                <span style="color: orange;padding-left: 5px;">
-                                                                    <t t-out="product_lvl_2.get('product').engineering_state"/>
+                                                            <t
+                                                                t-elif="product_lvl_2.get('product').engineering_state == 'undermodify'"
+                                                            >
+                                                                <span
+                                                                    style="color: orange;padding-left: 5px;"
+                                                                >
+                                                                    <t
+                                                                        t-out="product_lvl_2.get('product').engineering_state"
+                                                                    />
                                                                 </span>
                                                             </t>
-                                                            <t t-elif="product_lvl_2.get('product').engineering_state == 'obsoleted'">
-                                                                <span style="color: red;padding-left: 5px;">
-                                                                    <t t-out="product_lvl_2.get('product').engineering_state"/>
+                                                            <t
+                                                                t-elif="product_lvl_2.get('product').engineering_state == 'obsoleted'"
+                                                            >
+                                                                <span
+                                                                    style="color: red;padding-left: 5px;"
+                                                                >
+                                                                    <t
+                                                                        t-out="product_lvl_2.get('product').engineering_state"
+                                                                    />
                                                                 </span>
                                                             </t>
                                                             <t t-else="">
-                                                                <span style="color: black;padding-left: 5px;">
-                                                                    <t t-out="product_lvl_2.get('product').engineering_state"/>
+                                                                <span
+                                                                    style="color: black;padding-left: 5px;"
+                                                                >
+                                                                    <t
+                                                                        t-out="product_lvl_2.get('product').engineering_state"
+                                                                    />
                                                                 </span>
                                                             </t>
                                                         </strong>
                                                     </td>
-                                                    <td class="text-center"
-                                                        style="padding-top: 5px; padding-bottom: 5px;">
+                                                    <td
+                                                        class="text-center"
+                                                        style="padding-top: 5px; padding-bottom: 5px;"
+                                                    >
                                                         <img
                                                             t-att-src="'/plm/product_product_image_1920/%s' % product_lvl_2.get('product').id"
                                                             t-att-alt="product_lvl_2.get('product').display_name"
                                                             class="image_document_report"
-                                                            style="margin: auto; border: none;"/>
+                                                            style="margin: auto; border: none;"
+                                                        />
                                                     </td>
                                                 </tr>
-                                                <t t-foreach="product_lvl_2['children']" t-as="product_lvl_3">
+                                                <t
+                                                    t-foreach="product_lvl_2['children']"
+                                                    t-as="product_lvl_3"
+                                                >
                                                     <tr>
                                                         <td class="text-center">
-                                                            <t t-out="product_lvl_3.get('level')"/>
+                                                            <t
+                                                                t-out="product_lvl_3.get('level')"
+                                                            />
                                                         </td>
                                                         <td class="text-left">
                                                             <span
-                                                                style='font-size:20px; color:rgb(1 88 92); padding-left: 60px;'>
+                                                                style='font-size:20px; color:rgb(1 88 92); padding-left: 60px;'
+                                                            >
                                                                 &#8627;
                                                             </span>
-                                                            <a t-attf-href="/web#id={{product_lvl_3.get('product').id}}&amp;model={{product_lvl_3.get('product')._name}}&amp;view_type=form"
-                                                               t-out="product_lvl_3.get('product').name"
-                                                               target="_blank"/>
+                                                            <a
+                                                                t-attf-href="/web#id={{product_lvl_3.get('product').id}}&amp;model={{product_lvl_3.get('product')._name}}&amp;view_type=form"
+                                                                t-out="product_lvl_3.get('product').name"
+                                                                target="_blank"
+                                                            />
                                                         </td>
                                                         <td class="text-center">
-                                                            <t t-out="product_lvl_3.get('product').engineering_code"/>
+                                                            <t
+                                                                t-out="product_lvl_3.get('product').engineering_code"
+                                                            />
                                                         </td>
                                                         <td class="text-center">
-                                                            <t t-out="product_lvl_3.get('product').engineering_revision"/>
+                                                            <t
+                                                                t-out="product_lvl_3.get('product').engineering_revision"
+                                                            />
                                                         </td>
                                                         <td class="text-center">
                                                             <strong>
-                                                                <t t-if="product_lvl_3.get('product').engineering_state == 'draft'">
-                                                                    <span style="color: grey;padding-left: 5px;">
-                                                                        <t t-out="product_lvl_3.get('product').engineering_state"/>
+                                                                <t
+                                                                    t-if="product_lvl_3.get('product').engineering_state == 'draft'"
+                                                                >
+                                                                    <span
+                                                                        style="color: grey;padding-left: 5px;"
+                                                                    >
+                                                                        <t
+                                                                            t-out="product_lvl_3.get('product').engineering_state"
+                                                                        />
                                                                     </span>
                                                                 </t>
-                                                                <t t-elif="product_lvl_3.get('product').engineering_state == 'confirmed'">
-                                                                    <span style="color: blue;padding-left: 5px;">
-                                                                        <t t-out="product_lvl_3.get('product').engineering_state"/>
+                                                                <t
+                                                                    t-elif="product_lvl_3.get('product').engineering_state == 'confirmed'"
+                                                                >
+                                                                    <span
+                                                                        style="color: blue;padding-left: 5px;"
+                                                                    >
+                                                                        <t
+                                                                            t-out="product_lvl_3.get('product').engineering_state"
+                                                                        />
                                                                     </span>
                                                                 </t>
-                                                                <t t-elif="product_lvl_3.get('product').engineering_state == 'released'">
-                                                                    <span style="color: green;padding-left: 5px;">
-                                                                        <t t-out="product_lvl_3.get('product').engineering_state"/>
+                                                                <t
+                                                                    t-elif="product_lvl_3.get('product').engineering_state == 'released'"
+                                                                >
+                                                                    <span
+                                                                        style="color: green;padding-left: 5px;"
+                                                                    >
+                                                                        <t
+                                                                            t-out="product_lvl_3.get('product').engineering_state"
+                                                                        />
                                                                     </span>
                                                                 </t>
-                                                                <t t-elif="product_lvl_3.get('product').engineering_state == 'undermodify'">
-                                                                    <span style="color: orange;padding-left: 5px;">
-                                                                        <t t-out="product_lvl_3.get('product').engineering_state"/>
+                                                                <t
+                                                                    t-elif="product_lvl_3.get('product').engineering_state == 'undermodify'"
+                                                                >
+                                                                    <span
+                                                                        style="color: orange;padding-left: 5px;"
+                                                                    >
+                                                                        <t
+                                                                            t-out="product_lvl_3.get('product').engineering_state"
+                                                                        />
                                                                     </span>
                                                                 </t>
-                                                                <t t-elif="product_lvl_3.get('product').engineering_state == 'obsoleted'">
-                                                                    <span style="color: red;padding-left: 5px;">
-                                                                        <t t-out="product_lvl_3.get('product').engineering_state"/>
+                                                                <t
+                                                                    t-elif="product_lvl_3.get('product').engineering_state == 'obsoleted'"
+                                                                >
+                                                                    <span
+                                                                        style="color: red;padding-left: 5px;"
+                                                                    >
+                                                                        <t
+                                                                            t-out="product_lvl_3.get('product').engineering_state"
+                                                                        />
                                                                     </span>
                                                                 </t>
                                                                 <t t-else="">
-                                                                    <span style="color: black;padding-left: 5px;">
-                                                                        <t t-out="product_lvl_3.get('product').engineering_state"/>
+                                                                    <span
+                                                                        style="color: black;padding-left: 5px;"
+                                                                    >
+                                                                        <t
+                                                                            t-out="product_lvl_3.get('product').engineering_state"
+                                                                        />
                                                                     </span>
                                                                 </t>
                                                             </strong>
                                                         </td>
-                                                        <td class="text-center"
-                                                            style="padding-top: 5px; padding-bottom: 5px;">
+                                                        <td
+                                                            class="text-center"
+                                                            style="padding-top: 5px; padding-bottom: 5px;"
+                                                        >
                                                             <img
                                                                 t-att-src="'/plm/product_product_image_1920/%s' % product_lvl_3.get('product').id"
                                                                 t-att-alt="product_lvl_3.get('product').display_name"
                                                                 class="image_document_report"
-                                                                style="margin: auto; border: none;"/>
+                                                                style="margin: auto; border: none;"
+                                                            />
                                                         </td>
                                                     </tr>
-                                                    <t t-foreach="product_lvl_3['children']" t-as="product_lvl_4">
+                                                    <t
+                                                        t-foreach="product_lvl_3['children']"
+                                                        t-as="product_lvl_4"
+                                                    >
                                                         <tr>
                                                             <td class="text-center">
-                                                                <t t-out="product_lvl_4.get('level')"/>
+                                                                <t
+                                                                    t-out="product_lvl_4.get('level')"
+                                                                />
                                                             </td>
                                                             <td class="text-left">
                                                                 <span
-                                                                    style='font-size:20px; color:rgb(1 88 92); padding-left: 80px;'>
+                                                                    style='font-size:20px; color:rgb(1 88 92); padding-left: 80px;'
+                                                                >
                                                                     &#8627;
                                                                 </span>
-                                                                <a t-attf-href="/web#id={{product_lvl_4.get('product').id}}&amp;model={{product_lvl_4.get('product')._name}}&amp;view_type=form"
-                                                                   t-out="product_lvl_4.get('product').name"
-                                                                   target="_blank"/>
+                                                                <a
+                                                                    t-attf-href="/web#id={{product_lvl_4.get('product').id}}&amp;model={{product_lvl_4.get('product')._name}}&amp;view_type=form"
+                                                                    t-out="product_lvl_4.get('product').name"
+                                                                    target="_blank"
+                                                                />
                                                             </td>
                                                             <td class="text-center">
-                                                                <t t-out="product_lvl_4.get('product').engineering_code"/>
+                                                                <t
+                                                                    t-out="product_lvl_4.get('product').engineering_code"
+                                                                />
                                                             </td>
                                                             <td class="text-center">
-                                                                <t t-out="product_lvl_4.get('product').engineering_revision"/>
+                                                                <t
+                                                                    t-out="product_lvl_4.get('product').engineering_revision"
+                                                                />
                                                             </td>
                                                             <td class="text-center">
                                                                 <strong>
-                                                                    <t t-if="product_lvl_4.get('product').engineering_state == 'draft'">
-                                                                        <span style="color: grey;padding-left: 5px;">
-                                                                            <t t-out="product_lvl_4.get('product').engineering_state"/>
+                                                                    <t
+                                                                        t-if="product_lvl_4.get('product').engineering_state == 'draft'"
+                                                                    >
+                                                                        <span
+                                                                            style="color: grey;padding-left: 5px;"
+                                                                        >
+                                                                            <t
+                                                                                t-out="product_lvl_4.get('product').engineering_state"
+                                                                            />
                                                                         </span>
                                                                     </t>
-                                                                    <t t-elif="product_lvl_4.get('product').engineering_state == 'confirmed'">
-                                                                        <span style="color: blue;padding-left: 5px;">
-                                                                            <t t-out="product_lvl_4.get('product').engineering_state"/>
+                                                                    <t
+                                                                        t-elif="product_lvl_4.get('product').engineering_state == 'confirmed'"
+                                                                    >
+                                                                        <span
+                                                                            style="color: blue;padding-left: 5px;"
+                                                                        >
+                                                                            <t
+                                                                                t-out="product_lvl_4.get('product').engineering_state"
+                                                                            />
                                                                         </span>
                                                                     </t>
-                                                                    <t t-elif="product_lvl_4.get('product').engineering_state == 'released'">
-                                                                        <span style="color: green;padding-left: 5px;">
-                                                                            <t t-out="product_lvl_4.get('product').engineering_state"/>
+                                                                    <t
+                                                                        t-elif="product_lvl_4.get('product').engineering_state == 'released'"
+                                                                    >
+                                                                        <span
+                                                                            style="color: green;padding-left: 5px;"
+                                                                        >
+                                                                            <t
+                                                                                t-out="product_lvl_4.get('product').engineering_state"
+                                                                            />
                                                                         </span>
                                                                     </t>
-                                                                    <t t-elif="product_lvl_4.get('product').engineering_state == 'undermodify'">
-                                                                        <span style="color: orange;padding-left: 5px;">
-                                                                            <t t-out="product_lvl_4.get('product').engineering_state"/>
+                                                                    <t
+                                                                        t-elif="product_lvl_4.get('product').engineering_state == 'undermodify'"
+                                                                    >
+                                                                        <span
+                                                                            style="color: orange;padding-left: 5px;"
+                                                                        >
+                                                                            <t
+                                                                                t-out="product_lvl_4.get('product').engineering_state"
+                                                                            />
                                                                         </span>
                                                                     </t>
-                                                                    <t t-elif="product_lvl_4.get('product').engineering_state == 'obsoleted'">
-                                                                        <span style="color: red;padding-left: 5px;">
-                                                                            <t t-out="product_lvl_4.get('product').engineering_state"/>
+                                                                    <t
+                                                                        t-elif="product_lvl_4.get('product').engineering_state == 'obsoleted'"
+                                                                    >
+                                                                        <span
+                                                                            style="color: red;padding-left: 5px;"
+                                                                        >
+                                                                            <t
+                                                                                t-out="product_lvl_4.get('product').engineering_state"
+                                                                            />
                                                                         </span>
                                                                     </t>
                                                                     <t t-else="">
-                                                                        <span style="color: black;padding-left: 5px;">
-                                                                            <t t-out="product_lvl_4.get('product').engineering_state"/>
+                                                                        <span
+                                                                            style="color: black;padding-left: 5px;"
+                                                                        >
+                                                                            <t
+                                                                                t-out="product_lvl_4.get('product').engineering_state"
+                                                                            />
                                                                         </span>
                                                                     </t>
                                                                 </strong>
                                                             </td>
-                                                            <td class="text-center"
-                                                                style="padding-top: 5px; padding-bottom: 5px;">
+                                                            <td
+                                                                class="text-center"
+                                                                style="padding-top: 5px; padding-bottom: 5px;"
+                                                            >
                                                                 <img
                                                                     t-att-src="'/plm/product_product_image_1920/%s' % product_lvl_4.get('product').id"
                                                                     t-att-alt="product_lvl_4.get('product').display_name"
                                                                     class="image_document_report"
-                                                                    style="margin: auto; border: none;"/>
+                                                                    style="margin: auto; border: none;"
+                                                                />
                                                             </td>
                                                         </tr>
-                                                        <t t-foreach="product_lvl_4['children']" t-as="product_lvl_5">
+                                                        <t
+                                                            t-foreach="product_lvl_4['children']"
+                                                            t-as="product_lvl_5"
+                                                        >
                                                             <tr>
                                                                 <td class="text-center">
-                                                                    <t t-out="product_lvl_5.get('level')"/>
+                                                                    <t
+                                                                        t-out="product_lvl_5.get('level')"
+                                                                    />
                                                                 </td>
                                                                 <td class="text-left">
                                                                     <span
-                                                                        style='font-size:20px; color:rgb(1 88 92); padding-left: 100px;'>
+                                                                        style='font-size:20px; color:rgb(1 88 92); padding-left: 100px;'
+                                                                    >
                                                                         &#8627;
                                                                     </span>
-                                                                    <a t-attf-href="/web#id={{product_lvl_5.get('product').id}}&amp;model={{product_lvl_5.get('product')._name}}&amp;view_type=form"
-                                                                       t-out="product_lvl_5.get('product').name"
-                                                                       target="_blank"/>
+                                                                    <a
+                                                                        t-attf-href="/web#id={{product_lvl_5.get('product').id}}&amp;model={{product_lvl_5.get('product')._name}}&amp;view_type=form"
+                                                                        t-out="product_lvl_5.get('product').name"
+                                                                        target="_blank"
+                                                                    />
                                                                 </td>
                                                                 <td class="text-center">
-                                                                    <t t-out="product_lvl_5.get('product').engineering_code"/>
+                                                                    <t
+                                                                        t-out="product_lvl_5.get('product').engineering_code"
+                                                                    />
                                                                 </td>
                                                                 <td class="text-center">
-                                                                    <t t-out="product_lvl_5.get('product').engineering_revision"/>
+                                                                    <t
+                                                                        t-out="product_lvl_5.get('product').engineering_revision"
+                                                                    />
                                                                 </td>
                                                                 <td class="text-center">
                                                                     <strong>
-                                                                        <t t-if="product_lvl_5.get('product').engineering_state == 'draft'">
+                                                                        <t
+                                                                            t-if="product_lvl_5.get('product').engineering_state == 'draft'"
+                                                                        >
                                                                             <span
-                                                                                style="color: grey;padding-left: 5px;">
-                                                                                <t t-out="product_lvl_5.get('product').engineering_state"/>
+                                                                                style="color: grey;padding-left: 5px;"
+                                                                            >
+                                                                                <t
+                                                                                    t-out="product_lvl_5.get('product').engineering_state"
+                                                                                />
                                                                             </span>
                                                                         </t>
-                                                                        <t t-elif="product_lvl_5.get('product').engineering_state == 'confirmed'">
+                                                                        <t
+                                                                            t-elif="product_lvl_5.get('product').engineering_state == 'confirmed'"
+                                                                        >
                                                                             <span
-                                                                                style="color: blue;padding-left: 5px;">
-                                                                                <t t-out="product_lvl_5.get('product').engineering_state"/>
+                                                                                style="color: blue;padding-left: 5px;"
+                                                                            >
+                                                                                <t
+                                                                                    t-out="product_lvl_5.get('product').engineering_state"
+                                                                                />
                                                                             </span>
                                                                         </t>
-                                                                        <t t-elif="product_lvl_5.get('product').engineering_state == 'released'">
+                                                                        <t
+                                                                            t-elif="product_lvl_5.get('product').engineering_state == 'released'"
+                                                                        >
                                                                             <span
-                                                                                style="color: green;padding-left: 5px;">
-                                                                                <t t-out="product_lvl_5.get('product').engineering_state"/>
+                                                                                style="color: green;padding-left: 5px;"
+                                                                            >
+                                                                                <t
+                                                                                    t-out="product_lvl_5.get('product').engineering_state"
+                                                                                />
                                                                             </span>
                                                                         </t>
-                                                                        <t t-elif="product_lvl_5.get('product').engineering_state == 'undermodify'">
+                                                                        <t
+                                                                            t-elif="product_lvl_5.get('product').engineering_state == 'undermodify'"
+                                                                        >
                                                                             <span
-                                                                                style="color: orange;padding-left: 5px;">
-                                                                                <t t-out="product_lvl_5.get('product').engineering_state"/>
+                                                                                style="color: orange;padding-left: 5px;"
+                                                                            >
+                                                                                <t
+                                                                                    t-out="product_lvl_5.get('product').engineering_state"
+                                                                                />
                                                                             </span>
                                                                         </t>
-                                                                        <t t-elif="product_lvl_5.get('product').engineering_state == 'obsoleted'">
-                                                                            <span style="color: red;padding-left: 5px;">
-                                                                                <t t-out="product_lvl_5.get('product').engineering_state"/>
+                                                                        <t
+                                                                            t-elif="product_lvl_5.get('product').engineering_state == 'obsoleted'"
+                                                                        >
+                                                                            <span
+                                                                                style="color: red;padding-left: 5px;"
+                                                                            >
+                                                                                <t
+                                                                                    t-out="product_lvl_5.get('product').engineering_state"
+                                                                                />
                                                                             </span>
                                                                         </t>
                                                                         <t t-else="">
                                                                             <span
-                                                                                style="color: black;padding-left: 5px;">
-                                                                                <t t-out="product_lvl_5.get('product').engineering_state"/>
+                                                                                style="color: black;padding-left: 5px;"
+                                                                            >
+                                                                                <t
+                                                                                    t-out="product_lvl_5.get('product').engineering_state"
+                                                                                />
                                                                             </span>
                                                                         </t>
                                                                     </strong>
                                                                 </td>
-                                                                <td class="text-center"
-                                                                    style="padding-top: 5px; padding-bottom: 5px;">
+                                                                <td
+                                                                    class="text-center"
+                                                                    style="padding-top: 5px; padding-bottom: 5px;"
+                                                                >
                                                                     <img
                                                                         t-att-src="'/plm/product_product_image_1920/%s' % product_lvl_5.get('product').id"
                                                                         t-att-alt="product_lvl_5.get('product').display_name"
                                                                         class="image_document_report"
-                                                                        style="margin: auto; border: none;"/>
+                                                                        style="margin: auto; border: none;"
+                                                                    />
                                                                 </td>
                                                             </tr>
-                                                            <t t-foreach="product_lvl_5['children']" t-as="product_lvl_6">
+                                                            <t
+                                                                t-foreach="product_lvl_5['children']"
+                                                                t-as="product_lvl_6"
+                                                            >
                                                                 <tr>
-                                                                    <td class="text-center">
-                                                                        <t t-out="product_lvl_6.get('level')"/>
+                                                                    <td
+                                                                        class="text-center"
+                                                                    >
+                                                                        <t
+                                                                            t-out="product_lvl_6.get('level')"
+                                                                        />
                                                                     </td>
-                                                                    <td class="text-left">
+                                                                    <td
+                                                                        class="text-left"
+                                                                    >
                                                                         <span
-                                                                            style='font-size:20px; color:rgb(1 88 92); padding-left: 120px;'>
+                                                                            style='font-size:20px; color:rgb(1 88 92); padding-left: 120px;'
+                                                                        >
                                                                             &#8627;
                                                                         </span>
-                                                                        <a t-attf-href="/web#id={{product_lvl_6.get('product').id}}&amp;model={{product_lvl_6.get('product')._name}}&amp;view_type=form"
-                                                                           t-out="product_lvl_6.get('product').name"
-                                                                           target="_blank"/>
+                                                                        <a
+                                                                            t-attf-href="/web#id={{product_lvl_6.get('product').id}}&amp;model={{product_lvl_6.get('product')._name}}&amp;view_type=form"
+                                                                            t-out="product_lvl_6.get('product').name"
+                                                                            target="_blank"
+                                                                        />
                                                                     </td>
-                                                                    <td class="text-center">
-                                                                        <t t-out="product_lvl_6.get('product').engineering_code"/>
+                                                                    <td
+                                                                        class="text-center"
+                                                                    >
+                                                                        <t
+                                                                            t-out="product_lvl_6.get('product').engineering_code"
+                                                                        />
                                                                     </td>
-                                                                    <td class="text-center">
-                                                                        <t t-out="product_lvl_6.get('product').engineering_revision"/>
+                                                                    <td
+                                                                        class="text-center"
+                                                                    >
+                                                                        <t
+                                                                            t-out="product_lvl_6.get('product').engineering_revision"
+                                                                        />
                                                                     </td>
-                                                                    <td class="text-center">
+                                                                    <td
+                                                                        class="text-center"
+                                                                    >
                                                                         <strong>
-                                                                            <t t-if="product_lvl_6.get('product').engineering_state == 'draft'">
+                                                                            <t
+                                                                                t-if="product_lvl_6.get('product').engineering_state == 'draft'"
+                                                                            >
                                                                                 <span
-                                                                                    style="color: grey;padding-left: 5px;">
-                                                                                    <t t-out="product_lvl_6.get('product').engineering_state"/>
+                                                                                    style="color: grey;padding-left: 5px;"
+                                                                                >
+                                                                                    <t
+                                                                                        t-out="product_lvl_6.get('product').engineering_state"
+                                                                                    />
                                                                                 </span>
                                                                             </t>
-                                                                            <t t-elif="product_lvl_6.get('product').engineering_state == 'confirmed'">
+                                                                            <t
+                                                                                t-elif="product_lvl_6.get('product').engineering_state == 'confirmed'"
+                                                                            >
                                                                                 <span
-                                                                                    style="color: blue;padding-left: 5px;">
-                                                                                    <t t-out="product_lvl_6.get('product').engineering_state"/>
+                                                                                    style="color: blue;padding-left: 5px;"
+                                                                                >
+                                                                                    <t
+                                                                                        t-out="product_lvl_6.get('product').engineering_state"
+                                                                                    />
                                                                                 </span>
                                                                             </t>
-                                                                            <t t-elif="product_lvl_6.get('product').engineering_state == 'released'">
+                                                                            <t
+                                                                                t-elif="product_lvl_6.get('product').engineering_state == 'released'"
+                                                                            >
                                                                                 <span
-                                                                                    style="color: green;padding-left: 5px;">
-                                                                                    <t t-out="product_lvl_6.get('product').engineering_state"/>
+                                                                                    style="color: green;padding-left: 5px;"
+                                                                                >
+                                                                                    <t
+                                                                                        t-out="product_lvl_6.get('product').engineering_state"
+                                                                                    />
                                                                                 </span>
                                                                             </t>
-                                                                            <t t-elif="product_lvl_6.get('product').engineering_state == 'undermodify'">
+                                                                            <t
+                                                                                t-elif="product_lvl_6.get('product').engineering_state == 'undermodify'"
+                                                                            >
                                                                                 <span
-                                                                                    style="color: orange;padding-left: 5px;">
-                                                                                    <t t-out="product_lvl_6.get('product').engineering_state"/>
+                                                                                    style="color: orange;padding-left: 5px;"
+                                                                                >
+                                                                                    <t
+                                                                                        t-out="product_lvl_6.get('product').engineering_state"
+                                                                                    />
                                                                                 </span>
                                                                             </t>
-                                                                            <t t-elif="product_lvl_6.get('product').engineering_state == 'obsoleted'">
+                                                                            <t
+                                                                                t-elif="product_lvl_6.get('product').engineering_state == 'obsoleted'"
+                                                                            >
                                                                                 <span
-                                                                                    style="color: red;padding-left: 5px;">
-                                                                                    <t t-out="product_lvl_6.get('product').engineering_state"/>
+                                                                                    style="color: red;padding-left: 5px;"
+                                                                                >
+                                                                                    <t
+                                                                                        t-out="product_lvl_6.get('product').engineering_state"
+                                                                                    />
                                                                                 </span>
                                                                             </t>
-                                                                            <t t-else="">
+                                                                            <t
+                                                                                t-else=""
+                                                                            >
                                                                                 <span
-                                                                                    style="color: black;padding-left: 5px;">
-                                                                                    <t t-out="product_lvl_6.get('product').engineering_state"/>
+                                                                                    style="color: black;padding-left: 5px;"
+                                                                                >
+                                                                                    <t
+                                                                                        t-out="product_lvl_6.get('product').engineering_state"
+                                                                                    />
                                                                                 </span>
                                                                             </t>
                                                                         </strong>
                                                                     </td>
-                                                                    <td class="text-center"
-                                                                        style="padding-top: 5px; padding-bottom: 5px;">
+                                                                    <td
+                                                                        class="text-center"
+                                                                        style="padding-top: 5px; padding-bottom: 5px;"
+                                                                    >
                                                                         <img
                                                                             t-att-src="'/plm/product_product_image_1920/%s' % product_lvl_6.get('product').id"
                                                                             t-att-alt="product_lvl_6.get('product').display_name"
                                                                             class="image_document_report"
-                                                                            style="margin: auto; border: none;"/>
+                                                                            style="margin: auto; border: none;"
+                                                                        />
                                                                     </td>
                                                                 </tr>
-                                                                <t t-foreach="product_lvl_6['children']" t-as="product_lvl_7">
+                                                                <t
+                                                                    t-foreach="product_lvl_6['children']"
+                                                                    t-as="product_lvl_7"
+                                                                >
                                                                     <tr>
-                                                                        <td class="text-center">
-                                                                            <t t-out="product_lvl_7.get('level')"/>
+                                                                        <td
+                                                                            class="text-center"
+                                                                        >
+                                                                            <t
+                                                                                t-out="product_lvl_7.get('level')"
+                                                                            />
                                                                         </td>
-                                                                        <td class="text-left">
+                                                                        <td
+                                                                            class="text-left"
+                                                                        >
                                                                             <span
-                                                                                style='font-size:20px; color:rgb(1 88 92); padding-left: 140px;'>
+                                                                                style='font-size:20px; color:rgb(1 88 92); padding-left: 140px;'
+                                                                            >
                                                                                 &#8627;
                                                                             </span>
-                                                                            <a t-attf-href="/web#id={{product_lvl_7.get('product').id}}&amp;model={{product_lvl_7.get('product')._name}}&amp;view_type=form"
-                                                                               t-out="product_lvl_7.get('product').name"
-                                                                               target="_blank"/>
+                                                                            <a
+                                                                                t-attf-href="/web#id={{product_lvl_7.get('product').id}}&amp;model={{product_lvl_7.get('product')._name}}&amp;view_type=form"
+                                                                                t-out="product_lvl_7.get('product').name"
+                                                                                target="_blank"
+                                                                            />
                                                                         </td>
-                                                                        <td class="text-center">
-                                                                            <t t-out="product_lvl_7.get('product').engineering_code"/>
+                                                                        <td
+                                                                            class="text-center"
+                                                                        >
+                                                                            <t
+                                                                                t-out="product_lvl_7.get('product').engineering_code"
+                                                                            />
                                                                         </td>
-                                                                        <td class="text-center">
-                                                                            <t t-out="product_lvl_7.get('product').engineering_revision"/>
+                                                                        <td
+                                                                            class="text-center"
+                                                                        >
+                                                                            <t
+                                                                                t-out="product_lvl_7.get('product').engineering_revision"
+                                                                            />
                                                                         </td>
-                                                                        <td class="text-center">
+                                                                        <td
+                                                                            class="text-center"
+                                                                        >
                                                                             <strong>
-                                                                                <t t-if="product_lvl_7.get('product').engineering_state == 'draft'">
+                                                                                <t
+                                                                                    t-if="product_lvl_7.get('product').engineering_state == 'draft'"
+                                                                                >
                                                                                     <span
-                                                                                        style="color: grey;padding-left: 5px;">
-                                                                                        <t t-out="product_lvl_7.get('product').engineering_state"/>
+                                                                                        style="color: grey;padding-left: 5px;"
+                                                                                    >
+                                                                                        <t
+                                                                                            t-out="product_lvl_7.get('product').engineering_state"
+                                                                                        />
                                                                                     </span>
                                                                                 </t>
-                                                                                <t t-elif="product_lvl_7.get('product').engineering_state == 'confirmed'">
+                                                                                <t
+                                                                                    t-elif="product_lvl_7.get('product').engineering_state == 'confirmed'"
+                                                                                >
                                                                                     <span
-                                                                                        style="color: blue;padding-left: 5px;">
-                                                                                        <t t-out="product_lvl_7.get('product').engineering_state"/>
+                                                                                        style="color: blue;padding-left: 5px;"
+                                                                                    >
+                                                                                        <t
+                                                                                            t-out="product_lvl_7.get('product').engineering_state"
+                                                                                        />
                                                                                     </span>
                                                                                 </t>
-                                                                                <t t-elif="product_lvl_7.get('product').engineering_state == 'released'">
+                                                                                <t
+                                                                                    t-elif="product_lvl_7.get('product').engineering_state == 'released'"
+                                                                                >
                                                                                     <span
-                                                                                        style="color: green;padding-left: 5px;">
-                                                                                        <t t-out="product_lvl_7.get('product').engineering_state"/>
+                                                                                        style="color: green;padding-left: 5px;"
+                                                                                    >
+                                                                                        <t
+                                                                                            t-out="product_lvl_7.get('product').engineering_state"
+                                                                                        />
                                                                                     </span>
                                                                                 </t>
-                                                                                <t t-elif="product_lvl_7.get('product').engineering_state == 'undermodify'">
+                                                                                <t
+                                                                                    t-elif="product_lvl_7.get('product').engineering_state == 'undermodify'"
+                                                                                >
                                                                                     <span
-                                                                                        style="color: orange;padding-left: 5px;">
-                                                                                        <t t-out="product_lvl_7.get('product').engineering_state"/>
+                                                                                        style="color: orange;padding-left: 5px;"
+                                                                                    >
+                                                                                        <t
+                                                                                            t-out="product_lvl_7.get('product').engineering_state"
+                                                                                        />
                                                                                     </span>
                                                                                 </t>
-                                                                                <t t-elif="product_lvl_7.get('product').engineering_state == 'obsoleted'">
+                                                                                <t
+                                                                                    t-elif="product_lvl_7.get('product').engineering_state == 'obsoleted'"
+                                                                                >
                                                                                     <span
-                                                                                        style="color: red;padding-left: 5px;">
-                                                                                        <t t-out="product_lvl_7.get('product').engineering_state"/>
+                                                                                        style="color: red;padding-left: 5px;"
+                                                                                    >
+                                                                                        <t
+                                                                                            t-out="product_lvl_7.get('product').engineering_state"
+                                                                                        />
                                                                                     </span>
                                                                                 </t>
-                                                                                <t t-else="">
+                                                                                <t
+                                                                                    t-else=""
+                                                                                >
                                                                                     <span
-                                                                                        style="color: black;padding-left: 5px;">
-                                                                                        <t t-out="product_lvl_7.get('product').engineering_state"/>
+                                                                                        style="color: black;padding-left: 5px;"
+                                                                                    >
+                                                                                        <t
+                                                                                            t-out="product_lvl_7.get('product').engineering_state"
+                                                                                        />
                                                                                     </span>
                                                                                 </t>
                                                                             </strong>
                                                                         </td>
-                                                                        <td class="text-center"
-                                                                            style="padding-top: 5px; padding-bottom: 5px;">
+                                                                        <td
+                                                                            class="text-center"
+                                                                            style="padding-top: 5px; padding-bottom: 5px;"
+                                                                        >
                                                                             <img
                                                                                 t-att-src="'/plm/product_product_image_1920/%s' % product_lvl_7.get('product').id"
                                                                                 t-att-alt="product_lvl_7.get('product').display_name"
                                                                                 class="image_document_report"
-                                                                                style="margin: auto; border: none;"/>
+                                                                                style="margin: auto; border: none;"
+                                                                            />
                                                                         </td>
                                                                     </tr>
                                                                 </t>

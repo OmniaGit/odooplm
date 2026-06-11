@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <data>
         <!-- List View -->
@@ -7,7 +7,7 @@
             <field name="model">consumption.state</field>
             <field name="arch" type="xml">
                 <list>
-                    <field name="name"/>
+                    <field name="name" />
                 </list>
             </field>
         </record>
@@ -20,7 +20,7 @@
                 <form>
                     <sheet>
                         <group>
-                            <field name="name" required="1"/>
+                            <field name="name" required="1" />
                         </group>
                     </sheet>
                 </form>

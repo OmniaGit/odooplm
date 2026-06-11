@@ -1,4 +1,3 @@
-# -*- encoding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Your own solutions
@@ -24,9 +23,7 @@ Created on 28/mag/2016
 
 @author: mboscolo
 """
-from odoo import _
-from odoo import api
-from odoo import models
+from odoo import _, api, models
 
 
 class ReportDocumentPdf(models.AbstractModel):

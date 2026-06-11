@@ -9,7 +9,7 @@ exclude: |
   # Maybe reactivate this when all README files include prettier ignore tags?
   ^README\.md$|
   # Library files can have extraneous formatting (even minimized)
-  /static/(src/)?lib/|
+  /static/(src/)?(js/)?lib/|
   # Repos using Sphinx to generate docs don't need prettying
   ^docs/_templates/.*\.html$|
   # You don't usually want a bot to modify your legal texts
@@ -29,7 +29,7 @@ repos:
         files: "\\.rej$"
       - id: bump-plm-version
         name: Bump plm app version
-        entry: python scripts/bump_plm_version.py
+        entry: python3 scripts/bump_plm_version.py
         language: system
         pass_filenames: false
         always_run: true
@@ -71,6 +71,11 @@ repos:
     hooks:
       - id: eslint
         verbose: true
+        exclude: |
+          (?x)
+          plm/static/src/js/many2one_widget/|
+          qt_views/static/src/js/|
+          plm_web_3d/
         args:
           - --color
           - --fix
@@ -109,16 +114,17 @@ repos:
         args:
           - --settings=.
         exclude: /__init__\.py$
-  - repo: https://github.com/acsone/setuptools-odoo
-    rev: 2.6.0
-    hooks:
-      - id: setuptools-odoo-make-default
-      - id: setuptools-odoo-get-requirements
-        args:
-          - --output
-          - requirements.txt
-          - --header
-          - "# generated from manifests external_dependencies"
+  # setuptools-odoo: disabled until a version with Odoo 18.0 support is released
+  # - repo: https://github.com/acsone/setuptools-odoo
+  #   rev: 3.3.2
+  #   hooks:
+  #     - id: setuptools-odoo-make-default
+  #     - id: setuptools-odoo-get-requirements
+  #       args:
+  #         - --output
+  #         - requirements.txt
+  #         - --header
+  #         - "# generated from manifests external_dependencies"
   - repo: https://github.com/PyCQA/flake8
     rev: 7.1.1
     hooks:

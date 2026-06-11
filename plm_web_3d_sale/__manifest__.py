@@ -22,14 +22,13 @@
     "name": "PLM Web 3d Support Sale",
     "version": "18.0.0.1",
     "author": "OmniaSolutions",
-    "website": "https://odooplm.omniasolutions.website",
+    "website": "https://github.com/OmniaGit/odooplm",
     "category": "Manufacturing/Product Lifecycle Management (PLM)",
     "sequence": 15,
     "license": "AGPL-3",
     "summary": "",
     "images": [],
-    "depends": ["plm",
-                "website_sale"],
+    "depends": ["plm", "website_sale"],
     "data": [
         # views
         "views/product_image.xml",

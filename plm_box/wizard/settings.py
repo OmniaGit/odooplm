@@ -1,4 +1,3 @@
-# -*- encoding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Open Source Management Solution
@@ -27,10 +26,8 @@ class stock_config_settings(models.TransientModel):
     _inherit = "res.config.settings"
 
     module_stock_plm_box = fields.Boolean(
-        string="Allow plm_box relation",
-        help="Adds plm_box relation to Warehouse."
+        string="Allow plm_box relation", help="Adds plm_box relation to Warehouse."
     )
     module_plm_box_widget = fields.Boolean(
-        string="Plm Widget",
-        help="Adds plm_box relation to Warehouse."
+        string="Plm Widget", help="Adds plm_box relation to Warehouse."
     )

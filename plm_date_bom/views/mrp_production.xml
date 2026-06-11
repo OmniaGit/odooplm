@@ -1,26 +1,31 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <data>
         <record id="plm_mrp_production_form_view" model="ir.ui.view">
             <field name="name">plm.mrp.production.form</field>
             <field name="model">mrp.production</field>
-            <field name="inherit_id" ref="mrp.mrp_production_form_view"/>
+            <field name="inherit_id" ref="mrp.mrp_production_form_view" />
             <field name="arch" type="xml">
                 <data>
-                    <xpath expr="//form[1]/sheet[1]/div[@name='button_box'][1]" position="after">
+                    <xpath
+                        expr="//form[1]/sheet[1]/div[@name='button_box'][1]"
+                        position="after"
+                    >
                         <group name="obsolete_presents_banner">
-                            <div invisible="obsolete_presents==False"
-                                 style="background-color: #ffd48a;
+                            <div
+                                invisible="obsolete_presents==False"
+                                style="background-color: #ffd48a;
   									   border-left: 5px solid #cc8100;
   									   padding: 10px;
   									   box-shadow: 0 0 11px 3px #ccc;
-  									   font-weight: bold;">
+  									   font-weight: bold;"
+                            >
                                 There are obsolete components in manufaturing lines.
                             </div>
                         </group>
                     </xpath>
                     <xpath expr="//field[@name='user_id']" position="after">
-                        <field name="obsolete_presents"/>
+                        <field name="obsolete_presents" />
                     </xpath>
                 </data>
             </field>

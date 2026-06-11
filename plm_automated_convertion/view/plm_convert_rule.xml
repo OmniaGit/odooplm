@@ -1,20 +1,25 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <data>
 
         <record model="ir.ui.view" id="plm_convert_rule_search">
             <field name="name">plm.convert.rule.search</field>
             <field name="model">plm.convert.rule</field>
-            <field name="priority" eval="1"/>
+            <field name="priority" eval="1" />
             <field name="arch" type="xml">
                 <search string="Plm Convert Rule">
-                    <field name="product_category"/>
-                    <field name="output_name_rule"/>
-                    <field name="start_format"/>
-                    <field name="end_format"/>
+                    <field name="product_category" />
+                    <field name="output_name_rule" />
+                    <field name="start_format" />
+                    <field name="end_format" />
                     <group expand="0" string="Group By...">
-                        <filter string="Category" icon="terp-personal" domain="[]"
-                                context="{'group_by':'product_category'}" name="convert_rule_category"/>
+                        <filter
+                            string="Category"
+                            icon="terp-personal"
+                            domain="[]"
+                            context="{'group_by':'product_category'}"
+                            name="convert_rule_category"
+                        />
                     </group>
                 </search>
             </field>
@@ -27,13 +32,26 @@
                 <form string="Plm Convert Rule">
                     <sheet>
                         <group>
-                            <field name="start_format" placeholder=".ipt" required="True"/>
-                            <field name="end_format" placeholder=".step" required="True"/>
-                            <field name="product_category" required="True"/>
-                            <field name="server_id" required="True"/>
-                            <field name="convert_alone_documents"/>
-                            <field name="output_name_rule"/>
-                            <i class="fa fa-info fa-3x text-info float-left" role="img" aria-label="Info" title="Info"/>
+                            <field
+                                name="start_format"
+                                placeholder=".ipt"
+                                required="True"
+                            />
+                            <field
+                                name="end_format"
+                                placeholder=".step"
+                                required="True"
+                            />
+                            <field name="product_category" required="True" />
+                            <field name="server_id" required="True" />
+                            <field name="convert_alone_documents" />
+                            <field name="output_name_rule" />
+                            <i
+                                class="fa fa-info fa-3x text-info float-left"
+                                role="img"
+                                aria-label="Info"
+                                title="Info"
+                            />
                             <p>
                                 <h3>Output Filename Rule</h3>
                             </p>
@@ -41,8 +59,10 @@
                                 <p>
                                     Available accessors to compute the rule are:
                                     <ol>
-                                        <li>document : Document that needs to be converted</li>
-                                        <li>component : Starting from the document to be converted we get the related
+                                        <li
+                                        >document : Document that needs to be converted</li>
+                                        <li
+                                        >component : Starting from the document to be converted we get the related
                                             component
                                         </li>
                                         <li>env : Odoo environment</li>
@@ -87,14 +107,14 @@
         <record model="ir.ui.view" id="plm_convert_rule_list">
             <field name="name">plm.convert.rule.list</field>
             <field name="model">plm.convert.rule</field>
-            <field name="priority" eval="1"/>
+            <field name="priority" eval="1" />
             <field name="arch" type="xml">
                 <list string="Plm Convert Rule">
-                    <field name="start_format"/>
-                    <field name="end_format"/>
-                    <field name="product_category"/>
-                    <field name="output_name_rule"/>
-                    <field name="server_id"/>
+                    <field name="start_format" />
+                    <field name="end_format" />
+                    <field name="product_category" />
+                    <field name="output_name_rule" />
+                    <field name="server_id" />
                 </list>
             </field>
         </record>
@@ -103,8 +123,8 @@
             <field name="name">Plm Convert Rule</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">plm.convert.rule</field>
-            <field name="view_id" ref="plm_convert_rule_list"/>
-            <field name="search_view_id" ref="plm_convert_rule_search"/>
+            <field name="view_id" ref="plm_convert_rule_list" />
+            <field name="search_view_id" ref="plm_convert_rule_search" />
         </record>
 
         <menuitem
@@ -112,8 +132,8 @@
             name="Plm Convert Rule"
             parent="plm.plm_menu_dictionaries"
             groups="plm_automated_convertion.group_plm_convert_view"
-            action="plm_convert_rule_action"/>
+            action="plm_convert_rule_action"
+        />
 
     </data>
 </odoo>
-

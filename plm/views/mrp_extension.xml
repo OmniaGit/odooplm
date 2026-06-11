@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <!-- View customization on MRP -->
 
@@ -7,18 +7,24 @@
         <field name="model">mrp.bom.line</field>
         <field name="arch" type="xml">
             <list>
-                <field name="product_id" 
-                       widget="plm_many2one_image" 
-                       options="{'image_field':'image_1920','linked_field':'linkeddocuments'}"/>
-                <field name="description"/>
-                <field name="route_ids" widget="many2many_tags" optional="hide"/>
-                <field name="has_vendor" optional="hide"/>
-                <field name="engineering_revision"/>
-                <field name="engineering_state"/>
-                <field name="product_qty"/>
-                <field name="product_uom_id"/>
-                <field name="product_tag_ids" widget="many2many_tags" options="{'color_field': 'color'}" />
-                <field name="source_id" optional="hide"/>
+                <field
+                    name="product_id"
+                    widget="plm_many2one_image"
+                    options="{'image_field':'image_1920','linked_field':'linkeddocuments'}"
+                />
+                <field name="description" />
+                <field name="route_ids" widget="many2many_tags" optional="hide" />
+                <field name="has_vendor" optional="hide" />
+                <field name="engineering_revision" />
+                <field name="engineering_state" />
+                <field name="product_qty" />
+                <field name="product_uom_id" />
+                <field
+                    name="product_tag_ids"
+                    widget="many2many_tags"
+                    options="{'color_field': 'color'}"
+                />
+                <field name="source_id" optional="hide" />
             </list>
         </field>
    </record>
@@ -29,14 +35,19 @@
         <field eval="100" name="priority" />
         <field name="arch" type="xml">
             <search string="Product line search">
-                <filter string="Group By Parent" name="grp_by_parent" context="{'group_by':'bom_id'}"/>
-                <field string="Product" name="product_id"/>
-                <field string="Description" name="description"/>
-                <field string="Tags" name="product_tag_ids"/>
+                <filter
+                    string="Group By Parent"
+                    name="grp_by_parent"
+                    context="{'group_by':'bom_id'}"
+                />
+                <field string="Product" name="product_id" />
+                <field string="Description" name="description" />
+                <field string="Tags" name="product_tag_ids" />
                 <filter
                     name="missing_vendor"
                     string="Missing Vendor"
-                    domain="[('has_vendor','=',False)]"/>
+                    domain="[('has_vendor','=',False)]"
+                />
             </search>
         </field>
     </record>
@@ -44,28 +55,38 @@
     <record id="plm_mrp_bom_line_view_form" model="ir.ui.view">
         <field name="name">plm.mrp.bom.line.view.form</field>
         <field name="model">mrp.bom.line</field>
-        <field name="inherit_id" ref="mrp.mrp_bom_line_view_form"/>
+        <field name="inherit_id" ref="mrp.mrp_bom_line_view_form" />
         <field name="type">form</field>
         <field name="arch" type="xml">
             <field name="product_id" position="replace">
-                <field name="itemnum"/>
-                <field name="product_id" 
-                       widget="plm_many2one_image" 
-                       options="{'image_field':'image_1920','linked_field':'linkeddocuments'}"/>
+                <field name="itemnum" />
+                <field
+                    name="product_id"
+                    widget="plm_many2one_image"
+                    options="{'image_field':'image_1920','linked_field':'linkeddocuments'}"
+                />
             </field>
             <field name="product_id" position="after">
-                <field name="engineering_revision" readonly="True"/>
-                <field name="engineering_state"/>
-                <field name="description" select="True"/>
-                <field name="product_tag_ids" widget="many2many_tags" options="{'color_field': 'color'}" />
-                <field name="source_id" string="Source Relation" widget="many2one"
-                	   context="{'kanban_view_ref':'plm.document_kanban_view',
+                <field name="engineering_revision" readonly="True" />
+                <field name="engineering_state" />
+                <field name="description" select="True" />
+                <field
+                    name="product_tag_ids"
+                    widget="many2many_tags"
+                    options="{'color_field': 'color'}"
+                />
+                <field
+                    name="source_id"
+                    string="Source Relation"
+                    widget="many2one"
+                    context="{'kanban_view_ref':'plm.document_kanban_view',
         						 'list_view_ref':'plm.ir_attachment_list',
-								 'form_view_ref':'plm.view_attachment_form_plm_hinerit'}"/>
+								 'form_view_ref':'plm.view_attachment_form_plm_hinerit'}"
+                />
             </field>
             <field name="product_qty" position="after">
-                <field name="weight_net" readonly="True"/>
-                <field name="create_date" select="True" readonly="True"/>
+                <field name="weight_net" readonly="True" />
+                <field name="create_date" select="True" readonly="True" />
             </field>
         </field>
     </record>
@@ -73,29 +94,39 @@
     <record id="plm_bom_list_view" model="ir.ui.view">
         <field name="name">plm.mrp.bom.list</field>
         <field name="model">mrp.bom</field>
-        <field name="inherit_id" ref="mrp.mrp_bom_tree_view"/>
+        <field name="inherit_id" ref="mrp.mrp_bom_tree_view" />
         <field name="arch" type="xml">
             <field name="product_tmpl_id" position="replace">
-                <field name="product_tmpl_id" 
-                       widget="plm_many2one_image" 
-                       options="{'image_field':'image_1920','linked_field':'linkeddocuments'}"/>
+                <field
+                    name="product_tmpl_id"
+                    widget="plm_many2one_image"
+                    options="{'image_field':'image_1920','linked_field':'linkeddocuments'}"
+                />
              </field>
             <field name="product_id" position="replace">
-                <field name="product_id" widget="many2one"/>
-            	<field name="code"/>
-            	<field name="source_id" string="Source Relation"/>
-                <field name="description" select="True"/>
-                <field name="company_id"/>
-                <field name="engineering_state" select="True"/>
-                <field name="weight_net"/>
-                <field name="product_qty"/>
-                <field name="engineering_revision"/>
+                <field name="product_id" widget="many2one" />
+            	<field name="code" />
+            	<field name="source_id" string="Source Relation" />
+                <field name="description" select="True" />
+                <field name="company_id" />
+                <field name="engineering_state" select="True" />
+                <field name="weight_net" />
+                <field name="product_qty" />
+                <field name="engineering_revision" />
             </field>
             <xpath expr="//list" position="attributes">
-            	<attribute name="decoration-info">engineering_state == 'confirmed'</attribute>
-            	<attribute name="decoration-success">engineering_state == 'released'</attribute>
-            	<attribute name="decoration-warning">engineering_state == 'undermodify'</attribute>
-            	<attribute name="decoration-muted">engineering_state == 'obsoleted'</attribute>
+            	<attribute
+                    name="decoration-info"
+                >engineering_state == 'confirmed'</attribute>
+            	<attribute
+                    name="decoration-success"
+                >engineering_state == 'released'</attribute>
+            	<attribute
+                    name="decoration-warning"
+                >engineering_state == 'undermodify'</attribute>
+            	<attribute
+                    name="decoration-muted"
+                >engineering_state == 'obsoleted'</attribute>
             </xpath>
         </field>
     </record>
@@ -103,82 +134,119 @@
     <record id="plm_bom_form_view" model="ir.ui.view">
         <field name="name">plm.bom.form</field>
         <field name="model">mrp.bom</field>
-        <field name="inherit_id" ref="mrp.mrp_bom_form_view"/>
+        <field name="inherit_id" ref="mrp.mrp_bom_form_view" />
         <field name="type">form</field>
-        <field name="priority" eval="16"/>
+        <field name="priority" eval="16" />
         <field name="arch" type="xml">
             <div class="oe_button_box" name="button_box" position="inside">
-                <button name="open_related_bom_lines"
-                        type="object"
-                        title="Related BOM Line"
-                        string="Related BOM Line"
-                        class="oe_stat_button"
-                        icon="fa-tasks"/>
-                <button name="open_related_bom_revisions"
-                        type="object"
-                        title="Related BOM Revisions"
-                        string="Related BOM Revisions"
-                        class="oe_stat_button"
-                        icon="fa-tasks"
-                        invisible="bom_revision_count>=1">
-                    <field name="bom_revision_count" string=" " widget="statinfo"/>
+                <button
+                    name="open_related_bom_lines"
+                    type="object"
+                    title="Related BOM Line"
+                    string="Related BOM Line"
+                    class="oe_stat_button"
+                    icon="fa-tasks"
+                />
+                <button
+                    name="open_related_bom_revisions"
+                    type="object"
+                    title="Related BOM Revisions"
+                    string="Related BOM Revisions"
+                    class="oe_stat_button"
+                    icon="fa-tasks"
+                    invisible="bom_revision_count>=1"
+                >
+                    <field name="bom_revision_count" string=" " widget="statinfo" />
                 </button>
             </div>
             <field name="product_tmpl_id" position="replace">
-				<field name="product_tmpl_id" 
-				    widget="plm_many2one_image" 
-				    options="{'image_field':'image_1920','linked_field':'linkeddocuments'}"/>
+				<field
+                    name="product_tmpl_id"
+                    widget="plm_many2one_image"
+                    options="{'image_field':'image_1920','linked_field':'linkeddocuments'}"
+                />
 		    </field>
 		    <field name="code" position="replace">
-		    	<field name="code" colspan="2"/>
-		    	<separator string=""/>
-		    	<separator string=""/>
-		    	<separator string=""/>
+		    	<field name="code" colspan="2" />
+		    	<separator string="" />
+		    	<separator string="" />
+		    	<separator string="" />
 
 		    </field>
             <field name="product_id" position="after">
-            	<separator string="Info:" colspan="2"/>
-                <field name="description" readonly="True"/>
-                <field name="engineering_revision" readonly="True"/>
-                <field name="engineering_state" readonly="True"/>
-                <field name="weight_net" readonly="True"/>
+            	<separator string="Info:" colspan="2" />
+                <field name="description" readonly="True" />
+                <field name="engineering_revision" readonly="True" />
+                <field name="engineering_state" readonly="True" />
+                <field name="weight_net" readonly="True" />
             </field>
             <xpath expr="//field[@name='bom_line_ids']/list" position="attributes">
-            	<attribute name="decoration-info">engineering_state == 'confirmed'</attribute>
-            	<attribute name="decoration-success">engineering_state == 'released'</attribute>
-            	<attribute name="decoration-warning">engineering_state == 'undermodify'</attribute>
-            	<attribute name="decoration-muted">engineering_state == 'obsoleted'</attribute>
+            	<attribute
+                    name="decoration-info"
+                >engineering_state == 'confirmed'</attribute>
+            	<attribute
+                    name="decoration-success"
+                >engineering_state == 'released'</attribute>
+            	<attribute
+                    name="decoration-warning"
+                >engineering_state == 'undermodify'</attribute>
+            	<attribute
+                    name="decoration-muted"
+                >engineering_state == 'obsoleted'</attribute>
             </xpath>
-            <xpath expr="//field[@name='bom_line_ids']/list/field[@name='product_id']" position="replace">
+            <xpath
+                expr="//field[@name='bom_line_ids']/list/field[@name='product_id']"
+                position="replace"
+            >
                 <field name="related_bom_ids" column_invisible="1" />
                 <field name="hasChildBoms" column_invisible="1" />
-                <button name="openRelatedBoms"
-                        type="object"
-                        icon="fa-level-down"
-                        title="Open Related Boms"
-                        class="btn btn-sm oe_stat_button"
-                        invisible="hasChildBoms==False"/>
-                <field name="product_id" 
-                       widget="plm_many2one_image" 
-                       options="{'image_field':'image_1920','linked_field':'linkeddocuments'}"/>
+                <button
+                    name="openRelatedBoms"
+                    type="object"
+                    icon="fa-level-down"
+                    title="Open Related Boms"
+                    class="btn btn-sm oe_stat_button"
+                    invisible="hasChildBoms==False"
+                />
+                <field
+                    name="product_id"
+                    widget="plm_many2one_image"
+                    options="{'image_field':'image_1920','linked_field':'linkeddocuments'}"
+                />
             </xpath>
-            <xpath expr="//field[@name='bom_line_ids']/list/field[@name='product_id']" position="after">
-                <field name="description" readonly="True"/>
-                <field name="engineering_revision" readonly="True"/>
-                <field name="engineering_state"/>
+            <xpath
+                expr="//field[@name='bom_line_ids']/list/field[@name='product_id']"
+                position="after"
+            >
+                <field name="description" readonly="True" />
+                <field name="engineering_revision" readonly="True" />
+                <field name="engineering_state" />
             </xpath>
-            <xpath expr="//field[@name='bom_line_ids']/list/field[@name='product_qty']" position="before">
-                <field name="source_id" string="Source Relation" widget="many2one"
-                	   context="{'kanban_view_ref':'plm.document_kanban_view',
+            <xpath
+                expr="//field[@name='bom_line_ids']/list/field[@name='product_qty']"
+                position="before"
+            >
+                <field
+                    name="source_id"
+                    string="Source Relation"
+                    widget="many2one"
+                    context="{'kanban_view_ref':'plm.document_kanban_view',
         						 'list_view_ref':'plm.ir_attachment_list',
-								 'form_view_ref':'plm.view_attachment_form_plm_hinerit'}"/>
+								 'form_view_ref':'plm.view_attachment_form_plm_hinerit'}"
+                />
             </xpath>
-            <xpath expr="//field[@name='bom_line_ids']/list/field[@name='product_uom_id']" position="after">
-            	<field name="itemnum"/>
-            	<field name="itemlbl" optional="hide"/>
+            <xpath
+                expr="//field[@name='bom_line_ids']/list/field[@name='product_uom_id']"
+                position="after"
+            >
+            	<field name="itemnum" />
+            	<field name="itemlbl" optional="hide" />
             </xpath>
-            <xpath expr="//field[@name='bom_line_ids']/list/field[@name='product_qty']" position="after">
-                <field name="hasChildBoms" invisible="True"/>
+            <xpath
+                expr="//field[@name='bom_line_ids']/list/field[@name='product_qty']"
+                position="after"
+            >
+                <field name="hasChildBoms" invisible="True" />
             </xpath>
 
             <list position="attributes">
@@ -193,7 +261,7 @@
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">mrp.bom</field>
         <field name="domain">[('type','=','normal'),]</field>
-        <field name="filter" eval="True"/>
+        <field name="filter" eval="True" />
     </record>
 
     <!-- Overrides standard Search -->
@@ -201,39 +269,48 @@
     <record id="view_mrp_bom_filter_inherit" model="ir.ui.view">
         <field name="name">plm.bom.select</field>
         <field name="model">mrp.bom</field>
-        <field name="inherit_id" ref="mrp.view_mrp_bom_filter"/>
+        <field name="inherit_id" ref="mrp.view_mrp_bom_filter" />
         <field name="arch" type="xml">
             <field name="code" position="before">
                 <filter
-            		name="last_year"
-            		string="Last Year"
-            		domain="[('create_date','&gt;=',(datetime.date.today() - relativedelta(days=1,months=1,years=1)).strftime('%%Y-%%m-%%d'))]"/>
+                    name="last_year"
+                    string="Last Year"
+                    domain="[('create_date','&gt;=',(datetime.date.today() - relativedelta(days=1,months=1,years=1)).strftime('%%Y-%%m-%%d'))]"
+                />
            		<filter
-            		name="last_month"
-            		string="Last Month"
-            		domain="[('create_date','&gt;=',(datetime.date.today() - relativedelta(days=1,months=1)).strftime('%%Y-%%m-%%d'))]"/>
+                    name="last_month"
+                    string="Last Month"
+                    domain="[('create_date','&gt;=',(datetime.date.today() - relativedelta(days=1,months=1)).strftime('%%Y-%%m-%%d'))]"
+                />
             	<filter
-            		name="last_week"
-            		string="Last Week"
-            		domain="[('create_date','&gt;=',(datetime.date.today() - datetime.timedelta(weeks=2)).strftime('%%Y-%%m-%%d'))]"/>
-                <separator name="separator" orientation="vertical"/>
+                    name="last_week"
+                    string="Last Week"
+                    domain="[('create_date','&gt;=',(datetime.date.today() - datetime.timedelta(weeks=2)).strftime('%%Y-%%m-%%d'))]"
+                />
+                <separator name="separator" orientation="vertical" />
             </field>
              <xpath expr="//group" position="after">
-             <field name="code"/>
-             <field name="product_id"/>
-             <field name="source_id"/>
-                 <filter name="bom_name"
-                         string="Bom Name"
-                         domain="[]"
-                         context="{'group_by':'code'}"/>
-                 <filter name="variant_name"
-                         string="Variant Name"
-                         domain="[]"
-                         context="{'group_by':'product_id'}"/>
-                 <filter name="source_relationship"
-                         string="Source Relationship"
-                         domain="[]"
-                         context="{'group_by':'source_id'}"/>
+             <field name="code" />
+             <field name="product_id" />
+             <field name="source_id" />
+                 <filter
+                    name="bom_name"
+                    string="Bom Name"
+                    domain="[]"
+                    context="{'group_by':'code'}"
+                />
+                 <filter
+                    name="variant_name"
+                    string="Variant Name"
+                    domain="[]"
+                    context="{'group_by':'product_id'}"
+                />
+                 <filter
+                    name="source_relationship"
+                    string="Source Relationship"
+                    domain="[]"
+                    context="{'group_by':'source_id'}"
+                />
              </xpath>
         </field>
     </record>
@@ -245,19 +322,23 @@
         <!-- not more supported on v17 <field name="field_parent">father_complete_ids</field> -->
         <field name="arch" type="xml">
             <list string="Where Used Bill of Materials">
-                <field name="product_id" string="Component Name"/>
+                <field name="product_id" string="Component Name" />
                 <!-- <field name="code" string="BoM Name"/> -->
-                <field name="engineering_revision" string="Revision"/>
-                <field name="description"/>
-                <field name="source_id" string="Source Relation" widget="many2one"
-                	   context="{'kanban_view_ref':'plm.document_kanban_view',
+                <field name="engineering_revision" string="Revision" />
+                <field name="description" />
+                <field
+                    name="source_id"
+                    string="Source Relation"
+                    widget="many2one"
+                    context="{'kanban_view_ref':'plm.document_kanban_view',
         						 'list_view_ref':'plm.ir_attachment_list',
-								 'form_view_ref':'plm.view_attachment_form_plm_hinerit'}"/>
-                <field name="product_qty"/>
-                <field name="product_uom_id"/>
-                <field name="weight_net"/>
-                <field name="create_date" select="True"/>
-                <field name="type"/>
+								 'form_view_ref':'plm.view_attachment_form_plm_hinerit'}"
+                />
+                <field name="product_qty" />
+                <field name="product_uom_id" />
+                <field name="weight_net" />
+                <field name="create_date" select="True" />
+                <field name="type" />
             </list>
         </field>
     </record>
@@ -268,19 +349,23 @@
         <!-- not more supported on v17 <field name="field_parent">child_line_ids</field> -->
         <field name="arch" type="xml">
             <list string="Bill of Materials">
-                <field name="itemnum" string="Position"/>
-                <field name="product_id" string="Component Name"/>
-                <field name="engineering_revision" string="Revision"/>
-                <field name="description"/>
-                <field string="Tags" name="product_tag_ids"/>
-                <field name="source_id" string="Source Relation" widget="many2one"
-                	   context="{'kanban_view_ref':'plm.document_kanban_view',
+                <field name="itemnum" string="Position" />
+                <field name="product_id" string="Component Name" />
+                <field name="engineering_revision" string="Revision" />
+                <field name="description" />
+                <field string="Tags" name="product_tag_ids" />
+                <field
+                    name="source_id"
+                    string="Source Relation"
+                    widget="many2one"
+                    context="{'kanban_view_ref':'plm.document_kanban_view',
         						 'list_view_ref':'plm.ir_attachment_list',
-								 'form_view_ref':'plm.view_attachment_form_plm_hinerit'}"/>
-                <field name="product_qty"/>
-                <field name="product_uom_id"/>
-                <field name="weight_net"/>
-                <field name="create_date" select="True"/>
+								 'form_view_ref':'plm.view_attachment_form_plm_hinerit'}"
+                />
+                <field name="product_qty" />
+                <field name="product_uom_id" />
+                <field name="weight_net" />
+                <field name="create_date" select="True" />
             </list>
         </field>
     </record>
@@ -291,8 +376,7 @@
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">mrp.bom.line</field>
         <field name="domain">[('bom_id', 'in', active_ids)]</field>
-        <field name="view_id" ref="plm_bom_list_structure"/>
+        <field name="view_id" ref="plm_bom_list_structure" />
     </record>
 
 </odoo>
-

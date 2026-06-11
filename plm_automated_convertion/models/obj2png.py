@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Created on Sat Jul  7 00:41:00 2018
 @author: Peter M. Clausen, pclausen
@@ -22,8 +21,9 @@ SOFTWARE.
 """
 
 import re
-import numpy as np
+
 import matplotlib.pyplot as plt
+import numpy as np
 
 RE = re.compile(r"/\d+")
 
@@ -59,8 +59,8 @@ class ObjFile:
 
     @staticmethod
     def MinMax3d(arr):
-        nmin = 1e9 * np.ones((3))
-        nmax = -1e9 * np.ones((3))
+        nmin = 1e9 * np.ones(3)
+        nmax = -1e9 * np.ones(3)
         for a in arr:
             for i in range(3):
                 nmin[i] = min(nmin[i], a[i])

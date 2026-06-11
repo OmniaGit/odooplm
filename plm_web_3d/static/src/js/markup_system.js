@@ -13,7 +13,7 @@ let _baseScreenshotData = null;
 let _currentBaseImage = null;
 let isSnapshotEditMode = false;
 let _currentSnapshotUrl = null;
-let _snapshotScale = 1;
+const _snapshotScale = 1;
 let _markupsInitialised = false;
 let _loadGeneration = 0;
 let _hasChanges = false;
@@ -23,10 +23,9 @@ window.addEventListener("load", () => {
     const markupBtnPerm = document.getElementById("markup_button_perm");
     if (markupBtn) markupBtn.addEventListener("click", openMarkupEditor);
     if (markupBtnPerm) markupBtnPerm.addEventListener("click", openMarkupEditor);
-
 });
 
-window.addEventListener("load", function() {
+window.addEventListener("load", function () {
     const submitBtn = document.getElementById("submit_markup");
     if (submitBtn) submitBtn.addEventListener("click", submitMarkup);
     initExistingMarkups();
@@ -56,10 +55,10 @@ function _positionEditorControls(tRect) {
 
         var origBtns = toolbar.querySelectorAll("button");
         var cloneBtns = tbClone.querySelectorAll("button");
-        cloneBtns.forEach(function(btn, i) {
+        cloneBtns.forEach(function (btn, i) {
             btn.removeAttribute("style");
             btn.className = "mcr-btn";
-            btn.onclick = function(e) {
+            btn.onclick = function (e) {
                 e.stopPropagation();
                 if (origBtns[i]) origBtns[i].click();
             };
@@ -76,7 +75,7 @@ function _positionEditorControls(tRect) {
     commentInput.placeholder = "Write Message...";
     commentInput.className = "mcr-input";
 
-    commentInput.addEventListener("input", function() {
+    commentInput.addEventListener("input", function () {
         _hasChanges = true;
     });
 
@@ -87,40 +86,49 @@ function _positionEditorControls(tRect) {
 
     var today = new Date().toISOString().split("T")[0];
     activityPanelClone.innerHTML =
-        "<div class=\"mcr-ap-row\">" +
-        "<label class=\"mcr-ap-label\">Due Date</label>" +
-        "<input type=\"date\" id=\"mcr_due_date\" class=\"mcr-ap-input\" value=\"" + today + "\"/>" +
+        '<div class="mcr-ap-row">' +
+        '<label class="mcr-ap-label">Due Date</label>' +
+        '<input type="date" id="mcr_due_date" class="mcr-ap-input" value="' +
+        today +
+        '"/>' +
         "</div>" +
-        "<div class=\"mcr-ap-row\">" +
-        "<label class=\"mcr-ap-label\">Summary</label>" +
-        "<input type=\"text\" id=\"mcr_summary\" class=\"mcr-ap-input\" placeholder=\"Summary\"/>" +
+        '<div class="mcr-ap-row">' +
+        '<label class="mcr-ap-label">Summary</label>' +
+        '<input type="text" id="mcr_summary" class="mcr-ap-input" placeholder="Summary"/>' +
         "</div>" +
-        "<div class=\"mcr-ap-row\">" +
-        "<label class=\"mcr-ap-label\">Assigned To</label>" +
-        "<select id=\"mcr_user_id\" class=\"mcr-ap-input\"><option value=\"\">Loading users...</option></select>" +
+        '<div class="mcr-ap-row">' +
+        '<label class="mcr-ap-label">Assigned To</label>' +
+        '<select id="mcr_user_id" class="mcr-ap-input"><option value="">Loading users...</option></select>' +
         "</div>";
 
     fetch("/web/dataset/call_kw", {
         method: "POST",
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify({
-            jsonrpc: "2.0", method: "call",
+            jsonrpc: "2.0",
+            method: "call",
             params: {
-                model: "res.users", method: "search_read",
-                args: [[["share", "=", false], ["active", "=", true]]],
+                model: "res.users",
+                method: "search_read",
+                args: [
+                    [
+                        ["share", "=", false],
+                        ["active", "=", true],
+                    ],
+                ],
                 kwargs: {fields: ["id", "name"], order: "name asc", limit: 100},
             },
         }),
     })
-        .then(function(r) {
+        .then(function (r) {
             return r.json();
         })
-        .then(function(data) {
+        .then(function (data) {
             var sel = document.getElementById("mcr_user_id");
             if (!sel) return;
             var users = data.result || [];
             sel.innerHTML = "";
-            users.forEach(function(u) {
+            users.forEach(function (u) {
                 var opt = document.createElement("option");
                 opt.value = u.id;
                 opt.textContent = u.name;
@@ -130,9 +138,9 @@ function _positionEditorControls(tRect) {
                 sel.value = odoo.session_info.uid;
             }
         })
-        .catch(function() {
+        .catch(function () {
             var sel = document.getElementById("mcr_user_id");
-            if (sel) sel.innerHTML = "<option value=\"\">Error loading users</option>";
+            if (sel) sel.innerHTML = '<option value="">Error loading users</option>';
         });
 
     var activityLabel = document.createElement("label");
@@ -142,7 +150,7 @@ function _positionEditorControls(tRect) {
     var activityCheck = document.createElement("input");
     activityCheck.type = "checkbox";
     activityCheck.className = "mcr-activity-check";
-    activityCheck.onchange = function() {
+    activityCheck.onchange = function () {
         var orig = document.getElementById("activity_view");
         if (orig) {
             orig.checked = this.checked;
@@ -157,7 +165,7 @@ function _positionEditorControls(tRect) {
     var submitBtn = document.createElement("button");
     submitBtn.textContent = "Submit";
     submitBtn.className = "mcr-submit";
-    submitBtn.onclick = function(e) {
+    submitBtn.onclick = function (e) {
         e.stopPropagation();
         var orig = document.getElementById("markup_comment");
         if (orig) orig.value = commentInput.value;
@@ -181,7 +189,7 @@ function _positionEditorControls(tRect) {
         saveBtn.id = "mcr_save_existing_btn";
         saveBtn.className = "mcr-btn";
         saveBtn.textContent = "💾 Save";
-        saveBtn.onclick = function(e) {
+        saveBtn.onclick = function (e) {
             e.stopPropagation();
 
             const threeCanvas = document.getElementById("odoo_canvas");
@@ -202,7 +210,8 @@ function _positionEditorControls(tRect) {
                 method: "POST",
                 headers: {"Content-Type": "application/json"},
                 body: JSON.stringify({
-                    jsonrpc: "2.0", method: "call",
+                    jsonrpc: "2.0",
+                    method: "call",
                     params: {
                         markup_id: _editingMarkupId,
                         image: finalImage,
@@ -211,13 +220,15 @@ function _positionEditorControls(tRect) {
                     },
                 }),
             })
-                .then(r => r.json())
-                .then(data => {
+                .then((r) => r.json())
+                .then((data) => {
                     if (data.result?.success) {
                         showToast("Markup saved successfully!", "success");
 
                         // ← Update log item in UI without page reload
-                        const logItem = document.querySelector(`[data-markup-id="${_editingMarkupId}"]`);
+                        const logItem = document.querySelector(
+                            `[data-markup-id="${_editingMarkupId}"]`
+                        );
                         if (logItem) {
                             // Update snapshot shown in eye/modal
                             const eye = logItem.querySelector(".markup_log_eye");
@@ -235,22 +246,34 @@ function _positionEditorControls(tRect) {
                                 const savedComment = logItem.dataset.comment;
                                 const savedDate = logItem.dataset.date;
 
-                                newEye.addEventListener("click", function(e) {
+                                newEye.addEventListener("click", function (e) {
                                     e.stopPropagation();
-                                    openMarkupLogModal(savedImage, savedComment, savedDate);
+                                    openMarkupLogModal(
+                                        savedImage,
+                                        savedComment,
+                                        savedDate
+                                    );
                                 });
 
-                                newEdit.addEventListener("click", function(e) {
+                                newEdit.addEventListener("click", function (e) {
                                     e.stopPropagation();
-                                    loadMarkupIntoEditor(savedCanvasJson, savedBaseImage, savedMarkupId);
+                                    loadMarkupIntoEditor(
+                                        savedCanvasJson,
+                                        savedBaseImage,
+                                        savedMarkupId
+                                    );
                                 });
 
                                 eye.replaceWith(newEye);
                                 edit.replaceWith(newEdit);
 
                                 // Update row click too
-                                logItem.onclick = function() {
-                                    openMarkupLogModal(savedImage, savedComment, savedDate);
+                                logItem.onclick = function () {
+                                    openMarkupLogModal(
+                                        savedImage,
+                                        savedComment,
+                                        savedDate
+                                    );
                                 };
                             }
                         }
@@ -261,7 +284,7 @@ function _positionEditorControls(tRect) {
                         showToast("Failed to save markup.", "danger");
                     }
                 })
-                .catch(err => {
+                .catch((err) => {
                     console.error("Save existing markup error:", err);
                     showToast("Something went wrong while saving.", "danger");
                 });
@@ -284,7 +307,7 @@ function _resetEditorControls() {
 function _setSidePanelsAbove(above) {
     var container = document.getElementById("main_3d_web");
     if (!container) return;
-    Array.from(container.children).forEach(function(child) {
+    Array.from(container.children).forEach(function (child) {
         if (child.id !== "markup_editor" && child.id !== "odoo_canvas") {
             child.style.zIndex = above ? "200" : "";
         }
@@ -368,8 +391,7 @@ function undo() {
     redoStack.push(JSON.stringify(fabricCanvas));
 
     _isLoadingJSON = true;
-    fabricCanvas.loadFromJSON(undoStack.pop(), function() {
-
+    fabricCanvas.loadFromJSON(undoStack.pop(), function () {
         _isLoadingJSON = false;
         if (_currentBaseImage) {
             _reapplyBaseBackground(() => {
@@ -394,8 +416,7 @@ function redo() {
 
     _isLoadingJSON = true;
 
-    fabricCanvas.loadFromJSON(redoStack.pop(), function() {
-
+    fabricCanvas.loadFromJSON(redoStack.pop(), function () {
         _isLoadingJSON = false;
 
         if (_currentBaseImage) {
@@ -415,34 +436,34 @@ function redo() {
 
 function initToolbar() {
     const actions = {
-        "draw_btn": () => {
+        draw_btn: () => {
             currentTool = "draw";
             fabricCanvas.isDrawingMode = true;
             fabricCanvas.freeDrawingBrush.width = 3;
             fabricCanvas.freeDrawingBrush.color = "red";
         },
-        "rect_btn": () => {
+        rect_btn: () => {
             currentTool = "rect";
             fabricCanvas.isDrawingMode = false;
         },
-        "circle_btn": () => {
+        circle_btn: () => {
             currentTool = "circle";
             fabricCanvas.isDrawingMode = false;
         },
-        "text_btn": () => {
+        text_btn: () => {
             currentTool = "text";
             fabricCanvas.isDrawingMode = false;
         },
-        "arrow_btn": () => {
+        arrow_btn: () => {
             currentTool = "arrow";
             fabricCanvas.isDrawingMode = false;
         },
-        "delete_btn": () => {
+        delete_btn: () => {
             const activeObjects = fabricCanvas.getActiveObjects();
             if (!activeObjects || activeObjects.length === 0) return;
             saveState();
 
-            activeObjects.forEach(obj => {
+            activeObjects.forEach((obj) => {
                 fabricCanvas.remove(obj);
             });
 
@@ -450,19 +471,19 @@ function initToolbar() {
             fabricCanvas.requestRenderAll();
         },
 
-        "clear_btn": () => {
+        clear_btn: () => {
             saveState();
             const objects = fabricCanvas.getObjects();
-            objects.forEach(obj => {
+            objects.forEach((obj) => {
                 fabricCanvas.remove(obj);
             });
             fabricCanvas.discardActiveObject();
             fabricCanvas.requestRenderAll();
         },
 
-        "undo_btn": () => undo(),
-        "redo_btn": () => redo(),
-        "close_btn": () => _closeEditor(),
+        undo_btn: () => undo(),
+        redo_btn: () => redo(),
+        close_btn: () => _closeEditor(),
     };
 
     for (const [id, func] of Object.entries(actions)) {
@@ -471,16 +492,19 @@ function initToolbar() {
     }
 }
 
-document.addEventListener("keydown", function(e) {
+document.addEventListener("keydown", function (e) {
     if (e.key === "Delete" || e.key === "Backspace") {
-        if (fabricCanvas && fabricCanvas.getActiveObject() &&
-            fabricCanvas.getActiveObject().isEditing) {
+        if (
+            fabricCanvas &&
+            fabricCanvas.getActiveObject() &&
+            fabricCanvas.getActiveObject().isEditing
+        ) {
             return;
         }
         const activeObjects = fabricCanvas?.getActiveObjects();
         if (!activeObjects || activeObjects.length === 0) return;
         saveState();
-        activeObjects.forEach(obj => {
+        activeObjects.forEach((obj) => {
             fabricCanvas.remove(obj);
         });
         fabricCanvas.discardActiveObject();
@@ -498,7 +522,7 @@ document.addEventListener("keydown", function(e) {
         modal.style.display = "flex";
 
         // Wire Save → reuse mcr-submit click logic (sync comment then submitMarkup)
-        document.getElementById("markup_esc_save").onclick = function() {
+        document.getElementById("markup_esc_save").onclick = function () {
             modal.style.display = "none";
             const commentInner = document.getElementById("markup_comment_inner");
             const commentOrig = document.getElementById("markup_comment");
@@ -507,7 +531,7 @@ document.addEventListener("keydown", function(e) {
         };
 
         // Wire Close → reuse close_btn logic
-        document.getElementById("markup_esc_close").onclick = function() {
+        document.getElementById("markup_esc_close").onclick = function () {
             modal.style.display = "none";
             const closeBtn = document.getElementById("close_btn");
             if (closeBtn) closeBtn.click();
@@ -517,17 +541,25 @@ document.addEventListener("keydown", function(e) {
 
 function _reapplySnapshotBackground(callback) {
     if (!_currentSnapshotUrl || !fabricCanvas) return;
-    fabric.Image.fromURL(_currentSnapshotUrl, function(img) {
-        img.set({
-            left: 0, top: 0,
-            scaleX: _snapshotScale, scaleY: _snapshotScale,
-            selectable: false, evented: false, excludeFromExport: true,
-        });
-        fabricCanvas.setBackgroundImage(img, function() {
-            fabricCanvas.renderAll();
-            if (callback) callback();
-        });
-    }, {crossOrigin: "anonymous"});
+    fabric.Image.fromURL(
+        _currentSnapshotUrl,
+        function (img) {
+            img.set({
+                left: 0,
+                top: 0,
+                scaleX: _snapshotScale,
+                scaleY: _snapshotScale,
+                selectable: false,
+                evented: false,
+                excludeFromExport: true,
+            });
+            fabricCanvas.setBackgroundImage(img, function () {
+                fabricCanvas.renderAll();
+                if (callback) callback();
+            });
+        },
+        {crossOrigin: "anonymous"}
+    );
 }
 
 function _closeEditor() {
@@ -536,7 +568,10 @@ function _closeEditor() {
     _currentBaseImage = null;
     if (fabricCanvas) {
         fabricCanvas.clear();
-        fabricCanvas.setBackgroundImage(null, fabricCanvas.renderAll.bind(fabricCanvas));
+        fabricCanvas.setBackgroundImage(
+            null,
+            fabricCanvas.renderAll.bind(fabricCanvas)
+        );
     }
     isSnapshotEditMode = false;
     _currentSnapshotUrl = null;
@@ -553,7 +588,7 @@ function _closeEditor() {
 }
 
 function initFabricEvents() {
-    fabricCanvas.on("object:added", function() {
+    fabricCanvas.on("object:added", function () {
         if (_isLoadingJSON) return;
         if (!isRedoing) {
             saveState();
@@ -561,13 +596,13 @@ function initFabricEvents() {
         }
     });
 
-    fabricCanvas.on("object:modified", function() {
+    fabricCanvas.on("object:modified", function () {
         if (_isLoadingJSON) return;
         saveState();
         _hasChanges = true;
     });
 
-    fabricCanvas.on("mouse:down", function(opt) {
+    fabricCanvas.on("mouse:down", function (opt) {
         if (opt.target) return;
         const pointer = fabricCanvas.getPointer(opt.e);
         startX = pointer.x;
@@ -577,14 +612,23 @@ function initFabricEvents() {
 
         if (currentTool === "rect") {
             tempShape = new fabric.Rect({
-                left: startX, top: startY, width: 1, height: 1,
-                fill: "transparent", stroke: "red", strokeWidth: 2,
+                left: startX,
+                top: startY,
+                width: 1,
+                height: 1,
+                fill: "transparent",
+                stroke: "red",
+                strokeWidth: 2,
             });
             fabricCanvas.add(tempShape);
         } else if (currentTool === "circle") {
             tempShape = new fabric.Circle({
-                left: startX, top: startY, radius: 1,
-                fill: "transparent", stroke: "blue", strokeWidth: 2,
+                left: startX,
+                top: startY,
+                radius: 1,
+                fill: "transparent",
+                stroke: "blue",
+                strokeWidth: 2,
             });
             fabricCanvas.add(tempShape);
         } else if (currentTool === "arrow") {
@@ -611,8 +655,11 @@ function initFabricEvents() {
             fabricCanvas.add(tempShape, tempShape._arrowHead);
         } else if (currentTool === "text") {
             const text = new fabric.IText("Text", {
-                left: startX, top: startY, fontSize: 24,
-                fill: "#000", backgroundColor: "#fff",
+                left: startX,
+                top: startY,
+                fontSize: 24,
+                fill: "#000",
+                backgroundColor: "#fff",
             });
             fabricCanvas.add(text);
             fabricCanvas.setActiveObject(text);
@@ -621,7 +668,7 @@ function initFabricEvents() {
         }
     });
 
-    fabricCanvas.on("mouse:move", function(opt) {
+    fabricCanvas.on("mouse:move", function (opt) {
         if (!tempShape) return;
         const pointer = fabricCanvas.getPointer(opt.e);
         const x = pointer.x;
@@ -635,7 +682,10 @@ function initFabricEvents() {
                 top: Math.min(y, startY),
             });
         } else if (currentTool === "circle") {
-            tempShape.set({radius: Math.sqrt(Math.pow(x - startX, 2) + Math.pow(y - startY, 2)) / 2});
+            tempShape.set({
+                radius:
+                    Math.sqrt(Math.pow(x - startX, 2) + Math.pow(y - startY, 2)) / 2,
+            });
         } else if (currentTool === "arrow") {
             const angle = Math.atan2(y - startY, x - startX);
             const headLen = 15; // Adjusted for visual balance
@@ -651,14 +701,14 @@ function initFabricEvents() {
             tempShape._arrowHead.set({
                 left: x,
                 top: y,
-                angle: (angle * 180 / Math.PI) + 90,
+                angle: (angle * 180) / Math.PI + 90,
                 visible: true,
             });
         }
         fabricCanvas.requestRenderAll();
     });
 
-    fabricCanvas.on("mouse:up", function() {
+    fabricCanvas.on("mouse:up", function () {
         if (tempShape) {
             if (currentTool === "arrow") {
                 const arrowLine = tempShape;
@@ -718,7 +768,7 @@ function submitMarkup() {
         finalImage,
         cleanBackground,
         comment,
-        JSON.stringify(fabricJsonObj),
+        JSON.stringify(fabricJsonObj)
     );
 }
 
@@ -726,7 +776,8 @@ function sendMarkupToBackend(imageData, baseImage, comment, canvasJson) {
     const container = document.getElementById("main_3d_web");
     const resId = container.dataset.resId;
     const resModel = container.dataset.resModel;
-    let fileName = (container.dataset.fileName || "markup").replace(/\.[^/.]+$/, "") + ".jpg";
+    const fileName =
+        (container.dataset.fileName || "markup").replace(/\.[^/.]+$/, "") + ".jpg";
 
     const activityCheckbox = document.getElementById("activity_view");
     const scheduleActivity = activityCheckbox && activityCheckbox.checked;
@@ -738,7 +789,8 @@ function sendMarkupToBackend(imageData, baseImage, comment, canvasJson) {
         method: "POST",
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify({
-            jsonrpc: "2.0", method: "call",
+            jsonrpc: "2.0",
+            method: "call",
             params: {
                 image: imageData,
                 base_image: baseImage,
@@ -754,13 +806,20 @@ function sendMarkupToBackend(imageData, baseImage, comment, canvasJson) {
             },
         }),
     })
-        .then(r => r.json())
-        .then(data => {
+        .then((r) => r.json())
+        .then((data) => {
             const newId = data.result?.markup_id || null;
 
             if (!scheduleActivity) {
-                const displayComment = comment || (fileName + " - Markup Logged");
-                addMarkupLog(baseImage, baseImage, displayComment, canvasJson, new Date().toLocaleDateString(), newId);
+                const displayComment = comment || fileName + " - Markup Logged";
+                addMarkupLog(
+                    baseImage,
+                    baseImage,
+                    displayComment,
+                    canvasJson,
+                    new Date().toLocaleDateString(),
+                    newId
+                );
             }
 
             const commentTextarea = document.getElementById("markup_comment");
@@ -780,7 +839,7 @@ function sendMarkupToBackend(imageData, baseImage, comment, canvasJson) {
             _resetEditorControls();
             _setSidePanelsAbove(false);
         })
-        .catch(err => console.error("Markup submit error:", err));
+        .catch((err) => console.error("Markup submit error:", err));
 }
 
 function initExistingMarkups() {
@@ -800,14 +859,15 @@ function initExistingMarkups() {
         method: "POST",
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify({
-            jsonrpc: "2.0", method: "call",
+            jsonrpc: "2.0",
+            method: "call",
             params: {res_id: parseInt(resId), res_model: resModel || ""},
         }),
     })
-        .then(r => r.json())
-        .then(data => {
+        .then((r) => r.json())
+        .then((data) => {
             if (data.result?.markups) {
-                data.result.markups.reverse().forEach(m => {
+                data.result.markups.reverse().forEach((m) => {
                     const dateOnly = new Date(m.create_date).toLocaleDateString();
                     const snapshotUrl = m.snapshot
                         ? "data:image/jpeg;base64," + m.snapshot
@@ -817,16 +877,34 @@ function initExistingMarkups() {
                         ? "data:image/jpeg;base64," + m.base_image
                         : null;
 
-                    const canvasData = typeof m.canvas_data === "string" ? m.canvas_data : JSON.stringify(m.canvas_data);
-                    const displayComment = m.comment || ((m.filename || "markup.jpg") + " - Markup Logged");
-                    addMarkupLog(snapshotUrl, baseImageUrl, displayComment, canvasData, dateOnly, m.id);
+                    const canvasData =
+                        typeof m.canvas_data === "string"
+                            ? m.canvas_data
+                            : JSON.stringify(m.canvas_data);
+                    const displayComment =
+                        m.comment || (m.filename || "markup.jpg") + " - Markup Logged";
+                    addMarkupLog(
+                        snapshotUrl,
+                        baseImageUrl,
+                        displayComment,
+                        canvasData,
+                        dateOnly,
+                        m.id
+                    );
                 });
             }
         })
-        .catch(err => console.error("Load error:", err));
+        .catch((err) => console.error("Load error:", err));
 }
 
-function addMarkupLog(snapshotUrl, baseImageUrl, commentText, canvasJson, dateStr, markupId) {
+function addMarkupLog(
+    snapshotUrl,
+    baseImageUrl,
+    commentText,
+    canvasJson,
+    dateStr,
+    markupId
+) {
     const logList = document.getElementById("markup_logs_list");
     if (!logList) return;
 
@@ -939,21 +1017,19 @@ function loadMarkupIntoEditor(canvasJson, bgUrl, markupId = null) {
     let parsed = null;
 
     if (canvasJson) {
-        parsed = typeof canvasJson === "string"
-            ? JSON.parse(canvasJson)
-            : canvasJson;
+        parsed = typeof canvasJson === "string" ? JSON.parse(canvasJson) : canvasJson;
 
         if (parsed.backgroundImage) {
             delete parsed.backgroundImage;
         }
     }
 
-    fabricCanvas.loadFromJSON(parsed || {}, function() {
+    fabricCanvas.loadFromJSON(parsed || {}, function () {
         if (myGen !== _loadGeneration) return;
 
         fabric.Image.fromURL(
             bgUrl,
-            function(img) {
+            function (img) {
                 if (myGen !== _loadGeneration) return;
 
                 if (!img) {
@@ -988,10 +1064,10 @@ function loadMarkupIntoEditor(canvasJson, bgUrl, markupId = null) {
             },
             {
                 crossOrigin: "anonymous",
-                onError: function() {
+                onError: function () {
                     console.error("Failed to load base image");
                 },
-            },
+            }
         );
     });
 }
@@ -1007,7 +1083,7 @@ function openMarkupLogModal(imageUrl, commentText, dateStr) {
     modal.classList.add("open");
 }
 
-window.addEventListener("load", function() {
+window.addEventListener("load", function () {
     const modal = document.getElementById("markup_esc_modal");
     const closeIcon = document.getElementById("markup_log_modal_close2");
     if (closeIcon) {
@@ -1017,13 +1093,17 @@ window.addEventListener("load", function() {
     }
 });
 
-window.addEventListener("load", function() {
+window.addEventListener("load", function () {
     const closeBtn = document.getElementById("markup_log_modal_close");
-    if (closeBtn) closeBtn.addEventListener("click", () => document.getElementById("markup_log_modal").classList.remove("open"));
+    if (closeBtn)
+        closeBtn.addEventListener("click", () =>
+            document.getElementById("markup_log_modal").classList.remove("open")
+        );
     const modal = document.getElementById("markup_log_modal");
-    if (modal) modal.addEventListener("click", e => {
-        if (e.target === modal) modal.classList.remove("open");
-    });
+    if (modal)
+        modal.addEventListener("click", (e) => {
+            if (e.target === modal) modal.classList.remove("open");
+        });
 });
 
 let toastOffset = 0;
@@ -1035,7 +1115,9 @@ function showToast(message, type = "info") {
     toastOffset += 70;
     toast.style.top = `${toastOffset}px`;
     document.body.appendChild(toast);
-    requestAnimationFrame(() => requestAnimationFrame(() => toast.classList.add("show")));
+    requestAnimationFrame(() =>
+        requestAnimationFrame(() => toast.classList.add("show"))
+    );
     setTimeout(() => {
         toast.classList.remove("show");
         setTimeout(() => {
@@ -1047,11 +1129,16 @@ function showToast(message, type = "info") {
 
 function deleteMarkup(markupId, itemElement) {
     fetch("/plm/markup/delete", {
-        method: "POST", headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({jsonrpc: "2.0", method: "call", params: {markup_id: markupId}}),
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({
+            jsonrpc: "2.0",
+            method: "call",
+            params: {markup_id: markupId},
+        }),
     })
-        .then(r => r.json())
-        .then(data => {
+        .then((r) => r.json())
+        .then((data) => {
             if (data.result?.success) {
                 itemElement.remove();
                 const logList = document.getElementById("markup_logs_list");
@@ -1064,57 +1151,81 @@ function deleteMarkup(markupId, itemElement) {
                 showToast("You are not allowed to delete this markup.", "warning");
             }
         })
-        .catch(err => {
+        .catch((err) => {
             console.error("Delete error:", err);
             showToast("Something went wrong while deleting.", "danger");
         });
 }
 
-window.addEventListener("load", function() {
+window.addEventListener("load", function () {
     function rpcCall(model, method, args, kwargs) {
         return fetch("/web/dataset/call_kw", {
-            method: "POST", headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({jsonrpc: "2.0", method: "call", params: {model, method, args, kwargs: kwargs || {}}}),
-        }).then(r => r.json()).then(data => {
-            if (data.error) throw new Error(data.error.data.message || "RPC Error");
-            return data.result;
-        });
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({
+                jsonrpc: "2.0",
+                method: "call",
+                params: {model, method, args, kwargs: kwargs || {}},
+            }),
+        })
+            .then((r) => r.json())
+            .then((data) => {
+                if (data.error) throw new Error(data.error.data.message || "RPC Error");
+                return data.result;
+            });
     }
 
     function getToDoActivityTypeId() {
-        return rpcCall("mail.activity.type", "search_read", [[["name", "ilike", "to"]]], {
-            fields: ["id", "name"],
-            limit: 5,
-        })
-            .then(results => {
-                if (results?.length) {
-                    const e = results.find(r => r.name.toLowerCase().replace("-", "").includes("todo"));
-                    return e ? e.id : results[0].id;
-                }
-                return 1;
-            });
+        return rpcCall(
+            "mail.activity.type",
+            "search_read",
+            [[["name", "ilike", "to"]]],
+            {
+                fields: ["id", "name"],
+                limit: 5,
+            }
+        ).then((results) => {
+            if (results?.length) {
+                const e = results.find((r) =>
+                    r.name.toLowerCase().replace("-", "").includes("todo")
+                );
+                return e ? e.id : results[0].id;
+            }
+            return 1;
+        });
     }
 
     function loadActivityUsers() {
         const select = document.getElementById("activity_user_id");
         if (!select) return;
-        rpcCall("res.users", "search_read", [[["share", "=", false], ["active", "=", true]]], {
-            fields: ["id", "name"],
-            order: "name asc",
-            limit: 100,
-        })
-            .then(users => {
+        rpcCall(
+            "res.users",
+            "search_read",
+            [
+                [
+                    ["share", "=", false],
+                    ["active", "=", true],
+                ],
+            ],
+            {
+                fields: ["id", "name"],
+                order: "name asc",
+                limit: 100,
+            }
+        )
+            .then((users) => {
                 select.innerHTML = "";
-                users.forEach(u => {
+                users.forEach((u) => {
                     const o = document.createElement("option");
                     o.value = u.id;
                     o.textContent = u.name;
                     select.appendChild(o);
                 });
-                if (window.odoo?.session_info?.uid) select.value = odoo.session_info.uid;
+                if (window.odoo?.session_info?.uid)
+                    select.value = odoo.session_info.uid;
             })
             .catch(() => {
-                select.innerHTML = "<option value=\"\">Error loading users</option>";
+                select.innerHTML = '<option value="">Error loading users</option>';
             });
     }
 
@@ -1128,7 +1239,7 @@ window.addEventListener("load", function() {
 
     function resetActivityForm() {
         const today = new Date().toISOString().split("T")[0];
-        ["activity_due_date", "activity_summary", "activity_note"].forEach(id => {
+        ["activity_due_date", "activity_summary", "activity_note"].forEach((id) => {
             const el = document.getElementById(id);
             if (el) el.value = id === "activity_due_date" ? today : "";
         });
@@ -1140,7 +1251,7 @@ window.addEventListener("load", function() {
     const activityViewBtn = document.getElementById("activity_view");
     const activityPanel = document.getElementById("activity_form_panel");
     if (activityViewBtn && activityPanel) {
-        activityViewBtn.addEventListener("click", function() {
+        activityViewBtn.addEventListener("click", function () {
             const isOpen = activityPanel.style.display !== "none";
             activityPanel.style.display = isOpen ? "none" : "block";
             if (!isOpen) {
@@ -1154,19 +1265,21 @@ window.addEventListener("load", function() {
     }
 
     const cancelBtn = document.getElementById("activity_cancel_btn");
-    if (cancelBtn) cancelBtn.addEventListener("click", () => {
-        if (activityPanel) activityPanel.style.display = "none";
-    });
+    if (cancelBtn)
+        cancelBtn.addEventListener("click", () => {
+            if (activityPanel) activityPanel.style.display = "none";
+        });
 
     const submitBtn2 = document.getElementById("activity_submit_btn");
     if (submitBtn2) {
-        submitBtn2.addEventListener("click", function() {
+        submitBtn2.addEventListener("click", function () {
             const container = document.getElementById("main_3d_web");
             const resId = container ? parseInt(container.dataset.resId) : null;
             const dueDate = document.getElementById("activity_due_date")?.value || "";
             const summary = document.getElementById("activity_summary")?.value || "";
             const note = document.getElementById("activity_note")?.value || "";
-            const userId = parseInt(document.getElementById("activity_user_id")?.value) || false;
+            const userId =
+                parseInt(document.getElementById("activity_user_id")?.value) || false;
             if (!dueDate) {
                 showActivityMsg("Please set a due date.", "orange");
                 return;
@@ -1176,11 +1289,16 @@ window.addEventListener("load", function() {
                 return;
             }
             getToDoActivityTypeId()
-                .then(activityTypeId =>
-                    rpcCall("ir.model", "search_read", [[["model", "=", "ir.attachment"]]], {fields: ["id"], limit: 1})
-                        .then(models => {
-                            if (!models?.length) throw new Error("ir.model not found");
-                            return rpcCall("mail.activity", "create", [{
+                .then((activityTypeId) =>
+                    rpcCall(
+                        "ir.model",
+                        "search_read",
+                        [[["model", "=", "ir.attachment"]]],
+                        {fields: ["id"], limit: 1}
+                    ).then((models) => {
+                        if (!models?.length) throw new Error("ir.model not found");
+                        return rpcCall("mail.activity", "create", [
+                            {
                                 res_model_id: models[0].id,
                                 res_id: resId,
                                 activity_type_id: activityTypeId,
@@ -1188,8 +1306,9 @@ window.addEventListener("load", function() {
                                 summary: summary || "",
                                 note: note || "",
                                 user_id: userId || false,
-                            }]);
-                        }),
+                            },
+                        ]);
+                    })
                 )
                 .then(() => {
                     showActivityMsg("Activity scheduled!", "#00a09d");
@@ -1198,7 +1317,7 @@ window.addEventListener("load", function() {
                         resetActivityForm();
                     }, 1800);
                 })
-                .catch(err => {
+                .catch((err) => {
                     showActivityMsg(err.message, "tomato");
                     console.error(err);
                 });
@@ -1206,7 +1325,7 @@ window.addEventListener("load", function() {
     }
 });
 
-window.addEventListener("load", function() {
+window.addEventListener("load", function () {
     const params = new URLSearchParams(window.location.search);
     const markupId = params.get("markup_id");
     if (!markupId) return;
@@ -1220,8 +1339,8 @@ window.addEventListener("load", function() {
             params: {markup_id: parseInt(markupId)},
         }),
     })
-        .then(r => r.json())
-        .then(data => {
+        .then((r) => r.json())
+        .then((data) => {
             const m = data.result?.markup;
             if (!m) return;
 
@@ -1232,43 +1351,46 @@ window.addEventListener("load", function() {
                 bgUrl = m.snapshot ? "data:image/jpeg;base64," + m.snapshot : null;
             }
 
-            const canvasData = typeof m.canvas_data === "string"
-                ? m.canvas_data
-                : JSON.stringify(m.canvas_data);
+            const canvasData =
+                typeof m.canvas_data === "string"
+                    ? m.canvas_data
+                    : JSON.stringify(m.canvas_data);
 
             setTimeout(() => {
                 loadMarkupIntoEditor(canvasData, bgUrl, parseInt(markupId));
             }, 300);
         })
-        .catch(err => console.error("Auto-load markup error:", err));
+        .catch((err) => console.error("Auto-load markup error:", err));
 });
 
 function _reapplyBaseBackground(callback) {
     if (!_currentBaseImage || !fabricCanvas) return;
 
-    fabric.Image.fromURL(_currentBaseImage, function(img) {
+    fabric.Image.fromURL(
+        _currentBaseImage,
+        function (img) {
+            const canvasW = fabricCanvas.getWidth();
+            const canvasH = fabricCanvas.getHeight();
 
-        const canvasW = fabricCanvas.getWidth();
-        const canvasH = fabricCanvas.getHeight();
+            const scale = Math.min(canvasW / img.width, canvasH / img.height);
 
-        const scale = Math.min(canvasW / img.width, canvasH / img.height);
+            img.set({
+                left: 0,
+                top: 0,
+                originX: "left",
+                originY: "top",
+                scaleX: scale,
+                scaleY: scale,
+                selectable: false,
+                evented: false,
+                excludeFromExport: true,
+            });
 
-        img.set({
-            left: 0,
-            top: 0,
-            originX: "left",
-            originY: "top",
-            scaleX: scale,
-            scaleY: scale,
-            selectable: false,
-            evented: false,
-            excludeFromExport: true,
-        });
-
-        fabricCanvas.setBackgroundImage(img, function() {
-            fabricCanvas.renderAll();
-            if (callback) callback();
-        });
-
-    }, {crossOrigin: "anonymous"});
+            fabricCanvas.setBackgroundImage(img, function () {
+                fabricCanvas.renderAll();
+                if (callback) callback();
+            });
+        },
+        {crossOrigin: "anonymous"}
+    );
 }

@@ -1,25 +1,36 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <data>
 
         <record id="plm_product_product_normal_form_view_inherit" model="ir.ui.view">
             <field name="name">plm.product.product.normal.form.view.inherit</field>
             <field name="model">product.product</field>
-            <field name="inherit_id" ref="product.product_normal_form_view"/>
+            <field name="inherit_id" ref="product.product_normal_form_view" />
             <field name="arch" type="xml">
                 <xpath expr="//button[@name='open_template']" position="after">
-                    <button string="Open Breakages"
-                            name="open_breakages"
-                            title="Open Breakages"
-                            type="object"
-                            class="oe_stat_button"
-                            icon="fa-chain-broken">
-                        <field string="Breakages" name="breakages_count" widget="statinfo"/>
+                    <button
+                        string="Open Breakages"
+                        name="open_breakages"
+                        title="Open Breakages"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-chain-broken"
+                    >
+                        <field
+                            string="Breakages"
+                            name="breakages_count"
+                            widget="statinfo"
+                        />
                     </button>
                 </xpath>
                 <xpath expr="//header" position="inside">
-                    <button string="Create Breakages" type="action" class="btn btn-primary"
-                            name="%(plm_breakages.breakages_form_view_action)d" context="{'default_product_id': id}"/>
+                    <button
+                        string="Create Breakages"
+                        type="action"
+                        class="btn btn-primary"
+                        name="%(plm_breakages.breakages_form_view_action)d"
+                        context="{'default_product_id': id}"
+                    />
                 </xpath>
 
             </field>

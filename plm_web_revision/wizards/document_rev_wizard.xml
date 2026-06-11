@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <data>
         <record id="ir_attachment_new_revision" model="ir.ui.view">
@@ -6,12 +6,16 @@
             <field name="model">document.rev_wizard</field>
             <field name="arch" type="xml">
                 <form string="Creation of New Revision">
-                    <separator string="" colspan="4"/>
+                    <separator string="" colspan="4" />
                     <div>"Are you sure you want to create a new Revision?"</div>
-                    <separator string="" colspan="4"/>
+                    <separator string="" colspan="4" />
                     <footer>
-                        <button special="cancel" string="Cancel"/>
-                        <button string="Create New Revision" name="new_document_revision_by_server" type="object"/>
+                        <button special="cancel" string="Cancel" />
+                        <button
+                            string="Create New Revision"
+                            name="new_document_revision_by_server"
+                            type="object"
+                        />
                     </footer>
                 </form>
             </field>
@@ -22,13 +26,14 @@
             <field name="res_model">document.rev_wizard</field>
             <field name="view_mode">kanban,list,form</field>
             <field name="target">new</field>
-            <field name="binding_model_id" ref="base.model_ir_attachment"/>
+            <field name="binding_model_id" ref="base.model_ir_attachment" />
             <field name="context">{'default_document_id': active_id}</field>
             <field name="domain">[('id','in',active_ids)]</field>
-            <field name="view_ids"
-                   eval="[(5, 0, 0),
-                      (0, 0, {'view_mode': 'form', 'view_id': ref('plm_web_revision.ir_attachment_new_revision')})]"/>
+            <field
+                name="view_ids"
+                eval="[(5, 0, 0),
+                      (0, 0, {'view_mode': 'form', 'view_id': ref('plm_web_revision.ir_attachment_new_revision')})]"
+            />
         </record>
     </data>
 </odoo>
-

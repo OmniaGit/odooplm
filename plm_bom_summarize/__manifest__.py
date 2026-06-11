@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Open Source Management Solution
@@ -23,7 +22,7 @@
     "name": "PLM Bom Sumarize",
     "version": "18.0.1.0.0",
     "author": "OmniaSolutions",
-    "website": "https://odooplm.omniasolutions.website",
+    "website": "https://github.com/OmniaGit/odooplm",
     "category": "Product Lifecycle Management",
     "sequence": 15,
     "license": "AGPL-3",

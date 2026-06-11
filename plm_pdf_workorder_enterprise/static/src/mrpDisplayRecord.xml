@@ -1,20 +1,29 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <templates xml:space="preserve">
 
     <t t-inherit="mrp_workorder.MrpDisplayRecord" t-inherit-mode="extension">
-        <xpath expr="//div[hasclass('o_mrp_display_record')]//ul[hasclass('list-group')]//MrpWorksheet" position="after">
-            <PlmMrpWorksheet record="props.record" clickable="true"/>
+        <xpath
+            expr="//div[hasclass('o_mrp_display_record')]//ul[hasclass('list-group')]//MrpWorksheet"
+            position="after"
+        >
+            <PlmMrpWorksheet record="props.record" clickable="true" />
         </xpath>
     </t>
 
-    <t t-name="plm_pdf_workorder_enterprise.MrpWorksheet" t-inherit="mrp_workorder.MrpWorksheet" t-inherit-mode="primary">
+    <t
+        t-name="plm_pdf_workorder_enterprise.MrpWorksheet"
+        t-inherit="mrp_workorder.MrpWorksheet"
+        t-inherit-mode="primary"
+    >
         <xpath expr="//li" position="replace">
-             <li t-if="showPlmDocCheck"
-                 t-on-click="clicked"
-                 class="o_mrp_record_line list-group-item d-flex justify-content-between align-items-center">
-                <span >Plm WorkSheet</span>
+             <li
+                t-if="showPlmDocCheck"
+                t-on-click="clicked"
+                class="o_mrp_record_line list-group-item d-flex justify-content-between align-items-center"
+            >
+                <span>Plm WorkSheet</span>
                  <div class="btn">
-                    <i class="fa fa-lg fa-lightbulb-o"/>
+                    <i class="fa fa-lg fa-lightbulb-o" />
                 </div>
              </li>
         </xpath>

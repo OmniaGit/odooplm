@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Your own solutions
@@ -25,8 +24,9 @@ Created on 30 Aug 2016
 
 @author: Daniel Smerghetto
 """
-from odoo import _, fields, models
 from datetime import datetime
+
+from odoo import fields, models
 
 
 class ProductExtension(models.Model):
@@ -39,7 +39,7 @@ class ProductExtension(models.Model):
         "project_id",
         string="Projects",
     )
-    
+
     tasks_ids = fields.Many2many(
         "project.task",
         "project_task_rel",
@@ -47,7 +47,7 @@ class ProductExtension(models.Model):
         "task_id",
         string="Tasks",
     )
-    
+
     activity_task_id = fields.Many2one("project.task", "Activity Task")
 
     def createConfirmActivity(self):

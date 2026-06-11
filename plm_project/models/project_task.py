@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, ERP-PLM-CAD Open Source Solutions
@@ -11,7 +10,7 @@
 #
 ##############################################################################
 
-from odoo import _, fields, models
+from odoo import fields, models
 
 
 class ProjectTask(models.Model):

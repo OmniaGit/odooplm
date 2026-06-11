@@ -1,4 +1,3 @@
-# -*- encoding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Your own solutions
@@ -26,6 +25,7 @@ Created on 24 Jul 2017
 @author: dsmerghetto
 """
 import logging
+
 from odoo import _, models
 from odoo.exceptions import UserError
 
@@ -78,4 +78,6 @@ class PlmDocumentExtended(models.TransientModel):
                 _("%s cannot be revised because the state isn't released!" % (objType))
             )
         return True
+
+
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

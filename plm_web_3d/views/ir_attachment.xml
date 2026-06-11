@@ -1,19 +1,21 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <record id="plm_web_3d_plm_document_kanban_view" model="ir.ui.view">
         <field name="name">plm.web.3d.plm.document.kanban.view</field>
         <field name="model">ir.attachment</field>
-        <field name="inherit_id" ref="plm.document_kanban_view"/>
+        <field name="inherit_id" ref="plm.document_kanban_view" />
         <field name="arch" type="xml">
             <xpath expr="//kanban/field[@name='engineering_state']" position="after">
-                <field name="has_web3d"></field>
+                <field name="has_web3d" />
             </xpath>
             <xpath expr="//td[@name='attachment_button_box']" position="inside">
-                <button type="object"
-                        name="show_releted_3d"
-                        class="btn btn-primary btn-sm ms-1"
-                        invisible="has_web3d==False">
-                    <i class="fa fa-cube"></i>
+                <button
+                    type="object"
+                    name="show_releted_3d"
+                    class="btn btn-primary btn-sm ms-1"
+                    invisible="has_web3d==False"
+                >
+                    <i class="fa fa-cube" />
                     3D Web
                 </button>
             </xpath>
@@ -23,13 +25,17 @@
     <record id="plm_web_3d_plm_view_attachment_form_plm_hinerit" model="ir.ui.view">
         <field name="name">plm.web.3d.plm.view_attachment.form.plm.hinerit</field>
         <field name="model">ir.attachment</field>
-        <field name="inherit_id" ref="plm.view_attachment_form_plm_hinerit"/>
+        <field name="inherit_id" ref="plm.view_attachment_form_plm_hinerit" />
         <field name="arch" type="xml">
             <xpath expr="//button[@name='action_view_rel_doc']" position="after">
-                <field name="has_web3d" invisible="True"/>
-                <button name="show_releted_3d"
-                        class="oe_stat_button" icon="fa-cube" type="object"
-                        invisible="has_web3d==False">
+                <field name="has_web3d" invisible="True" />
+                <button
+                    name="show_releted_3d"
+                    class="oe_stat_button"
+                    icon="fa-cube"
+                    type="object"
+                    invisible="has_web3d==False"
+                >
                     <div class="o_field_widget o_stat_info o_readonly_modifier">
                         <span>WebGl</span>
                     </div>

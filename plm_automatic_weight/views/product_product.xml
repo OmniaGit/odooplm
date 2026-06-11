@@ -1,45 +1,68 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <record model="ir.ui.view" id="plm_component_base_form_extended_weight">
         <field name="name">plm.base.component.extended.weight</field>
         <field name="model">product.product</field>
-        <field name="inherit_id" ref="plm.plm_component_base_form"/>
+        <field name="inherit_id" ref="plm.plm_component_base_form" />
         <field name="arch" type="xml">
             <xpath expr="//field[@name='weight']" position="replace">
-                <field name="weight" invisible="1"/>
+                <field name="weight" invisible="1" />
             </xpath>
             <xpath expr="//group[@name='technical_infos_group']" position="after">
                 <group name="weight" string="Weight">
-                    <field name="automatic_compute_selection" widget='radio'/>
-                    <field name="weight"
-                           readonly="engineering_state in ['released', 'obsoleted']"/>
-                    <field name="weight_additional"
-                           readonly="engineering_state in ['released', 'obsoleted'] or automatic_compute_selection not in ['use_normal_bom', 'use_cad']"/>
-                    <field name="weight_cad"
-                           invisible="automatic_compute_selection in ['use_normal_bom']"/>
-                    <field name="weight_n_bom_computed" invisible="automatic_compute_selection != 'use_normal_bom'"/>
+                    <field name="automatic_compute_selection" widget='radio' />
+                    <field
+                        name="weight"
+                        readonly="engineering_state in ['released', 'obsoleted']"
+                    />
+                    <field
+                        name="weight_additional"
+                        readonly="engineering_state in ['released', 'obsoleted'] or automatic_compute_selection not in ['use_normal_bom', 'use_cad']"
+                    />
+                    <field
+                        name="weight_cad"
+                        invisible="automatic_compute_selection in ['use_normal_bom']"
+                    />
+                    <field
+                        name="weight_n_bom_computed"
+                        invisible="automatic_compute_selection != 'use_normal_bom'"
+                    />
                 </group>
             </xpath>
         </field>
     </record>
 
-    <record model="ir.ui.view" id="plm_product_product_normal_form_view_inherit_extended_weight">
-        <field name="name">plm.product.product.normal.form.view.inherit.extended.weight</field>
+    <record
+        model="ir.ui.view"
+        id="plm_product_product_normal_form_view_inherit_extended_weight"
+    >
+        <field
+            name="name"
+        >plm.product.product.normal.form.view.inherit.extended.weight</field>
         <field name="model">product.product</field>
-        <field name="inherit_id" ref="plm.plm_product_product_normal_form_view_inherit"/>
+        <field
+            name="inherit_id"
+            ref="plm.plm_product_product_normal_form_view_inherit"
+        />
         <field name="arch" type="xml">
             <xpath expr="//group[@name='technical_infos_group']" position="after">
                 <group name="weight" string="Weight">
                     <group>
-                        <field name="automatic_compute_selection" widget='radio'/>
+                        <field name="automatic_compute_selection" widget='radio' />
                     </group>
                     <group>
-                        <field name="weight_additional"
-                               readonly="engineering_state in ['released', 'obsoleted'] or automatic_compute_selection not in ['use_normal_bom', 'use_cad']"/>
-                        <field name="weight_cad"
-                               invisible="automatic_compute_selection in ['use_normal_bom']"/>
-                        <field name="weight_n_bom_computed"
-                               invisible="automatic_compute_selection!='use_normal_bom'"/>
+                        <field
+                            name="weight_additional"
+                            readonly="engineering_state in ['released', 'obsoleted'] or automatic_compute_selection not in ['use_normal_bom', 'use_cad']"
+                        />
+                        <field
+                            name="weight_cad"
+                            invisible="automatic_compute_selection in ['use_normal_bom']"
+                        />
+                        <field
+                            name="weight_n_bom_computed"
+                            invisible="automatic_compute_selection!='use_normal_bom'"
+                        />
                     </group>
                 </group>
             </xpath>

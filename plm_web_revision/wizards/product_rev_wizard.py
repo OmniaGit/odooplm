@@ -1,4 +1,3 @@
-# -*- encoding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Your own solutions
@@ -35,17 +34,22 @@ class ProductProductExtended(models.TransientModel):
     _name = "product.rev_wizard"
     _description = "Product Revision wizards"
 
-    reviseDocument = fields.Boolean("Document Revision", 
-                                    help="""Make new revision of the linked document ?""")
-    
-    reviseEbom = fields.Boolean("Engineering Bom Revision",
-                                help="""Make new revision of the linked Engineering BOM ?""")
-    
-    reviseNbom = fields.Boolean("Normal Bom Revision",
-                                help="""Make new revision of the linked Normal BOM ?""")
-    
-    reviseSbom = fields.Boolean("Spare Bom Revision",
-                                help="""Make new revision of the linked Spare BOM ?""")
+    reviseDocument = fields.Boolean(
+        "Document Revision", help="""Make new revision of the linked document ?"""
+    )
+
+    reviseEbom = fields.Boolean(
+        "Engineering Bom Revision",
+        help="""Make new revision of the linked Engineering BOM ?""",
+    )
+
+    reviseNbom = fields.Boolean(
+        "Normal Bom Revision", help="""Make new revision of the linked Normal BOM ?"""
+    )
+
+    reviseSbom = fields.Boolean(
+        "Spare Bom Revision", help="""Make new revision of the linked Spare BOM ?"""
+    )
 
     def action_create_new_revision_by_server(self):
         product_id = self.env.context.get("active_id", False)

@@ -1,12 +1,12 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <record id="plm_description_spare_list_view" model="ir.ui.view">
         <field name="name">plm.spare.description.list</field>
         <field name="model">plm.description</field>
-        <field name="inherit_id" ref="plm.plm_view_description_list"/>
+        <field name="inherit_id" ref="plm.plm_view_description_list" />
         <field name="arch" type="xml">
             <field name="sequence" position="after">
-                <field name="bom_tmpl"/>
+                <field name="bom_tmpl" />
             </field>
         </field>
     </record>
@@ -14,15 +14,15 @@
     <record id="plm_description_spare_form_view" model="ir.ui.view">
         <field name="name">plm.spare.description.form</field>
         <field name="model">plm.description</field>
-        <field name="inherit_id" ref="plm.view_plm_description"/>
-        <field name="priority" eval="16"/>
+        <field name="inherit_id" ref="plm.view_plm_description" />
+        <field name="priority" eval="16" />
         <field name="arch" type="xml">
             <data>
                 <group name="Normalized features formatting" position="after">
                     <b>
-                        <separator colspan="1" string="Choose the Reference Object:"/>
+                        <separator colspan="1" string="Choose the Reference Object:" />
                     </b>
-                    <field name="bom_tmpl" placeholder="Object"/>
+                    <field name="bom_tmpl" placeholder="Object" />
                 </group>
             </data>
         </field>

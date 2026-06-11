@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, ERP-PLM-CAD Open Source Solutions
@@ -18,13 +17,12 @@
 #    along with this prograIf not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-'''
+"""
 Created on Sep 11, 2019
 
 @author: mboscolo
-'''
-import py2exe
-from setuptools import setup, find_packages
+"""
+from setuptools import find_packages, setup
 
 NAME = "OdooPLMSyncServer"
 VERSION = "1.0"
@@ -36,14 +34,12 @@ setup(
     long_description="",
     classifiers=[],
     author="Matteo Boscolo OmniaSolutions",
-    author_email='',
-    url='',
-    license='Free',
-    packages=find_packages(exclude=['ez_setup', 'examples', 'tests']),
+    author_email="",
+    url="",
+    license="Free",
+    packages=find_packages(exclude=["ez_setup", "examples", "tests"]),
     include_package_data=True,
     zip_safe=False,
-    install_requires=[
-        'flask >= 0.10.1'
-    ],
-    console=['main.py']
+    install_requires=["flask >= 0.10.1"],
+    console=["main.py"],
 )

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, ERP-PLM-CAD Open Source Solutions
@@ -18,7 +17,7 @@
 #    along with this prograIf not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-from odoo import models, fields
+from odoo import fields, models
 
 
 class ConsumptionState(models.Model):
@@ -27,4 +26,3 @@ class ConsumptionState(models.Model):
     _rec_name = "name"
 
     name = fields.Char(string="Consumption State", required=True)
-

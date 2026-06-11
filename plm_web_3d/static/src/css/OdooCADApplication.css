@@ -28,7 +28,7 @@
 }
 
 .plm_web_button:hover {
-    background-color: #E0E0E0;
+    background-color: #e0e0e0;
 }
 
 #bottom_command {
@@ -105,7 +105,7 @@
     left: 40px;
     background-color: white;
     border-radius: 10px;
-    border: 2px solid #714B67;
+    border: 2px solid #714b67;
     padding: 2px;
     width: 300px;
     visibility: hidden;
@@ -199,7 +199,7 @@
 }
 
 #object_explosion:hover {
-    opacity: 1.0;
+    opacity: 1;
 }
 
 #plm_button1 {
@@ -232,7 +232,7 @@
 }
 
 #object_transparency:hover {
-    opacity: 1.0;
+    opacity: 1;
 }
 
 #color_object_grp {
@@ -316,12 +316,12 @@ hr.e {
 }
 
 hr.datacard_line {
-    color: #714B67;
+    color: #714b67;
     margin-top: 2px;
 }
 
 hr.hover_line {
-    color: #714B67;
+    color: #714b67;
     margin-top: 4px;
     margin-bottom: 4px;
 }
@@ -344,7 +344,7 @@ label {
     box-shadow: 2px 2px 5px 1px grey;
     background-color: white;
     border-radius: 10px;
-    border: 2px solid #714B67;
+    border: 2px solid #714b67;
     padding: 2px;
     margin-top: 27px;
     width: 300px;
@@ -524,15 +524,14 @@ ul,
     border-radius: 2px;
 }
 
-.document_tree_line>i {
+.document_tree_line > i {
     padding: 8px;
     border-radius: 2px;
 }
 
-.document_tree_line>i:hover {
+.document_tree_line > i:hover {
     background-color: #eda3da;
 }
-
 
 .document_tree_line_highlighted,
 .document_tree_line_highlighted span {
@@ -632,7 +631,7 @@ canvas#odoo_canvas {
 }
 
 .mcr-btn:hover {
-    background: #E0E0E0;
+    background: #e0e0e0;
 }
 
 /* Comment + Submit — row above toolbar */
@@ -676,7 +675,7 @@ canvas#odoo_canvas {
 }
 
 .mcr-submit:hover {
-    background: #714B67;
+    background: #714b67;
 }
 
 /* Groups comment row + activity panel so panel sits directly above comment box */
@@ -713,7 +712,7 @@ canvas#odoo_canvas {
 
 .mcr-ap-label {
     font-size: 10px;
-    color: #714B67;
+    color: #714b67;
     font-weight: bold;
     margin-bottom: 2px;
     background: transparent;
@@ -733,7 +732,7 @@ canvas#odoo_canvas {
 }
 
 .mcr-ap-input:focus {
-    outline: 1px solid #714B67;
+    outline: 1px solid #714b67;
 }
 
 /* Action group: Activity title → checkbox → Submit, stacked vertically */
@@ -899,8 +898,6 @@ canvas#odoo_canvas {
    LAPTOP 1024px – 1640px
 ================================================================= */
 @media (min-width: 1024px) and (max-width: 1640px) {
-
-
     #markup_logs_list {
         max-height: 200px !important;
     }
@@ -918,16 +915,12 @@ canvas#odoo_canvas {
         font-size: 11px !important;
         line-height: normal !important;
     }
-
-
 }
 
 /* =================================================================
    TABLET ≤ 1023px
 ================================================================= */
 @media (max-width: 1023px) {
-
-
     .main_command_slide {
         left: 38px !important;
         width: calc(50% - 48px) !important;
@@ -969,7 +962,7 @@ canvas#odoo_canvas {
     }
 
     select,
-    input[type=range] {
+    input[type="range"] {
         max-width: 100% !important;
     }
 
@@ -991,16 +984,12 @@ canvas#odoo_canvas {
         font-size: 9px !important;
         line-height: normal !important;
     }
-
-
 }
 
 /* =================================================================
    MOBILE ≤ 480px
 ================================================================= */
 @media (max-width: 480px) {
-
-
     .main_command_slide {
         left: 36px !important;
         width: calc(50% - 44px) !important;
@@ -1047,8 +1036,6 @@ canvas#odoo_canvas {
         font-size: 7px !important;
     }
 
-
-
     #click_show,
     #activatorClick {
         width: 18px;
@@ -1074,7 +1061,7 @@ canvas#odoo_canvas {
 }
 
 .markup_log_date {
-    color: #714B67;
+    color: #714b67;
     font-weight: bold;
     white-space: nowrap;
     font-size: 13px;
@@ -1091,7 +1078,7 @@ canvas#odoo_canvas {
 
 .markup_log_eye {
     cursor: pointer;
-    color: #714B67;
+    color: #714b67;
     font-size: 18px;
     padding: 3px 5px;
     border-radius: 3px;
@@ -1136,7 +1123,7 @@ canvas#odoo_canvas {
 }
 
 #markup_logs_list::-webkit-scrollbar-thumb:hover {
-    background: #714B67;
+    background: #714b67;
 }
 
 /* ── MARKUP LOG PREVIEW MODAL ── */
@@ -1174,7 +1161,7 @@ canvas#odoo_canvas {
     right: 12px;
     font-size: 20px;
     cursor: pointer;
-    color: #714B67;
+    color: #714b67;
     font-weight: bold;
 }
 
@@ -1245,7 +1232,7 @@ canvas#odoo_canvas {
 }
 
 .plm_button_per.active {
-    background-color: #714B67;
+    background-color: #714b67;
     color: white;
 }
 
@@ -1256,11 +1243,10 @@ canvas#odoo_canvas {
 #markup_log_modal_close2 {
     font-size: 20px;
     cursor: pointer;
-    color: #714B67;
+    color: #714b67;
     font-weight: bold;
     margin-left: 100%;
 }
-
 
 #dropdown_menu_left_permenant {
     display: block;
@@ -1285,20 +1271,20 @@ canvas#odoo_canvas {
     width: 34px;
     height: 34px;
     background: white;
-    border: 2px solid #714B67;
+    border: 2px solid #714b67;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    color: #714B67;
+    color: #714b67;
     font-size: 18px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
     transition: background 0.15s, color 0.15s;
 }
 
 #help_btn:hover {
-    background: #714B67;
+    background: #714b67;
     color: white;
 }
 
@@ -1323,7 +1309,7 @@ canvas#odoo_canvas {
 #shortcut_modal_inner {
     background: white;
     border-radius: 10px;
-    border: 2px solid #714B67;
+    border: 2px solid #714b67;
     padding: 20px 28px 24px;
     min-width: 340px;
     position: relative;
@@ -1336,7 +1322,7 @@ canvas#odoo_canvas {
     right: 12px;
     font-size: 18px;
     cursor: pointer;
-    color: #714B67;
+    color: #714b67;
     font-weight: bold;
 }
 
@@ -1356,7 +1342,7 @@ canvas#odoo_canvas {
     padding: 6px 10px;
     background: #f0e8f0;
     color: #572649;
-    border-bottom: 2px solid #714B67;
+    border-bottom: 2px solid #714b67;
 }
 
 #shortcut_table td {

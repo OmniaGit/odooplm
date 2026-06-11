@@ -1,4 +1,3 @@
-# -*- encoding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Open Source Management Solution
@@ -24,7 +23,7 @@ Created on Mar 30, 2016
 
 @author: Daniel Smerghetto
 """
-from odoo import _, fields, models
+from odoo import fields, models
 
 
 class ProductTemplateCuttedParts(models.Model):

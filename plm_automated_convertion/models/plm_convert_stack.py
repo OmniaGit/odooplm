@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, ERP-PLM-CAD Open Source Solutions
@@ -27,9 +26,10 @@ import base64
 import logging
 import os
 import shutil
-import traceback
-import requests
 import tempfile
+import traceback
+
+import requests
 
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
@@ -63,7 +63,7 @@ class PlmConvertStack(models.Model):
         Download: Perform a conversion on the given format and download the file
                   in the given server path
         Convert: Convert the file in place on the stack object
-        """
+        """,
     )
 
     def _compute_name(self):
@@ -105,7 +105,10 @@ class PlmConvertStack(models.Model):
                         shutil.copyfile(file_converted, dest_path)
                     else:
                         raise Exception(
-                            _("No server path defined for server %s" % stack_id.server_id.name)
+                            _(
+                                "No server path defined for server %s"
+                                % stack_id.server_id.name
+                            )
                         )
                 elif stack_id.operation_type == "CONVERT":
                     file_converted = stack_id._generateFile()
@@ -232,7 +235,10 @@ class PlmConvertStack(models.Model):
             encoded_content = base64.b64encode(content)
             if attachment_ids:
                 attachment_ids.write(
-                    {"datas": encoded_content, "source_convert_document": self.start_document_id.id}
+                    {
+                        "datas": encoded_content,
+                        "source_convert_document": self.start_document_id.id,
+                    }
                 )
                 target_attachment = attachment_ids[0]
             else:
@@ -257,8 +263,10 @@ class PlmConvertStack(models.Model):
                 logging.warning(ex)
         else:
             raise Exception(
-                _("Cannot convert document %r because no content is provided."
-                  "Convert stack %r")
+                _(
+                    "Cannot convert document %r because no content is provided."
+                    "Convert stack %r"
+                )
                 % (self.start_document_id.id, self.id)
             )
         self.end_document_id = target_attachment.id

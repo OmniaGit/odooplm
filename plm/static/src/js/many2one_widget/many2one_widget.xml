@@ -1,31 +1,53 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
+<?xml version="1.0" encoding="UTF-8" ?>
 <templates xml:space="preserve">
-    <t t-name="plm.PlmMany2oneWidget" t-inherit="web.Many2OneField" t-inherit-mode="primary">
+    <t
+        t-name="plm.PlmMany2oneWidget"
+        t-inherit="web.Many2OneField"
+        t-inherit-mode="primary"
+    >
 <!--        plm_many2one_widget for form view -->
-        <xpath expr="//div[hasclass('o_field_many2one_selection')]/Many2XAutocomplete" position="before">
+        <xpath
+            expr="//div[hasclass('o_field_many2one_selection')]/Many2XAutocomplete"
+            position="before"
+        >
             <span t-if="imageData" style="padding:0px 10px 0px 0px;">
-                <img data-tooltip-template="web.ImageZoomTooltip"
-                     t-att-data-tooltip-info="imageToolTipData"
-                     style="width:30px;height:30px" t-att-src="imageData"
-                     t-on-click="onImageClicked"/>
+                <img
+                    data-tooltip-template="web.ImageZoomTooltip"
+                    t-att-data-tooltip-info="imageToolTipData"
+                    style="width:30px;height:30px"
+                    t-att-src="imageData"
+                    t-on-click="onImageClicked"
+                />
             </span>
             <span t-else="" style="padding:0px 10px 0px 0px;" class="plm_m2o_avatar">
-                <div class="fa fa-folder-open" t-on-click="onImageClicked"
-                     style="font-size: 20px; width:30px;height:30px"/>
+                <div
+                    class="fa fa-folder-open"
+                    t-on-click="onImageClicked"
+                    style="font-size: 20px; width:30px;height:30px"
+                />
             </span>
         </xpath>
         <!--        plm_many2one_widget for list view -->
         <xpath expr="//t[@t-if='!props.canOpen']" position="before">
-            <span t-if="imageData" style="padding:0px 10px 0px 0px;" class="plm_m2o_avatar">
-                  <img data-tooltip-template="web.ImageZoomTooltip"
-                       t-att-data-tooltip-info="imageToolTipData"
-                       style="width:30px;height:30px" t-att-src="imageData"
-                       t-on-click="onImageClicked"/>
+            <span
+                t-if="imageData"
+                style="padding:0px 10px 0px 0px;"
+                class="plm_m2o_avatar"
+            >
+                  <img
+                    data-tooltip-template="web.ImageZoomTooltip"
+                    t-att-data-tooltip-info="imageToolTipData"
+                    style="width:30px;height:30px"
+                    t-att-src="imageData"
+                    t-on-click="onImageClicked"
+                />
             </span>
             <span t-else="" style="padding:0px 10px 0px 0px;" class="plm_m2o_avatar">
-                <div class="fa fa-folder-open" t-on-click="onImageClicked"
-                     style="font-size: 20px; width:30px;height:30px"/>
+                <div
+                    class="fa fa-folder-open"
+                    t-on-click="onImageClicked"
+                    style="font-size: 20px; width:30px;height:30px"
+                />
             </span>
         </xpath>
     </t>

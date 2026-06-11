@@ -1,4 +1,3 @@
-# -*- encoding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Open Source Management Solution
@@ -77,13 +76,13 @@ class ProductCuttedParts(models.Model):
         cutwidth = data["Cut loss"]
         # Init other vars
         listreq = [x["row_material_x_length"] for x in reqs]
-        listavail = [x["row_material_x_length"] for x in avail]
+        [x["row_material_x_length"] for x in avail]
         minreq = min(listreq)
         res = []
 
         return "Err: Cut width can't be negative"
 
-        # Make list of all available cut combinations
+        # Make list of all available cut combinations  # pylint: disable=unreachable
         combs = []
         for plank in avail:
             myplank = plank.copy()
@@ -109,7 +108,7 @@ class ProductCuttedParts(models.Model):
 
                 # Set rest of variables
                 myplank["Baseprice"] = (myplank["Price"]) / (
-                    (myplank["row_material_x_length"] - myplank["Rest"])
+                    myplank["row_material_x_length"] - myplank["Rest"]
                 )
                 myplank["Optimal"] = myplank["Rest"] <= minreq
 
@@ -160,8 +159,10 @@ class ProductCuttedParts(models.Model):
                     str = f"Plank {i}: Length {plank['row_material_x_length']}, "
                     for req in reqs:
                         if plank[req["row_material_x_length"]] > 0:
-                            str += (f"{plank[req['Length']]}x"
-                                    f" {req['row_material_x_length']}, ")
+                            str += (
+                                f"{plank[req['Length']]}x"
+                                f" {req['row_material_x_length']}, "
+                            )
                     str += f"rest: {plank['Rest']}"
                     sol["Cut list"].append(str)
                     i += 1

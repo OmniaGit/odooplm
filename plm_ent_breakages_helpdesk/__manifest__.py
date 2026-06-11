@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Your own solutions
@@ -26,7 +25,7 @@
     "name": "PLM Breakages Helpdesk",
     "version": "18.0.1.0.0",
     "author": "OmniaSolutions",
-    "website": "https://www.omniasolutions.website",
+    "website": "https://github.com/OmniaGit/odooplm",
     "category": "Helpdesk",
     "license": "LGPL-3",
     "summary": "PLM Breakages",

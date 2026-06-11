@@ -1,24 +1,40 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <data>
         <record id="plm_mrp_workorder_view_form_tablet" model="ir.ui.view">
             <field name="name">plm.mrp.workorder.view.form.tablet</field>
             <field name="model">mrp.workorder</field>
-            <field name="inherit_id" ref="mrp.mrp_production_workorder_form_view_inherit"/>
+            <field
+                name="inherit_id"
+                ref="mrp.mrp_production_workorder_form_view_inherit"
+            />
             <field name="arch" type="xml">
-                <xpath expr="//page[@name='workorder_page_work_instruction']" position="attributes">
-                    <attribute name="invisible">use_plm_docs == True or not worksheet and not worksheet_google_slide and not operation_note</attribute>
+                <xpath
+                    expr="//page[@name='workorder_page_work_instruction']"
+                    position="attributes"
+                >
+                    <attribute
+                        name="invisible"
+                    >use_plm_docs == True or not worksheet and not worksheet_google_slide and not operation_note</attribute>
                 </xpath>
                 <xpath expr="//notebook" position="inside">
-                    <page name="plm_production_doc" string="PLM Production Doc" invisible="use_plm_docs==False">
-                        <field name="production_doc_ids" nolabel="1" mode="kanban"
-                               domain="[('is_plm', '=', True), ('is_production_doc','=', True)]"
-                               context="{
+                    <page
+                        name="plm_production_doc"
+                        string="PLM Production Doc"
+                        invisible="use_plm_docs==False"
+                    >
+                        <field
+                            name="production_doc_ids"
+                            nolabel="1"
+                            mode="kanban"
+                            domain="[('is_plm', '=', True), ('is_production_doc','=', True)]"
+                            context="{
                                'odooPLM': True,
                                'kanban_view_ref':'plm.document_kanban_view',
                                'list_view_ref':'plm.ir_attachment_list',
                                'form_view_ref':'plm.view_attachment_form_plm_hinerit'
-                               }"/>
+                               }"
+                        />
                     </page>
                 </xpath>
             </field>

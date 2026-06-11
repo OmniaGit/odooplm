@@ -24,30 +24,26 @@ Created on 25 Aug 2016
 
 @author: Daniel Smerghetto
 """
-from odoo import models
-from odoo import fields
-from odoo import api
-from odoo import _
+from odoo import fields, models
 
 
 class PlmFinishing(models.Model):
     _name = "plm.finishing"
     _description = "Surface Finishing"
 
-    name = fields.Char('Specification',
-                       required=True,
-                       translate=True)
-    description = fields.Char('Description',
-                              size=128)
-    sequence = fields.Integer('Sequence',
-                              help="Gives the sequence order when displaying a list of product categories.")
+    name = fields.Char("Specification", required=True, translate=True)
+    description = fields.Char("Description", size=128)
+    sequence = fields.Integer(
+        "Sequence",
+        help="Gives the sequence order when displaying a list of product categories.",
+    )
 
     _sql_constraints = [
-        ('name_uniq', 'unique(name)', 'Surface Finishing has to be unique !'),
+        ("name_uniq", "unique(name)", "Surface Finishing has to be unique !"),
     ]
 
     def copy(self, default=None):
         if not default:
             default = {}
-        default['name'] = self.name + ' (copy)'
-        return super(PlmFinishing, self).copy(default=default)
+        default["name"] = self.name + " (copy)"
+        return super().copy(default=default)

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, ERP-PLM-CAD Open Source Solutions
@@ -23,6 +22,7 @@ Created on Sep 7, 2019
 @author: mboscolo
 """
 import requests
+
 from odoo import api, fields, models
 from odoo.exceptions import UserError
 

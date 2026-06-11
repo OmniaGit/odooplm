@@ -1,9 +1,9 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <template id="plm_spare.pdf_all">
         <t t-foreach="docs" t-as="o">
             <div class="o_composer_container">
-                <embed width="100%" height="100%" t-att-src="get_content(o)"/>
+                <embed width="100%" height="100%" t-att-src="get_content(o)" />
             </div>
         </t>
     </template>
@@ -11,7 +11,7 @@
     <template id="plm_spare.pdf_one">
         <t t-foreach="docs" t-as="o">
             <div class="o_composer_container">
-                <embed width="100%" height="100%" t-att-src="get_content(o)"/>
+                <embed width="100%" height="100%" t-att-src="get_content(o)" />
             </div>
         </t>
     </template>
@@ -19,26 +19,29 @@
     <template id="plm_spare.bom_spare_header">
         <t t-foreach="docs" t-as="compBrws">
             <t t-call="web.html_container">
-                <t t-set="data_report_margin_top" t-value="12"/>
-                <t t-set="data_report_header_spacing" t-value="9"/>
-                <t t-set="data_report_dpi" t-value="110"/>
+                <t t-set="data_report_margin_top" t-value="12" />
+                <t t-set="data_report_header_spacing" t-value="9" />
+                <t t-set="data_report_dpi" t-value="110" />
                 <t t-call="web.internal_layout">
                     <div class="page" align="center">
-                        <t t-set="docBrws" t-value="get_document_brws(compBrws)"/>
+                        <t t-set="docBrws" t-value="get_document_brws(compBrws)" />
                         <div style="position: relative;top: 50mm;">
                             <div>
                                 <h1>
                                     <b>Spare Parts Report</b>
                                 </h1>
                                 <span
-                                    t-esc="compBrws.product_tmpl_id.engineering_code or compBrws.product_tmpl_id.default_code"/>
-                                <span t-esc="compBrws.product_tmpl_id.name"/>
+                                    t-esc="compBrws.product_tmpl_id.engineering_code or compBrws.product_tmpl_id.default_code"
+                                />
+                                <span t-esc="compBrws.product_tmpl_id.name" />
                             </div>
                             <t t-if="docBrws">
                                 <div style="position: relative;top: 80px;">
-                                    <img t-att-src="'/plm/ir_attachment_preview/%s' % docBrws.id"
-                                         t-att-alt="docBrws.display_name"
-                                         style="height: auto;width: 150mm;box-shadow: 1px 1px 2px 3px lightgrey;"/>
+                                    <img
+                                        t-att-src="'/plm/ir_attachment_preview/%s' % docBrws.id"
+                                        t-att-alt="docBrws.display_name"
+                                        style="height: auto;width: 150mm;box-shadow: 1px 1px 2px 3px lightgrey;"
+                                    />
                                 </div>
                             </t>
                         </div>

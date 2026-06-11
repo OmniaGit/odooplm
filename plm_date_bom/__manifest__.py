@@ -1,4 +1,3 @@
-# -*- encoding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Open Source Management Solution
@@ -24,7 +23,7 @@
     "version": "18.0.1.0.0",
     "author": "OmniaSolutions",
     "license": "AGPL-3",
-    "website": "https://odooplm.omniasolutions.website",
+    "website": "https://github.com/OmniaGit/odooplm",
     "category": "Manufacturing/Product Lifecycle Management (PLM)",
     "sequence": 15,
     "summary": "Allow to compute boms due to date",

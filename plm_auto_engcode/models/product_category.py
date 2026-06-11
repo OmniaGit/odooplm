@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, ERP-PLM-CAD Open Source Solution
@@ -23,7 +22,7 @@ Created on 30 Oct 2022
 
 @author: mboscolo
 """
-from odoo import models, fields
+from odoo import fields, models
 
 
 class ProductCategory(models.Model):

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, ERP-PLM-CAD Open Source Solutions
@@ -23,23 +22,9 @@ Created on 9 Set 2023
 
 @author: mboscolo
 """
-import logging
-import datetime
-from odoo import models
-from odoo import Command
-from odoo import fields
-from odoo import api
-from odoo import _
 from odoo.tests import tagged
-from odoo.exceptions import UserError
-from datetime import timedelta
-from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 from odoo.tests.common import TransactionCase
-from odoo.addons.plm.models.plm_mixin import RELEASED_STATUS
-from odoo.addons.plm.models.plm_mixin import UNDER_MODIFY_STATUS
-from odoo.addons.plm.models.plm_mixin import START_STATUS
-from odoo.addons.plm.models.plm_mixin import CONFIRMED_STATUS
-from odoo.addons.plm.models.plm_mixin import OBSOLATED_STATUS
+
 from odoo.addons.plm.tests.entity_creator import PlmEntityCreator
 
 #
@@ -47,6 +32,7 @@ from odoo.addons.plm.tests.entity_creator import PlmEntityCreator
 # --test-tags=odoo_pack_and_go
 #
 #
+
 
 #
 @tagged("-standard", "odoo_pack_and_go")

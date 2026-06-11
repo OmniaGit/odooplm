@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <data>
         <record id="plm_sparechoselanguage_form" model="ir.ui.view">
@@ -7,14 +7,18 @@
             <field name="arch" type="xml">
                 <form string="Creation of Spare Bom">
                     <group col="4" colspan="4">
-                        <field string="Language" name="lang"/>
-                        <field string="First Level" name="onelevel"/>
+                        <field string="Language" name="lang" />
+                        <field string="First Level" name="onelevel" />
                     </group>
-                    <field name="datas" filename="datas_name"/>
-                    <field name="datas_name" invisible="1"/>
+                    <field name="datas" filename="datas_name" />
+                    <field name="datas_name" invisible="1" />
                     <footer>
-                        <button special="cancel" string="Cancel"/>
-                        <button string="Create Spare Report" name="print_report" type="object"/>
+                        <button special="cancel" string="Cancel" />
+                        <button
+                            string="Create Spare Report"
+                            name="print_report"
+                            type="object"
+                        />
                     </footer>
                 </form>
             </field>
@@ -24,8 +28,8 @@
             <field name="name">Create Report Spare Bom</field>
             <field name="res_model">plm.sparechoselanguage</field>
             <field name="view_mode">form</field>
-            <field name="binding_model_id" ref="product.model_product_product"/>
-            <field name="view_id" ref="plm_sparechoselanguage_form"/>
+            <field name="binding_model_id" ref="product.model_product_product" />
+            <field name="view_id" ref="plm_sparechoselanguage_form" />
             <field name="target">new</field>
         </record>
 
@@ -35,14 +39,18 @@
             <field name="arch" type="xml">
                 <form string="Creation of Spare Bom">
                     <group col="4" colspan="4">
-                        <field string="Language" name="lang"/>
-                        <field string="Print Bom Type" name="bom_type"/>
+                        <field string="Language" name="lang" />
+                        <field string="Print Bom Type" name="bom_type" />
                     </group>
-                    <field name="datas" filename="datas_name"/>
-                    <field name="datas_name" invisible="1"/>
+                    <field name="datas" filename="datas_name" />
+                    <field name="datas_name" invisible="1" />
                     <footer>
-                        <button special="cancel" string="Cancel"/>
-                        <button string="Create Spare Report" name="print_report" type="object"/>
+                        <button special="cancel" string="Cancel" />
+                        <button
+                            string="Create Spare Report"
+                            name="print_report"
+                            type="object"
+                        />
                     </footer>
                 </form>
             </field>
@@ -52,8 +60,8 @@
             <field name="name">Create Boms Report</field>
             <field name="res_model">plm.bomchoselanguage</field>
             <field name="view_mode">form</field>
-            <field name="binding_model_id" ref="mrp.model_mrp_bom"/>
-            <field name="view_id" ref="plm_bomchoselanguage_form"/>
+            <field name="binding_model_id" ref="mrp.model_mrp_bom" />
+            <field name="view_id" ref="plm_bomchoselanguage_form" />
             <field name="target">new</field>
         </record>
     </data>

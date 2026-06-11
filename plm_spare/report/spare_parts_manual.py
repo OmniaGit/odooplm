@@ -1,4 +1,3 @@
-# -*- encoding: utf-8 -*-
 ##############################################################################
 #
 #    OpenERP, Open Source Management Solution
@@ -25,16 +24,18 @@ Created on Apr 15, 2016
 @author: Daniel Smerghetto
 """
 
-import os
-import time
 import base64
 import logging
-from io import BytesIO
-from dateutil import tz
+import os
+import time
 from datetime import datetime
+from io import BytesIO
 from operator import itemgetter
 
+from dateutil import tz
+
 from odoo import _, api, models
+
 from odoo.addons.plm.report.book_collector import BookCollector
 
 
@@ -57,7 +58,7 @@ def get_document_stream(doc_repository, obj_doc):
                 content = f.read()
     except Exception as ex:
         logging.error(
-            "getFileStream : Exception ({0})reading  stream on file : {1}.".format(
+            "getFileStream : Exception ({})reading  stream on file : {}.".format(
                 ex, obj_doc.name
             )
         )

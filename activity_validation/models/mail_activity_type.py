@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, ERP-PLM-CAD Open Source Solutions
@@ -18,18 +17,20 @@
 #    along with this prograIf not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-'''
+"""
 Created on Nov 16, 2019
 @author: mboscolo
-'''
-from odoo import _, fields, models
+"""
+from odoo import fields, models
 
 
 class MailActivityType(models.Model):
-    _inherit = 'mail.activity.type'
+    _inherit = "mail.activity.type"
 
-    activity_user_ids = fields.Many2many('res.users',
-                                         'activity_type_user_rel',
-                                         'activity_type_id',
-                                         'user_id',
-                                         'Template Documents')
+    activity_user_ids = fields.Many2many(
+        "res.users",
+        "activity_type_user_rel",
+        "activity_type_id",
+        "user_id",
+        "Template Documents",
+    )

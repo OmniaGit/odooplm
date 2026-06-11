@@ -1,14 +1,17 @@
-# -*- coding: utf-8 -*-
-from odoo import _, fields, models
+from odoo import fields, models
 
 
 class StockMove(models.Model):
     _inherit = "stock.move"
 
-    engineering_revision = fields.Integer(related="product_id.engineering_revision",
-                                          string="Revision",
-                                          help="The revision of the product.")
-    engineering_state = fields.Selection(related="product_id.engineering_state",
-                                         string="Status",
-                                         help="The status of the product in its LifeCycle.",
-                                         store=False)
+    engineering_revision = fields.Integer(
+        related="product_id.engineering_revision",
+        string="Revision",
+        help="The revision of the product.",
+    )
+    engineering_state = fields.Selection(
+        related="product_id.engineering_state",
+        string="Status",
+        help="The status of the product in its LifeCycle.",
+        store=False,
+    )

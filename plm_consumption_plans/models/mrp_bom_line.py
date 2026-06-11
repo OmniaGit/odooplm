@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, ERP-PLM-CAD Open Source Solutions
@@ -18,9 +17,7 @@
 #    along with this prograIf not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-from odoo import (models, 
-                  fields, 
-                  api)
+from odoo import api, fields, models
 
 
 class MrpBomLine(models.Model):
@@ -36,6 +33,11 @@ class MrpBomLine(models.Model):
         line_ids = super().create(vals)
         for bom_line_id in line_ids:
             bom_product = bom_line_id.product_id
-            if not bom_product.is_independent_consumption_plan and bom_product.template_consumption_plan_ids:
-                bom_line_id.template_consumption_plan_ids = [(6,0,bom_product.template_consumption_plan_ids.ids)]
+            if (
+                not bom_product.is_independent_consumption_plan
+                and bom_product.template_consumption_plan_ids
+            ):
+                bom_line_id.template_consumption_plan_ids = [
+                    (6, 0, bom_product.template_consumption_plan_ids.ids)
+                ]
         return line_ids

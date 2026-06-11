@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, ERP-PLM-CAD Open Source Solutions
@@ -41,8 +40,9 @@ class IrAttachment(models.Model):
 
     def action_open_report_ir_attachment_pdf(self):
 
-        base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
+        base_url = self.env["ir.config_parameter"].sudo().get_param("web.base.url")
         view_id = self.env["ir.model.data"]._xmlid_to_res_id(
-            "plm_pdf_workorder.plm_pdf_show_document_attachment")
+            "plm_pdf_workorder.plm_pdf_show_document_attachment"
+        )
         url = f"{base_url}/web#id={self.id}&view_id={view_id}&model=ir.attachment&view_type=form"
-        return {'type': 'ir.actions.act_url', 'url': url, 'target': '_blank'}
+        return {"type": "ir.actions.act_url", "url": url, "target": "_blank"}

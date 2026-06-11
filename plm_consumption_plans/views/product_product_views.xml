@@ -1,27 +1,30 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <data>
         <record model="ir.ui.view" id="ni_product_normal_form_view">
             <field name="name">Ni product normal form view customization</field>
             <field name="model">product.product</field>
             <field name="priority">101</field>
-            <field name="inherit_id" ref="product.product_normal_form_view"/>
+            <field name="inherit_id" ref="product.product_normal_form_view" />
             <field name="arch" type="xml">
-                <xpath expr="//form[1]//sheet[@name='product_form']//notebook[1]" position="inside">
+                <xpath
+                    expr="//form[1]//sheet[@name='product_form']//notebook[1]"
+                    position="inside"
+                >
                     <page string="Consumption Plans">
                         <group>
                             <field name="template_consumption_plan_ids" nolabel="1">
                                 <list>
-                                    <field name="name"/>
-                                    <field name="time_span"/>
-                                    <field name="consumption_state_id"/>
+                                    <field name="name" />
+                                    <field name="time_span" />
+                                    <field name="consumption_state_id" />
                                 </list>
                             </field>
                         </group>
                     </page>
                 </xpath>
                 <xpath expr="//field[@name='default_code']" position="after">
-                    <field name="is_independent_consumption_plan"/>
+                    <field name="is_independent_consumption_plan" />
                 </xpath>
             </field>
         </record>

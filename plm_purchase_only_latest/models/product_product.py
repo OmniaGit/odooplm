@@ -1,4 +1,3 @@
-# -*- encoding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Your own solutions
@@ -24,6 +23,7 @@ Created on 25 Aug 2016
 @author: Daniel Smerghetto
 """
 from odoo import api, models
+
 from odoo.addons.plm.models.plm_mixin import RELEASED_STATUSES
 
 
@@ -44,6 +44,4 @@ class ProductProduct(models.Model):
                 ("engineering_state", "in", conditional_status),
             ]
 
-        return super(ProductProduct, self).name_search(
-            name=name, args=args, operator=operator, limit=limit
-        )
+        return super().name_search(name=name, args=args, operator=operator, limit=limit)

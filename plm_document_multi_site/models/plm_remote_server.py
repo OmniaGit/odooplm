@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, ERP-PLM-CAD Open Source Solutions
@@ -18,26 +17,20 @@
 #    along with this prograIf not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-'''
+"""
 Created on Aug 30, 2019
 
 @author: mboscolo
-'''
-import os
-import requests
-import hashlib
-from requests.auth import HTTPBasicAuth
-import logging
-import datetime
-from odoo import models
-from odoo import fields
-from odoo import api
-from odoo import _
-from odoo.exceptions import UserError
-from datetime import timedelta
-from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
-from io import BytesIO
+"""
 import base64
+import hashlib
+import logging
+from io import BytesIO
+
+import requests
+from requests.auth import HTTPBasicAuth
+
+from odoo import api, fields, models
 
 
 def md5(fname):
@@ -56,18 +49,14 @@ class PlmRemoteServer(models.Model):
     password = fields.Char("Password")
     address = fields.Char("Server Ip Address")
 
-    _sql_constraints = [('name',
-                         'unique (name)',
-                         'Server name must be unique !!!')]
+    _sql_constraints = [("name", "unique (name)", "Server name must be unique !!!")]
 
     @api.model
     def document_is_there(self, ir_attachment_id):
-        url = '%s/document_is_there/%s' % (self.address, ir_attachment_id)
-        r = requests.get(url,
-                         auth=HTTPBasicAuth(self.login,
-                                            self.password))
+        url = "%s/document_is_there/%s" % (self.address, ir_attachment_id)
+        r = requests.get(url, auth=HTTPBasicAuth(self.login, self.password))
         if r.status_code == 200:
-            return r.text == 'true'
+            return r.text == "true"
         else:
             raise Exception("Get %s from server %s" % (r.status_code, self.name))
 
@@ -75,13 +64,12 @@ class PlmRemoteServer(models.Model):
     def push_document_to_remote(self, ir_attachment_id):
         try:
             logging.info("push_document_to_remote")
-            url = '%s/upload_file' % self.address
+            url = "%s/upload_file" % self.address
             file_path = ir_attachment_id.full_path()
-            files = {'file': (str(ir_attachment_id.id), open(file_path, 'rb'))}
-            r = requests.post(url,
-                              auth=HTTPBasicAuth(self.login,
-                                                 self.password),
-                              files=files)
+            files = {"file": (str(ir_attachment_id.id), open(file_path, "rb"))}
+            r = requests.post(
+                url, auth=HTTPBasicAuth(self.login, self.password), files=files
+            )
             out = r.status_code == 200
             if not out:
                 logging.error("Bad response from server %r" % r.status_code)
@@ -93,9 +81,8 @@ class PlmRemoteServer(models.Model):
     @api.model
     def pull_document_to_odoo(self, ir_attachment_id):
         try:
-            url = '%s/download_file/%s' % (self.address, ir_attachment_id.id)
-            r = requests.get(url, auth=HTTPBasicAuth(self.login,
-                                                     self.password))
+            url = "%s/download_file/%s" % (self.address, ir_attachment_id.id)
+            r = requests.get(url, auth=HTTPBasicAuth(self.login, self.password))
             r.raise_for_status()
             ret = r.status_code == 200
             if ret:

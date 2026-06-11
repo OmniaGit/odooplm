@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Your own solutions
@@ -42,7 +41,7 @@ class MailActivity(models.Model):
                             " if is not assigned to you."
                         )
                     )
-        messages, activities = super(MailActivity, self)._action_done(
+        messages, activities = super()._action_done(
             feedback=feedback, attachment_ids=attachment_ids
         )
         for message in messages:
@@ -76,7 +75,7 @@ class MailActivity(models.Model):
                             "if is not assigned to you."
                         )
                     )
-        return super(MailActivity, self).unlink()
+        return super().unlink()
 
     def write(self, vals):
         for activity in self:
@@ -88,4 +87,4 @@ class MailActivity(models.Model):
                             " if is not assigned to you."
                         )
                     )
-        return super(MailActivity, self).write(vals)
+        return super().write(vals)

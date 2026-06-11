@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
 	<data>
 
@@ -9,10 +9,8 @@
 			<field name="arch" type="xml">
 				<list string="Children activities">
 					<field name="name" />
-					<field name="user_id"
-						invisible="'mail_children_activity_id', '!=', False" />
-					<field name="activity_user_id"
-						invisible="'mail_children_activity_id', '==', False" />
+					<field name="user_id" invisible="'mail_children_activity_id', '!=', False" />
+					<field name="activity_user_id" invisible="'mail_children_activity_id', '==', False" />
 					<field name="mail_children_activity_id" />
 					<field name="plm_state" />
 				</list>

@@ -1,32 +1,41 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <record model="ir.ui.view" id="view_attachment_client_workflow">
         <field name="name">view.attachment.client.workflow</field>
         <field name="model">ir.attachment</field>
-        <field name="priority" eval="20"/>
+        <field name="priority" eval="20" />
         <field name="arch" type="xml">
             <form string="Attachments">
                 <header>
-                    <field name="is_checkout" invisible="1"></field>
-                    <field name="engineering_state" widget="statusbar"
-                           statusbar_visible="draft,confirmed,released"
-                           statusbar_colors='{"undermodify":"red","obsoleted":"red"}'
-                           readonly="1"/>
-                    <button name="action_release"
-                            string="Release Document"
-                            class="oe_highlight"
-                            type="object"
-                            groups="plm.group_plm_release_users"
-                            invisible="is_checkout == True or engineering_state != engineering_state"/>
-                    <button name="action_draft"
-                            invisible="engineering_state!='confirmed'"
-                            type="object"
-                            string="Correct Document"/>
-                    <button name="action_confirm"
-                            type="object"
-                            string="Confirm Document"
-                            class="oe_highlight"
-                            invisible="is_checkout==True or engineering_state!='draft'"/>
+                    <field name="is_checkout" invisible="1" />
+                    <field
+                        name="engineering_state"
+                        widget="statusbar"
+                        statusbar_visible="draft,confirmed,released"
+                        statusbar_colors='{"undermodify":"red","obsoleted":"red"}'
+                        readonly="1"
+                    />
+                    <button
+                        name="action_release"
+                        string="Release Document"
+                        class="oe_highlight"
+                        type="object"
+                        groups="plm.group_plm_release_users"
+                        invisible="is_checkout == True or engineering_state != engineering_state"
+                    />
+                    <button
+                        name="action_draft"
+                        invisible="engineering_state!='confirmed'"
+                        type="object"
+                        string="Correct Document"
+                    />
+                    <button
+                        name="action_confirm"
+                        type="object"
+                        string="Confirm Document"
+                        class="oe_highlight"
+                        invisible="is_checkout==True or engineering_state!='draft'"
+                    />
                 </header>
             </form>
         </field>
@@ -36,229 +45,357 @@
     <record model="ir.ui.view" id="view_attachment_form_plm_hinerit">
         <field name="name">plm.ir.attachment.form</field>
         <field name="model">ir.attachment</field>
-        <field name="priority" eval="20"/>
+        <field name="priority" eval="20" />
         <field name="arch" type="xml">
             <form string="Attachments">
                 <header>
 
-                    <button name="action_release"
-                            string="Release Document"
-                            class="oe_highlight"
-                            type="object"
-                            groups="plm.group_plm_release_users"
-                            invisible="is_checkout==True or engineering_state!='confirmed'"/>
-                    <button name="action_draft"
-                            invisible="is_checkout==True or engineering_state!='confirmed'"
-                            type="object"
-                            string="Correct Document"/>
-                    <button name="action_confirm"
-                            type="object"
-                            string="Confirm Document"
-                            class="oe_highlight"
-                            invisible="is_checkout==True or engineering_state!='draft'"/>
-                    <button name="action_un_release"
-                            type="object"
-                            invisible="engineering_state!='released'"
-                            string="Un Release"
-                            groups="plm.group_plm_admin_unrelease"
-                            class="oe_highlight"/>
-                    <button name="action_un_release_release"
-                            type="object"
-                            invisible="engineering_state!='draft'"
-                            string="Re Release"
-                            groups="plm.group_plm_admin_unrelease"
-                            class="oe_highlight"/>
-                    <field name="engineering_state"
-                           widget="statusbar"
-                           statusbar_visible="draft,confirmed,released"
-                           statusbar_colors='{"undermodify":"red","obsoleted":"red"}'
-                           readonly="1"/>
+                    <button
+                        name="action_release"
+                        string="Release Document"
+                        class="oe_highlight"
+                        type="object"
+                        groups="plm.group_plm_release_users"
+                        invisible="is_checkout==True or engineering_state!='confirmed'"
+                    />
+                    <button
+                        name="action_draft"
+                        invisible="is_checkout==True or engineering_state!='confirmed'"
+                        type="object"
+                        string="Correct Document"
+                    />
+                    <button
+                        name="action_confirm"
+                        type="object"
+                        string="Confirm Document"
+                        class="oe_highlight"
+                        invisible="is_checkout==True or engineering_state!='draft'"
+                    />
+                    <button
+                        name="action_un_release"
+                        type="object"
+                        invisible="engineering_state!='released'"
+                        string="Un Release"
+                        groups="plm.group_plm_admin_unrelease"
+                        class="oe_highlight"
+                    />
+                    <button
+                        name="action_un_release_release"
+                        type="object"
+                        invisible="engineering_state!='draft'"
+                        string="Re Release"
+                        groups="plm.group_plm_admin_unrelease"
+                        class="oe_highlight"
+                    />
+                    <field
+                        name="engineering_state"
+                        widget="statusbar"
+                        statusbar_visible="draft,confirmed,released"
+                        statusbar_colors='{"undermodify":"red","obsoleted":"red"}'
+                        readonly="1"
+                    />
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
-                        <button class="oe_stat_button" icon="fa-sitemap" type="object" name="action_view_rel_doc">
-                            <field name="document_rel_count" string="Documents" widget="statinfo"/>
+                        <button
+                            class="oe_stat_button"
+                            icon="fa-sitemap"
+                            type="object"
+                            name="action_view_rel_doc"
+                        >
+                            <field
+                                name="document_rel_count"
+                                string="Documents"
+                                widget="statinfo"
+                            />
                         </button>
-                        <field name="is_checkout" invisible="True"/>
-                        <button name="toggle_check_out"
-                                class="oe_stat_button"
-                                icon="fa-lock"
-                                type="object"
-                                invisible="is_checkout==True">
+                        <field name="is_checkout" invisible="True" />
+                        <button
+                            name="toggle_check_out"
+                            class="oe_stat_button"
+                            icon="fa-lock"
+                            type="object"
+                            invisible="is_checkout==True"
+                        >
                             <div class="o_field_widget o_stat_info o_readonly_modifier">
                                 <span>Check-Out</span>
                             </div>
                         </button>
-                        <button name="toggle_check_out"
-                                class="oe_stat_button"
-                                icon="fa-unlock"
-                                invisible="is_checkout==False"
-                                type="object">
+                        <button
+                            name="toggle_check_out"
+                            class="oe_stat_button"
+                            icon="fa-unlock"
+                            invisible="is_checkout==False"
+                            type="object"
+                        >
                             <div class="o_field_widget o_stat_info o_readonly_modifier">
                                 <span>Check-In</span>
                             </div>
                         </button>
-                        <button name="print_Document_Doc_Structure"
-                                string="Doc Structure"
-                                type="object"
-                                class="oe_stat_button"
-                                icon="fa-bars"/>
-                        <button name="open_related_document_revisions"
-                                type="object"
-                                string="N.Rev."
-                                class="oe_stat_button"
-                                icon="fa-tasks"
-                                invisible="engineering_revision_count &lt;=1">
-                            <field name="engineering_revision_count" string=" " widget="statinfo"/>
+                        <button
+                            name="print_Document_Doc_Structure"
+                            string="Doc Structure"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-bars"
+                        />
+                        <button
+                            name="open_related_document_revisions"
+                            type="object"
+                            string="N.Rev."
+                            class="oe_stat_button"
+                            icon="fa-tasks"
+                            invisible="engineering_revision_count &lt;=1"
+                        >
+                            <field
+                                name="engineering_revision_count"
+                                string=" "
+                                widget="statinfo"
+                            />
                         </button>
-                        <button name="check_out_user"
-                                icon="fa-user"
-                                invisible="checkout_user==False or checkout_user==''">
-                            <field name="checkout_user"/>
+                        <button
+                            name="check_out_user"
+                            icon="fa-user"
+                            invisible="checkout_user==False or checkout_user==''"
+                        >
+                            <field name="checkout_user" />
                         </button>
-                        <field name="must_update_from_cad" invisible="1"></field>
-                        <button name="related_not_update"
-                                icon="fa-warning"
-                                type="object"
-                                title=""
-                                invisible="must_update_from_cad==False">
+                        <field name="must_update_from_cad" invisible="1" />
+                        <button
+                            name="related_not_update"
+                            icon="fa-warning"
+                            type="object"
+                            title=""
+                            invisible="must_update_from_cad==False"
+                        >
                             <div class="o_field_widget o_stat_info o_readonly_modifier">
                                 <span style="color:orange">Not.Update</span>
                             </div>
                         </button>
-                        <field name="has_error" invisible="True"/>
-                        <button name="open_related_dbthread"
-                                title=""
-                                type="object"
-                                string="S.ERR"
-                                class="oe_stat_button"
-                                icon="fa-bug"
-                                invisible="has_error==False">
+                        <field name="has_error" invisible="True" />
+                        <button
+                            name="open_related_dbthread"
+                            title=""
+                            type="object"
+                            string="S.ERR"
+                            class="oe_stat_button"
+                            icon="fa-bug"
+                            invisible="has_error==False"
+                        >
                         </button>
                     </div>
                     <group>
                         <group string="PLM Infos:" name="main_doc_info">
-                            <field string="Eng. Document Name"
-                                   name="engineering_code"
-                                   readonly="id>0"/>
-                            <field string="Engineering revision" name="engineering_revision" readonly="True"/>
-                            <field string="Is a Plm Document" name="is_plm" visible="0" widget="boolean_toggle"
-                                   readonly="True"/>
+                            <field
+                                string="Eng. Document Name"
+                                name="engineering_code"
+                                readonly="id>0"
+                            />
+                            <field
+                                string="Engineering revision"
+                                name="engineering_revision"
+                                readonly="True"
+                            />
+                            <field
+                                string="Is a Plm Document"
+                                name="is_plm"
+                                visible="0"
+                                widget="boolean_toggle"
+                                readonly="True"
+                            />
                         </group>
                         <group name="doc_preview">
-                            <field name="preview"
-                                   widget="image"
-                                   options="{'zoom': true, 'zoom_delay': 800}"
-                                   nolabel="1" invisible="preview == False"
-                                   readonly="is_plm==True"/>
-                            <field name="preview_related" colspan="2" widget="image"
-                                   readonly="1" nolabel="1" invisible="preview != False"
-                                   options="{'size':[400,400],'zoom': true, 'zoom_delay': 800}"/>
+                            <field
+                                name="preview"
+                                widget="image"
+                                options="{'zoom': true, 'zoom_delay': 800}"
+                                nolabel="1"
+                                invisible="preview == False"
+                                readonly="is_plm==True"
+                            />
+                            <field
+                                name="preview_related"
+                                colspan="2"
+                                widget="image"
+                                readonly="1"
+                                nolabel="1"
+                                invisible="preview != False"
+                                options="{'size':[400,400],'zoom': true, 'zoom_delay': 800}"
+                            />
                         </group>
                     </group>
                     <notebook>
                         <page string="Attachment">
                             <group string="File Data:" name="FileData">
-                                <group invisible="type=='url'" name="group_datas" colspan="4" col="2">
-                                    <field name="datas"
-                                           filename="name"
-                                           readonly="engineering_state in ['released','obsoleted']"/>
-                                    <field name="name"
-                                           select="1"
-                                           readonly="engineering_state in ['released','obsoleted']"/>
-                                    <field name="document_type"
-                                           readonly="engineering_state in ['released','obsoleted']"/>
-                                    <field name="type"
-                                           readonly="engineering_state in ['released','obsoleted']"/>
-                                    <field name="printout" invisible="1"/>
+                                <group
+                                    invisible="type=='url'"
+                                    name="group_datas"
+                                    colspan="4"
+                                    col="2"
+                                >
+                                    <field
+                                        name="datas"
+                                        filename="name"
+                                        readonly="engineering_state in ['released','obsoleted']"
+                                    />
+                                    <field
+                                        name="name"
+                                        select="1"
+                                        readonly="engineering_state in ['released','obsoleted']"
+                                    />
+                                    <field
+                                        name="document_type"
+                                        readonly="engineering_state in ['released','obsoleted']"
+                                    />
+                                    <field
+                                        name="type"
+                                        readonly="engineering_state in ['released','obsoleted']"
+                                    />
+                                    <field name="printout" invisible="1" />
                                 </group>
-                                <group string="Website:"
-                                       name="group_url"
-                                       colspan="4"
-                                       invisible="type=='binary'"
-                                       readonly="engineering_state in ['released','obsoleted']">
-                                    <field name="url" widget="url"/>
+                                <group
+                                    string="Website:"
+                                    name="group_url"
+                                    colspan="4"
+                                    invisible="type=='binary'"
+                                    readonly="engineering_state in ['released','obsoleted']"
+                                >
+                                    <field name="url" widget="url" />
                                 </group>
                             </group>
                             <group name="related">
                                 <group string="Related To">
-                                    <field name="res_id" readonly="True" colspan="1"/>
+                                    <field name="res_id" readonly="True" colspan="1" />
                                 </group>
                                 <group string="Attachments To">
-                                    <field name="res_name" readonly="1" colspan="1"/>
-                                    <field name="res_model" readonly="True" colspan="1"/>
+                                    <field name="res_name" readonly="1" colspan="1" />
+                                    <field
+                                        name="res_model"
+                                        readonly="True"
+                                        colspan="1"
+                                    />
                                 </group>
                             </group>
                         </page>
                         <page string="History" name="workflow_section">
                             <group string="Changes">
                                 <group>
-                                    <label for="create_uid" string="Creation"/>
+                                    <label for="create_uid" string="Creation" />
                                     <div name="create_uid_div">
-                                        <field name="create_uid" readonly="1" class="oe_inline"/>
+                                        <field
+                                            name="create_uid"
+                                            readonly="1"
+                                            class="oe_inline"
+                                        />
                                         on
-                                        <field name="create_date" readonly="1" class="oe_inline"/>
+                                        <field
+                                            name="create_date"
+                                            readonly="1"
+                                            class="oe_inline"
+                                        />
                                     </div>
-                                    <label for="write_uid"/>
+                                    <label for="write_uid" />
                                     <div name="write_uid_div">
-                                        <field name="write_uid" readonly="1" class="oe_inline"/>
+                                        <field
+                                            name="write_uid"
+                                            readonly="1"
+                                            class="oe_inline"
+                                        />
                                         on
-                                        <field name="write_date" readonly="1" class="oe_inline"/>
+                                        <field
+                                            name="write_date"
+                                            readonly="1"
+                                            class="oe_inline"
+                                        />
                                     </div>
                                 </group>
                                 <group>
-                                    <label for="engineering_workflow_user"/>
+                                    <label for="engineering_workflow_user" />
                                     <div name="workflow_user_div">
-                                        <field name="engineering_workflow_user" readonly="1" class="oe_inline"/>
+                                        <field
+                                            name="engineering_workflow_user"
+                                            readonly="1"
+                                            class="oe_inline"
+                                        />
                                         on
-                                        <field name="engineering_workflow_date" readonly="1" class="oe_inline"/>
+                                        <field
+                                            name="engineering_workflow_date"
+                                            readonly="1"
+                                            class="oe_inline"
+                                        />
                                     </div>
                                 </group>
-                                <group string="User"
-                                       invisible="engineering_release_user==False or engineering_revision_user==False">
-                                    <label for="engineering_release_user"/>
+                                <group
+                                    string="User"
+                                    invisible="engineering_release_user==False or engineering_revision_user==False"
+                                >
+                                    <label for="engineering_release_user" />
                                     <div name="attachment_release_user_div">
-                                        <field name="engineering_release_user" readonly="1" class="oe_inline"/>
+                                        <field
+                                            name="engineering_release_user"
+                                            readonly="1"
+                                            class="oe_inline"
+                                        />
                                         on
-                                        <field name="engineering_release_date" readonly="1" class="oe_inline"/>
+                                        <field
+                                            name="engineering_release_date"
+                                            readonly="1"
+                                            class="oe_inline"
+                                        />
                                     </div>
-                                    <label for="engineering_revision_user"/>
+                                    <label for="engineering_revision_user" />
                                     <div name="engineering_revision_user">
-                                        <field name="engineering_revision_user" readonly="1" class="oe_inline"/>
+                                        <field
+                                            name="engineering_revision_user"
+                                            readonly="1"
+                                            class="oe_inline"
+                                        />
                                         on
-                                        <field name="engineering_revision_date" readonly="1" class="oe_inline"/>
+                                        <field
+                                            name="engineering_revision_date"
+                                            readonly="1"
+                                            class="oe_inline"
+                                        />
                                     </div>
                                 </group>
                             </group>
                         </page>
                         <page string="Linked Parts" name="page_liked_parts">
-                            <field colspan="4"
-                                   name="linkedcomponents"
-                                   nolabel="1"
-                                   readonly="engineering_state in ['released','obsoleted']"/>
+                            <field
+                                colspan="4"
+                                name="linkedcomponents"
+                                nolabel="1"
+                                readonly="engineering_state in ['released','obsoleted']"
+                            />
                         </page>
                         <page string="Indexed Content" name="page_indexed_content">
-                            <field name="index_content"
-                                   colspan="4"
-                                   nolabel="1"
-                                   readonly="engineering_state in ['released','obsoleted']"/>
+                            <field
+                                name="index_content"
+                                colspan="4"
+                                nolabel="1"
+                                readonly="engineering_state in ['released','obsoleted']"
+                            />
                         </page>
                         <page string="Notes" name="page_notes">
-                            <label for="description" class="oe_edit_only"/>
-                            <field name="description"
-                                   colspan="4"
-                                   nolabel="1"
-                                   readonly="engineering_state in ['released','obsoleted']"/>
-                            <label for="desc_modify" class="oe_edit_only"/>
-                            <field name="desc_modify"
-                                   colspan="4"
-                                   nolabel="1"
-                                   readonly="engineering_state in ['released','obsoleted']"
-                                   invisible="engineering_revision==0"/>
+                            <label for="description" class="oe_edit_only" />
+                            <field
+                                name="description"
+                                colspan="4"
+                                nolabel="1"
+                                readonly="engineering_state in ['released','obsoleted']"
+                            />
+                            <label for="desc_modify" class="oe_edit_only" />
+                            <field
+                                name="desc_modify"
+                                colspan="4"
+                                nolabel="1"
+                                readonly="engineering_state in ['released','obsoleted']"
+                                invisible="engineering_revision==0"
+                            />
                         </page>
                     </notebook>
                 </sheet>
-                <chatter/>
+                <chatter />
             </form>
         </field>
     </record>
@@ -266,31 +403,44 @@
     <record model="ir.ui.view" id="ir_attachment_list">
         <field name="name">plm.ir.attachment.list</field>
         <field name="model">ir.attachment</field>
-        <field name="priority" eval="20"/>
+        <field name="priority" eval="20" />
         <field name="arch" type="xml">
-            <list string="Documents"
-                  decoration-info="engineering_state == 'confirmed'"
-                  decoration-success="engineering_state == 'released'"
-                  decoration-warning="engineering_state == 'undermodify'"
-                  decoration-muted="engineering_state == 'obsoleted'">
-                <field name="document_type" invisible="True"/>
-                <field name="preview" widget="image" invisible="preview == False" options="{ 'size': [60, 60]}"/>
-                <field name="preview_related" widget="image" invisible="preview != False" options="{ 'size': [60, 60]}"/>
+            <list
+                string="Documents"
+                decoration-info="engineering_state == 'confirmed'"
+                decoration-success="engineering_state == 'released'"
+                decoration-warning="engineering_state == 'undermodify'"
+                decoration-muted="engineering_state == 'obsoleted'"
+            >
+                <field name="document_type" invisible="True" />
+                <field
+                    name="preview"
+                    widget="image"
+                    invisible="preview == False"
+                    options="{ 'size': [60, 60]}"
+                />
+                <field
+                    name="preview_related"
+                    widget="image"
+                    invisible="preview != False"
+                    options="{ 'size': [60, 60]}"
+                />
                 <button
                     class="fa fa-print"
                     type="object"
                     title="print"
                     name="download_printout"
-                    invisible="document_type in ['3d','pr','other']"/>
-                <field name="name" select="True"/>
-                <field name="engineering_revision" select="True"/>
-                <field name="engineering_state" select="True"/>
-                <field name="engineering_code" select="True"/>
-                <field name="checkout_user" colspan="2"/>
-                <field name="create_uid" select="True"/>
-                <field name="create_date" select="True"/>
-                <field name="write_uid" select="True"/>
-                <field name="write_date" select="True"/>
+                    invisible="document_type in ['3d','pr','other']"
+                />
+                <field name="name" select="True" />
+                <field name="engineering_revision" select="True" />
+                <field name="engineering_state" select="True" />
+                <field name="engineering_code" select="True" />
+                <field name="checkout_user" colspan="2" />
+                <field name="create_uid" select="True" />
+                <field name="create_date" select="True" />
+                <field name="write_uid" select="True" />
+                <field name="write_date" select="True" />
             </list>
         </field>
     </record>
@@ -298,84 +448,113 @@
     <record model="ir.ui.view" id="ir_attachment_search">
         <field name="name">plm.ir.attachment.search</field>
         <field name="model">ir.attachment</field>
-        <field name="priority" eval="20"/>
+        <field name="priority" eval="20" />
         <field name="arch" type="xml">
             <search string="Documents">
-                <field name="engineering_code"/>
-                <field name="name"/>
-                <field name="document_type"/>
+                <field name="engineering_code" />
+                <field name="name" />
+                <field name="document_type" />
                 <filter
                     name="last_year"
                     string="Last Year"
-                    domain="[('create_date','&gt;=',(datetime.date.today() - relativedelta(days=1,months=1,years=1)).strftime('%%Y-%%m-%%d'))]"/>
+                    domain="[('create_date','&gt;=',(datetime.date.today() - relativedelta(days=1,months=1,years=1)).strftime('%%Y-%%m-%%d'))]"
+                />
                 <filter
                     name="last_month"
                     string="Last Month"
-                    domain="[('create_date','&gt;=',(datetime.date.today() - relativedelta(days=1,months=1)).strftime('%%Y-%%m-%%d'))]"/>
+                    domain="[('create_date','&gt;=',(datetime.date.today() - relativedelta(days=1,months=1)).strftime('%%Y-%%m-%%d'))]"
+                />
                 <filter
                     name="last_week"
                     string="Last Week"
-                    domain="[('create_date','&gt;=',(datetime.date.today() - datetime.timedelta(weeks=2)).strftime('%%Y-%%m-%%d'))]"/>
-                <separator orientation="vertical"/>
-                <field name="engineering_state"/>
-                <filter name="confirmed"
-                        string="Confirmed"
-                        domain="[('engineering_state', '=', 'confirmed')]"/>
-                <filter name="released"
-                        string="Released"
-                        domain="[('engineering_state', 'in', ['released','undermodify'])]"/>
-                <filter name="latest"
-                        string="Latest"
-                        domain="[('engineering_state', 'not in', ['obsoleted','undermodify'])]"/>
-                <filter name="doc_has_error"
-                        string="Has Error"
-                        domain="[('has_error','=',True)]"
-                        help="Filter on documents with error"/>
-                <filter name="must_update_from_cad"
-                        string="Must Update From Cad"
-                        domain="[('must_update_from_cad','=',True)]"
-                        help="Filter on documents with update on CAD"/>
-                <separator orientation="vertical"/>
+                    domain="[('create_date','&gt;=',(datetime.date.today() - datetime.timedelta(weeks=2)).strftime('%%Y-%%m-%%d'))]"
+                />
+                <separator orientation="vertical" />
+                <field name="engineering_state" />
+                <filter
+                    name="confirmed"
+                    string="Confirmed"
+                    domain="[('engineering_state', '=', 'confirmed')]"
+                />
+                <filter
+                    name="released"
+                    string="Released"
+                    domain="[('engineering_state', 'in', ['released','undermodify'])]"
+                />
+                <filter
+                    name="latest"
+                    string="Latest"
+                    domain="[('engineering_state', 'not in', ['obsoleted','undermodify'])]"
+                />
+                <filter
+                    name="doc_has_error"
+                    string="Has Error"
+                    domain="[('has_error','=',True)]"
+                    help="Filter on documents with error"
+                />
+                <filter
+                    name="must_update_from_cad"
+                    string="Must Update From Cad"
+                    domain="[('must_update_from_cad','=',True)]"
+                    help="Filter on documents with update on CAD"
+                />
+                <separator orientation="vertical" />
                 <group>
-                    <field name="create_uid"/>
-                    <filter name="create_by_me"
-                            string="Create By Me"
-                            domain="[('create_uid','=',uid)]"
-                            help="Filter on documents created by me"/>
-                    <field name="write_uid"/>
-                    <filter name="changed_by_me"
-                            string="Changed By Me"
-                            domain="[('write_uid','=',uid)]"
-                            help="Filter on documents changed by me"/>
+                    <field name="create_uid" />
+                    <filter
+                        name="create_by_me"
+                        string="Create By Me"
+                        domain="[('create_uid','=',uid)]"
+                        help="Filter on documents created by me"
+                    />
+                    <field name="write_uid" />
+                    <filter
+                        name="changed_by_me"
+                        string="Changed By Me"
+                        domain="[('write_uid','=',uid)]"
+                        help="Filter on documents changed by me"
+                    />
                 </group>
-                <separator orientation="vertical"/>
+                <separator orientation="vertical" />
                 <group expand="0" string="Group By...">
-                    <filter name="created_in"
-                            string="Created in"
-                            domain="[]"
-                            context="{'group_by':'create_date'}"/>
-                    <filter name="canged_in"
-                            string="Changed in"
-                            domain="[]"
-                            context="{'group_by':'write_date'}"/>
-                    <separator orientation="vertical"/>
-                    <filter name="create_by"
-                            string="Created by"
-                            domain="[]"
-                            context="{'group_by':'create_uid'}"/>
-                    <filter name="changed_by"
-                            string="Changed by"
-                            domain="[]"
-                            context="{'group_by':'write_uid'}"/>
-                    <separator orientation="vertical"/>
-                    <filter name="status"
-                            string="Status"
-                            domain="[]"
-                            context="{'group_by':'engineering_state'}"/>
-                    <filter name="type"
-                            string="Type Document"
-                            domain="[]"
-                            context="{'group_by':'document_type'}"/>
+                    <filter
+                        name="created_in"
+                        string="Created in"
+                        domain="[]"
+                        context="{'group_by':'create_date'}"
+                    />
+                    <filter
+                        name="canged_in"
+                        string="Changed in"
+                        domain="[]"
+                        context="{'group_by':'write_date'}"
+                    />
+                    <separator orientation="vertical" />
+                    <filter
+                        name="create_by"
+                        string="Created by"
+                        domain="[]"
+                        context="{'group_by':'create_uid'}"
+                    />
+                    <filter
+                        name="changed_by"
+                        string="Changed by"
+                        domain="[]"
+                        context="{'group_by':'write_uid'}"
+                    />
+                    <separator orientation="vertical" />
+                    <filter
+                        name="status"
+                        string="Status"
+                        domain="[]"
+                        context="{'group_by':'engineering_state'}"
+                    />
+                    <filter
+                        name="type"
+                        string="Type Document"
+                        domain="[]"
+                        context="{'group_by':'document_type'}"
+                    />
                 </group>
             </search>
         </field>
@@ -384,101 +563,162 @@
     <record id="document_kanban_view" model="ir.ui.view">
         <field name="name">Product.template.product.kanban</field>
         <field name="model">ir.attachment</field>
-        <field name="priority" eval="20"/>
+        <field name="priority" eval="20" />
         <field name="arch" type="xml">
             <kanban>
-                <field name="id"/>                                                <!-- Necessary to render previews -->
-                <field name="engineering_code"/>
-                <field name="engineering_revision"/>
-                <field name="description"/>
-                <field name="name"/>
-                <field name="engineering_state"/>
-                <field name="document_type"/>
-                <field name="has_error"/>
-                <field name="must_update_from_cad" invisible="True"/>
-                <field name="is_checkout" invisible="True"/>
-                <field name="is_linkedcomponents" invisible="True"/>
+                <field
+                    name="id"
+                />                                                <!-- Necessary to render previews -->
+                <field name="engineering_code" />
+                <field name="engineering_revision" />
+                <field name="description" />
+                <field name="name" />
+                <field name="engineering_state" />
+                <field name="document_type" />
+                <field name="has_error" />
+                <field name="must_update_from_cad" invisible="True" />
+                <field name="is_checkout" invisible="True" />
+                <field name="is_linkedcomponents" invisible="True" />
                 <templates>
-                    <t t-value="record.engineering_state.raw_value" t-set="stateToUse"/>
+                    <t
+                        t-value="record.engineering_state.raw_value"
+                        t-set="stateToUse"
+                    />
                     <t t-name="kanban-box">
-                        <div class="oe_kanban_global_click o_kanban_record_has_image_fill">
+                        <div
+                            class="oe_kanban_global_click o_kanban_record_has_image_fill"
+                        >
                             <div
-                                style="margin-right: 3px;border-left: 1px solid lightgray;border-right: 1px solid lightgray;">
-                                <field name="preview"
-                                       widget="image"
-                                       options="{'zoom': true, 'zoom_delay': 800}"
-                                       nolabel="1" invisible="preview == False"
-                                       readonly="is_plm==True"/>
-                                <field name="preview_related" colspan="2" widget="image"
-                                       readonly="1" nolabel="1" invisible="preview != False"
-                                       options="{'zoom': true, 'zoom_delay': 800}"/>
+                                style="margin-right: 3px;border-left: 1px solid lightgray;border-right: 1px solid lightgray;"
+                            >
+                                <field
+                                    name="preview"
+                                    widget="image"
+                                    options="{'zoom': true, 'zoom_delay': 800}"
+                                    nolabel="1"
+                                    invisible="preview == False"
+                                    readonly="is_plm==True"
+                                />
+                                <field
+                                    name="preview_related"
+                                    colspan="2"
+                                    widget="image"
+                                    readonly="1"
+                                    nolabel="1"
+                                    invisible="preview != False"
+                                    options="{'zoom': true, 'zoom_delay': 800}"
+                                />
                             </div>
                             <table style="width: 100%; line-height: 1;">
                                 <tr>
                                     <td>
-                                        <strong invisible="document_type!='other'">Other</strong>
-                                        <strong invisible="document_type!='2d'">2D</strong>
-                                        <strong invisible="document_type!='3d'">3D</strong>
-                                        <strong invisible="document_type!='pr'">PR</strong>
+                                        <strong
+                                            invisible="document_type!='other'"
+                                        >Other</strong>
+                                        <strong
+                                            invisible="document_type!='2d'"
+                                        >2D</strong>
+                                        <strong
+                                            invisible="document_type!='3d'"
+                                        >3D</strong>
+                                        <strong
+                                            invisible="document_type!='pr'"
+                                        >PR</strong>
                                     </td>
                                     <td name="check-in-out">
                                         <h2>
-                                            <field name="checkout_user"
-                                                   invisible="checkout_user==False or checkout_user==''"/>
+                                            <field
+                                                name="checkout_user"
+                                                invisible="checkout_user==False or checkout_user==''"
+                                            />
                                         </h2>
                                     </td>
-                                    <td name="Component" style="text-align: right; width: 100%; padding:1px;">
-                                        <button name="open_related_dbthread"
-                                                type="object"
-                                                invisible="has_error==False"
-                                                class="fa fa-bug fa-2x btn-danger"
-                                                title=""
+                                    <td
+                                        name="Component"
+                                        style="text-align: right; width: 100%; padding:1px;"
+                                    >
+                                        <button
+                                            name="open_related_dbthread"
+                                            type="object"
+                                            invisible="has_error==False"
+                                            class="fa fa-bug fa-2x btn-danger"
+                                            title=""
                                         />
-                                        <button name="related_not_update"
-                                                type="object"
-                                                invisible="must_update_from_cad==False"
-                                                class="fa fa-warning fa-2x btn-warning"
-                                                title=""
+                                        <button
+                                            name="related_not_update"
+                                            type="object"
+                                            invisible="must_update_from_cad==False"
+                                            class="fa fa-warning fa-2x btn-warning"
+                                            title=""
                                         />
-                                        <div class="fa fa-lock fa-2x"
-                                             string="."
-                                             style="color:red;display: inline;"
-                                             invisible="checkout_user=='False' or checkout_user==''"/>
-                                        <div class="fa fa-dropbox fa-2x"
-                                             aria-label="Missing Component"
-                                             style="color:#ff8300;"
-                                             invisible="is_linkedcomponents not in [False, []]"/>
-                                        <div class="fa fa-dropbox fa-2x"
-                                             aria-label="Founding Component"
-                                             style="color: green;"
-                                             invisible="is_linkedcomponents in [False, []]"/>
+                                        <div
+                                            class="fa fa-lock fa-2x"
+                                            string="."
+                                            style="color:red;display: inline;"
+                                            invisible="checkout_user=='False' or checkout_user==''"
+                                        />
+                                        <div
+                                            class="fa fa-dropbox fa-2x"
+                                            aria-label="Missing Component"
+                                            style="color:#ff8300;"
+                                            invisible="is_linkedcomponents not in [False, []]"
+                                        />
+                                        <div
+                                            class="fa fa-dropbox fa-2x"
+                                            aria-label="Founding Component"
+                                            style="color: green;"
+                                            invisible="is_linkedcomponents in [False, []]"
+                                        />
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>
 
                                     </td>
-                                    <td style="padding-left:10px; vertical-align: middle;" colspan="2">
+                                    <td
+                                        style="padding-left:10px; vertical-align: middle;"
+                                        colspan="2"
+                                    >
                                         <table style="width:100%">
                                             <tr>
                                                 <td>
                                                     <t t-if="stateToUse == 'draft'">
-                                                        <hr style="background-color: rgb(110, 51, 197);height: 1px;"></hr>
+                                                        <hr
+                                                            style="background-color: rgb(110, 51, 197);height: 1px;"
+                                                        />
                                                     </t>
-                                                    <t t-elif="stateToUse == 'confirmed'">
-                                                        <hr style="background-color: blue;height: 1px;"></hr>
+                                                    <t
+                                                        t-elif="stateToUse == 'confirmed'"
+                                                    >
+                                                        <hr
+                                                            style="background-color: blue;height: 1px;"
+                                                        />
                                                     </t>
-                                                    <t t-elif="stateToUse == 'released'">
-                                                        <hr style="background-color: rgba(0, 170, 34, 0.66);height: 1px;"></hr>
+                                                    <t
+                                                        t-elif="stateToUse == 'released'"
+                                                    >
+                                                        <hr
+                                                            style="background-color: rgba(0, 170, 34, 0.66);height: 1px;"
+                                                        />
                                                     </t>
-                                                    <t t-elif="stateToUse == 'undermodify'">
-                                                        <hr style="background-color: rgb(218, 159, 34);height: 1px;"></hr>
+                                                    <t
+                                                        t-elif="stateToUse == 'undermodify'"
+                                                    >
+                                                        <hr
+                                                            style="background-color: rgb(218, 159, 34);height: 1px;"
+                                                        />
                                                     </t>
-                                                    <t t-elif="stateToUse == 'obsoleted'">
-                                                        <hr style="background-color: rgb(231, 43, 26);height: 1px;"></hr>
+                                                    <t
+                                                        t-elif="stateToUse == 'obsoleted'"
+                                                    >
+                                                        <hr
+                                                            style="background-color: rgb(231, 43, 26);height: 1px;"
+                                                        />
                                                     </t>
                                                     <t t-else="">
-                                                        <hr style="background-color: black;height: 1px;"></hr>
+                                                        <hr
+                                                            style="background-color: black;height: 1px;"
+                                                        />
                                                     </t>
                                                 </td>
                                             </tr>
@@ -487,10 +727,14 @@
                                                     <t>
                                                         <strong>Name:</strong>
                                                     </t>
-                                                    <field name="engineering_code"
-                                                           readonly="id not in [False, [], 0]"/>
-                                                    <field name="display_name"
-                                                           invisible="id not in [False, []]"/>
+                                                    <field
+                                                        name="engineering_code"
+                                                        readonly="id not in [False, [], 0]"
+                                                    />
+                                                    <field
+                                                        name="display_name"
+                                                        invisible="id not in [False, []]"
+                                                    />
                                                 </td>
                                             </tr>
                                             <tr>
@@ -498,7 +742,9 @@
                                                     <t>
                                                         <strong>Revision:</strong>
                                                     </t>
-                                                    <field name="engineering_revision"/>
+                                                    <field
+                                                        name="engineering_revision"
+                                                    />
                                                 </td>
                                             </tr>
                                             <tr name="state">
@@ -506,55 +752,86 @@
                                                     <strong>State:</strong>
                                                     <t t-if="stateToUse == 'draft'">
                                                         <b>
-                                                            <span style="color: rgb(110, 51, 197);padding-left: 5px;">
+                                                            <span
+                                                                style="color: rgb(110, 51, 197);padding-left: 5px;"
+                                                            >
                                                                 <u>
-                                                                    <field name="engineering_state"/>
+                                                                    <field
+                                                                        name="engineering_state"
+                                                                    />
                                                                 </u>
                                                             </span>
                                                         </b>
                                                     </t>
-                                                    <t t-elif="stateToUse == 'confirmed'">
-                                                        <b>
-                                                            <span style="color: blue;padding-left: 5px;">
-                                                                <u>
-                                                                    <field name="engineering_state"/>
-                                                                </u>
-                                                            </span>
-                                                        </b>
-                                                    </t>
-                                                    <t t-elif="stateToUse == 'released'">
+                                                    <t
+                                                        t-elif="stateToUse == 'confirmed'"
+                                                    >
                                                         <b>
                                                             <span
-                                                                style="color: rgba(0, 170, 34, 0.66);padding-left: 5px;">
+                                                                style="color: blue;padding-left: 5px;"
+                                                            >
                                                                 <u>
-                                                                    <field name="engineering_state"/>
+                                                                    <field
+                                                                        name="engineering_state"
+                                                                    />
                                                                 </u>
                                                             </span>
                                                         </b>
                                                     </t>
-                                                    <t t-elif="stateToUse == 'undermodify'">
+                                                    <t
+                                                        t-elif="stateToUse == 'released'"
+                                                    >
                                                         <b>
-                                                            <span style="color: rgb(218, 159, 34);padding-left: 5px;">
+                                                            <span
+                                                                style="color: rgba(0, 170, 34, 0.66);padding-left: 5px;"
+                                                            >
                                                                 <u>
-                                                                    <field name="engineering_state"/>
+                                                                    <field
+                                                                        name="engineering_state"
+                                                                    />
                                                                 </u>
                                                             </span>
                                                         </b>
                                                     </t>
-                                                    <t t-elif="stateToUse == 'obsoleted'">
+                                                    <t
+                                                        t-elif="stateToUse == 'undermodify'"
+                                                    >
                                                         <b>
-                                                            <span style="color: rgb(231, 43, 26);padding-left: 5px;">
+                                                            <span
+                                                                style="color: rgb(218, 159, 34);padding-left: 5px;"
+                                                            >
                                                                 <u>
-                                                                    <field name="engineering_state"/>
+                                                                    <field
+                                                                        name="engineering_state"
+                                                                    />
+                                                                </u>
+                                                            </span>
+                                                        </b>
+                                                    </t>
+                                                    <t
+                                                        t-elif="stateToUse == 'obsoleted'"
+                                                    >
+                                                        <b>
+                                                            <span
+                                                                style="color: rgb(231, 43, 26);padding-left: 5px;"
+                                                            >
+                                                                <u>
+                                                                    <field
+                                                                        name="engineering_state"
+                                                                    />
                                                                 </u>
                                                             </span>
                                                         </b>
                                                     </t>
                                                     <t t-else="">
                                                         <b>
-                                                            <span style="color: black;padding-left: 5px;">
+                                                            <span
+                                                                style="color: black;padding-left: 5px;"
+                                                            >
                                                                 <u>
-                                                                    <field name="engineering_state"/>
+                                                                    <field
+                                                                        name="engineering_state"
+                                                                    />
                                                                 </u>
                                                             </span>
                                                         </b>
@@ -562,28 +839,51 @@
                                                 </td>
                                             </tr>
                                             <tr name="attachment_button_box">
-                                                <td name="attachment_button_box" style="display: inline-flex;">
+                                                <td
+                                                    name="attachment_button_box"
+                                                    style="display: inline-flex;"
+                                                >
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <td>
                                                     <t t-if="stateToUse == 'draft'">
-                                                        <hr style="background-color: rgb(110, 51, 197);height: 1px;"></hr>
+                                                        <hr
+                                                            style="background-color: rgb(110, 51, 197);height: 1px;"
+                                                        />
                                                     </t>
-                                                    <t t-elif="stateToUse == 'confirmed'">
-                                                        <hr style="background-color: blue;height: 1px;"></hr>
+                                                    <t
+                                                        t-elif="stateToUse == 'confirmed'"
+                                                    >
+                                                        <hr
+                                                            style="background-color: blue;height: 1px;"
+                                                        />
                                                     </t>
-                                                    <t t-elif="stateToUse == 'released'">
-                                                        <hr style="background-color: rgba(0, 170, 34, 0.66);height: 1px;"></hr>
+                                                    <t
+                                                        t-elif="stateToUse == 'released'"
+                                                    >
+                                                        <hr
+                                                            style="background-color: rgba(0, 170, 34, 0.66);height: 1px;"
+                                                        />
                                                     </t>
-                                                    <t t-elif="stateToUse == 'undermodify'">
-                                                        <hr style="background-color: rgb(218, 159, 34);height: 1px;"></hr>
+                                                    <t
+                                                        t-elif="stateToUse == 'undermodify'"
+                                                    >
+                                                        <hr
+                                                            style="background-color: rgb(218, 159, 34);height: 1px;"
+                                                        />
                                                     </t>
-                                                    <t t-elif="stateToUse == 'obsoleted'">
-                                                        <hr style="background-color: rgb(231, 43, 26);height: 1px;"></hr>
+                                                    <t
+                                                        t-elif="stateToUse == 'obsoleted'"
+                                                    >
+                                                        <hr
+                                                            style="background-color: rgb(231, 43, 26);height: 1px;"
+                                                        />
                                                     </t>
                                                     <t t-else="">
-                                                        <hr style="background-color: black;height: 1px;"></hr>
+                                                        <hr
+                                                            style="background-color: black;height: 1px;"
+                                                        />
                                                     </t>
                                                 </td>
                                             </tr>
@@ -601,11 +901,11 @@
     <record model="ir.ui.view" id="document_graph_view">
         <field name="name">Product.template.product.graph</field>
         <field name="model">ir.attachment</field>
-        <field name="priority" eval="20"/>
+        <field name="priority" eval="20" />
         <field name="arch" type="xml">
             <graph string="Graph">
-                <field name="create_date"/>
-                <field name="create_uid"/>
+                <field name="create_date" />
+                <field name="create_uid" />
             </graph>
         </field>
     </record>
@@ -614,14 +914,16 @@
         <field name="name">Documents</field>
         <field name="res_model">ir.attachment</field>
         <field name="view_mode">kanban,graph,list,form</field>
-        <field name="search_view_id" ref="plm.ir_attachment_search"></field>
+        <field name="search_view_id" ref="plm.ir_attachment_search" />
         <field name="context">{"odooPLM":True}</field>
         <field name="domain">[('is_plm', '=', True)]</field>
-        <field name="view_ids"
-               eval="[(5, 0, 0),
+        <field
+            name="view_ids"
+            eval="[(5, 0, 0),
                       (0, 0, {'view_mode': 'kanban', 'view_id': ref('plm.document_kanban_view')}),
                       (0, 0, {'view_mode': 'form', 'view_id': ref('plm.view_attachment_form_plm_hinerit')}),
                       (0, 0, {'view_mode': 'list', 'view_id': ref('plm.ir_attachment_list')})
-                      ]"/>
+                      ]"
+        />
     </record>
 </odoo>

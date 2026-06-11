@@ -1,10 +1,9 @@
-# -*- coding: utf-8 -*-
 {
     "name": "PLM Auto Translator",
     "author": "OmniaSolutions",
     "version": "18.0.1.0.0",
     "summary": "PLM Auto Translator",
-    "website": "https://odooplm.omniasolutions.website",
+    "website": "https://github.com/OmniaGit/odooplm",
     "description": """Automatically update translation files for PLM modules""",
     "depends": [
         "plm",

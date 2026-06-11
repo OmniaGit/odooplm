@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, ERP-PLM-CAD Open Source Solutions
@@ -18,7 +17,7 @@
 #    along with this prograIf not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-from odoo import models, fields, api
+from odoo import fields, models
 
 
 class ProductProduct(models.Model):
@@ -28,9 +27,15 @@ class ProductProduct(models.Model):
         comodel_name="template.consumption.plan",
         string="Consumption Plans",
     )
-    is_independent_consumption_plan = fields.Boolean(string="Independent Consumption Plan", help="If enabled, the BoM line has its own consumption plans and changes here won’t affect the product.", default=False, copy=False)
-
+    is_independent_consumption_plan = fields.Boolean(
+        string="Independent Consumption Plan",
+        help="If enabled, the BoM line has its own consumption plans and changes here won’t affect the product.",
+        default=False,
+        copy=False,
+    )
 
     def act_get_consumption_plan_report(self):
         self.ensure_one()
-        return self.env.ref('plm_consumption_plans.report_action_consumption_plan_product_variant').report_action(self)
+        return self.env.ref(
+            "plm_consumption_plans.report_action_consumption_plan_product_variant"
+        ).report_action(self)

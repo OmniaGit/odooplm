@@ -1,4 +1,3 @@
-# -*- encoding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Your own solutions
@@ -21,6 +20,7 @@
 ##############################################################################
 
 from odoo import api, models
+
 from odoo.addons.plm.models.plm_mixin import OBSOLATED_STATUS
 
 
@@ -46,7 +46,7 @@ class ProductExtension(models.Model):
         recursion(struct, isRoot=True)
 
     def write(self, vals):
-        res = super(ProductExtension, self).write(vals)
+        res = super().write(vals)
         statePresent = vals.get("engineering_state", None)
         if statePresent == OBSOLATED_STATUS:
             # Here I force compute obsolete presents flag in all boms

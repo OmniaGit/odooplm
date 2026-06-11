@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, ERP-PLM-CAD Open Source Solutions
@@ -18,17 +17,20 @@
 #    along with this prograIf not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-from odoo import models, fields
+from odoo import fields, models
+
 
 class PlmMarkupLog(models.Model):
-    _name = 'plm.markup.log'
-    _description = 'PLM 3D Markup Annotations'
+    _name = "plm.markup.log"
+    _description = "PLM 3D Markup Annotations"
 
-    comment     = fields.Text()
-    snapshot    = fields.Binary()
+    comment = fields.Text()
+    snapshot = fields.Binary()
     base_image = fields.Binary()
-    filename    = fields.Char()
+    filename = fields.Char()
     canvas_data = fields.Text()
-    res_id      = fields.Integer(string='Document ID', index=True)
-    res_model   = fields.Char(string='Document Model')
-    message_id = fields.Many2one('mail.message', string='Chatter Message', ondelete='set null')
+    res_id = fields.Integer(string="Document ID", index=True)
+    res_model = fields.Char(string="Document Model")
+    message_id = fields.Many2one(
+        "mail.message", string="Chatter Message", ondelete="set null"
+    )

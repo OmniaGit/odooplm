@@ -1,34 +1,45 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-    <record id="plm_pdf_workorder_plm_view_attachment_form_plm_inherit" model="ir.ui.view">
-        <field name="name">plm.pdf.workorder.plm.view_attachment.form.plm.hinerit</field>
+    <record
+        id="plm_pdf_workorder_plm_view_attachment_form_plm_inherit"
+        model="ir.ui.view"
+    >
+        <field
+            name="name"
+        >plm.pdf.workorder.plm.view_attachment.form.plm.hinerit</field>
         <field name="model">ir.attachment</field>
-        <field name="inherit_id" ref="plm.view_attachment_form_plm_hinerit"/>
+        <field name="inherit_id" ref="plm.view_attachment_form_plm_hinerit" />
         <field name="arch" type="xml">
             <xpath expr="//field[@name='is_plm']" position="after">
-                <field name="is_production_doc" widget="boolean_toggle"/>
-                <field name="doc_seq"/>
+                <field name="is_production_doc" widget="boolean_toggle" />
+                <field name="doc_seq" />
             </xpath>
         </field>
     </record>
     <record id="plm_pdf_workorder_plm_document_kanban_view" model="ir.ui.view">
         <field name="name">plm.pdf.workorder.plm.document.kanban.view</field>
         <field name="model">ir.attachment</field>
-        <field name="inherit_id" ref="plm.document_kanban_view"/>
+        <field name="inherit_id" ref="plm.document_kanban_view" />
         <field name="arch" type="xml">
             <xpath expr="//table/tr" position="inside">
                 <td>
                     <span>Prod Doc:</span>
-                    <field name="is_production_doc" widget="boolean_toggle" readonly="context.get('readonly', False)"/>
+                    <field
+                        name="is_production_doc"
+                        widget="boolean_toggle"
+                        readonly="context.get('readonly', False)"
+                    />
                 </td>
-                <field name="doc_seq" invisible="1"/>
+                <field name="doc_seq" invisible="1" />
             </xpath>
             <xpath expr="//td[@name='attachment_button_box']" position="inside">
-                <button name="action_open_report_ir_attachment_pdf"
-                        class="btn btn-primary btn-sm ms-1"
-                        type="object"
-                        invisible="printout == False">
-                    <i class="fa fa-file-pdf-o"></i>
+                <button
+                    name="action_open_report_ir_attachment_pdf"
+                    class="btn btn-primary btn-sm ms-1"
+                    type="object"
+                    invisible="printout == False"
+                >
+                    <i class="fa fa-file-pdf-o" />
                     PDF
                 </button>
             </xpath>
@@ -40,7 +51,7 @@
         <field name="model">ir.attachment</field>
         <field name="arch" type="xml">
             <form string="Plm PDF" create="false" edit="false">
-                <field name="printout" widget="pdf_viewer" readonly="True"/>
+                <field name="printout" widget="pdf_viewer" readonly="True" />
             </form>
         </field>
     </record>

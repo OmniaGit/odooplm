@@ -22,14 +22,14 @@ if not match:
 
 old_patch = int(match.group(3))
 new_patch = old_patch + 1
-new_content = (
-    content[: match.start(3)] + str(new_patch) + content[match.end(3) :]
-)
+new_content = content[: match.start(3)] + str(new_patch) + content[match.end(3) :]
 
 with open(MANIFEST, "w") as f:
     f.write(new_content)
 
 subprocess.run(["git", "add", MANIFEST], check=True)
-print("plm version bumped: {}{}  →  {}{}".format(
-    match.group(2), old_patch, match.group(2), new_patch
-))
+print(
+    "plm version bumped: {}{}  →  {}{}".format(
+        match.group(2), old_patch, match.group(2), new_patch
+    )
+)

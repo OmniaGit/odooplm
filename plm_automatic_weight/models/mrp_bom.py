@@ -1,4 +1,3 @@
-# -*- encoding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Open Source Management Solution
@@ -30,12 +29,12 @@ from odoo import models
 
 
 class MrpBomExtension(models.Model):
-    _name = 'mrp.bom'
-    _inherit = 'mrp.bom'
+    _name = "mrp.bom"
+    _inherit = "mrp.bom"
 
     def force_compute_bom_weight(self):
         """
-            Call plm bom weight calculator function
+        Call plm bom weight calculator function
         """
         self.rebase_bom_weight()
 
@@ -44,7 +43,5 @@ class MrpBomExtension(models.Model):
         out = 0.0
         for mrp_bom_id in self:
             for bom_line_id in mrp_bom_id.bom_line_ids:
-                out+= bom_line_id.product_id.weight  * bom_line_id.product_qty
+                out += bom_line_id.product_id.weight * bom_line_id.product_qty
         return out
-
-

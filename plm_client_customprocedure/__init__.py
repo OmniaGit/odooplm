@@ -1,4 +1,3 @@
-# -*- encoding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Open Source Management Solution
@@ -20,9 +19,9 @@
 #
 ##############################################################################
 
-'''
+"""
 Created on Apr 19, 2017
 
 @author: Daniel Smerghetto
-'''
+"""
 from . import models

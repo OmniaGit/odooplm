@@ -1,4 +1,3 @@
-# -*- encoding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Your own solutions
@@ -20,37 +19,34 @@
 #
 ##############################################################################
 
-'''
+"""
 Created on 25 Aug 2016
 
 @author: Daniel Smerghetto
-'''
-from odoo import models
-from odoo import fields
-from odoo import api
-from odoo import _
+"""
+from odoo import fields, models
 
 
 class PlmTreatment(models.Model):
     _name = "plm.treatment"
     _description = "Thermal Treatment"
 
-    name = fields.Char('Specification',
-                       required=True,
-                       translate=True)
-    description = fields.Char('Description',
-                              size=128)
-    sequence = fields.Integer('Sequence',
-                              help="Gives the sequence order when displaying a list of product categories.")
+    name = fields.Char("Specification", required=True, translate=True)
+    description = fields.Char("Description", size=128)
+    sequence = fields.Integer(
+        "Sequence",
+        help="Gives the sequence order when displaying a list of product categories.",
+    )
 
     _sql_constraints = [
-        ('name_uniq', 'unique(name)', 'Thermal Treatment has to be unique !'),
+        ("name_uniq", "unique(name)", "Thermal Treatment has to be unique !"),
     ]
-    
+
     def copy(self, default=None):
         if not default:
             default = {}
-        default['name'] = self.name + ' (copy)'
-        return super(PlmTreatment, self).copy(default=default)
+        default["name"] = self.name + " (copy)"
+        return super().copy(default=default)
+
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

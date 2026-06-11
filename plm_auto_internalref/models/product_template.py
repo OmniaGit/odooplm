@@ -1,4 +1,3 @@
-# -*- encoding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Your own solutions
@@ -27,6 +26,7 @@ Created on 9 Dec 2016
 """
 
 import logging
+
 from odoo import api, models
 
 
@@ -38,23 +38,31 @@ class ProductTemplateExtension(models.Model):
     def create(self, vals):
         obj_pp = self.env["product.product"]
         for val_dict in vals:
-            if 'engineering_code' in val_dict and val_dict['engineering_code']!=False:
+            if "engineering_code" in val_dict and val_dict["engineering_code"] != False:
                 new_default_code = obj_pp.computeDefaultCode(val_dict)
                 if new_default_code:
-                    logging.info("OdooPLM: Default Code set to %s " % (new_default_code))
+                    logging.info(
+                        "OdooPLM: Default Code set to %s " % (new_default_code)
+                    )
                     val_dict["default_code"] = new_default_code
         return super().create(vals)
 
     def write(self, vals):
         for product_template_id in self:
             if product_template_id.engineering_code:
-                new_default_code = self.env['product.product'].computeDefaultCode(vals,
-                                                                                  product_template_id)
-                if new_default_code :
-                    vals['default_code'] = new_default_code
-                    if product_template_id.product_variant_id.default_code!=new_default_code:
-                        product_template_id.product_variant_id.default_code=new_default_code
-        return super(ProductTemplateExtension, self).write(vals)
+                new_default_code = self.env["product.product"].computeDefaultCode(
+                    vals, product_template_id
+                )
+                if new_default_code:
+                    vals["default_code"] = new_default_code
+                    if (
+                        product_template_id.product_variant_id.default_code
+                        != new_default_code
+                    ):
+                        product_template_id.product_variant_id.default_code = (
+                            new_default_code
+                        )
+        return super().write(vals)
 
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

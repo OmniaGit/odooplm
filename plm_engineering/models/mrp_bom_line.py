@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Your own solutions
@@ -29,6 +28,6 @@ from odoo import fields, models
 
 
 class MrpBomLineExtension(models.Model):
-    _inherit = 'mrp.bom.line'
+    _inherit = "mrp.bom.line"
 
-    ebom_source_id = fields.Integer('Source E-Bom ID')
+    ebom_source_id = fields.Integer("Source E-Bom ID")

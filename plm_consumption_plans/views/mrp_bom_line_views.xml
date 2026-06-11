@@ -1,29 +1,29 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <data>
         <record id="view_mrp_bom_line_inherit_consumption_plan" model="ir.ui.view">
             <field name="name">mrp.bom.line.inherit.consumption.plan</field>
             <field name="model">mrp.bom.line</field>
-            <field name="inherit_id" ref="mrp.mrp_bom_line_view_form"/>
+            <field name="inherit_id" ref="mrp.mrp_bom_line_view_form" />
             <field name="arch" type="xml">
                 <xpath expr="//sheet" position="inside">
                     <notebook>
                         <page name="consumption_plan" string="Consumption Plans">
                             <field name="template_consumption_plan_ids">
                                 <list editable="bottom">
-                                    <field name="name" required="1"/>
-                                    <field name="time_span"/>
-                                    <field name="consumption_state_id"/>
-                                    <field name="product_template_ids"/>
-                                    <field name="product_ids"/>
+                                    <field name="name" required="1" />
+                                    <field name="time_span" />
+                                    <field name="consumption_state_id" />
+                                    <field name="product_template_ids" />
+                                    <field name="product_ids" />
                                 </list>
                                 <form>
                                     <group>
-                                        <field name="name" required="1"/>
-                                        <field name="time_span"/>
-                                        <field name="consumption_state_id"/>
-                                        <field name="product_template_ids"/>
-                                        <field name="product_ids"/>
+                                        <field name="name" required="1" />
+                                        <field name="time_span" />
+                                        <field name="consumption_state_id" />
+                                        <field name="product_template_ids" />
+                                        <field name="product_ids" />
                                     </group>
                                 </form>
                             </field>
@@ -36,10 +36,13 @@
          <record id="view_plm_plan_mrp_bom" model="ir.ui.view">
             <field name="name">view.plm.plan.mrp.bom</field>
             <field name="model">mrp.bom</field>
-            <field name="inherit_id" ref="mrp.mrp_bom_form_view"/>
+            <field name="inherit_id" ref="mrp.mrp_bom_form_view" />
             <field name="arch" type="xml">
-                <xpath expr="//field[@name='bom_line_ids']/list/field[@name='product_qty']" position="before">
-                    <field name="template_consumption_plan_ids" widget='one2many'/>
+                <xpath
+                    expr="//field[@name='bom_line_ids']/list/field[@name='product_qty']"
+                    position="before"
+                >
+                    <field name="template_consumption_plan_ids" widget='one2many' />
                 </xpath>
             </field>
         </record>

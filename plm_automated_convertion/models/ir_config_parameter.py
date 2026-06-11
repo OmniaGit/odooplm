@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, ERP-PLM-CAD Open Source Solutions
@@ -18,20 +17,21 @@
 #    along with this prograIf not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-from odoo import  models, api
+from odoo import api, models
+
 
 class IrConfigParameter(models.Model):
-    _inherit = 'ir.config_parameter'
+    _inherit = "ir.config_parameter"
 
     @api.model_create_multi
     def create(self, vals_list):
         records = super().create(vals_list)
-        if any(rec.key == 'Cad Excange Cli' for rec in records):
-            self.env['plm.convert.format'].sudo()._update_cad_ex_availability()
+        if any(rec.key == "Cad Excange Cli" for rec in records):
+            self.env["plm.convert.format"].sudo()._update_cad_ex_availability()
         return records
 
     def write(self, vals):
         res = super().write(vals)
-        if 'value' in vals and any(record.key == 'Cad Excange Cli' for record in self):
-            self.env['plm.convert.format'].sudo()._update_cad_ex_availability()
+        if "value" in vals and any(record.key == "Cad Excange Cli" for record in self):
+            self.env["plm.convert.format"].sudo()._update_cad_ex_availability()
         return res

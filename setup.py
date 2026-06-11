@@ -1,5 +1,6 @@
 import os
 import re
+
 from setuptools import setup
 
 HERE = os.path.abspath(os.path.dirname(__file__))
@@ -7,10 +8,27 @@ HERE = os.path.abspath(os.path.dirname(__file__))
 # Recursive patterns for all non-Python addon assets (views, security, i18n,
 # static files including git-submodule JS libraries with dots in dir names).
 ASSET_PATTERNS = [
-    "**/*.xml", "**/*.csv", "**/*.po", "**/*.pot",
-    "**/*.png", "**/*.gif", "**/*.jpg", "**/*.jpeg", "**/*.svg", "**/*.ico",
-    "**/*.scss", "**/*.css", "**/*.js", "**/*.ts", "**/*.html",
-    "**/*.json", "**/*.ttf", "**/*.woff", "**/*.woff2", "**/*.eot", "**/*.map",
+    "**/*.xml",
+    "**/*.csv",
+    "**/*.po",
+    "**/*.pot",
+    "**/*.png",
+    "**/*.gif",
+    "**/*.jpg",
+    "**/*.jpeg",
+    "**/*.svg",
+    "**/*.ico",
+    "**/*.scss",
+    "**/*.css",
+    "**/*.js",
+    "**/*.ts",
+    "**/*.html",
+    "**/*.json",
+    "**/*.ttf",
+    "**/*.woff",
+    "**/*.woff2",
+    "**/*.eot",
+    "**/*.map",
 ]
 
 

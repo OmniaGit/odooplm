@@ -1,4 +1,3 @@
-# -*- encoding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Open Source Management Solution
@@ -29,6 +28,7 @@ import logging
 import os
 import shutil
 import tempfile
+
 import requests
 
 from odoo import _, api, fields, models
@@ -114,7 +114,7 @@ class PackAndGo(models.TransientModel):
         [("url", "URL"), ("binary", "File")],
         "Type",
         help="You can either upload a file from your computer or"
-               " copy/paste an internet link to your file",
+        " copy/paste an internet link to your file",
         required=True,
         change_default=True,
         default="binary",
@@ -187,24 +187,26 @@ class PackAndGo(models.TransientModel):
         default="ALL_LEVEL",
     )
 
-    file_name_computation = fields.Selection([
-        ("FILE_NAME", "File name"),
-        ("FILE_NAME_REV", "File name and revision"),
-        ("PRODUCT_ENGINEERING_CODE", "Product engineering Code"),
-        ("PRODUCT_ENGINEERING_REV", "Product engineering name and revision"),
-        (
-            "PRODUCT_ENGINEERING_DESCCRIPRION",
-            "Product engineering name and description",
-        ),
-        (
-            "PRODUCT_ENGINEERING_REV_DESCCRIPRION",
-            "Product engineering name revision and descriprion",
-        ),
-        ("INTERNAL_REFERENCE", "Product internal reference"),
-        (
-            "INTERNAL_REFERENCE_DESCRIPTION",
-            "Product internal reference and description",
-        )],
+    file_name_computation = fields.Selection(
+        [
+            ("FILE_NAME", "File name"),
+            ("FILE_NAME_REV", "File name and revision"),
+            ("PRODUCT_ENGINEERING_CODE", "Product engineering Code"),
+            ("PRODUCT_ENGINEERING_REV", "Product engineering name and revision"),
+            (
+                "PRODUCT_ENGINEERING_DESCCRIPRION",
+                "Product engineering name and description",
+            ),
+            (
+                "PRODUCT_ENGINEERING_REV_DESCCRIPRION",
+                "Product engineering name revision and descriprion",
+            ),
+            ("INTERNAL_REFERENCE", "Product internal reference"),
+            (
+                "INTERNAL_REFERENCE_DESCRIPTION",
+                "Product internal reference and description",
+            ),
+        ],
         string="File name computation",
         default="FILE_NAME",
         help="""
@@ -693,6 +695,7 @@ class PackAndGo(models.TransientModel):
 
     def get_steram(self, file_name):
         import io
+
         from base64io import Base64IO
 
         target = io.BytesIO()
@@ -808,5 +811,6 @@ class PackAndGo(models.TransientModel):
                         else:
                             out[product_product_id].append(ref_ir_attachment_id)
         return out
+
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

@@ -4,7 +4,6 @@ import {Many2OneField, many2OneField} from "@web/views/fields/many2one/many2one_
 import {onWillUpdateProps} from "@odoo/owl";
 
 export class PlmMany2oneWidget extends Many2OneField {
-
     static template = "plm.PlmMany2oneWidget";
     static props = {
         ...Many2OneField.props,
@@ -24,31 +23,69 @@ export class PlmMany2oneWidget extends Many2OneField {
             this.imageData = false;
             this.imageToolTipData = false;
             let fieldName = nextProps.name;
-            if (nextProps && nextProps.record && nextProps.record.data && nextProps.record.data[fieldName] && nextProps.record.data[fieldName].length != 0) {
-                let imageData = await this.env.model.orm.call(this.relation, "search_read", [], {
-                    domain: [["id", "=", nextProps.record.data[fieldName][0]]],
-                    fields: [nextProps.options.image_field],
-                });
-                if (imageData && imageData.length != 0 && imageData[0][nextProps.options.image_field]) {
-                    this.imageData = "data:image/png;base64, " + imageData[0][nextProps.options.image_field];
-                    this.imageToolTipData = JSON.stringify({"url": this.imageData});
+            if (
+                nextProps &&
+                nextProps.record &&
+                nextProps.record.data &&
+                nextProps.record.data[fieldName] &&
+                nextProps.record.data[fieldName].length != 0
+            ) {
+                let imageData = await this.env.model.orm.call(
+                    this.relation,
+                    "search_read",
+                    [],
+                    {
+                        domain: [["id", "=", nextProps.record.data[fieldName][0]]],
+                        fields: [nextProps.options.image_field],
+                    }
+                );
+                if (
+                    imageData &&
+                    imageData.length != 0 &&
+                    imageData[0][nextProps.options.image_field]
+                ) {
+                    this.imageData =
+                        "data:image/png;base64, " +
+                        imageData[0][nextProps.options.image_field];
+                    this.imageToolTipData = JSON.stringify({url: this.imageData});
                     this.render();
                 }
             }
         });
-        if (this.props && this.props.record && this.props.record.data && this.props.record.data[this.props.name] && this.props.record.data[this.props.name].length != 0) {
-
-            let imageData = await this.env.model.orm.call(this.relation, "search_read", [], {
-                domain: [["id", "=", this.props.record.data[this.props.name][0]]],
-                fields: [this.props.options.image_field],
-            });
-            this.relatedField = await this.env.model.orm.call(this.relation, "search_read", [], {
-                domain: [["id", "=", this.props.record.data[this.props.name][0]]],
-                fields: [this.props.options.linked_field],
-            });
-            if (imageData && imageData.length != 0 && imageData[0][this.props.options.image_field]) {
-                this.imageData = "data:image/png;base64, " + imageData[0][this.props.options.image_field];
-                this.imageToolTipData = JSON.stringify({"url": this.imageData});
+        if (
+            this.props &&
+            this.props.record &&
+            this.props.record.data &&
+            this.props.record.data[this.props.name] &&
+            this.props.record.data[this.props.name].length != 0
+        ) {
+            let imageData = await this.env.model.orm.call(
+                this.relation,
+                "search_read",
+                [],
+                {
+                    domain: [["id", "=", this.props.record.data[this.props.name][0]]],
+                    fields: [this.props.options.image_field],
+                }
+            );
+            this.relatedField = await this.env.model.orm.call(
+                this.relation,
+                "search_read",
+                [],
+                {
+                    domain: [["id", "=", this.props.record.data[this.props.name][0]]],
+                    fields: [this.props.options.linked_field],
+                }
+            );
+            if (
+                imageData &&
+                imageData.length != 0 &&
+                imageData[0][this.props.options.image_field]
+            ) {
+                this.imageData =
+                    "data:image/png;base64, " +
+                    imageData[0][this.props.options.image_field];
+                this.imageToolTipData = JSON.stringify({url: this.imageData});
                 this.render();
             }
         }
@@ -58,8 +95,13 @@ export class PlmMany2oneWidget extends Many2OneField {
         event.stopPropagation(); // It stops the event from triggering any additional event handlers
         let selectedProductId = this.props.record.data.product_id[0];
         let relatedFieldName = this.props.options.linked_field;
-        let model = this.props.record.model.root.model.config.fields[this.props.name].relation;
-        let action_open_linked_field = await this.props.record.model.orm.call(model, "action_open_linked_field", [selectedProductId, relatedFieldName]);
+        let model = this.props.record.model.root.model.config.fields[this.props.name]
+            .relation;
+        let action_open_linked_field = await this.props.record.model.orm.call(
+            model,
+            "action_open_linked_field",
+            [selectedProductId, relatedFieldName]
+        );
         return this.action.doAction(action_open_linked_field);
     }
 }
@@ -68,7 +110,10 @@ const plmMany2oneField = {
     ...many2OneField,
     component: PlmMany2oneWidget,
     extractProps: ({attrs, context, decorations, options, string}, dynamicInfo) => ({
-        ...many2OneField.extractProps({attrs, context, decorations, options, string}, dynamicInfo),
+        ...many2OneField.extractProps(
+            {attrs, context, decorations, options, string},
+            dynamicInfo
+        ),
         options: options,
     }),
 };

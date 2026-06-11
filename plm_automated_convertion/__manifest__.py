@@ -1,4 +1,3 @@
-# -*- encoding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Open Source Management Solution
@@ -23,7 +22,7 @@
     "name": "Product Lifecycle Management Batch conversion",
     "version": "18.0.4.0.3",
     "author": "OmniaSolutions",
-    "website": "https://odooplm.omniasolutions.website",
+    "website": "https://github.com/OmniaGit/odooplm",
     "category": "Manufacturing/Product Lifecycle Management (PLM)",
     "sequence": 15,
     "license": "AGPL-3",
@@ -41,11 +40,7 @@
         "view/plm_convert_stack.xml",
     ],
     "external_dependencies": {
-        "python": ["ezdxf",
-                   "matplotlib",
-                   "cadquery",
-                   "numpy-stl",
-                   "to-3mf"]
+        "python": ["ezdxf", "matplotlib", "cadquery", "numpy-stl", "to-3mf"]
     },
     "installable": True,
     "application": False,

@@ -1,4 +1,3 @@
-# -*- encoding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Open Source Management Solution
@@ -24,14 +23,16 @@ import logging
 
 import pytz
 from dateutil import parser
+
 from odoo import _, api, fields, models
-from odoo.addons.plm.models.plm_mixin import (
-    START_STATUS,
-    CONFIRMED_STATUS,
-    RELEASED_STATUS,
-    OBSOLATED_STATUS,
-)
 from odoo.exceptions import UserError
+
+from odoo.addons.plm.models.plm_mixin import (
+    CONFIRMED_STATUS,
+    OBSOLATED_STATUS,
+    RELEASED_STATUS,
+    START_STATUS,
+)
 
 _logger = logging.getLogger(__name__)
 
@@ -89,7 +90,11 @@ class Plm_box(models.Model):
     create_date = fields.Datetime(string="Date Created", readonly=True)
     write_date = fields.Datetime(string="Date Modified", readonly=True)
     product_id = fields.Many2many(
-        "product.product", "plm_box_products_rel", "box_id", "product_id", string="Product"
+        "product.product",
+        "plm_box_products_rel",
+        "box_id",
+        "product_id",
+        string="Product",
     )
     project_id = fields.Many2many(
         "project.project", "plm_box_proj_rel", "box_id", "project_id", string="Project"
@@ -98,7 +103,11 @@ class Plm_box(models.Model):
         "project.task", "plm_box_task_rel", "box_id", "task_id", string="Task"
     )
     sale_ord_id = fields.Many2many(
-        "sale.order", "plm_box_sale_ord_rel", "box_id", "sale_ord_id", string="Sale Order"
+        "sale.order",
+        "plm_box_sale_ord_rel",
+        "box_id",
+        "sale_ord_id",
+        string="Sale Order",
     )
     user_rel_id = fields.Many2many(
         "res.users", "plm_box_user_rel", "box_id", "user_id", string="User"
@@ -110,27 +119,21 @@ class Plm_box(models.Model):
         "mrp.workcenter", "plm_box_wc_rel", "box_id", "wc_id", string="Work Center"
     )
 
-    parent_id = fields.Many2one(
-        "plm.box",
-        string="Parent Folder",
-        index=True
-    )
+    parent_id = fields.Many2one("plm.box", string="Parent Folder", index=True)
 
     parent_path = fields.Char(index=True)
 
-    child_ids = fields.One2many(
-        "plm.box",
-        "parent_id",
-        string="Sub Folders"
-    )
+    child_ids = fields.One2many("plm.box", "parent_id", string="Sub Folders")
 
-    @api.depends('description', 'engineering_code')
+    @api.depends("description", "engineering_code")
     def _compute_display_name(self):
         for box_id in self:
             if box_id.engineering_code:
-                box_id.display_name = f'[{box_id.engineering_code}] - {box_id.description}'[:20]
+                box_id.display_name = (
+                    f"[{box_id.engineering_code}] - {box_id.description}"[:20]
+                )
             else:
-                box_id.display_name = f'{box_id.description}'[:20]
+                box_id.display_name = f"{box_id.description}"[:20]
 
     def unlink(self):
         for plm_box_id in self:
@@ -200,7 +203,7 @@ class Plm_box(models.Model):
             if not rec.get("engineering_code", False):
                 name = self.getNewSequencedName()
                 rec["engineering_code"] = name
-        return super(Plm_box, self).create(vals)
+        return super().create(vals)
 
     def write(self, vals):
         """
@@ -211,7 +214,7 @@ class Plm_box(models.Model):
             if name in [False, ""]:
                 name = self.getNewSequencedName()
                 vals["engineering_code"] = name
-        return super(Plm_box, self).write(vals)
+        return super().write(vals)
 
     def action_add_view_dox_document(self):
 
@@ -248,9 +251,9 @@ class Plm_box(models.Model):
             docRelList.append(ir_attachment_id.engineering_code)
             if ir_attachment_id.engineering_code not in self.docs.keys():
                 if self.isDocAvaibleForUser(ir_attachment_id):
-                    self.docs[
-                        ir_attachment_id.engineering_code
-                    ] = self.getDocDictValues(ir_attachment_id)
+                    self.docs[ir_attachment_id.engineering_code] = (
+                        self.getDocDictValues(ir_attachment_id)
+                    )
         self.box_doc_rel[parentBrws.engineering_code] = docRelList
 
     @api.model
@@ -906,6 +909,6 @@ class Plm_box(models.Model):
         for document in parentBrws.document_rel:
             if "document_rel" not in outDict["entities"]:
                 outDict["entities"]["document_rel"] = {}
-            outDict["entities"]["document_rel"][
-                str(document.id)
-            ] = self.getDocDictValues(document)
+            outDict["entities"]["document_rel"][str(document.id)] = (
+                self.getDocDictValues(document)
+            )

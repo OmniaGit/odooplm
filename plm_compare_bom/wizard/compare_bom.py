@@ -1,4 +1,3 @@
-# -*- encoding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Your own solutions
@@ -18,8 +17,9 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-import os
 import logging
+import os
+
 from odoo import _, api, fields, models
 
 _logger = logging.getLogger(__name__)
@@ -71,9 +71,7 @@ class plm_missing_bom(models.TransientModel):
     revision = fields.Integer(
         related="part_id.engineering_revision", string="Rev.", store=False
     )
-    description = fields.Char(
-        related="part_id.name", string="Description", store=False
-    )
+    description = fields.Char(related="part_id.name", string="Description", store=False)
     itemnum = fields.Integer(
         related="bom_idrow.itemnum", string="Cad Pos.", store=False
     )
@@ -122,9 +120,7 @@ class plm_adding_bom(models.TransientModel):
     revision = fields.Integer(
         related="part_id.engineering_revision", string="Rev.", store=False
     )
-    description = fields.Char(
-        related="part_id.name", string="Description", store=False
-    )
+    description = fields.Char(related="part_id.name", string="Description", store=False)
     itemnum = fields.Integer(
         related="bom_idrow.itemnum", string="Cad Pos.", store=False
     )
@@ -200,11 +196,15 @@ class plm_compare_bom(models.TransientModel):
     )
     anotinb = fields.One2many("plm.adding.bom", "bom_id", "BoM Adding")
     bnotina = fields.One2many("plm.missing.bom", "bom_id", "BoM Missing")
-    compute_type = fields.Selection([
-        ("only_product", "Compare Only Product Existence"),
-        ("num_qty", "Compare By Item Number and Quantity"),
-        ("summarized", "Compare Product Quantity")
-    ], default="only_product", string="Compare type")
+    compute_type = fields.Selection(
+        [
+            ("only_product", "Compare Only Product Existence"),
+            ("num_qty", "Compare By Item Number and Quantity"),
+            ("summarized", "Compare Product Quantity"),
+        ],
+        default="only_product",
+        string="Compare type",
+    )
 
     bom_line_id_to_delete = fields.Many2many(
         "mrp.bom.line", string="BoM Line to Delete"
@@ -228,11 +228,14 @@ class plm_compare_bom(models.TransientModel):
     def update_bom(self):
         def process_bom_line(records, bom_id, bom_type):
             for record in records.filtered(lambda x: x.reason == "new"):
-                existing_line = self.env["mrp.bom.line"].search([
-                    ("bom_id", "=", bom_id.id),
-                    ("product_id", "=", record.part_id.id),
-                    ("itemnum", "=", record.itemnum)
-                ], limit=1)
+                existing_line = self.env["mrp.bom.line"].search(
+                    [
+                        ("bom_id", "=", bom_id.id),
+                        ("product_id", "=", record.part_id.id),
+                        ("itemnum", "=", record.itemnum),
+                    ],
+                    limit=1,
+                )
 
                 if existing_line:
                     if self.compute_type == "num_qty":
@@ -240,25 +243,27 @@ class plm_compare_bom(models.TransientModel):
                     else:
                         existing_line.product_qty += record.itemqty
                 else:
-                    self.env["mrp.bom.line"].create({
-                        "bom_id": bom_id.id,
-                        "product_qty": record.itemqty,
-                        "product_id": record.part_id.id,
-                        "type": bom_type,
-                        "itemnum": record.itemnum
-                    })
+                    self.env["mrp.bom.line"].create(
+                        {
+                            "bom_id": bom_id.id,
+                            "product_qty": record.itemqty,
+                            "product_id": record.part_id.id,
+                            "type": bom_type,
+                            "itemnum": record.itemnum,
+                        }
+                    )
                 record.reason = "added"
 
         self.to_update = False
         for plm_compare_bom_id in self:
 
-            process_bom_line(plm_compare_bom_id.anotinb,
-                             self.bom_id1,
-                             self.bom_id1.type)
+            process_bom_line(
+                plm_compare_bom_id.anotinb, self.bom_id1, self.bom_id1.type
+            )
 
-            process_bom_line(plm_compare_bom_id.bnotina,
-                             self.bom_id2,
-                             self.bom_id2.type)
+            process_bom_line(
+                plm_compare_bom_id.bnotina, self.bom_id2, self.bom_id2.type
+            )
 
             for mrp_bom_line_id in plm_compare_bom_id.bom_line_id_to_delete:
                 mrp_bom_line_id.unlink()
@@ -401,10 +406,12 @@ class plm_compare_bom(models.TransientModel):
         else:
             logging.warning("Compute type not found!")
         logging.info("Starting returning self %r" % (self))
-        self.write({
-            "anotinb": [(6, False, bom1NewItems)],
-            "bnotina": [(6, False, bom2NewItems)]
-        })
+        self.write(
+            {
+                "anotinb": [(6, False, bom1NewItems)],
+                "bnotina": [(6, False, bom2NewItems)],
+            }
+        )
         data_obj = self.env["ir.model.data"]
         _modelName, id3 = data_obj.check_object_reference(
             openerpModule, "plm_visualize_diff_form"

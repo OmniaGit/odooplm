@@ -1,33 +1,38 @@
-# -*- coding: utf-8 -*-
-from odoo import http
-from odoo.http import request
 import io
 import zipfile
+
+from odoo import http
+from odoo.http import request
 
 
 class PortalPurchaseDownload(http.Controller):
 
-    @http.route('/my/purchase/<int:order_id>/download_docs', type='http', auth='public', website=True)
+    @http.route(
+        "/my/purchase/<int:order_id>/download_docs",
+        type="http",
+        auth="public",
+        website=True,
+    )
     def download_purchase_documents(self, order_id, **kwargs):
-        order = request.env['purchase.order'].sudo().browse(order_id)
+        order = request.env["purchase.order"].sudo().browse(order_id)
         if not order or not order.exists():
             return request.not_found()
 
         zip_buffer = io.BytesIO()
-        zip_file = zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED)
+        zip_file = zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED)
 
-        report_action = request.env.ref(
-            'plm.report_product_product_pdf_latest'
-        ).sudo()
+        report_action = request.env.ref("plm.report_product_product_pdf_latest").sudo()
 
-        Report = request.env['ir.actions.report'].sudo()
+        Report = request.env["ir.actions.report"].sudo()
 
         for line in order.order_line:
             product = line.product_id
             if not product:
                 continue
 
-            html_content, _ = report_action._render_qweb_html("plm.report_product_product_pdf_latest", product.id)
+            html_content, _ = report_action._render_qweb_html(
+                "plm.report_product_product_pdf_latest", product.id
+            )
 
             wrapped_html = f"""
                             <html>
@@ -51,7 +56,7 @@ class PortalPurchaseDownload(http.Controller):
         return request.make_response(
             zip_buffer.getvalue(),
             headers=[
-                ('Content-Type', 'application/zip'),
-                ('Content-Disposition', f'attachment; filename=\"{zip_filename}\"'),
-            ]
+                ("Content-Type", "application/zip"),
+                ("Content-Disposition", f'attachment; filename="{zip_filename}"'),
+            ],
         )

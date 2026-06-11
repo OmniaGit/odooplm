@@ -1,7 +1,6 @@
-# -*- encoding: utf-8 -*-
 ##############################################################################
 #
-#    OmniaSolutions, Open Source Management Solution    
+#    OmniaSolutions, Open Source Management Solution
 #    Copyright (C) 2010-2011 OmniaSolutions (<http://www.omniasolutions.eu>). All Rights Reserved
 #    $Id$
 #
@@ -25,5 +24,5 @@ from . import mail_activity
 from . import mail_activity_type
 from . import mail_activity_shedule
 from . import mail_activity_children_rel
+
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
-0

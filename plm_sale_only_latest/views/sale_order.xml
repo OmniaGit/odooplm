@@ -1,12 +1,14 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <record id="view_sale_order_form_sale_latest_rev" model="ir.ui.view">
         <field name="name">sale.order.form.latest.rev</field>
         <field name="model">sale.order</field>
-        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="inherit_id" ref="sale.view_order_form" />
         <field name="arch" type="xml">
-            <xpath expr="//sheet/notebook/page[1]/field[@name='order_line']/list//field[@name='product_template_id']"
-                   position="attributes">
+            <xpath
+                expr="//sheet/notebook/page[1]/field[@name='order_line']/list//field[@name='product_template_id']"
+                position="attributes"
+            >
                 <attribute name="context">{
                     'sale_latest': True,
                     'partner_id': parent.partner_id,
@@ -22,7 +24,8 @@
 
             <xpath
                 expr="//sheet/notebook/page[1]/field[@name='order_line']/form/group/group[1]//field[@name='product_id']"
-                position="attributes">
+                position="attributes"
+            >
                 <attribute name="context">{
                     'partner_id':parent.partner_id,
                     'quantity':product_uom_qty,
@@ -34,8 +37,10 @@
                 </attribute>
             </xpath>
 
-            <xpath expr="//sheet/notebook/page[1]/field[@name='order_line']/list//field[@name='product_id']"
-                   position="attributes">
+            <xpath
+                expr="//sheet/notebook/page[1]/field[@name='order_line']/list//field[@name='product_id']"
+                position="attributes"
+            >
                 <attribute name="context">{
                     'sale_latest': True,
                     'partner_id': parent.partner_id,

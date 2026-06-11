@@ -1,4 +1,3 @@
-# -*- encoding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Open Source Management Solution
@@ -23,7 +22,7 @@
     "name": "PLM Purchase Share",
     "version": "18.0.1.0.0",
     "author": "OmniaSolutions",
-    "website": "https://odooplm.omniasolutions.website",
+    "website": "https://github.com/OmniaGit/odooplm",
     "sequence": 15,
     "license": "AGPL-3",
     "summary": "download the products document from the purchase orders on the portal.",
@@ -34,7 +33,6 @@
     "data": [
         # security
         "security/data.xml",
-
         # views
         "views/portal_templates.xml",
     ],

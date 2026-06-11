@@ -1,74 +1,97 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
 <data>
 
     <record model="ir.ui.view" id="plm_checkout_search">
         <field name="name">plm.checkout</field>
         <field name="model">plm.checkout</field>
-        <field name="priority" eval="1"/>
+        <field name="priority" eval="1" />
         <field name="arch" type="xml">
             <search string="Checked-Out Document">
-                <filter 
-                         name="last_month"
-                         string="Last Month"
-                         domain="[('create_date','&lt;=', (datetime.date.today() - datetime.timedelta(days=31)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today() - datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d'))]"
-                         help="Checked-Out in last month"/>
-                <filter 
-                         name="last_week"
-                         string="Last Week"
-                         domain="[('create_date','&lt;=', (datetime.date.today()-datetime.timedelta(weeks=1)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=2)).strftime('%%Y-%%m-%%d'))]"
-                         help="Checked-Out in last week"/>
-                 <filter name="last_7_daye"
-                         string="Latest 7 Days"
-                         domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=1)).strftime('%%Y-%%m-%%d'))]"
-                         help="Checked-Out in last week"/>
-                 <filter 
-                         name="yestarday"
-                         string="Yesterday"
-                         domain="[('create_date','&lt;=', (datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d'))]"
-                         help="Checked-Out Yesterday"/>
-                 <filter 
-                         name="today"
-                         string="Today" 
-                         domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()).strftime('%%Y-%%m-%%d'))]"
-                         help="Checked-Out today"/>
-                <newline/>
-               	<separator orientation="vertical"/>
-            	<field name="documentid"/>
-            	<field name="hostname"/>
-               	<separator orientation="vertical"/>
+                <filter
+                        name="last_month"
+                        string="Last Month"
+                        domain="[('create_date','&lt;=', (datetime.date.today() - datetime.timedelta(days=31)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today() - datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d'))]"
+                        help="Checked-Out in last month"
+                    />
+                <filter
+                        name="last_week"
+                        string="Last Week"
+                        domain="[('create_date','&lt;=', (datetime.date.today()-datetime.timedelta(weeks=1)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=2)).strftime('%%Y-%%m-%%d'))]"
+                        help="Checked-Out in last week"
+                    />
+                 <filter
+                        name="last_7_daye"
+                        string="Latest 7 Days"
+                        domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=1)).strftime('%%Y-%%m-%%d'))]"
+                        help="Checked-Out in last week"
+                    />
+                 <filter
+                        name="yestarday"
+                        string="Yesterday"
+                        domain="[('create_date','&lt;=', (datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d'))]"
+                        help="Checked-Out Yesterday"
+                    />
+                 <filter
+                        name="today"
+                        string="Today"
+                        domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()).strftime('%%Y-%%m-%%d'))]"
+                        help="Checked-Out today"
+                    />
+                <newline />
+               	<separator orientation="vertical" />
+            	<field name="documentid" />
+            	<field name="hostname" />
+               	<separator orientation="vertical" />
                 <field name="userid" nolabel="1">
- 					<filter name="create_by_me" string="Created by me" domain="[('userid', '=', uid)]"/>
+ 					<filter name="create_by_me" string="Created by me" domain="[('userid', '=', uid)]" />
                 </field>
                 <group expand="0" string="Group By...">
-                    <filter name="hostname" string="Hostname" domain="[]" context="{'group_by':'hostname'}"/>
-                    <filter name="create_by_month" string="Create by Month" domain="[]" context="{'group_by':'create_date'}"/>
-                    <filter name="creator" string="Creator" domain="[]" context="{'group_by':'userid'}"/>
+                    <filter
+                            name="hostname"
+                            string="Hostname"
+                            domain="[]"
+                            context="{'group_by':'hostname'}"
+                        />
+                    <filter
+                            name="create_by_month"
+                            string="Create by Month"
+                            domain="[]"
+                            context="{'group_by':'create_date'}"
+                        />
+                    <filter
+                            name="creator"
+                            string="Creator"
+                            domain="[]"
+                            context="{'group_by':'userid'}"
+                        />
                 </group>
             </search>
      	</field>
     </record>
- 
+
     <record model="ir.ui.view" id="view_plm_checkout_form">
         <field name="name">plm.checkout</field>
         <field name="model">plm.checkout</field>
         <field name="arch" type="xml">
             <form string="Plm checkout">
-            	<sheet>	
+            	<sheet>
                 <group>
-	                <field name="userid" readonly="1"/>
-	                <field name="hostname" readonly="1"/>
-	                <field name="hostpws" readonly="1"/>
-	                <field name="documentid" readonly="1"/>
-	                <field name="rel_doc_rev" readonly="1"/>
-	                <field name="create_date" readonly="1"/>
-                    <field name="preview"
-                           widget="image"
-                           readonly="1"
-                           nolabel="1"
-                           options="{'size':[350,350]}"/>
+	                <field name="userid" readonly="1" />
+	                <field name="hostname" readonly="1" />
+	                <field name="hostpws" readonly="1" />
+	                <field name="documentid" readonly="1" />
+	                <field name="rel_doc_rev" readonly="1" />
+	                <field name="create_date" readonly="1" />
+                    <field
+                                name="preview"
+                                widget="image"
+                                readonly="1"
+                                nolabel="1"
+                                options="{'size':[350,350]}"
+                            />
                 </group>
-               	</sheet> 
+               	</sheet>
             </form>
         </field>
     </record>
@@ -79,40 +102,40 @@
 	            <field name="inherit_id" ref="plm.view_plm_checkout_form" />
 	            <!-- <field name="groups_id" eval="[(6, 0, [ref('plm.group_plm_admin') ])]" /> -->
 	            <!-- Inherited view cannot have 'Groups' define on the record. Use 'groups' attributes inside the view definition -->
-	            <field name="arch" type="xml">                                   
+	            <field name="arch" type="xml">
 	                <field name="userid" position="attributes">
-	                   <attribute name="readonly">0</attribute>                   
-	                </field>         
+	                   <attribute name="readonly">0</attribute>
+	                </field>
 	                <field name="hostname" position="attributes">
-	                   <attribute name="readonly">0</attribute>                   
-	                </field>    
+	                   <attribute name="readonly">0</attribute>
+	                </field>
 	                <field name="hostpws" position="attributes">
-	                   <attribute name="readonly">0</attribute>                   
-	                </field>    
+	                   <attribute name="readonly">0</attribute>
+	                </field>
 	                <field name="documentid" position="attributes">
-	                   <attribute name="readonly">0</attribute>                   
-	                </field>    
+	                   <attribute name="readonly">0</attribute>
+	                </field>
 	                <field name="rel_doc_rev" position="attributes">
-	                   <attribute name="readonly">0</attribute>                   
-	                </field>    
+	                   <attribute name="readonly">0</attribute>
+	                </field>
 	                <field name="create_date" position="attributes">
-	                   <attribute name="readonly">0</attribute>                   
-	                </field>    
+	                   <attribute name="readonly">0</attribute>
+	                </field>
 	            </field>
 	</record>
 
     <record model="ir.ui.view" id="plm_checkout_list">
         <field name="name">plm.checkout</field>
         <field name="model">plm.checkout</field>
-        <field name="priority" eval="1"/>
+        <field name="priority" eval="1" />
         <field name="arch" type="xml">
             <list string="Documents in Check-Out">
-                <field name="userid" select="1"/>
-                <field name="hostname" select="1"/>
-                <field name="hostpws" select="1"/>
-                <field name="documentid" select="1"/>
-                <field name="rel_doc_rev"/>
-                <field name="create_date" select="1"/>
+                <field name="userid" select="1" />
+                <field name="hostname" select="1" />
+                <field name="hostpws" select="1" />
+                <field name="documentid" select="1" />
+                <field name="rel_doc_rev" />
+                <field name="create_date" select="1" />
             </list>
         </field>
     </record>
@@ -121,10 +144,9 @@
         <field name="name">Check-Out</field>
         <field name="res_model">plm.checkout</field>
         <field name="view_mode">list,form</field>
-        <field name="view_id" ref="plm_checkout_list"/>
-        <field name="search_view_id" ref="plm_checkout_search"/>
+        <field name="view_id" ref="plm_checkout_list" />
+        <field name="search_view_id" ref="plm_checkout_search" />
     </record>
 
 </data>
 </odoo>
-

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Your own solutions
@@ -34,7 +33,7 @@ class ProductProduct(models.Model):
 
     @property
     def actions(self):
-        action_dict = super(ProductProduct, self).actions
+        action_dict = super().actions
         action_dict["suspended"] = self.action_suspend
         return action_dict
 

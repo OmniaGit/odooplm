@@ -1,8 +1,7 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
 	<data>
-		<record id="mail_activity_check_out_request"
-			model="mail.activity.type">
+		<record id="mail_activity_check_out_request" model="mail.activity.type">
 			<field name="name">Check-Out Request</field>
 			<field name="icon">fa-mail-reply</field>
 			<field name="sequence">3</field>
@@ -12,25 +11,21 @@
 		</record>
 
 		<!-- generate product change impact report -->
-		<record id="check_product_change_impact"
-			model="ir.actions.server">
+		<record id="check_product_change_impact" model="ir.actions.server">
 			<field name="name">Check Product Change Impact</field>
 			<field name="model_id" ref="product.model_product_product" />
-			<field name="binding_model_id"
-				ref="product.model_product_product" />
+			<field name="binding_model_id" ref="product.model_product_product" />
 			<field name="binding_view_types">form</field>
 			<field name="state">code</field>
 			<field name="code">action = records.check_product_change_impact()</field>
 		</record>
 
 		<!-- product change impact report -->
-		<record id="action_report_product_change_impact"
-			model="ir.actions.report">
+		<record id="action_report_product_change_impact" model="ir.actions.report">
 			<field name="name">Product Change Impact</field>
 			<field name="model">product.product</field>
 			<field name="report_type">qweb-html</field>
-			<field name="paperformat_id"
-				ref="plm.paperformat_doc_structure" />
+			<field name="paperformat_id" ref="plm.paperformat_doc_structure" />
 			<field name="report_name">plm.product_change_impact_report_template</field>
 			<field name="report_file">plm.product_change_impact_report_template</field>
 			<field name="print_report_name">'product : %s Change Impact' %
@@ -38,8 +33,7 @@
 		</record>
 
 		<!-- generate attachment change impact report -->
-		<record id="check_attachment_change_impact"
-			model="ir.actions.server">
+		<record id="check_attachment_change_impact" model="ir.actions.server">
 			<field name="name">Check Attachment Change Impact</field>
 			<field name="model_id" ref="model_ir_attachment" />
 			<field name="binding_model_id" ref="model_ir_attachment" />
@@ -49,13 +43,11 @@
 		</record>
 
 		<!-- product change impact report -->
-		<record id="action_report_attachment_change_impact"
-			model="ir.actions.report">
+		<record id="action_report_attachment_change_impact" model="ir.actions.report">
 			<field name="name">Attachment Change Impact</field>
 			<field name="model">ir.attachment</field>
 			<field name="report_type">qweb-html</field>
-			<field name="paperformat_id"
-				ref="plm.paperformat_doc_structure" />
+			<field name="paperformat_id" ref="plm.paperformat_doc_structure" />
 			<field name="report_name">plm.attachment_change_impact_report_template</field>
 			<field name="report_file">plm.attachment_change_impact_report_template</field>
 			<field name="print_report_name">'attachment : %s change impact report' %

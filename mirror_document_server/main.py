@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, ERP-PLM-CAD Open Source Solution
@@ -18,61 +17,64 @@
 #    along with this prograIf not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-'''
+"""
 Created on Aug 30, 2019
 
 @author: mboscolo
-'''
+"""
 import json
 import os
-import hashlib
+
 from app import app
-from flask import Flask, flash, request, redirect, send_from_directory, make_response, jsonify
-from werkzeug.utils import secure_filename
+from flask import flash, jsonify, make_response, redirect, request, send_from_directory
 from flask_httpauth import HTTPBasicAuth
+from werkzeug.utils import secure_filename
+
 auth = HTTPBasicAuth()
 
 
-@app.route('/upload_file', methods=['POST'])
+@app.route("/upload_file", methods=["POST"])
 @auth.login_required
 def upload_file():
-    if request.method == 'POST':
+    if request.method == "POST":
         # check if the post request has the file part
-        if 'file' not in request.files:
-            flash('No file part')
+        if "file" not in request.files:
+            flash("No file part")
             return redirect(request.url)
-        file_file = request.files['file']
-        if file_file.filename == '':
-            flash('No file selected for uploading')
+        file_file = request.files["file"]
+        if file_file.filename == "":
+            flash("No file selected for uploading")
             return redirect(request.url)
         if file_file:
             filename = secure_filename(file_file.filename)
             file_file.save(getNewFileName(filename))
-            flash('File successfully uploaded')
-            data = {'message': 'Created', 'code': 'SUCCESS'}
+            flash("File successfully uploaded")
+            data = {"message": "Created", "code": "SUCCESS"}
             return make_response(jsonify(data), 200)
         else:
             return redirect(request.url)
 
 
-@app.route('/download_file/<path:doc_id>', methods=['GET', 'POST'])
+@app.route("/download_file/<path:doc_id>", methods=["GET", "POST"])
 @auth.login_required
 def download(doc_id):
     filename = getNewFileName(doc_id)
-    return send_from_directory(directory=os.path.dirname(filename), filename=os.path.basename(filename))
+    return send_from_directory(
+        directory=os.path.dirname(filename), filename=os.path.basename(filename)
+    )
 
 
-@app.route('/document_is_there/<path:doc_id>', methods=['GET'])
+@app.route("/document_is_there/<path:doc_id>", methods=["GET"])
 @auth.login_required
 def document_is_there(doc_id):
     file_name = getNewFileName(doc_id)
-    path = os.path.join(app.config['UPLOAD_FOLDER'], file_name)
+    path = os.path.join(app.config["UPLOAD_FOLDER"], file_name)
     return json.dumps(os.path.exists(path))
 
 
 @auth.verify_password
 def verify_password(username, password):
-    return app.config['USER_NAME'] == username and app.config['PASSWORD'] == password
+    return app.config["USER_NAME"] == username and app.config["PASSWORD"] == password
 
 
 # def md5(fname):
@@ -91,8 +93,9 @@ def verify_password(username, password):
 #         return md5(path) == request.args.get('md5')
 #     return False
 
+
 def getNewFileName(doc_id):
-    base_path = app.config['UPLOAD_FOLDER']
+    base_path = app.config["UPLOAD_FOLDER"]
     folder_name = "ir_%s" % ("0" if not doc_id[:-3] else doc_id[:-3])
     file_name = "doc_%s" % doc_id
     base_path = os.path.join(base_path, folder_name)
@@ -102,4 +105,4 @@ def getNewFileName(doc_id):
 
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0')
+    app.run(host="0.0.0.0")

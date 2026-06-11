@@ -1,36 +1,40 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
 <!-- This View is the one used in the advanced bom for the list -->
     <record model="ir.ui.view" id="plm_component_base_tree">
         <field name="name">plm.base.component.tree</field>
         <field name="model">product.product</field>
-        <field name="priority" eval="5"/>
+        <field name="priority" eval="5" />
         <field name="arch" type="xml">
-            <list string="Engineering Parts"
-                  default_order="write_date desc"
-                  decoration-bf="engineering_state != ''"
-                  decoration-info="engineering_state == 'confirmed'"
-                  decoration-success="engineering_state == 'released'"
-                  decoration-warning="engineering_state == 'undermodify'"
-                  decoration-muted="engineering_state == 'obsoleted'">
+            <list
+                string="Engineering Parts"
+                default_order="write_date desc"
+                decoration-bf="engineering_state != ''"
+                decoration-info="engineering_state == 'confirmed'"
+                decoration-success="engineering_state == 'released'"
+                decoration-warning="engineering_state == 'undermodify'"
+                decoration-muted="engineering_state == 'obsoleted'"
+            >
                 <!--  Koo dose not render properly the image so i comment it -->
-                <field name="image_1920" widget="image" options="{ 'size': [60, 60]}"/> 
+                <field name="image_1920" widget="image" options="{ 'size': [60, 60]}" />
                 <!-- Koo search for "select" attribute to use it as filter, so do not remove it-->
-                <field name="engineering_code" select="1"/>
-                <field name="engineering_revision" select="1"/>
-                <field name="name" select="1"/>
-                <field name="description" select="1"/>
-                <field name="configuration_name" select="1"  optional="hide"/>
-                <field name="default_code" select="1"/>
-                <field name="engineering_state" select="1"/>
-                <field name="engineering_writable" invisible="1"/>
-                <field name="engineering_material"/>
-                <field name="engineering_surface"/>
-                <field name="linkeddocuments" invisible="True"/>
-                <field name="document_checkout_user_ids"
-                       widget="many2many_tags"
-                       string="Checked-Out By"
-                       optional="show"/>
+                <field name="engineering_code" select="1" />
+                <field name="engineering_revision" select="1" />
+                <field name="name" select="1" />
+                <field name="description" select="1" />
+                <field name="configuration_name" select="1" optional="hide" />
+                <field name="default_code" select="1" />
+                <field name="engineering_state" select="1" />
+                <field name="engineering_writable" invisible="1" />
+                <field name="engineering_material" />
+                <field name="engineering_surface" />
+                <field name="linkeddocuments" invisible="True" />
+                <field
+                    name="document_checkout_user_ids"
+                    widget="many2many_tags"
+                    string="Checked-Out By"
+                    optional="show"
+                />
             </list>
         </field>
     </record>

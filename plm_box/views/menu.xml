@@ -1,17 +1,24 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-    <menuitem id="menu_plm_box_main" name="BOX" parent="plm.ir_attachment_form"
-              groups="plm_box.group_plm_box_admin" sequence="40"/>
+    <menuitem
+        id="menu_plm_box_main"
+        name="BOX"
+        parent="plm.ir_attachment_form"
+        groups="plm_box.group_plm_box_admin"
+        sequence="40"
+    />
 
     <menuitem
         name="Box"
         id="menu_non_cad_doc_relations"
         parent="plm_box.menu_plm_box_main"
-        action="action_non_cad_doc"/>
+        action="action_non_cad_doc"
+    />
 
     <menuitem
         name="Documents"
         id="menu_plm_box_documents"
         parent="menu_plm_box_main"
-        action="action_plm_box_documents_custom"/>
+        action="action_plm_box_documents_custom"
+    />
 </odoo>

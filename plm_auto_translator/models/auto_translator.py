@@ -1,11 +1,11 @@
-# -*- coding: utf-8 -*-
-
-import os
-import polib
 import logging
-from odoo import models, fields, api
-from odoo.exceptions import ValidationError
+import os
+
+import polib
 from googletrans import Translator
+
+from odoo import api, fields, models
+from odoo.exceptions import ValidationError
 
 _logger = logging.getLogger(__name__)
 
@@ -37,7 +37,7 @@ class AutoTranslator(models.Model):
                     lang.code.split("_")[0] for lang in cfg.lang_ids
                 )
 
-            current_langs = set(lang.code.split("_")[0] for lang in record.lang_ids)
+            current_langs = {lang.code.split("_")[0] for lang in record.lang_ids}
             duplicates = current_langs & configured_langs
             if duplicates:
                 dup_names = ", ".join(duplicates)
