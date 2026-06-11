@@ -5,31 +5,27 @@ from setuptools import setup
 
 HERE = os.path.abspath(os.path.dirname(__file__))
 
-# Recursive patterns for all non-Python addon assets (views, security, i18n,
-# static files including git-submodule JS libraries with dots in dir names).
-ASSET_PATTERNS = [
-    "**/*.xml",
-    "**/*.csv",
-    "**/*.po",
-    "**/*.pot",
-    "**/*.png",
-    "**/*.gif",
-    "**/*.jpg",
-    "**/*.jpeg",
-    "**/*.svg",
-    "**/*.ico",
-    "**/*.scss",
-    "**/*.css",
-    "**/*.js",
-    "**/*.ts",
-    "**/*.html",
-    "**/*.json",
-    "**/*.ttf",
-    "**/*.woff",
-    "**/*.woff2",
-    "**/*.eot",
-    "**/*.map",
+# Path fragments that are excluded from the wheel.
+# three.js ships docs/examples/manual that are not needed at runtime.
+# static/description contains large GIFs/PNGs only used by the Odoo app store.
+EXCLUDE_DIR_FRAGMENTS = [
+    os.path.join("three.js", "manual"),
+    os.path.join("three.js", "examples"),
+    os.path.join("three.js", "test"),
+    os.path.join("three.js", "docs"),
+    os.path.join("three.js", "editor"),
+    os.path.join("three.js", "utils"),
+    os.path.join("three.js", "src"),
+    os.path.join("three.js", "files"),
+    os.path.join("static", "description"),
 ]
+
+ASSET_EXTENSIONS = {
+    ".xml", ".csv", ".po", ".pot",
+    ".png", ".gif", ".jpg", ".jpeg", ".svg", ".ico",
+    ".scss", ".css", ".js", ".ts", ".html", ".json",
+    ".ttf", ".woff", ".woff2", ".eot", ".map",
+}
 
 
 def get_version():
@@ -53,37 +49,65 @@ def get_addons():
     return addons
 
 
+def _is_excluded(abs_path):
+    for fragment in EXCLUDE_DIR_FRAGMENTS:
+        if fragment in abs_path:
+            return True
+    return False
+
+
 def build_package_info(addons):
     packages = []
     package_dir = {}
+    package_data = {}
+
     for addon in addons:
-        addon_path = os.path.join(HERE, addon)
-        for root, dirs, files in os.walk(addon_path):
+        addon_abs = os.path.join(HERE, addon)
+        root_pkg = "odoo.addons.{}".format(addon)
+
+        # Register all Python sub-packages (dirs with __init__.py)
+        for root, dirs, files in os.walk(addon_abs):
             dirs[:] = sorted(
                 d for d in dirs if not d.startswith(".") and d != "__pycache__"
             )
-            # Only register directories that are actual Python packages.
-            # Non-Python asset trees (static/, views/, i18n/, etc.) are
-            # covered by ASSET_PATTERNS in package_data on the addon root,
-            # which preserves directory names with dots (e.g. three.js/).
-            rel_from_addon = os.path.relpath(root, addon_path)
-            if rel_from_addon != "." and "__init__.py" not in files:
-                continue
-
+            rel_from_addon = os.path.relpath(root, addon_abs)
             rel_from_repo = os.path.relpath(root, HERE)
+
             if rel_from_addon == ".":
-                pkg = "odoo.addons.{}".format(addon)
+                pkg = root_pkg
+            elif "__init__.py" not in files:
+                continue
             else:
                 pkg = "odoo.addons.{}.{}".format(
                     addon, rel_from_addon.replace(os.sep, ".")
                 )
             packages.append(pkg)
             package_dir[pkg] = rel_from_repo
-    return packages, package_dir
+
+        # Collect all asset files for this addon, attached to the root package.
+        # Paths are relative to the addon root directory.
+        assets = []
+        for root, dirs, files in os.walk(addon_abs):
+            dirs[:] = sorted(
+                d for d in dirs if not d.startswith(".") and d != "__pycache__"
+            )
+            if _is_excluded(root):
+                dirs.clear()
+                continue
+            for fname in files:
+                ext = os.path.splitext(fname)[1].lower()
+                if ext in ASSET_EXTENSIONS:
+                    rel = os.path.relpath(os.path.join(root, fname), addon_abs)
+                    assets.append(rel)
+
+        if assets:
+            package_data[root_pkg] = assets
+
+    return packages, package_dir, package_data
 
 
 addons = get_addons()
-packages, package_dir = build_package_info(addons)
+packages, package_dir, package_data = build_package_info(addons)
 
 setup(
     name="odooplm",
@@ -118,6 +142,6 @@ setup(
     },
     packages=packages,
     package_dir=package_dir,
-    package_data={pkg: ASSET_PATTERNS for pkg in packages},
+    package_data=package_data,
     include_package_data=False,
 )
