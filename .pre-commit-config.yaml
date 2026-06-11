@@ -27,6 +27,12 @@ repos:
         entry: found forbidden files; remove them
         language: fail
         files: "\\.rej$"
+      - id: bump-plm-version
+        name: Bump plm app version
+        entry: python scripts/bump_plm_version.py
+        language: system
+        pass_filenames: false
+        always_run: true
   - repo: https://github.com/oca/maintainer-tools
     rev: ab1d7f6
     hooks:
