@@ -42,8 +42,7 @@ def build_package_info(addons):
         addon_path = os.path.join(HERE, addon)
         for root, dirs, files in os.walk(addon_path):
             dirs[:] = sorted(
-                d for d in dirs
-                if not d.startswith(".") and d != "__pycache__"
+                d for d in dirs if not d.startswith(".") and d != "__pycache__"
             )
             # Only register directories that are actual Python packages.
             # Non-Python asset trees (static/, views/, i18n/, etc.) are
