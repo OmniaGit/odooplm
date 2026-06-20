@@ -2007,6 +2007,7 @@ class PlmDocument(models.Model):
         # during system requests (e.g., QWeb rendering, website layout loading) where no user session is yet 
         # initialized. This ensures the PLM security filter only triggers when a valid user context exists.
         # Without this FIX, after logging in with "PLM BOX Client" to my Odoo V13 instance, I lost access to my Odoo login page; only the Odoo Home page remains accessible.
+        # With help from Major-Bolt (Gemini AI).
         if (self.env.user and (self.env.user._is_admin() or self.env.user._is_superuser())):  
             # rules do not apply for the superuser
             return len(ids) if count else ids
