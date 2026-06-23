@@ -14,7 +14,7 @@
     <record id="view_product_product_form_old_plm_code_sequence_id" model="ir.ui.view">
         <field name="name">product.product.form.plm_code_sequence_id</field>
         <field name="model">product.product</field>
-        <field name="inherit_id" ref="product.product_normal_form_view"/>
+        <field name="inherit_id" ref="plm.plm_product_product_normal_form_view_inherit"/>
         <field name="arch" type="xml">
             <field name="engineering_code" position="after">
                 <field name="old_plm_code_sequence_id" invisible="1"/>
