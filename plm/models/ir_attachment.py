@@ -2002,7 +2002,13 @@ class PlmDocument(models.Model):
         ids = super(models.Model, self)._search(args, offset=offset, limit=limit, order=order,
                                                 count=False, access_rights_uid=access_rights_uid)
 
-        if self.env.user._is_admin() or self.env.user._is_superuser():
+        #if self.env.user._is_admin() or self.env.user._is_superuser():
+        # FIX: Added a safety check for 'self.env.user' to prevent ValueError (Expected singleton: res.users())
+        # during system requests (e.g., QWeb rendering, website layout loading) where no user session is yet 
+        # initialized. This ensures the PLM security filter only triggers when a valid user context exists.
+        # Without this FIX, after logging in with "PLM BOX Client" to my Odoo V13 instance, I lost access to my Odoo login page; only the Odoo Home page remains accessible.
+        # With help from Major-Bolt (Gemini AI).
+        if (self.env.user and (self.env.user._is_admin() or self.env.user._is_superuser())):  
             # rules do not apply for the superuser
             return len(ids) if count else ids
 
