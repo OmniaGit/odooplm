@@ -31,7 +31,7 @@ class PlmTemporaryCutted(models.TransientModel):
 
     cutted_part_explosion = fields.Selection(
         [("none", "None"), ("explode", "Explode"), ("replace", "Replace")],
-        _("Cutted Part Action"),
+        "Cutted Part Action",
         default="none",
     )
 

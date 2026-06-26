@@ -164,9 +164,9 @@ class plm_bomChoseLanguage(models.TransientModel):
 
     bom_type = fields.Selection(
         AVAILABLE_REPORT,
-        _("Bom Report Type"),
+        "Bom Report Type",
         required=True,
-        help=_("Chose the Bom report you would like to print"),
+        help="Chose the Bom report you would like to print",
     )
 
     datas = fields.Binary("Download", readonly=True)

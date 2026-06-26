@@ -27,6 +27,7 @@ import base64
 import io
 import json
 import logging
+import warnings
 
 _logger = logging.getLogger(__name__)
 
@@ -52,20 +53,23 @@ import matplotlib.pyplot as plt
 from mpl_toolkits import mplot3d
 
 try:
-    import cadquery as cq
-    from cadquery.occ_impl.importers.assembly import (
-        _get_name, _get_ref_color, _get_material, _get_shape_color,
-    )
-    from OCP.TDF import TDF_Label, TDF_LabelSequence
-    from OCP.TCollection import TCollection_ExtendedString
-    from OCP.IFSelect import IFSelect_RetDone
-    from OCP.TDocStd import TDocStd_Document
-    from OCP.STEPCAFControl import STEPCAFControl_Reader
-    from OCP.XCAFDoc import XCAFDoc_DocumentTool
-    from OCP.Interface import Interface_Static
-    from cadquery.occ_impl.geom import Location
-    from cadquery.occ_impl.shapes import Shape
-    from cadquery.occ_impl.assembly import Color
+    with warnings.catch_warnings():
+        warnings.filterwarnings("ignore", category=DeprecationWarning,
+                                message="builtin type.*has no __module__")
+        import cadquery as cq
+        from cadquery.occ_impl.importers.assembly import (
+            _get_name, _get_ref_color, _get_material, _get_shape_color,
+        )
+        from OCP.TDF import TDF_Label, TDF_LabelSequence
+        from OCP.TCollection import TCollection_ExtendedString
+        from OCP.IFSelect import IFSelect_RetDone
+        from OCP.TDocStd import TDocStd_Document
+        from OCP.STEPCAFControl import STEPCAFControl_Reader
+        from OCP.XCAFDoc import XCAFDoc_DocumentTool
+        from OCP.Interface import Interface_Static
+        from cadquery.occ_impl.geom import Location
+        from cadquery.occ_impl.shapes import Shape
+        from cadquery.occ_impl.assembly import Color
 except Exception as ex:
     logging.warning(ex)
 try:
@@ -461,9 +465,9 @@ class ir_attachment(models.Model):
 
     def convert_from_stl_to(self, toFormat):
         newFileName = ""
-        if toFormat.replace(".", "").lower() not in ["png", 
-                                                     "pdf", 
-                                                     "svg", 
+        if toFormat.replace(".", "").lower() not in ["png",
+                                                     "pdf",
+                                                     "svg",
                                                      "jpg",
                                                      "3mf"]:
             raise UserError("Format %s not supported" % toFormat)
@@ -472,7 +476,7 @@ class ir_attachment(models.Model):
             name, exte = os.path.splitext(self.name)
             newFileName = os.path.join(tmpdirname, "%s%s" % (name, toFormat))
             if toFormat=='.3mf':
-                stl_to_3mf([store_fname], 
+                stl_to_3mf([store_fname],
                            newFileName)
             else:
                 _render_stl_to_png(store_fname, newFileName)

@@ -34,26 +34,26 @@ class AdvancedPackView(models.TransientModel):
     _name = "pack_and_go_view"
     _description = "Manage pack view for exporting"
 
-    component_id = fields.Many2one("product.template", _("Component"))
-    document_id = fields.Many2one("ir.attachment", _("Document"))
-    comp_rev = fields.Integer(_("Component Revision"))
+    component_id = fields.Many2one("product.template", "Component")
+    document_id = fields.Many2one("ir.attachment", "Document")
+    comp_rev = fields.Integer("Component Revision")
     comp_description = fields.Char(compute="_getComponentDescription")
-    doc_rev = fields.Integer(_("Document Revision"))
+    doc_rev = fields.Integer("Document Revision")
     document_description = fields.Char(compute="_getDocumentDescription")
     doc_file_name = fields.Char(compute="_getDocumentFileName")
-    preview = fields.Binary(_("Preview Content"))
+    preview = fields.Binary("Preview Content")
     # Don't change keys because are used in a lower check in this file
     doc_type = fields.Selection(
         [
-            ("2d", _("2D")),
-            ("3d", _("3D")),
-            ("other", _("Other")),
-            ("pdf", _("PDF")),
+            ("2d", "2D"),
+            ("3d", "3D"),
+            ("other", "Other"),
+            ("pdf", "PDF"),
         ],
-        _("Document Type"),
+        "Document Type",
     )
-    available_types = fields.Many2one("pack_and_go_types", _("Types"))
-    pack_and_go_id = fields.Many2one("pack.and_go", _("Pack and go id"))
+    available_types = fields.Many2one("pack_and_go_types", "Types")
+    pack_and_go_id = fields.Many2one("pack.and_go", "Pack and go id")
 
 
     @api.model

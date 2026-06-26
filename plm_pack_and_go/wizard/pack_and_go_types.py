@@ -34,5 +34,5 @@ class AvailableTypes(models.TransientModel):
     _name = "pack_and_go_types"
     _description = "Description of pack and go"
 
-    name = fields.Char(_("Name"))
+    name = fields.Char("Name")
     pack_and_go_view_id = fields.Many2one("pack_and_go_view")

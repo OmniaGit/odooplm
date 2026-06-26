@@ -18,23 +18,24 @@
 #    along with this prograIf not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-import json
-from odoo import models, fields, api
+from odoo import fields, models
 import base64
-import os
 import requests
 from odoo.exceptions import UserError, ValidationError
 from odoo import release
 import re
+import logging
+
+_logger = logging.getLogger(__name__)
 
 # odoo version check #
 current_version = release.version
 match = re.match(r"(\d+)", current_version)
 if match:
     major_version = match.group(1)
-    print("Odoo major version:", major_version)
+    _logger.info("Odoo major version: %s", major_version)
 else:
-    print("Could not parse version")
+    _logger.warning("Could not parse Odoo version: %s", current_version)
 
 
 class UpdateProperty(models.Model):

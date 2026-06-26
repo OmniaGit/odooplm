@@ -29,11 +29,10 @@ from odoo.exceptions import UserError
 class OdooCadMapping(models.Model):
     _name = 'odoo.cad.mapping'
     _description = 'Odoo CAD Mapping'
-    _sql_constraints = [
-        ('validate_duplicate_model_field',
-         'unique(odoo_model_id, odoo_fields_id)',
-         'This field is already mapped for the model')
-    ]
+    _validate_duplicate_model_field = models.Constraint(
+        'unique(odoo_model_id, odoo_fields_id)',
+        'This field is already mapped for the model',
+    )
 
     odoo_model_id = fields.Many2one(
         'ir.model',
