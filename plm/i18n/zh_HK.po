@@ -4289,9 +4289,7 @@ msgstr "一次只能恢复一个文档。"
 msgid ""
 "You can use Normalized features formatting, where the component description "
 "will be Standard Description + Format Feature Composed."
-msgstr ""
-"您可以使用规范化特征格式，其中组件描述"
-“将由标准描述+格式特征组成。”
+msgstr "您可以使用规范化特征格式，其中组件描述将由标准描述+格式特征组成。"
 
 #. module: plm
 #. odoo-python
