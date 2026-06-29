@@ -4377,7 +4377,7 @@ msgstr "把 readOnly 字段标准描述 1"
 #. odoo-python
 #: code:addons/plm/models/mrp_bom.py:0
 msgid "saveChild.toCompute : Father \"%s\" refers to himself"
-msgstr "saveChild.toCompute ：父亲“％s”指的是他自己"
+msgstr "您可以使用规范化特征格式，其中组件描述将由标准描述+格式特征组成。"
 
 #. module: plm
 #. odoo-python
