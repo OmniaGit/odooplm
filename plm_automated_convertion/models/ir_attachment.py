@@ -44,7 +44,6 @@ from ezdxf import recover
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 
-from .obj2png import ObjFile
 from stl import mesh
 
 # matplotlib may be unavailable when the system package is incompatible with numpy 2.x
@@ -52,8 +51,10 @@ matplotlib = None  # ezdxf drawing adapter
 mpl = None
 plt = None
 mplot3d = None
+ObjFile = None
 _MATPLOTLIB_AVAILABLE = False
 try:
+    from .obj2png import ObjFile
     from ezdxf.addons.drawing import matplotlib
     import matplotlib as mpl
     mpl.use("Agg")  # non-interactive backend — required when running in Odoo worker threads
@@ -416,6 +417,8 @@ class ir_attachment(models.Model):
         """
         convert using the exdxf library
         """
+        if not _MATPLOTLIB_AVAILABLE:
+            raise UserError(_("OBJ conversion requires matplotlib. The current matplotlib version is incompatible with the installed numpy. Please update matplotlib."))
         if not self.store_fname:
             raise UserError(_("Cannot convert %s: no file content available.") % self.name)
         if toFormat.replace(".", "") not in ["png", "pdf", "svg", "jpg"]:
