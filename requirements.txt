@@ -1,5 +1,5 @@
 ezdxf
-matplotlib>=3.9
+matplotlib==3.8.4
 git+https://github.com/CadQuery/cadquery.git
 numpy-stl
 numpy==1.26.4
