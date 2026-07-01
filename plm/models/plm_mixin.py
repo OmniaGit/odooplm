@@ -24,6 +24,7 @@ Created on 28 Sep 2022
 """
 import datetime
 import logging
+import copy
 from datetime import datetime
 
 #
