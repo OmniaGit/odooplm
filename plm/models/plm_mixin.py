@@ -409,15 +409,22 @@ class RevisionBaseMixin(models.AbstractModel):
         return []
 
     def copy(self, default=None):
-        default = default or {}
-        if "engineering_state" not in default:
-            default["engineering_state"] = START_STATUS
-        if "engineering_code" not in default:
-            default["engineering_code"] = False
-        if "engineering_revision" not in default:
-            default["engineering_revision"] = 0
-            default["engineering_revision_letter"] = self.get_revision_letter(0)
-        return super().copy(default)
+        if any(self.mapped("engineering_code")):
+            out=self.env[self._name]
+            default = default or {}
+            for old_mixin in self:
+                line_default = copy.copy(default)
+                if "engineering_state" not in default:
+                    line_default["engineering_state"] = START_STATUS
+                if "engineering_code" not in default:
+                    line_default["engineering_code"] = False
+                if "engineering_revision" not in default:
+                    line_default["engineering_revision"] = 0
+                    line_default["engineering_revision_letter"] = old_mixin.get_revision_letter(0)
+                out+=super(RevisionBaseMixin, self).copy(line_default)
+            return out
+        else:
+            return super().copy(default)
 
     def get_latest_version(self):
         """

@@ -763,38 +763,42 @@ class IrAttachment(models.Model):
         """
         Overwrite the default copy method
         """
+        out = self.env["ir.attachment"]
         defaults["engineering_state"] = START_STATUS
         defaults["engineering_writable"] = True
-        if not self.is_plm:
-            defaults["engineering_code"] = False
-            newDocBrws = super().copy(defaults)
-        else:
-            documentRelation = self.env["ir.attachment.relation"]
-            docBrwsList = documentRelation.search([("parent_id", "=", self.id)])
-            previous_name = self.engineering_code
-            if "engineering_code" not in defaults:
-                new_name = "Copy of %s" % previous_name
-                documents = self.search(
-                    [("engineering_code", "=", new_name)], order="engineering_revision"
-                )
-                if len(documents) > 0:
-                    new_name = "%s (%s)" % (new_name, len(documents) + 1)
-                defaults["engineering_code"] = new_name
-            newDocBrws = super().copy(defaults)
-            if newDocBrws:
-                newDocBrws.message_post(
-                    body=_("Copied starting from : %s." % previous_name)
-                )
-            for brwEnt in docBrwsList:
-                documentRelation.create(
-                    {
-                        "parent_id": newDocBrws.id,
-                        "child_id": brwEnt.child_id.id,
-                        "configuration": brwEnt.configuration,
-                        "link_kind": brwEnt.link_kind,
-                    }
-                )
-        return newDocBrws
+        for old_attachment_id in self:
+            if not old_attachment_id.is_plm:
+                defaults["engineering_code"] = False
+                return super(IrAttachment, self).copy(defaults)
+            else:
+                line_defaults = copy.copy(defaults)
+                documentRelation = self.env["ir.attachment.relation"]
+                docBrwsList = documentRelation.search([("parent_id", "=", old_attachment_id.id)])
+                previous_name = old_attachment_id.engineering_code
+                if "engineering_code" not in line_defaults:
+                    new_name = "Copy of %s" % previous_name
+                    documents = self.search(
+                        [("engineering_code", "=", new_name)], order="engineering_revision"
+                    )
+                    if len(documents) > 0:
+                        new_name = "%s (%s)" % (new_name, len(documents) + 1)
+                    line_defaults["engineering_code"] = new_name
+                newDocBrws = super(IrAttachment, old_attachment_id).copy(line_defaults)
+                if newDocBrws:
+                    newDocBrws.message_post(
+                        body=_("Copied starting from : %s." % previous_name)
+                    )
+                for brwEnt in docBrwsList:
+                    documentRelation.create(
+                        {
+                            "parent_id": newDocBrws.id,
+                            "child_id": brwEnt.child_id.id,
+                            "configuration": brwEnt.configuration,
+                            "link_kind": brwEnt.link_kind,
+                        }
+                    )
+                out+=newDocBrws
+        return out
 
     @api.model
     def _iswritable(self, oid):
@@ -1222,7 +1226,7 @@ class IrAttachment(models.Model):
         for ir_attachment_id in self:
             if ir_attachment_id.document_type == "3d" and ir_attachment_id.preview:
                 try:
-                    if product_id:
+                    if product_id and str(product_id) not in ("False", "None", ""):
                         product_product_id = self.env["product.product"].browse(
                             int(product_id)
                         )

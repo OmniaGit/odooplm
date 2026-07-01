@@ -987,7 +987,25 @@ class MrpBomExtension(models.Model):
         return False
 
     @api.model
+    def saveRelationNew_time(self, clientArgs):
+        #
+        import pickle
+        import random
+        import time, random
+        name = f"file_{int(time.time()*1000)}_{random.getrandbits(16)}.pickle"
+        with open(f'/home/mboscolo/git/odoov18/v18/plm/plm/tests/data/{name}', 'wb') as f:
+            f.write(pickle.dumps(clientArgs))
+        #
+        parentOdooTuple, childrenOdooTuple = clientArgs
+        tic = time.perf_counter()
+        out = self.with_context(from_cad=True)._saveRelationNew(clientArgs)
+        toc = time.perf_counter()
+        logging.warning(f"_saveRelationNew {parentOdooTuple} in {toc - tic:0.4f} seconds")
+        return out
+    
+    @api.model
     def saveRelationNew(self, clientArgs):
+        #
         return self.with_context(from_cad=True)._saveRelationNew(clientArgs)
 
     def _saveRelationNew(self, clientArgs):
@@ -999,13 +1017,9 @@ class MrpBomExtension(models.Model):
             #
             # check module installation for setting the default bom type creation
             #
-            domain = [
-                ("state", "in", ["installed", "to upgrade", "to remove"]),
-                ("name", "=", "plm_engineering"),
-            ]
-            apps = self.env["ir.module.module"].sudo().search_read(domain, ["name"])
             bomType = "normal"
-            if apps:
+            plm_eng = self.env["ir.module.module"].sudo()._get("plm_engineering")
+            if plm_eng and plm_eng.state in ("installed", "to upgrade", "to remove"):
                 bomType = "ebom"
             #
             parentOdooTuple, childrenOdooTuple = clientArgs
@@ -1034,10 +1048,24 @@ class MrpBomExtension(models.Model):
                 parent_product_product_id,
                 len(childrenOdooTuple),
             )
-            if mrp_bom_found_id:
-                mrp_bom_found_id.delete_child_row(parent_ir_attachment_id)
             #
-            # add rows
+            # build index of existing BOM lines for this document
+            #
+            existing_lines = {}
+            if mrp_bom_found_id:
+                for line in mrp_bom_found_id.bom_line_ids:
+                    if (
+                        line.source_id.id == parent_ir_attachment_id
+                        and line.type == bomType
+                    ):
+                        k = (line.product_id.id, parent_ir_attachment_id)
+                        if line.cutted_type == "client":
+                            k = k + (line.position,)
+                        existing_lines[k] = line
+            lines_to_delete = dict(existing_lines)
+            bom_changed = False
+            #
+            # diff-based update: update/keep/add rows
             #
             summarize_bom = self.env.context.get("SUMMARIZE_BOM", False)
             cache_row = {}
@@ -1056,25 +1084,34 @@ class MrpBomExtension(models.Model):
                 #
                 # bom row computation
                 #
-                if not relationAttributes.get("EXCLUDE", False) and mrp_bom_found_id:
-                    if mrp_bom_found_id and child_product_product_id:
-                        key = f"{child_product_product_id}_{parent_ir_attachment_id}"
-                        if relationAttributes.get("CUTTED_COMP"):
-                            position = relationAttributes.get("POSITION")
-                            key = f"{key}_{position}"
-                        if summarize_bom and key in cache_row:
-                            cache_row[key].product_qty += relationAttributes.get(
-                                "product_qty", 1
-                            )
-                        else:
-                            mrp_bom_line_id = mrp_bom_found_id.add_child_row(
-                                child_product_product_id,
-                                parent_ir_attachment_id,
-                                relationAttributes,
-                                bomType,
-                            )
-                            if summarize_bom:
-                                cache_row[key] = mrp_bom_line_id
+                if not relationAttributes.get("EXCLUDE", False) and mrp_bom_found_id and child_product_product_id:
+                    is_cutted = bool(relationAttributes.get("CUTTED_COMP"))
+                    position = relationAttributes.get("POSITION")
+                    k = (child_product_product_id, parent_ir_attachment_id)
+                    if is_cutted:
+                        k = k + (position,)
+                    incoming_qty = relationAttributes.get("product_qty", 1)
+                    if summarize_bom and k in cache_row:
+                        cache_row[k].product_qty += incoming_qty
+                        bom_changed = True
+                    elif k in existing_lines:
+                        existing_line = existing_lines[k]
+                        lines_to_delete.pop(k, None)
+                        if existing_line.product_qty != incoming_qty:
+                            existing_line.product_qty = incoming_qty
+                            bom_changed = True
+                        if summarize_bom:
+                            cache_row[k] = existing_line
+                    else:
+                        mrp_bom_line_id = mrp_bom_found_id.add_child_row(
+                            child_product_product_id,
+                            parent_ir_attachment_id,
+                            relationAttributes,
+                            bomType,
+                        )
+                        bom_changed = True
+                        if summarize_bom:
+                            cache_row[k] = mrp_bom_line_id
                 #
                 # Manage attachment attachment relation
                 #
@@ -1092,8 +1129,22 @@ class MrpBomExtension(models.Model):
                         self.env["product.product"].browse(child_product_product_id),
                         self.env["ir.attachment"].browse(l_tree_document_id),
                     )
+            #
+            # batch-delete lines no longer present in incoming data
+            #
+            if lines_to_delete:
+                to_unlink = self.env["mrp.bom.line"]
+                for line in lines_to_delete.values():
+                    to_unlink |= line
+                to_unlink.unlink()
+                bom_changed = True
             if mrp_bom_found_id and not mrp_bom_found_id.bom_line_ids:
                 mrp_bom_found_id.unlink()
+            #
+            # notify productions if BOM structure changed
+            #
+            if bom_changed and mrp_bom_found_id:
+                mrp_bom_found_id._set_outdated_bom_in_productions()
             #
             if hasattr(self, "afterSaveRelationNew") and mrp_bom_found_id:
                 self.afterSaveRelationNew(mrp_bom_found_id)
