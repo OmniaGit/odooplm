@@ -228,6 +228,7 @@ class ProductProduct(models.Model):
         compute='_compute_document_checkout_user_ids',
         search='_search_document_checkout_user_ids',
         string='Documents Checked-Out By',
+        store=True
     )
 
     @api.depends('linkeddocuments')
