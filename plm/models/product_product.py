@@ -1335,7 +1335,12 @@ class ProductProduct(models.Model):
                 fields = list(set(cleaned_up_fields))
                 fields = self.plm_sanitize(fields)
                 res = super().read(fields=fields, load=load)
-                return self.readMany2oneFields(res, fields)
+                # Only run the many2one post-processing when a plm_m2o_* field
+                # was actually requested; otherwise it is a no-op that still
+                # rebuilt fields_get for every record (major read overhead).
+                if any(fld.startswith("plm_m2o_") for fld in fields):
+                    return self.readMany2oneFields(res, fields)
+                return res
             return super().read(fields=fields, load=load)
         except Exception as ex:
             if isinstance(ex, AccessError) and "sale.report" in ex.name:
@@ -1358,13 +1363,21 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
     @api.model
     def _readMany2oneFields(self, obj, readVals, fields):
         out = []
+        fields_set = set(fields)
+        # fields_get() is expensive; the field definitions are identical for
+        # every record read, so compute once per key-set instead of per record.
+        _fdef_cache = {}
         for vals in readVals:
-            fields_def = obj.fields_get(vals.keys())
+            cache_key = frozenset(vals.keys())
+            fields_def = _fdef_cache.get(cache_key)
+            if fields_def is None:
+                fields_def = obj.fields_get(vals.keys())
+                _fdef_cache[cache_key] = fields_def
             tmpVals = vals.copy()
             for fieldName, fieldVal in vals.items():
                 customField = "plm_m2o_" + fieldName
-                if customField in fields:
-                    logging.info(
+                if customField in fields_set:
+                    logging.debug(
                         "Reading many2one field %r, fieldVal %r"
                         % (customField, fieldVal)
                     )
