@@ -6,3 +6,6 @@
 	path = plm_web_3d/static/src/js/lib/dxf-viewer
 	url = https://github.com/OmniaGit/dxf-viewer.git
     branch = 15.0
+[submodule "plm_automated_convertion/cadquery"]
+	path = plm_automated_convertion/cadquery
+	url = https://github.com/CadQuery/cadquery.git

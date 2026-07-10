@@ -54,11 +54,9 @@ class ProductTemplate(models.Model):
         return False
 
     engineering_code = fields.Char(
-        _("Part Number"),
+        "Part Number",
         index=True,
-        help=_(
-            "This is engineering reference to manage a different P/N from item Name."
-        ),
+        help="This is engineering reference to manage a different P/N from item Name.",
         size=64,
     )
     old_plm_code_sequence_id = fields.Many2one('ir.sequence')

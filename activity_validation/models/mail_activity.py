@@ -26,26 +26,26 @@ class MailActivity(models.Model):
     _inherit = 'mail.activity'
 
     plm_state = fields.Selection([
-        ('draft', _('draft')),
-        ('in_progress', _('In Progress')),
-        ('eco', _('Change Order')),
-        ('done', _('Done')),
-        ('cancel', _('Cancel')),
-        ('exception', _('Exception')),
-    ], default='draft', string=_('Plm State'))
+        ('draft', 'draft'),
+        ('in_progress', 'In Progress'),
+        ('eco', 'Change Order'),
+        ('done', 'Done'),
+        ('cancel', 'Cancel'),
+        ('exception', 'Exception'),
+    ], default='draft', string='Plm State')
     children_ids = fields.One2many('mail.activity.children.rel',
                                    'mail_parent_activity_id',
-                                   _('ECR Activities'))
+                                   'ECR Activities')
     name = fields.Char('Name')
     change_activity_type = fields.Selection(related='activity_type_id.change_activity_type')
-    has_parent = fields.Boolean(_('Has parent ECR'), compute="_compute_has_parent_ecr", store=True)
-    has_parent_eco = fields.Boolean(_('Has parent ECO'), compute="_compute_has_parent_eco", store=True)
+    has_parent = fields.Boolean('Has parent ECR', compute="_compute_has_parent_ecr", store=True)
+    has_parent_eco = fields.Boolean('Has parent ECO', compute="_compute_has_parent_eco", store=True)
     eco_child_ids = fields.One2many('mail.activity',
                                     'mail_parent_eco_activity_id',
-                                    _('ECO Activities'))
-    mail_parent_eco_activity_id = fields.Many2one('mail.activity', _('ECO Parent Activity'))
+                                    'ECO Activities')
+    mail_parent_eco_activity_id = fields.Many2one('mail.activity', 'ECO Parent Activity')
     default_plm_activity = fields.Many2one('mail.activity.type', compute='_compute_mail_activity_type')
-    is_eco = fields.Boolean(_('Is ECO'))
+    is_eco = fields.Boolean('Is ECO')
 
     def _compute_mail_activity_type(self):
         for activity_id in self:

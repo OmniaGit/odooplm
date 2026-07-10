@@ -21,14 +21,17 @@
 ##############################################################################
 {
     "name": "PLM Client Custom Procedure",
-    "version": "19.0.1.0.0",
+    "version": "19.0.1.0.1",
     "author": "OmniaSolutions",
     "website": "https://odooplm.omniasolutions.website",
     "category": "Manufacturing/Product Lifecycle Management (PLM)",
     "sequence": 15,
     "summary": "PLM Client Custom Procedure",
     "license": "AGPL-3",
-    "depends": ["plm"],
+    "depends": [
+        "plm",
+        "plm_automated_convertion"
+    ],
     "data": [
         "security/ir.model.access.csv",
         "data/ir_cron.xml",

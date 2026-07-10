@@ -48,22 +48,22 @@ class ProjectExtension(models.Model):
     plm_use_plm = fields.Boolean(
         string="Use PLM",
         default=False,
-        help=_("Check this box to manage plm data into project"),
+        help="Check this box to manage plm data into project",
         compute="_compute_plm_use_plm",
         store=True
     )
     plm_completed = fields.Float(
-        string=_("Plm Complete"), compute="_compute_plm_complete"
+        string="Plm Complete", compute="_compute_plm_complete"
     )
     plm_product_ids = fields.Many2many(
         "product.product",
         "project_product_rel",
         "project_id",
         "product_id",
-        string=_("Products"),
+        string="Products",
     )
     plm_product_count = fields.Integer(
-        compute="_compute_product_count", string=_("Number of product related")
+        compute="_compute_product_count", string="Number of product related"
     )
 
     total_components = fields.Integer(string="Total Components", compute="_compute_component_stats")

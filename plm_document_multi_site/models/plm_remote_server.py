@@ -51,9 +51,10 @@ class PlmRemoteServer(models.Model):
     password = fields.Char("Password")
     address = fields.Char("Server Ip Address")
 
-    _sql_constraints = [('name',
-                         'unique (name)',
-                         'Server name must be unique !!!')]
+    _name_uniq = models.Constraint(
+        'unique (name)',
+        'Server name must be unique !!!',
+    )
 
     @api.model
     def document_is_there(self, ir_attachment_id):

@@ -27,6 +27,7 @@ import base64
 import io
 import json
 import logging
+import warnings
 
 _logger = logging.getLogger(__name__)
 
@@ -40,32 +41,47 @@ import zipfile
 # conversion
 #
 from ezdxf import recover
-from ezdxf.addons.drawing import matplotlib
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 
-from .obj2png import ObjFile
 from stl import mesh
-import matplotlib as mpl
-mpl.use("Agg")  # non-interactive backend — required when running in Odoo worker threads
-import matplotlib.pyplot as plt
-from mpl_toolkits import mplot3d
+
+# matplotlib may be unavailable when the system package is incompatible with numpy 2.x
+matplotlib = None  # ezdxf drawing adapter
+mpl = None
+plt = None
+mplot3d = None
+ObjFile = None
+_MATPLOTLIB_AVAILABLE = False
+try:
+    from .obj2png import ObjFile
+    from ezdxf.addons.drawing import matplotlib
+    import matplotlib as mpl
+    mpl.use("Agg")  # non-interactive backend — required when running in Odoo worker threads
+    import matplotlib.pyplot as plt
+    from mpl_toolkits import mplot3d
+    _MATPLOTLIB_AVAILABLE = True
+except Exception as _mpl_ex:
+    _logger.warning("matplotlib not available, DXF/STL preview features disabled: %s", _mpl_ex)
 
 try:
-    import cadquery as cq
-    from cadquery.occ_impl.importers.assembly import (
-        _get_name, _get_ref_color, _get_material, _get_shape_color,
-    )
-    from OCP.TDF import TDF_Label, TDF_LabelSequence
-    from OCP.TCollection import TCollection_ExtendedString
-    from OCP.IFSelect import IFSelect_RetDone
-    from OCP.TDocStd import TDocStd_Document
-    from OCP.STEPCAFControl import STEPCAFControl_Reader
-    from OCP.XCAFDoc import XCAFDoc_DocumentTool
-    from OCP.Interface import Interface_Static
-    from cadquery.occ_impl.geom import Location
-    from cadquery.occ_impl.shapes import Shape
-    from cadquery.occ_impl.assembly import Color
+    with warnings.catch_warnings():
+        warnings.filterwarnings("ignore", category=DeprecationWarning,
+                                message="builtin type.*has no __module__")
+        import cadquery as cq
+        from cadquery.occ_impl.importers.assembly import (
+            _get_name, _get_ref_color, _get_material, _get_shape_color,
+        )
+        from OCP.TDF import TDF_Label, TDF_LabelSequence
+        from OCP.TCollection import TCollection_ExtendedString
+        from OCP.IFSelect import IFSelect_RetDone
+        from OCP.TDocStd import TDocStd_Document
+        from OCP.STEPCAFControl import STEPCAFControl_Reader
+        from OCP.XCAFDoc import XCAFDoc_DocumentTool
+        from OCP.Interface import Interface_Static
+        from cadquery.occ_impl.geom import Location
+        from cadquery.occ_impl.shapes import Shape
+        from cadquery.occ_impl.assembly import Color
 except Exception as ex:
     logging.warning(ex)
 try:
@@ -265,6 +281,8 @@ def _render_stl_to_png(stl_path: str, png_path: str, dpi: int = 150) -> None:
     is visible against a white background.  All callers should use this instead
     of inlining the Poly3DCollection logic to keep rendering consistent.
     """
+    if not _MATPLOTLIB_AVAILABLE:
+        raise ImportError("matplotlib is not available. Check system/pip matplotlib compatibility with the installed numpy version.")
     your_mesh = mesh.Mesh.from_file(stl_path)
     figure = plt.figure(figsize=(6, 6), facecolor="white")
     axes = figure.add_subplot(111, projection="3d")
@@ -375,6 +393,8 @@ class ir_attachment(models.Model):
         """
         convert using the exdxf library
         """
+        if not _MATPLOTLIB_AVAILABLE:
+            raise UserError(_("DXF conversion requires matplotlib. The current matplotlib version is incompatible with the installed numpy. Please update matplotlib."))
         if not self.store_fname:
             raise UserError(_("Cannot convert %s: no file content available.") % self.name)
         if toFormat.replace(".", "") not in ["png", "pdf", "svg", "jpg"]:
@@ -397,6 +417,8 @@ class ir_attachment(models.Model):
         """
         convert using the exdxf library
         """
+        if not _MATPLOTLIB_AVAILABLE:
+            raise UserError(_("OBJ conversion requires matplotlib. The current matplotlib version is incompatible with the installed numpy. Please update matplotlib."))
         if not self.store_fname:
             raise UserError(_("Cannot convert %s: no file content available.") % self.name)
         if toFormat.replace(".", "") not in ["png", "pdf", "svg", "jpg"]:
@@ -461,9 +483,9 @@ class ir_attachment(models.Model):
 
     def convert_from_stl_to(self, toFormat):
         newFileName = ""
-        if toFormat.replace(".", "").lower() not in ["png", 
-                                                     "pdf", 
-                                                     "svg", 
+        if toFormat.replace(".", "").lower() not in ["png",
+                                                     "pdf",
+                                                     "svg",
                                                      "jpg",
                                                      "3mf"]:
             raise UserError("Format %s not supported" % toFormat)
@@ -472,7 +494,7 @@ class ir_attachment(models.Model):
             name, exte = os.path.splitext(self.name)
             newFileName = os.path.join(tmpdirname, "%s%s" % (name, toFormat))
             if toFormat=='.3mf':
-                stl_to_3mf([store_fname], 
+                stl_to_3mf([store_fname],
                            newFileName)
             else:
                 _render_stl_to_png(store_fname, newFileName)
@@ -616,6 +638,9 @@ class ir_attachment(models.Model):
                 self.preview = base64.b64encode(pngStream.read())
 
     def _updatePreviewFromDxf(self, fromFile):
+        if not _MATPLOTLIB_AVAILABLE:
+            _logger.warning("Skipping DXF preview update: matplotlib not available")
+            return
         doc, auditor = recover.readfile(fromFile)
         if not auditor.has_errors:
             with tempfile.TemporaryDirectory() as tmpdirname:

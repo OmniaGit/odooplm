@@ -25,7 +25,7 @@ from odoo import _, api, fields, models
 class MrpRoutingWorkcenter(models.Model):
     _inherit = "mrp.routing.workcenter"
 
-    use_plm_docs = fields.Boolean(_("Use PLM Docs"))
+    use_plm_docs = fields.Boolean("Use PLM Docs")
     production_doc_ids = fields.Many2many("ir.attachment",
                                           compute="_compute_production_doc_ids",
                                           inverse="_set_production_doc_ids",

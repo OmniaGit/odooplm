@@ -1,7 +1,11 @@
 ezdxf
-matplotlib
+matplotlib==3.8.4
 git+https://github.com/CadQuery/cadquery.git
 numpy-stl
+numpy==1.26.4
+scipy==1.16.2
+nlopt==2.7.1
+pythonopenscad==2.1.3
 base64io
 to-3mf
 --pre cadquery

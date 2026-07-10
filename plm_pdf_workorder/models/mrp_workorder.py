@@ -27,7 +27,7 @@ class MrpWorkorder(models.Model):
     _inherit = "mrp.workorder"
 
     use_plm_docs = fields.Boolean(
-        related="operation_id.use_plm_docs", string=_("Use PLM Docs")
+        related="operation_id.use_plm_docs", string="Use PLM Docs"
     )
     production_doc_ids = fields.Many2many("ir.attachment",
                                           compute="_compute_production_doc_ids",

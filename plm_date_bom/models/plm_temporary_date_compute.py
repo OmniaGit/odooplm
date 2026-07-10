@@ -31,14 +31,12 @@ class mrp_bom_data_compute(models.Model):
         [
             (
                 "update",
-                _(
-                    "Update Bom replacing obsoleted bom lines"
-                    " with components at the latest revision."
-                ),
+                "Update Bom replacing obsoleted bom lines"
+                    " with components at the latest revision.",
                ),
-            ("new_bom", _("Create new bom using last revision of all components.")),
+            ("new_bom", "Create new bom using last revision of all components."),
         ],
-        _("Compute Type"),
+        "Compute Type",
         required=True,
     )
 

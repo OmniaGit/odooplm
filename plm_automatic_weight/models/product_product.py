@@ -34,22 +34,21 @@ class PlmComponent(models.Model):
     _inherit = 'product.product'
 
     automatic_compute_selection = fields.Selection(
-        [('use_net', _('Use Net Weight')),
-         ('use_cad', _('Use CAD Weight')),
-         ('use_normal_bom', _('Use Normal Bom'))],
-        _('Weight compute mode'),
+        [('use_net', 'Use Net Weight'),
+         ('use_cad', 'Use CAD Weight'),
+         ('use_normal_bom', 'Use Normal Bom')],
+        'Weight compute mode',
         default='use_net',
-        help=_(
-            """Set "Use Net Weight" to use only gross weight. \n
+        help="""Set "Use Net Weight" to use only gross weight. \n
                Set "Use CAD Weight" to use CAD weight + Additional Weight
                as gross weight. \n
                Set "Use Normal Bom" to use NBOM Weight Computed + Additional weight
-               as gross weight.""")
+               as gross weight."""
     )
-    weight_additional = fields.Float(_('Additional Weight'), digits='Stock Weight')
-    weight_cad = fields.Float(_('CAD Weight'), readonly=True, digits='Stock Weight')
+    weight_additional = fields.Float('Additional Weight', digits='Stock Weight')
+    weight_cad = fields.Float('CAD Weight', readonly=True, digits='Stock Weight')
     weight_n_bom_computed = fields.Float(
-        _('NBOM Weight Computed'),
+        'NBOM Weight Computed',
          compute="compute_bom_weight",
          readonly=True,
          digits='Stock Weight', default=0

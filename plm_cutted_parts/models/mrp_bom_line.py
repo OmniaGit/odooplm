@@ -26,10 +26,10 @@ class MrpBomLineTemplateCuttedParts(models.Model):
     _inherit = "mrp.bom.line"
 
     x_length = fields.Float(
-        compute="compute_x_length", string=_("X Length"), default=0.0
+        compute="compute_x_length", string="X Length", default=0.0
     )
     y_length = fields.Float(
-        compute="compute_y_length", string=_("Y Length"), default=0.0
+        compute="compute_y_length", string="Y Length", default=0.0
     )
     client_x_length = fields.Float("X Cutted Qty", default=0)
     client_y_length = fields.Float("Y Cutted Qty", default=0)

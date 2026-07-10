@@ -4440,7 +4440,7 @@ msgstr "poner leer Solo la descripción estándar del campo 3"
 #. odoo-python
 #: code:addons/plm/models/mrp_bom.py:0
 msgid "saveChild.toCompute : Father \"%s\" refers to himself"
-msgstr "saveChild.toCompute : El padre "%s" se refiere a sí mismo"
+msgstr "saveChild.toCompute : El padre \"%s\" se refiere a sí mismo"
 
 #. module: plm
 #. odoo-python

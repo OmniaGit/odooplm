@@ -32,14 +32,14 @@ class mrp_bom_extension_data(models.Model):
     # If you decide to compute that field each time without store you have always to put
     # it in the view or the field will not be computed
     obsolete_presents_computed = fields.Boolean(
-        string=_("Obsolete presents computed"), compute="_obsolete_compute"
+        string="Obsolete presents computed", compute="_obsolete_compute"
     )
-    obsolete_presents = fields.Boolean(_("Obsolete presents"))
+    obsolete_presents = fields.Boolean("Obsolete presents")
 
     # This fields has not to be computed fields because
     # bom may be very big and the time too
     obsolete_presents_recursive = fields.Boolean(
-        _("Obsolete presents Recursive"), default=False
+        "Obsolete presents Recursive", default=False
     )
 
     def _obsolete_compute(self):

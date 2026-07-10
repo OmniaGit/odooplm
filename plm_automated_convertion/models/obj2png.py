@@ -23,7 +23,12 @@ SOFTWARE.
 
 import re
 import numpy as np
-import matplotlib.pyplot as plt
+
+plt = None
+try:
+    import matplotlib.pyplot as plt
+except Exception:
+    pass
 
 RE = re.compile(r"/\d+")
 
@@ -160,6 +165,8 @@ class ObjFile:
                 return v * (1.0 - scale)
 
     def Plot(self, output_file, elevation=None, azim=None, dpi=None, scale=None):
+        if plt is None:
+            raise ImportError("matplotlib is not available. Cannot render OBJ to image.")
         plt.ioff()
         tri = self.QuadToTria()
         fig = plt.figure()

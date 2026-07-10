@@ -1,5 +1,6 @@
 ezdxf
 matplotlib
 mpl_toolkits
-cadquery
+git+https://github.com/CadQuery/cadquery.git@d6507b66d1b062f73ce01e7024140e67858ddf31
+PyOpenGL_accelerate
 to-3mf
