@@ -55,6 +55,11 @@ class ProductProduct(models.Model):
     _inherit = ["product.product"]
     _description = "Product Product"
 
+    @api.onchange("categ_id")
+    def _onchange_storable_by_categ(self):
+        if self.categ_id:
+            self.is_storable = self.categ_id.is_storable
+
     def check_product_change_impact(self):
         self.ensure_one()
         report_data = {}

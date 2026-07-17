@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-       <record id="plm_product_category_form_view" model="ir.ui.view">
-            <field name="name">plm.product.category.form</field>
-            <field name="model">product.category</field>
-            <field name="inherit_id" ref="product.product_category_form_view"/>
-            <field name="arch" type="xml">
-               <xpath expr="//field[@name='parent_id']" position="after">
-                   <field name="kit_bom"/>
-               </xpath>
-            </field>
-       </record>
+    <record id="plm_product_category_form_view" model="ir.ui.view">
+        <field name="name">plm.product.category.form</field>
+        <field name="model">product.category</field>
+        <field name="inherit_id" ref="product.product_category_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='parent_id']" position="after">
+                <field name="kit_bom"/>
+            </xpath>
+            <xpath expr="//field[@name='property_valuation']" position="after">
+                <field name="is_storable"/>
+            </xpath>
+        </field>
+    </record>
 </odoo>
