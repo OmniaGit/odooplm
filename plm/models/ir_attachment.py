@@ -32,7 +32,7 @@ import odoo.tools as tools
 from odoo import SUPERUSER_ID, _, api, fields, models
 from odoo.exceptions import UserError
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
-
+from odoo.tools.safe_eval import safe_eval 
 from odoo.addons.plm.models.plm_mixin import (
     CONFIRMED_STATUS,
     OBSOLATED_STATUS,
@@ -1650,11 +1650,11 @@ class IrAttachment(models.Model):
         extensions3D = []
         extensionsPR = []
         if file_exte_2d_param:
-            extensions2D = eval(file_exte_2d_param)
+            extensions2D = safe_eval(file_exte_2d_param)
         if file_exte_3d_param:
-            extensions3D = eval(file_exte_3d_param)
+            extensions3D = safe_eval(file_exte_3d_param)
         if file_exte_pr_param:
-            extensionsPR = eval(file_exte_pr_param)
+            extensionsPR = safe_eval(file_exte_pr_param)
         for docBrws in self:
             try:
                 fileExtension = docBrws.getFileExtension(docBrws)
@@ -3382,7 +3382,7 @@ class IrAttachment(models.Model):
             PLM_DT_DELTA = 10
         else:
             try:
-                PLM_DT_DELTA = eval(PLM_DT_DELTA)
+                PLM_DT_DELTA = safe_eval(PLM_DT_DELTA)
             except Exception as ex:
                 logging.error("Cannot compute DT delta %r" % (ex))
                 PLM_DT_DELTA = 10

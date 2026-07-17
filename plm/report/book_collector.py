@@ -61,15 +61,16 @@ class BookCollector:
         self.poolObj = poolObj
 
     def evalDictVals(self, dict_vals, doc_obj, page_count, user_id):
+        from odoo.tools.safe_eval import safe_eval
         out = {}
         for key, val in dict_vals.items():
             try:
                 if "doc_obj" in val:
-                    val = eval(val)
+                    val = safe_eval(val,locals_dict={'doc_obj':doc_obj})
                 elif "page_count" in val:
-                    val = eval(val)
+                    val = int(val)
                 elif "user_id" in val:
-                    val = eval(val)
+                    val = int(val)
             except Exception as ex:
                 logging.error(
                     "Cannot eval attribute %r for report due to error %r" % (val, ex)
