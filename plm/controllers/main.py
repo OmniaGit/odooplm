@@ -362,9 +362,20 @@ class UploadDocument(Controller):
         self, product_id="", doc_name="", doc_rev="0", related_attachment_id="", **kw
     ):
         logging.info("Start upload extra file %r" % (product_id))
-        product_id = eval(product_id)
-        doc_rev = eval(doc_rev)
-        related_attachment_id = eval(related_attachment_id)
+        #
+        try:
+            product_id = int(product_id)
+        except Exception as ex:
+            product_id=0
+        try:
+            doc_rev = int(doc_rev)
+        except Exception as ex:
+            doc_rev=0
+        try:
+            related_attachment_id = int(related_attachment_id)
+        except Exception as ex:
+            related_attachment_id = 0
+        #
         if doc_name:
             value1 = kw.get("file_stream").stream.read()
             ir_attachment_id = request.env["ir.attachment"].search(
