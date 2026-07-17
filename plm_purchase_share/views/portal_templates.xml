@@ -19,6 +19,7 @@
                 t-set="doc"
                 t-value="line.product_id.linkeddocuments.filtered(lambda a: a.document_type == '2d')[:1]"
             />
+            <t t-if="doc.engineering_state in ['released', 'undermodify']">
             <td id="single_product_download">
                 <t
                     t-if="doc and request.env.user.has_group('plm_purchase_share.group_plm_purchase_portal_user')"
@@ -33,6 +34,12 @@
                     </a>
                 </t>
             </td>
+            </t>
+            <t t-else="">
+	            <td id="single_product_download" title="Document not already released">
+	                <i class="fa fa-ban" style="color: red; font-weight: bold;" />
+	            </td>
+            </t>
         </xpath>
     </template>
 

@@ -2100,9 +2100,12 @@ class ProductProduct(models.Model):
         out_product_produc_id = self.env["product.product"]
         found = False
         sanitaized_attributes = {}
-        for attribute_name in self._fields.keys():
-            if attribute_name in productAttribute:
+        #
+        available_fields = list(self._fields.keys())
+        for attribute_name in productAttribute:
+            if attribute_name in available_fields:
                 sanitaized_attributes[attribute_name] = productAttribute[attribute_name]
+                continue
             elif "plm_m2o_" + attribute_name in productAttribute:
                 value = productAttribute["plm_m2o_" + attribute_name]
                 sanitaized_attributes[attribute_name] = self.env[
@@ -2112,6 +2115,19 @@ class ProductProduct(models.Model):
                     attribute_name,
                     value,
                 )
+                
+        # for attribute_name in self._fields.keys():
+        #     if attribute_name in productAttribute:
+        #         sanitaized_attributes[attribute_name] = productAttribute[attribute_name]
+        #     elif "plm_m2o_" + attribute_name in productAttribute:
+        #         value = productAttribute["plm_m2o_" + attribute_name]
+        #         sanitaized_attributes[attribute_name] = self.env[
+        #             "product.template"
+        #         ].translate_plm_m2o_name(
+        #             [self.env["product.template"], self.env["product.product"]],
+        #             attribute_name,
+        #             value,
+        #         )
         language_attrs = {}
         for key in list(filter(lambda x: "@-@-@" in x, list(productAttribute.keys()))):
             field_name, language = key.split("@-@-@")
@@ -2132,7 +2148,7 @@ class ProductProduct(models.Model):
                 (
                     "engineering_revision",
                     "=",
-                    sanitaized_attributes.get("engineering_revision", "0"),
+                    sanitaized_attributes.get("engineering_revision", 0),
                 ),
             ]
         ):
@@ -2145,7 +2161,7 @@ class ProductProduct(models.Model):
                 OBSOLATED_STATUS,
             ]:
                 out_product_produc_id.write(sanitaized_attributes)
-        else:  # write
+        else:  # Create
             out_product_produc_id = self.create(sanitaized_attributes)
         for lang, translated_values in language_attrs.items():
             out_product_produc_id.with_context(lang=lang).write(translated_values)

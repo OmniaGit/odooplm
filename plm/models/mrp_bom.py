@@ -1138,8 +1138,8 @@ class MrpBomExtension(models.Model):
                     to_unlink |= line
                 to_unlink.unlink()
                 bom_changed = True
-            if mrp_bom_found_id and not mrp_bom_found_id.bom_line_ids:
-                mrp_bom_found_id.unlink()
+                if mrp_bom_found_id and not mrp_bom_found_id.bom_line_ids:
+                    mrp_bom_found_id.unlink()
             #
             # notify productions if BOM structure changed
             #
