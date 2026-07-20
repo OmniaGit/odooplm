@@ -20,7 +20,7 @@ def webservice(f):
 
 
 class Web3DView(Controller):
-    @route("/plm/show_treejs_model", type="http", auth="public")
+    @route("/plm/show_treejs_model", type="http", auth="user")
     @webservice
     def show_treejs_model(self, document_id, document_name):
         return request.render(
@@ -28,11 +28,15 @@ class Web3DView(Controller):
             {"document_id": document_id, "document_name": document_name},
         )
 
-    @route("/plm/download_treejs_model", type="http", auth="public")
+    @route("/plm/download_treejs_model", type="http", auth="user")
     @webservice
     def download_treejs_model(self, document_id):
-        for ir_attachment in (
-            request.env["ir.attachment"].sudo().search([("id", "=", int(document_id))])
+        if not request.env.user.has_group("plm.group_plm_view_user"):
+            return Response(response="Access denied", status=403)
+        # No sudo: record rules decide which attachments this user may read,
+        # so a user cannot download CAD files they have no access to.
+        for ir_attachment in request.env["ir.attachment"].search(
+            [("id", "=", int(document_id))]
         ):
             if ir_attachment.has_web3d:
                 headers = []

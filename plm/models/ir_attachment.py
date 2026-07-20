@@ -1273,7 +1273,7 @@ class IrAttachment(models.Model):
             fields = self.plm_sanitize(fields)
             ctx = self.env.context.copy()
             plm_flag = ctx.get("odooPLM", False)
-            if plm_flag and request.env.user.has_group("plm.group_plm_view_user"):
+            if plm_flag and self.env.user.has_group("plm.group_plm_view_user"):
                 self = self.sudo()
             res = super().read(fields=fields, load=load)
             res = self.readMany2oneFields(res, fields)
