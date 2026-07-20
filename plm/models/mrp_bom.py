@@ -1053,6 +1053,7 @@ class MrpBomExtension(models.Model):
             #
             existing_lines = {}
             if mrp_bom_found_id:
+                bomType = mrp_bom_found_id.type
                 for line in mrp_bom_found_id.bom_line_ids:
                     if (
                         line.source_id.id == parent_ir_attachment_id
