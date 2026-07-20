@@ -44,6 +44,7 @@ from odoo.addons.plm.models.plm_mixin import (
 
 _logger = logging.getLogger(__name__)
 
+RECURSION_CHECK_OBJECT = object()
 
 def random_name():
     random.seed()
@@ -154,7 +155,7 @@ class IrAttachment(models.Model):
 
     @api.model
     def check(self, mode, values=None):
-        if self.env.context.get("plm_avoid_recursion"):
+        if self.env.context.get("plm_avoid_recursion") is RECURSION_CHECK_OBJECT:
             return True
         if self.env.is_superuser():
             return True
@@ -192,7 +193,7 @@ class IrAttachment(models.Model):
                     attachment_id_toCheck.append(attachment_id)
             #
             if attachment_id_toCheck:
-                super().with_context(plm_avoid_recursion=True).check(mode, values)
+                super().with_context(plm_avoid_recursion=RECURSION_CHECK_OBJECT).check(mode, values)
 
     def get_checkout_user(self):
         lastDoc = self._getlastrev(self.ids)
