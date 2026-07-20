@@ -173,8 +173,13 @@ class UploadDocument(Controller):
         :attachemnt_id internal odoo id for the given attachment
         :return: file request
         """
+        #
+        if not request.env.user.has_group("plm.group_plm_view_user"):
+            return Responce(status=403,qcontext=f"No permissions to download {attachment_id}")
+        #
         for ir_attachment_id in (
-            request.env["ir.attachment"].sudo().search([("id", "=", attachment_id)])
+            request.env["ir.attachment"].sudo().search([("id", "=", attachment_id),
+                                                        ("is_plm","=", True)])
         ):
             return (
                 request.env["ir.binary"]
