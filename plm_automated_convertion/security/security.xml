@@ -48,7 +48,9 @@
         <field name="group_id" ref="plm_automated_convertion.group_plm_convert_view"/>
         <field name="perm_read" eval="1"/>
         <field name="perm_write" eval="0"/>
-        <field name="perm_create" eval="1"/>
+        <!-- Rules carry the evaluated output_name_rule; creating them is admin
+             configuration only, so view users get read-only access. -->
+        <field name="perm_create" eval="0"/>
         <field name="perm_unlink" eval="0"/>
     </record>
 

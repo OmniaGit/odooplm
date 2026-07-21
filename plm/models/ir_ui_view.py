@@ -32,6 +32,8 @@ class IrUiView(models.Model):
 
     @api.model
     def search(self, args, offset=0, limit=None, order=None):
-        if self.env.context.get("odooPLM"):
+        if self.env.context.get("odooPLM") and self.env.user.has_group(
+            "plm.group_plm_view_user"
+        ):
             self = self.sudo()
         return super(IrUiView, self).search(args, offset, limit, order)

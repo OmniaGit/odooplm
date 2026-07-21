@@ -30,6 +30,7 @@ import json
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 from odoo import release
+from odoo.tools.safe_eval import safe_eval
 import re
 
 # odoo version check #
@@ -104,6 +105,18 @@ class PlmConvertStack(models.Model):
 
     @api.model_create_multi
     def create(self, vals):
+        for val in vals:
+            # output_name_rule is evaluated server-side at conversion time, so
+            # only trusted convert admins may author it (otherwise a low-priv
+            # user could inject an expression via a direct create). Internal
+            # flows copy it from the rule under sudo, which passes as superuser.
+            if val.get("output_name_rule") and not (
+                self.env.is_superuser()
+                or self.env.user.has_group(
+                    "plm_automated_convertion.group_plm_convert_admin"
+                )
+            ):
+                del val["output_name_rule"]
         ret = super().create(vals)
         for r in ret:
             r.sequence = r.id
@@ -237,9 +250,14 @@ class PlmConvertStack(models.Model):
         file_name = "%s_%s" % (document.name, document.engineering_revision)
         if self.output_name_rule:
             try:
-                file_name = eval(
+                # Sandboxed evaluation: no builtins/imports and no `env`, so the
+                # rule can only build a name from the document/component records.
+                # Authorship of the rule is additionally restricted to convert
+                # admins (see create() / ACLs) since safe_eval still allows
+                # method calls on the records passed into scope.
+                file_name = safe_eval(
                     self.output_name_rule,
-                    {"component": component, "document": document, "env": self.env},
+                    {"component": component, "document": document},
                 )
             except Exception as ex:
                 raise Exception(

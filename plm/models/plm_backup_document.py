@@ -185,12 +185,11 @@ class BackupDocWizard(models.TransientModel):
                 documentId = ir_attachment_bck_id.id
                 write_res = ir_attachment_bck_id.sudo().with_context(ctx).write(values)
                 sql = """
-                UPDATE IR_ATTACHMENT SET store_fname = '%s' where id = %s
-                """ % (
-                    plm_backupdoc_id.existingfile,
-                    ir_attachment_bck_id.id,
-                )
-                self.env.cr.execute(sql)
+                UPDATE IR_ATTACHMENT SET store_fname = %s where id = %s
+                """
+                self.env.cr.execute(sql, (plm_backupdoc_id.existingfile,
+                                          ir_attachment_bck_id.id,
+                                          ))
                 if write_res:
                     logging.info(
                         "[action_restore_document] Updated document %r" % (documentId)

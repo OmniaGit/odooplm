@@ -37,6 +37,7 @@ from odoo.addons.plm.models.plm_mixin import (PLM_NO_WRITE_STATE,
                                               START_STATUS)
 from odoo.exceptions import UserError
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
+from odoo.tools.safe_eval import safe_eval
 from pickle import FALSE
 
 _logger = logging.getLogger(__name__)
@@ -1267,7 +1268,7 @@ class IrAttachment(models.Model):
             fields = self.plm_sanitize(fields)
             ctx = self.env.context.copy()
             plm_flag = ctx.get("odooPLM", False)
-            if plm_flag:
+            if plm_flag and self.env.user.has_group("plm.group_plm_view_user"):
                 self = self.sudo()
             res = super(IrAttachment, self).read(fields=fields, load=load)
             res = self.readMany2oneFields(res, fields)
@@ -1596,11 +1597,11 @@ class IrAttachment(models.Model):
         extensions3D = []
         extensionsPR = []
         if file_exte_2d_param:
-            extensions2D = eval(file_exte_2d_param)
+            extensions2D = safe_eval(file_exte_2d_param)
         if file_exte_3d_param:
-            extensions3D = eval(file_exte_3d_param)
+            extensions3D = safe_eval(file_exte_3d_param)
         if file_exte_pr_param:
-            extensionsPR = eval(file_exte_pr_param)
+            extensionsPR = safe_eval(file_exte_pr_param)
         for docBrws in self:
             try:
                 fileExtension = docBrws.getFileExtension(docBrws)
@@ -3314,7 +3315,7 @@ class IrAttachment(models.Model):
             PLM_DT_DELTA = 10
         else:
             try:
-                PLM_DT_DELTA = eval(PLM_DT_DELTA)
+                PLM_DT_DELTA = safe_eval(PLM_DT_DELTA)
             except Exception as ex:
                 logging.error("Cannot compute DT delta %r" % (ex))
                 PLM_DT_DELTA = 10
@@ -4701,7 +4702,7 @@ class IrAttachment(models.Model):
         :link_kind kind of link to get the doc bom
         :return: [browserecord(ir.attachment),..]
         """
-        sql = f"""
+        sql = """
         WITH RECURSIVE subordinates AS (
             SELECT
                 parent_id,
@@ -4709,8 +4710,8 @@ class IrAttachment(models.Model):
                 link_kind
             FROM
                 ir_attachment_relation
-            WHERE
-                parent_id = {self.id} or child_id ={self.id} and link_kind='{link_kind}'
+            WHERE        
+                parent_id = %s or child_id = %s and link_kind=%s
             UNION
                 SELECT
                     e.parent_id,
@@ -4724,7 +4725,9 @@ class IrAttachment(models.Model):
         """
         ids = set()
         ids.add(self.id)
-        self.env.cr.execute(sql)
+        self.env.cr.execute(sql,(self.id,
+                                 self.id,
+                                 link_kind))
         for child_id in self.env.cr.fetchall():
             ids.add(child_id[0])
         return self.browse(list(ids))

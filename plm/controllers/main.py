@@ -153,7 +153,11 @@ class UploadDocument(Controller):
         latest=False
         if mode=='latest':
             latest=True
-        for ir_attachment_id in request.env['ir.attachment'].sudo().search([('id','=', attachment_id)]):
+        if not request.env.user.has_group("plm.group_plm_view_user"):
+            return Response(status=403,
+                            response=f"No permissions to download {attachment_id}")
+        for ir_attachment_id in request.env['ir.attachment'].sudo().search([('id','=', attachment_id),
+                                                                            ('is_plm','=', True)]):
             try:
                 return Response(json.dumps(ir_attachment_id.sudo().download_structure(hostname,
                                                                                hostpws,
@@ -175,7 +179,11 @@ class UploadDocument(Controller):
         :attachemnt_id internal odoo id for the given attachment
         :return: file request
         """
-        for ir_attachment_id in request.env['ir.attachment'].sudo().search([('id','=', attachment_id)]):
+        if not request.env.user.has_group("plm.group_plm_view_user"):
+            return Response(status=403,
+                            response=f"No permissions to download {attachment_id}")
+        for ir_attachment_id in request.env['ir.attachment'].sudo().search([('id','=', attachment_id),
+                                                                            ('is_plm','=', True)]):
             return request.env['ir.binary'].sudo()._get_stream_from(ir_attachment_id,
                                                                     field_name='datas').get_response()
         return Response(status=500,
@@ -359,9 +367,20 @@ class UploadDocument(Controller):
         self, product_id="", doc_name="", doc_rev="0", related_attachment_id="", **kw
     ):
         logging.info("Start upload extra file %r" % (product_id))
-        product_id = eval(product_id)
-        doc_rev = eval(doc_rev)
-        related_attachment_id = eval(related_attachment_id)
+        #
+        try:
+            product_id = int(product_id)
+        except Exception:
+            product_id = 0
+        try:
+            doc_rev = int(doc_rev)
+        except Exception:
+            doc_rev = 0
+        try:
+            related_attachment_id = int(related_attachment_id)
+        except Exception:
+            related_attachment_id = 0
+        #
         if doc_name:
             value1 = kw.get("file_stream").stream.read()
             ir_attachment_id = request.env["ir.attachment"].search(
