@@ -24,11 +24,14 @@ Created on 25 Aug 2016
 
 @author: Daniel Smerghetto
 """
-from odoo import models
-from odoo import fields
+from odoo import _, fields, models
 
 
 class ProductCategory(models.Model):
     _inherit = "product.category"
 
     kit_bom = fields.Boolean("KIT Bom Type")
+    is_storable = fields.Boolean(
+        string=_("Track Inventory"),
+        default=True,
+    )
