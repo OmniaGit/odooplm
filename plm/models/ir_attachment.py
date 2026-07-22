@@ -4034,41 +4034,29 @@ class IrAttachment(models.Model):
                 ]
             )
             for doc_id in document_ids:
-                doc_fields["name"] = doc_id.name
-                if not doc_id.isLatestRevision():
-                    doc_fields["checkout"] = False
-                    doc_fields["err_msg"] = (
-                        "Document %r is not at latest revision in PWS."
-                        % (doc_fields["name"])
-                    )
-                    out.append(doc_fields)
-                    continue
-                checkout_by_me = doc_id.isCheckedOutByMe()
-                if checkout_by_me:
-                    doc_fields["checkout"] = True
-                    out.append(doc_fields)
-                    continue
-                is_check_in = doc_id.ischecked_in()
-                if is_check_in:
-                    newer_in_odoo = not doc_id.is_open_by_me(hostname, hostpws)
-                    if newer_in_odoo:
-                        doc_fields["checkout"] = False
-                        doc_fields["newer"] = True
-                        doc_fields["err_msg"] = "Document %r is not updated." % (
-                            doc_fields["name"]
-                        )
-                        out.append(doc_fields)
-                        continue
-                    doc_fields["checkout"] = True
-                    out.append(doc_fields)
-                else:
-                    doc_fields["checkout"] = False
-                    doc_fields["err_msg"] = (
-                        f"Document {doc_fields['name']} is in checkout by {doc_id.checkout_user}."
-                    )
-                    out.append(doc_fields)
+                out.append(self.get_row_checkout_data(doc_fields, doc_id,hostname, hostpws))
+                for doc_id_pgk_tree in doc_id.getChildPkgTree():
+                    row_data = {'engineering_code': doc_id_pgk_tree.engineering_code,
+                                'engineering_revision': doc_id_pgk_tree.engineering_revision,
+                                }
+                    out.append(self.get_row_checkout_data(row_data, doc_id_pgk_tree,hostname, hostpws))
+               
         return json.dumps(out)
-
+    
+    def getChildPkgTree(self):
+        """
+        get the linked children pgk tree
+        """
+        ir_attachment_relation = self.env['ir.attachment.relation']
+        out = self.env['ir.attachment']
+        #
+        for doc_id in self:
+            for ref_doc_id in ir_attachment_relation.search([('parent_id','=',doc_id.id),
+                                                             ('link_kind', '=', 'PkgTree')]):
+                out+=ref_doc_id.child_id
+        #
+        return out
+    
     @api.model
     def CheckOutRecursive(self, structure, pws_path="", hostname="", force=False):
         stop = False
@@ -4111,7 +4099,44 @@ class IrAttachment(models.Model):
                             doc_fields["name"]
                         )
         return json.dumps(structure)
-
+        
+    def get_row_checkout_data(self, 
+                              doc_fields, 
+                              doc_id,
+                              hostname, 
+                              hostpws):
+        doc_fields["name"] = doc_id.name
+        if not doc_id.isLatestRevision():
+            doc_fields["checkout"] = False
+            doc_fields["err_msg"] = (
+                "Document %r is not at latest revision in PWS."
+                % (doc_fields["name"])
+            )
+            return doc_fields
+        checkout_by_me = doc_id.isCheckedOutByMe()
+        if checkout_by_me:
+            doc_fields["checkout"] = True
+            return doc_fields
+            
+        is_check_in = doc_id.ischecked_in()
+        if is_check_in:
+            newer_in_odoo = not doc_id.is_open_by_me(hostname, hostpws)
+            if newer_in_odoo:
+                doc_fields["checkout"] = False
+                doc_fields["newer"] = True
+                doc_fields["err_msg"] = "Document %r is not updated." % (
+                    doc_fields["name"]
+                )
+                return doc_fields
+            doc_fields["checkout"] = True
+            return doc_fields
+        else:
+            doc_fields["checkout"] = False
+            doc_fields["err_msg"] = (
+                f"Document {doc_fields['name']} is in checkout by {doc_id.checkout_user}."
+            )
+            return doc_fields
+                    
     @api.model
     def getRelatedPkgTreeCount(self, doc_id):
         if not doc_id:

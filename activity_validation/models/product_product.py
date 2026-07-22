@@ -26,7 +26,7 @@ import logging
 import xml.etree.ElementTree as ElementTree
 
 from odoo import api, fields, models
-
+from odoo.tools.safe_eval import safe_eval 
 
 class ProductProduct(models.Model):
     _inherit = "product.product"
@@ -152,7 +152,7 @@ class ProductProduct(models.Model):
                         modifiers = button.attrib.get("modifiers", "")
                         butt_name = button.attrib.get("name", "")
                         try:
-                            modifiers = eval(modifiers)
+                            modifiers = safe_eval(modifiers)
                             buttons[butt_name] = modifiers.get(
                                 "invisible", modifiers.get("readonly", [])
                             )

@@ -3,7 +3,6 @@ import functools
 import json
 
 from markupsafe import Markup
-
 from odoo import http
 from odoo.http import Controller, Response, request, route
 
@@ -67,7 +66,7 @@ class Web3DView(Controller):
             request.env["ir.attachment"].sudo().search([("id", "=", int(document_id))])
         ):
             if ir_attachment.has_web3d:
-                document = """
+                document = Markup("""
                 <li class="attribute_info"><b>Name:</b> %s</li>
                 <li class="attribute_info"><b>Revision:</b> %s</li>
                 <li class="attribute_info"><b>Description:</b> %s</li>
@@ -75,11 +74,11 @@ class Web3DView(Controller):
                     ir_attachment.engineering_code or ir_attachment.name,
                     ir_attachment.engineering_revision,
                     ir_attachment.engineering_state,
-                )
+                ))
                 document = self.document_extra(document)
                 out["document"] = document
                 for component in ir_attachment.linkedcomponents:
-                    components = """
+                    components = Markup("""
                     <li class="attribute_info" id="linked_component_id" data-id=%s><b>Product Name:</b> %s</li>
                     <li class="attribute_info"><b>Product Revision:</b> %s</li>
                     <li class="attribute_info"><b>Description:</b> %s</li>
@@ -88,7 +87,7 @@ class Web3DView(Controller):
                         component.engineering_code,
                         component.engineering_revision,
                         component.name,
-                    )
+                    ))
                     components = self.component_extra(components)
                     out["component"] = components
         return json.dumps(out)
