@@ -21,7 +21,7 @@
 import json
 import logging
 import xml.etree.cElementTree as ElementTree
-
+from odoo.tools.safe_eval import safe_eval 
 from odoo import api, fields, models
 
 
@@ -117,7 +117,7 @@ class ProductProduct(models.Model):
                         modifiers = button.attrib.get('modifiers', '')
                         butt_name = button.attrib.get('name', '')
                         try:
-                            modifiers = eval(modifiers)
+                            modifiers = safe_eval(modifiers)
                             buttons[butt_name] = modifiers.get('invisible', modifiers.get('readonly', []))
                         except Exception as ex:
                             pass
