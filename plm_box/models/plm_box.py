@@ -546,6 +546,8 @@ class Plm_box(models.Model):
 
     def move_children_object_to_state(self, state, call_name):
         message = ""
+        visited = self.env.context.get('visited_plm_boxes', set())
+        new_visited = visited | set(self.ids)
         for attachment_id in self.document_rel:
             if attachment_id.ischecked_in():
                 attachment_id.commonWFAction(True, state, True)
@@ -555,7 +557,9 @@ class Plm_box(models.Model):
                     f"to move to state {state}"
                 )
         for plm_box_id in self.plm_box_rel:
-            sub_message = getattr(plm_box_id, call_name)()
+            if plm_box_id.id in new_visited:
+                continue
+            sub_message = getattr(plm_box_id.with_context(visited_plm_boxes=new_visited), call_name)()
             if sub_message:
                 message += sub_message
         return message
@@ -711,21 +715,30 @@ class Plm_box(models.Model):
         return outDict
 
     def createBoxStructure(
-        self, primary=False, available_box_ids=[], all_boxes={}, primary_box_ids=[]
+        self, primary=False, available_box_ids=None, all_boxes=None, primary_box_ids=None
     ):
         """
         *** CLIENT ***
         """
+        if available_box_ids is None:
+            available_box_ids = []
+        if all_boxes is None:
+            all_boxes = {}
+        if primary_box_ids is None:
+            primary_box_ids = []
+
         outDict = {"primary": primary, "children": {}}
         for boxBrws in self:
             if boxBrws.id not in available_box_ids:
                 return {}, all_boxes
+            if boxBrws.id in all_boxes:
+                # Cycle detected: return empty dict to skip this child/branch
+                return {}, all_boxes
+            all_boxes[boxBrws.id] = boxBrws
             for boxChildBrws in boxBrws.plm_box_rel:
-                outDict["children"].setdefault(boxChildBrws.engineering_code, {})
-                (
-                    outDict["children"][boxChildBrws.engineering_code],
-                    all_boxes,
-                ) = boxChildBrws.createBoxStructure(False, available_box_ids, all_boxes)
+                child_structure, all_boxes = boxChildBrws.createBoxStructure(False, available_box_ids, all_boxes, primary_box_ids)
+                if child_structure:
+                    outDict["children"][boxChildBrws.engineering_code] = child_structure
             self.setRelatedEntities(boxBrws, outDict)
             outDict["description"] = boxBrws.description or ""
             outDict["state"] = boxBrws.engineering_state
@@ -734,7 +747,6 @@ class Plm_box(models.Model):
             outDict["id"] = boxBrws.id
             if boxBrws.id in primary_box_ids:
                 outDict["primary"] = True
-            all_boxes[boxBrws.id] = boxBrws
         return outDict, all_boxes
 
     @api.model
@@ -778,16 +790,21 @@ class Plm_box(models.Model):
 
     @api.model
     def boxStructureRecursion(
-        self, to_read, tooltip_fields, box_ids, available_boxes=[]
+        self, to_read, tooltip_fields, box_ids, available_boxes=None, visited=None
     ):
+        if available_boxes is None:
+            available_boxes = []
+        if visited is None:
+            visited = set()
         out = []
         for box in self.browse(box_ids):
-            if box.id in available_boxes:
+            if box.id in available_boxes and box.id not in visited:
+                new_visited = visited | {box.id}
                 vals_list = box.read(to_read)
                 for vals in vals_list:
                     vals["entities"] = box.computeEntities()
                     children = self.boxStructureRecursion(
-                        to_read, tooltip_fields, box.plm_box_rel.ids, available_boxes
+                        to_read, tooltip_fields, box.plm_box_rel.ids, available_boxes, new_visited
                     )
                     vals = self.setupTooltipFields(vals, tooltip_fields)
                     out.append([vals, children])
