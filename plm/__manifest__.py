@@ -55,6 +55,7 @@
         "views/plm_cad_open_bck.xml",
         "views/mail_activity_type.xml",
         "views/sequence.xml",
+        "views/plm_uom_lang_view.xml",
         "views/menu.xml",
         # QwebTemplates
         'views/templates.xml',

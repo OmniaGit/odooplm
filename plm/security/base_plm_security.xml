@@ -632,4 +632,25 @@
         <field name="perm_unlink" eval="0"/>
     </record>
 
+<!-- model_plm_uom_lang -->
+    <record id="plm_uom_lang_view" model="ir.model.access">
+        <field name="name">PLM Report UoM per Language (read)</field>
+        <field name="model_id" ref="model_plm_uom_lang"/>
+        <field name="group_id" ref="group_plm_view_user"/>
+        <field name="perm_read" eval="1"/>
+        <field name="perm_write" eval="0"/>
+        <field name="perm_create" eval="0"/>
+        <field name="perm_unlink" eval="0"/>
+    </record>
+
+    <record id="plm_uom_lang_admin" model="ir.model.access">
+        <field name="name">PLM Report UoM per Language (admin)</field>
+        <field name="model_id" ref="model_plm_uom_lang"/>
+        <field name="group_id" ref="group_plm_admin"/>
+        <field name="perm_read" eval="1"/>
+        <field name="perm_write" eval="1"/>
+        <field name="perm_create" eval="1"/>
+        <field name="perm_unlink" eval="1"/>
+    </record>
+
 </odoo>

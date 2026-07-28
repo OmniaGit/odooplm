@@ -57,6 +57,7 @@
 	                <field name="pws_path"/>
 	                <field name="hostname"/>
 	                <field name="operation_type"/>
+	                <field name="dbThread"/> 
 	                <field name="create_date"/>
                 </group>
                	</sheet> 
@@ -79,6 +80,7 @@
                 <field name="plm_backup_doc_id" select="1"/>
                 <field name="hostname"/>
                 <field name="operation_type"/>
+                <field name="dbThread"/> 
                 <field name="create_date"/>
             </tree>
         </field>

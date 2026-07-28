@@ -40,6 +40,8 @@ from . import plm_checkout
 from . import res_config_settings
 from . import mrp_bom
 from . import mrp_bom_line
+from . import uom_uom
+from . import plm_uom_lang
 from . import report_on_document
 from . import plm_temporary
 from . import plm_dbthread

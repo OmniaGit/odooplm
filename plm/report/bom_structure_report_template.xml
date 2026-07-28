@@ -37,6 +37,7 @@
 							<t t-set="lineBrws" t-value="childDict.get('lineBrws')"/>
 							<t t-set="prodBrws" t-value="childDict.get('prodBrws')"/>
 							<t t-set="prodTmplBrws" t-value="childDict.get('prodTmplBrws')"/>
+							<t t-set="qty_uom" t-value="lineBrws.product_uom_id.get_report_qty_uom(childDict.get('pqty')) if lineBrws.product_uom_id else (childDict.get('pqty'), '')"/>
 							<tr>
 								<t t-if="i%2 == 1">
 									<td name="bom_name_value_b" style="background-color: aliceblue;"></td>
@@ -44,8 +45,8 @@
 									<td name="bom_level_value_b" style="background-color: aliceblue;"><span t-esc="childDict.get('level')"/></td>
 									<td name="bom_prod_name_value_b" style="background-color: aliceblue; white-space: nowrap;"><span t-esc="childDict.get('engineering_code')"/></td>
 									<td name="bom_description_value_b" style="background-color: aliceblue;"><span t-esc="prodBrws.get_str_description()"/></td>
-									<td name="bom_qty_value_b" style="background-color: aliceblue;"><span t-esc="childDict.get('pqty')"/></td>
-									<td name="bom_uom_value_b" style="background-color: aliceblue;"><span t-esc="lineBrws.product_uom_id.name"/></td>
+									<td name="bom_qty_value_b" style="background-color: aliceblue;"><span t-esc="qty_uom[0]"/></td>
+									<td name="bom_uom_value_b" style="background-color: aliceblue;"><span t-esc="qty_uom[1]"/></td>
 									<td name="bom_weight_value_b" style="background-color: aliceblue;"><span t-esc="prodTmplBrws.weight"/></td>
 								</t>
 								<t t-if="i%2 != 1">
@@ -54,8 +55,8 @@
 									<td name="bom_level_value" ><span t-esc="childDict.get('level')"/></td>
 									<td name="bom_prod_name_value" style='white-space: nowrap;'><span t-esc="childDict.get('engineering_code')"/></td>
 									<td name="bom_description_value" ><span t-esc="prodBrws.get_str_description()"/></td>
-									<td name="bom_qty_value" ><span t-esc="childDict.get('pqty')"/></td>
-									<td name="bom_uom_value" ><span t-esc="lineBrws.product_uom_id.name"/></td>
+									<td name="bom_qty_value" ><span t-esc="qty_uom[0]"/></td>
+									<td name="bom_uom_value" ><span t-esc="qty_uom[1]"/></td>
 									<td name="bom_weight_value" ><span t-esc="prodTmplBrws.weight"/></td>
 								</t>
 							</tr>

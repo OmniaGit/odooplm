@@ -102,7 +102,8 @@ class PlmComponent(models.Model):
                                        'component_id',
                                        'document_id',
                                        _('Linked Docs'),
-                                       ondelete='cascade')
+                                       ondelete='cascade',
+                                       copy=False)
     tmp_material = fields.Many2one('plm.material',
                                    _('Raw Material'),
                                    required=False,
@@ -184,6 +185,8 @@ class PlmComponent(models.Model):
     readonly_std_umc2 = fields.Boolean(_("put readOnly the field standard description 2"))
     readonly_std_umc3 = fields.Boolean(_("put readOnly the field standard description 3"))
     kit_bom = fields.Boolean(_('KIT Bom Type'))
+
+    configuration_name = fields.Char("Configuration Name")
 
     def _computeStd(self):
         for product_product_id in self:
