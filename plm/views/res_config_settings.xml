@@ -173,7 +173,7 @@
             <field name="name">Groups</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">res.groups</field>
-            <field name="domain">["|", ("full_name", "ilike", "plm"), ("privilege_id", "ilike", "plm")]</field>
+            <field name="domain" eval="[('privilege_id.category_id', '=', ref('plm.odooplm_module_category'))]"/>
         </record>
 
         <record id="plm_action_settings_form" model="ir.actions.act_window">

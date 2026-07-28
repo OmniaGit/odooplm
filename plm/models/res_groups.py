@@ -26,7 +26,6 @@ Created on 28 March 2022
 @author: Daniel Smerghetto
 """
 from odoo import models, api
-from odoo.fields import Domain
 
 
 class ResGroups(models.Model):
@@ -82,13 +81,6 @@ class ResGroups(models.Model):
             if additional_obj:
                 available_types.append(additional_obj.id)
         return available_types
-
-    @api.model
-    def search(self, args, offset=0, limit=None, order=None):
-        if self.env.context.get("odooPLM"):
-            available_types = self._get_plm_available_groups()
-            args = Domain([args, [("id", "in", available_types)]])
-        return super(ResGroups, self).search(args, offset, limit, order)
 
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
