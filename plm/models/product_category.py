@@ -32,6 +32,6 @@ class ProductCategory(models.Model):
 
     kit_bom = fields.Boolean("KIT Bom Type")
     is_storable = fields.Boolean(
-        string=_("Track Inventory"),
+        string="Track Inventory",
         default=True,
     )
