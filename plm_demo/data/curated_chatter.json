@@ -1,0 +1,47 @@
+{
+ "_comment": [
+  "Hand written demo conversation, kept separate from dataset.json because the",
+  "generator overwrites that file on every run. These are demo comments, written",
+  "to show what an active PLM discussion looks like — they are not extracted from",
+  "any database.",
+  "",
+  "target: an external id from dataset.json, without the plm_demo. prefix."
+ ],
+ "chatter": [
+  {
+   "model": "product.template",
+   "target": "part_lsu_100",
+   "body": "<p>First complete assembly of the shaft support unit. Two bearing units on a common shaft, everything bolted to the base plate. Weights come straight from the solid models.</p>"
+  },
+  {
+   "model": "product.template",
+   "target": "part_lsu_100",
+   "body": "<p>BOM checked against the layout drawing: 8 × M8x30 for the two support blocks, 2 clamp rings. Quantities match.</p>"
+  },
+  {
+   "model": "product.template",
+   "target": "part_brg_unit_001",
+   "body": "<p>Split out as a sub-assembly so it can be stocked and sold complete. The spare part BOM carries only the wear items — bushing, spacer and screws.</p>"
+  },
+  {
+   "model": "product.template",
+   "target": "part_brg_hsg_001",
+   "body": "<p>Cast in EN-GJL-250. Bushing seats machined after casting, 0.02 concentricity between the two seats.</p>"
+  },
+  {
+   "model": "product.template",
+   "target": "part_bsh_030_001",
+   "body": "<p>Wear part. CuSn12, replaced at service. Keep two in stock per unit.</p>"
+  },
+  {
+   "model": "product.template",
+   "target": "part_shf_020_001",
+   "body": "<p>Keyway at the drive end still to be confirmed with the gearbox supplier — kept in draft until then.</p>"
+  },
+  {
+   "model": "ir.attachment",
+   "target": "doc_brg_hsg_001_drawing_dxf",
+   "body": "<p>Drawing sheet issued at revision A. Bore tolerance and the two mounting holes are the critical dimensions.</p>"
+  }
+ ]
+}
