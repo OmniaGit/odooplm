@@ -11,6 +11,11 @@ Rules:
   handled; other formats are left untouched.
 - The updated manifest is staged automatically so the bump is part of the commit.
 """
+# The hook runs with language: system, so it gets whatever python3 the developer
+# has. Postponed annotations keep `Path | None` and `dict[...]` working down to
+# 3.7 — without this the script dies on Python 3.9, which is what Debian 11 ships.
+from __future__ import annotations
+
 import re
 import subprocess
 import sys
@@ -62,14 +67,32 @@ def bump_version(manifest_path: Path) -> bool:
     return True
 
 
+def staged_files(root: Path) -> set[Path]:
+    """Paths staged for the current commit."""
+    out = subprocess.check_output(
+        ["git", "diff", "--cached", "--name-only", "--diff-filter=ACMR"], text=True
+    )
+    return {(root / line).resolve() for line in out.split("\n") if line.strip()}
+
+
 def main(argv: list[str]) -> int:
     root = repo_root()
+
+    # pre-commit hands over whatever it was asked to check, which on a
+    # `--all-files` run — what the CI workflow does — is the entire repository.
+    # Bumping every manifest there would be wrong, so the argument list is
+    # intersected with what is actually staged: nothing staged, nothing bumped.
+    staged = staged_files(root)
+    if not staged:
+        return 0
 
     # Group staged files by their module root.
     # key: module root Path  →  value: set of staged paths inside that module
     module_files: dict[Path, set[Path]] = {}
     for raw in argv:
         path = Path(raw).resolve()
+        if path not in staged:
+            continue
         module = find_module_root(path, root)
         if module is None:
             continue
