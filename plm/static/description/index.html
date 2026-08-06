@@ -31,7 +31,7 @@
                     </div>
                     <div class="row ">
                         <div class="col-12 px-4">
-                            <h2>The module is developed and maintained by <b>OmniaSolutions</b>, Further information at <a href="https://www.omniasolutions.website" style="text-decoration:none; color:#CC0000">www.omniasolutions.website</a></h2>
+                            <h2>The module is developed and maintained by <b>OmniaSolutions</b>, Further information at <b style="color:#CC0000">www.omniasolutions.website</b></h2>
                         </div>
                     </div>
 
@@ -45,21 +45,75 @@
                             <hr style="border: 2px solid #CC0000 !important; background-color: #CC0000 !important; width: 50px !important; margin-left: 0 !important; margin-top: 8px;">
                             <p style="font-size:18px; text-align:justify; margin-top:16px">
                                 The OdooPLM client application bridges your CAD editor and your Odoo instance.
-                                It is free, open source, and available on SourceForge.
+                                It is available on SourceForge.
                             </p>
-                            <div style="margin-top:20px; text-align:center">
-                                <a href="https://sourceforge.net/projects/openerpplm/" target="_blank"
-                                   style="text-decoration:none; color:white; background-color:#CC0000; font-size:18px; padding:12px 24px; border-radius:10px; display:inline-block">
-                                    &#8681;&nbsp; Download from SourceForge
-                                </a>
-                                <p style="margin-top:12px; font-size:14px; color:#666">
-                                    <a href="https://sourceforge.net/projects/openerpplm/" target="_blank" style="color:#CC0000">
-                                        sourceforge.net/projects/openerpplm
-                                    </a>
-                                </p>
-                            </div>
-                        </div>
+                            <div class="oe_centeralign" style="margin-top:20px">
+                            <div class="oe_spaced" style="display:inline-block; min-width:300px; margin:10px 12px; padding:14px 22px; border:2px solid #040f3a; border-radius:10px; text-align:center; vertical-align:top">
+                                <span style="font-size:15px; color:#040f3a">Download the CAD client</span><br/>
+                                    <b style="font-size:17px; color:#CC0000">sourceforge.net/projects/openerpplm</b>
+                                    </div>
+                                    </div>
                     </div>
+
+                    <!-- DOCKER -->
+                    <!-- The Apps store rewrites every <a> of a module description into a
+                         <span>, so a link here would look clickable and do nothing: the
+                         addresses are printed as text instead. Inline styles, the bootstrap
+                         grid and the oe_ classes are kept by the store, and the only two
+                         colours in this page are the company ones, #CC0000 and #040f3a. -->
+                    <div class="row" id="docker" style="margin-top: 3rem;">
+                        <div class="col-sm-12 col-md-12 col-lg-12 px-4">
+                            <h2 class="font-weight-bold"
+                                style="font-family:'Montserrat', sans-serif !important; font-size:2rem; color:#CC0000">
+                                Run it with Docker
+                            </h2>
+                            <hr style="border: 2px solid #040f3a !important; background-color: #040f3a !important; width: 50px !important; margin-left: 0 !important; margin-top: 8px;">
+                            <p style="font-size:18px; text-align:justify; margin-top:16px">
+                                OdooPLM is published as a ready to run Docker image, on GitHub Container Registry
+                                and on Docker Hub. A single command gives you Odoo with the whole community PLM
+                                suite in the addons path, a PostgreSQL database and a working PLM server on the
+                                first boot &mdash; no database wizard, no dependency installation.
+                            </p>
+                            <div class="oe_spaced"
+                                 style="border:2px solid #040f3a; padding:18px 22px; border-radius:10px; font-family:monospace; font-size:15px; line-height:1.7; color:#040f3a; overflow-x:auto">
+                                git clone --branch 19.0 https://github.com/OmniaGit/DockerOdooPLM.git<br/>
+                                cd DockerOdooPLM<br/>
+                                docker compose up
+                            </div>
+                            <div class="row" style="margin-top:24px">
+                                <div class="col-6">
+                                    <h3 class="oe_slogan" style="color:#040f3a; text-align:left; font-size:1.3rem">Two variants</h3>
+                                    <p style="font-size:18px; text-align:justify">
+                                        <b>full</b> carries the CAD conversion stack, for batch STEP to 3MF, STL
+                                        and PNG conversion. <b>slim</b> leaves it out, for the teams that do not
+                                        convert. Both ship every community PLM module in the addons path.
+                                    </p>
+                                </div>
+                                <div class="col-6">
+                                    <h3 class="oe_slogan" style="color:#040f3a; text-align:left; font-size:1.3rem">Demo images</h3>
+                                    <p style="font-size:18px; text-align:justify">
+                                        Each variant also has a <b>demo</b> tag that boots already populated: a
+                                        sample product over three BOM levels, its 3D models, ballooned assembly
+                                        drawings and the spare parts manual that prints from them.
+                                    </p>
+                                </div>
+                            </div>
+                            <p style="font-size:18px; text-align:justify">
+                                The images are rebuilt every week, against both the PLM sources and the official
+                                Odoo image, and every build is started and verified before it is published.
+                            </p>
+                            <div class="oe_centeralign" style="margin-top:24px">
+                            <div class="oe_spaced" style="display:inline-block; min-width:300px; margin:10px 12px; padding:14px 22px; border:2px solid #040f3a; border-radius:10px; text-align:center; vertical-align:top">
+                                <span style="font-size:15px; color:#040f3a">Images and Compose stack</span><br/>
+                                    <b style="font-size:17px; color:#CC0000">github.com/OmniaGit/DockerOdooPLM</b>
+                                    </div>
+                                    <div class="oe_spaced" style="display:inline-block; min-width:300px; margin:10px 12px; padding:14px 22px; border:2px solid #040f3a; border-radius:10px; text-align:center; vertical-align:top">
+                                        <span style="font-size:15px; color:#040f3a">How it is built, and what is inside</span><br/>
+                                            <b style="font-size:17px; color:#CC0000">odooplm.omniasolutions.website/blog</b>
+                                            </div>
+                                            </div>
+                                            </div>
+                                            </div>
 
                     <!-- FEATURES -->
                     <div class="row" id="features" style="margin-top: 3rem;">
@@ -86,9 +140,12 @@
                                         It helps to work on Concurrent Engineering managing access policies on documents.
                                         Moreover, it adds many reports and views on Bill of Materials or related to them. 
                                     </p>
-                                    <div style="width:200px; margin:50px auto 0 auto">
-                                        <a href="https://www.odoo.sh/project/odooplm/builds" style="text-decoration:none; color:white; background-color:#CC0000; font-size:18px; padding:10px; border-radius:10px">Start your free trial</a>
-                                    </div>
+                                    <div class="oe_centeralign" style="margin-top:40px">
+                                    <div class="oe_spaced" style="display:inline-block; min-width:300px; margin:10px 12px; padding:14px 22px; border:2px solid #040f3a; border-radius:10px; text-align:center; vertical-align:top">
+                                        <span style="font-size:15px; color:#040f3a">Try it online</span><br/>
+                                            <b style="font-size:17px; color:#CC0000">odoo.sh/project/odooplm/builds</b>
+                                            </div>
+                                            </div>
                                 </div>
                             </div>
                         </div>
@@ -117,7 +174,7 @@
                                             <div class="oe_span" style="width:20%">
                                                 <div>
                                                     <div class="icona" style="text-align:center">
-                                                        <a href="https://discover.solidworks.com/it/solidworks-products?mktid=7753&gclid=EAIaIQobChMIormIu4S_5wIVRLTtCh34sgHFEAAYASAAEgLpR_D_BwE"><img src="solidworks.png" class="cad_icon" style="width:60%; height:60%; border:2px solid lightgrey; border-radius:50%; padding:10px"></a>
+                                                        <img src="solidworks.png" class="cad_icon" style="width:60%; height:60%; border:2px solid lightgrey; border-radius:50%; padding:10px">
                                                     </div>
                                                     <div style="text-align:center; font-size:20px">
                                                         <p>SolidWorks</p>
@@ -127,7 +184,7 @@
                                             <div class="oe_span" style="width:20%">
                                                 <div>
                                                     <div class="icona" style="text-align:center">
-                                                        <a href="http://www.dptcorporate.com/it/"><img src="thinkdesign.png" class="cad_icon" style="width:60%; height:60%; border:2px solid lightgrey; border-radius:50%; padding:10px"></a>
+                                                        <img src="thinkdesign.png" class="cad_icon" style="width:60%; height:60%; border:2px solid lightgrey; border-radius:50%; padding:10px">
                                                     </div>
                                                     <div style="text-align:center; font-size:20px">
                                                         <p>ThinkDesign</p>
@@ -137,7 +194,7 @@
                                             <div class="oe_span" style="width:20%">
                                                 <div>
                                                     <div class="icona" style="text-align:center">
-                                                        <a href="https://solidedge.siemens.com/it/"><img src="solidedge.png" class="cad_icon" style="width:60%; height:60%; border:2px solid lightgrey; border-radius:50%; padding:10px"></a>
+                                                        <img src="solidedge.png" class="cad_icon" style="width:60%; height:60%; border:2px solid lightgrey; border-radius:50%; padding:10px">
                                                     </div>
                                                     <div style="text-align:center; font-size:20px">
                                                         <p>Solid Edge</p>
@@ -147,7 +204,7 @@
                                             <div class="oe_span" style="width:20%">
                                                 <div>
                                                     <div class="icona" style="text-align:center">
-                                                        <a href="https://www.autodesk.it/products/autocad/overview"><img src="autocad.png" class="cad_icon" style="width:60%; height:60%; border:2px solid lightgrey; border-radius:50%; padding:10px"></a>
+                                                        <img src="autocad.png" class="cad_icon" style="width:60%; height:60%; border:2px solid lightgrey; border-radius:50%; padding:10px">
                                                     </div>
                                                     <div style="text-align:center; font-size:20px">
                                                         <p>AutoCad</p>
@@ -157,7 +214,7 @@
                                             <div class="oe_span" style="width:20%">
                                                 <div>
                                                     <div class="icona" style="text-align:center">
-                                                        <a href="https://www.autodesk.it/products/inventor/overview"><img src="inventor.png" class="cad_icon" style="width:60%; height:60%; border:2px solid lightgrey; border-radius:50%; padding:10px"></a>
+                                                        <img src="inventor.png" class="cad_icon" style="width:60%; height:60%; border:2px solid lightgrey; border-radius:50%; padding:10px">
                                                     </div>
                                                     <div style="text-align:center; font-size:20px">
                                                         <p>Inventor</p>
@@ -273,14 +330,14 @@
                                     <img class="image" src="engineering_parts_1.png" style="width:70%; display:inline-block; border:2px solid lightgrey; border-radius:15px; float:right">
                                 </div>    
                                 <ul class="oe_span6" style="display:inline-block; text-align:center">    
-                                    <li style="background-color:#CC0000; width:70%; color:white; margin:10px 0; border-radius:10px; list-style-type:none; padding:5px">Kanban View with Document Icons</li>
-                                    <li style="background-color:#CC0000; width:70%; color:white; margin:30px 0; border-radius:10px; list-style-type:none; padding:5px">Revision Index</li> 
-                                    <li style="background-color:#CC0000; width:70%; color:white; margin:10px 0; border-radius:10px; list-style-type:none; padding:5px">Revision Status</li>
+                                    <li style="border:2px solid #040f3a; background-color:transparent; width:70%; color:#CC0000; font-weight:600; margin:10px 0; border-radius:10px; list-style-type:none; padding:5px">Kanban View with Document Icons</li>
+                                    <li style="border:2px solid #040f3a; background-color:transparent; width:70%; color:#CC0000; font-weight:600; margin:30px 0; border-radius:10px; list-style-type:none; padding:5px">Revision Index</li> 
+                                    <li style="border:2px solid #040f3a; background-color:transparent; width:70%; color:#CC0000; font-weight:600; margin:10px 0; border-radius:10px; list-style-type:none; padding:5px">Revision Status</li>
                                 </ul>    
                                 <ul class="oe_span6" style="display:inline-block; text-align:center; margin-top:30px">    
-                                    <li style="background-color:#CC0000; width:70%; color:white; margin:10px 0; border-radius:10px; list-style-type:none; padding:5px; float:right">Revision WorkFlow</li>
-                                    <li style="background-color:#CC0000; width:70%; color:white; margin:30px 0; border-radius:10px; list-style-type:none; padding:5px; float:right">Fast build in actions for printing</li>
-                                    <li style="background-color:#CC0000; width:70%; color:white; margin:10px 0; border-radius:10px; list-style-type:none; padding:5px; float:right">Fast build in actions for exploring boms</li>
+                                    <li style="border:2px solid #040f3a; background-color:transparent; width:70%; color:#CC0000; font-weight:600; margin:10px 0; border-radius:10px; list-style-type:none; padding:5px; float:right">Revision WorkFlow</li>
+                                    <li style="border:2px solid #040f3a; background-color:transparent; width:70%; color:#CC0000; font-weight:600; margin:30px 0; border-radius:10px; list-style-type:none; padding:5px; float:right">Fast build in actions for printing</li>
+                                    <li style="border:2px solid #040f3a; background-color:transparent; width:70%; color:#CC0000; font-weight:600; margin:10px 0; border-radius:10px; list-style-type:none; padding:5px; float:right">Fast build in actions for exploring boms</li>
                                 </ul>
                                 <div class="oe_span6" style="margin-top:30px">
                                     <img class="image" src="engineering_parts_2.png" style="width:70%; display:inline-block; border:2px solid lightgrey; border-radius:15px">
@@ -332,28 +389,27 @@
 
                     <div>
                         <h2 class="oe_slogan">
-                            <a href="https://odooplm.omniasolutions.website" target="new">
-                                <img src="odooPLM_logo.png" class="img img-responsive" style="width:40%"/>
-                            </a>
+                            <img src="odooPLM_logo.png" class="img img-responsive" style="width:40%"/>
                             <br/><br/>
-                            <a href="" style="color: #000000 !important;">
-                                Get Help &amp; Support
-                            </a>
+                            <span style="color:#000000">Get Help &amp; Support</span>
                         </h2>
                         <div class="oe_slogan oe_spaced text-center">
-                            <a class="btn btn success mt8" title="website" target="new"
-                               style="background-color: #CC0000 !important; border-radius: 5px !important; color: #ffffff; !important; position:relative; overflow: hidden;"
-                               href="https://odooplm.omniasolutions.website/"><b>Website</b></a>
-                            <a class="btn btn success mt8" title="Contact Us"
-                               style="background-color: #CC0000 !important; border-radius: 5px !important; color: #ffffff; !important; position:relative; overflow: hidden;"
-                               href=""><b>Contact Us</b></a>
-                            <a class="btn btn success mt8" title="Request New Features Now!"
-                               style="background-color: #CC0000 !important; border-radius: 5px !important; color: #ffffff; !important; position:relative; overflow: hidden;"
-                               href=""><b>Request For New Features</b></a>
-                        </div>
+                        <div class="oe_spaced" style="display:inline-block; min-width:300px; margin:10px 12px; padding:14px 22px; border:2px solid #040f3a; border-radius:10px; text-align:center; vertical-align:top">
+                            <span style="font-size:15px; color:#040f3a">Website</span><br/>
+                                <b style="font-size:17px; color:#CC0000">odooplm.omniasolutions.website</b>
+                                </div>
+                                <div class="oe_spaced" style="display:inline-block; min-width:300px; margin:10px 12px; padding:14px 22px; border:2px solid #040f3a; border-radius:10px; text-align:center; vertical-align:top">
+                                    <span style="font-size:15px; color:#040f3a">Contact us</span><br/>
+                                        <b style="font-size:17px; color:#CC0000">www.omniasolutions.website/#contact</b>
+                                        </div>
+                                        <div class="oe_spaced" style="display:inline-block; min-width:300px; margin:10px 12px; padding:14px 22px; border:2px solid #040f3a; border-radius:10px; text-align:center; vertical-align:top">
+                                            <span style="font-size:15px; color:#040f3a">Request new features</span><br/>
+                                                <b style="font-size:17px; color:#CC0000">github.com/OmniaGit/odooplm/issues</b>
+                                                </div>
+                                                </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
+    </div>
