@@ -22,6 +22,42 @@ def webservice(f):
     return wrap
 
 
+# The magic bytes of the formats a preview can be stored in.
+IMAGE_SIGNATURES = (
+    (b"\x89PNG\r\n\x1a\n", "image/png"),
+    (b"\xff\xd8\xff", "image/jpeg"),
+    (b"GIF87a", "image/gif"),
+    (b"GIF89a", "image/gif"),
+    (b"BM", "image/bmp"),
+)
+
+
+def image_response(b64_data):
+    """Serve a stored image with its real content type.
+
+    Returning the bytes alone leaves Odoo's default text/html on the response,
+    and since it also sends X-Content-Type-Options: nosniff the browser is told
+    not to guess: the image is fetched but never drawn, so previews come out
+    blank. Up to 15.0 the same code worked only because that release did not
+    send nosniff.
+    """
+    if not b64_data:
+        return request.not_found()
+    payload = base64.b64decode(b64_data)
+    mimetype = "application/octet-stream"
+    for signature, candidate in IMAGE_SIGNATURES:
+        if payload.startswith(signature):
+            mimetype = candidate
+            break
+    return request.make_response(
+        payload,
+        headers=[
+            ("Content-Type", mimetype),
+            ("Content-Length", str(len(payload))),
+        ],
+    )
+
+
 class UploadDocument(Controller):
 
     @route(
@@ -456,7 +492,8 @@ class UploadDocument(Controller):
     def get_preview(self, id):
         ir_attachement = request.env["ir.attachment"].sudo()
         for record in ir_attachement.search_read([("id", "=", id)], ["preview"]):
-            return base64.b64decode(record.get("preview"))
+            return image_response(record.get("preview"))
+        return request.not_found()
 
     @route(
         "/plm/product_product_image_1920/<int:id>",
@@ -469,7 +506,8 @@ class UploadDocument(Controller):
     def get_product_preview(self, id):
         productobj = request.env["product.product"].sudo()
         for record in productobj.search_read([("id", "=", id)], ["image_1920"]):
-            return base64.b64decode(record.get("image_1920"))
+            return image_response(record.get("image_1920"))
+        return request.not_found()
 
     @route(
         "/plm/product_product_preview/<int:product_id>",
@@ -484,7 +522,8 @@ class UploadDocument(Controller):
         for product_product_id in product_product_sudo.search(
             [("id", "=", product_id)]
         ):
-            return base64.b64decode(product_product_id.image_1920)
+            return image_response(product_product_id.image_1920)
+        return request.not_found()
 
     @route(
         "/plm/ir_attachment_printout/<int:id>",

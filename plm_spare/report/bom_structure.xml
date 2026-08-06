@@ -35,18 +35,25 @@
                                 <span t-esc="compBrws.product_tmpl_id.name"/>
                             </div>
                             <div id="spare_header_image" style="position: relative;top: 80px;">
-                                <!-- the picture of the product comes first: it is
+                                <!-- The picture of the product comes first: it is
                                      what the cover of a spare parts manual shows.
                                      The preview of its oldest document is only the
-                                     fallback for products that carry no image. -->
+                                     fallback for products that carry no image.
+
+                                     Both are embedded with image_data_uri instead
+                                     of pointing at /plm/..., because the PDF is
+                                     rendered by wkhtmltopdf: it would have to
+                                     fetch that URL over HTTP, against web.base.url
+                                     and with a session, and any of the two being
+                                     off leaves an empty box on the cover. -->
                                 <t t-if="compBrws.image_1920">
                                     <img class="image"
-                                         t-att-src="'/plm/product_product_preview/%s' % compBrws.id"
+                                         t-att-src="image_data_uri(compBrws.image_1920)"
                                          t-att-alt="compBrws.display_name"
                                          style="height: auto;width: 150mm;box-shadow: 1px 1px 2px 3px lightgrey;"/>
                                 </t>
-                                <t t-elif="docBrws">
-                                    <img t-att-src="'/plm/ir_attachment_preview/%s' % docBrws.id"
+                                <t t-elif="docBrws and docBrws.preview">
+                                    <img t-att-src="image_data_uri(docBrws.preview)"
                                          t-att-alt="docBrws.display_name"
                                          style="height: auto;width: 150mm;box-shadow: 1px 1px 2px 3px lightgrey;"/>
                                 </t>
