@@ -444,7 +444,7 @@ def main():
     shapes, doc_by_code = {}, {}
 
     def add_document(fname, doc_type, code, part_xml_id, preview=None, mimetype=None,
-                     used_for_spare=False):
+                     used_for_spare=False, printout=None):
         with open(os.path.join(docs_dir, fname), "rb") as fh:
             payload = fh.read()
         entry = {
@@ -463,6 +463,10 @@ def main():
             "is_library": False,
             "sha1": hashlib.sha1(payload).hexdigest(),
             "preview": preview,
+            # the printable version of a 2D document lives in its printout field,
+            # not as a document of its own — that is where plm publishes it and
+            # where the Spare Parts Manual looks first
+            "printout": printout,
             # what plm_spare prints in the Spare Parts Manual: the assembly sheets
             # of the products a spare BOM hangs from, not the single part drawings
             "used_for_spare": bool(used_for_spare),
@@ -525,14 +529,10 @@ def main():
             drawing_sheet(code, name, material, shape, dxf, pdf, png)
             dxf_doc = add_document("%s-drawing.dxf" % code, "2d", "%s-DRW" % code, xml_id,
                                    preview="%s_drawing.png" % slug(code),
-                                   mimetype="image/vnd.dxf")
-            pdf_doc = add_document("%s-drawing.pdf" % code, "2d", "%s-PDF" % code, xml_id,
-                                   mimetype="application/pdf")
-            # model -> drawing (LyTree), drawing -> its printout (ExtraTree)
+                                   mimetype="image/vnd.dxf",
+                                   printout="%s-drawing.pdf" % code)
             relations.append({"parent": model_doc["xml_id"], "child": dxf_doc["xml_id"],
                               "link_kind": "LyTree"})
-            relations.append({"parent": dxf_doc["xml_id"], "child": pdf_doc["xml_id"],
-                              "link_kind": "ExtraTree"})
 
     # ----------------------------------------------------------- assemblies
     # placement: (x, y, z) or (x, y, z, degrees about Y) for parts modelled along Z
@@ -623,13 +623,10 @@ def main():
             assembly_sheet(code, name, assembly_shapes[code], items, dxf, pdf, png)
             dxf_doc = add_document("%s-drawing.dxf" % code, "2d", "%s-DRW" % code, xml_id,
                                    preview="%s_drawing.png" % slug(code),
-                                   mimetype="image/vnd.dxf", used_for_spare=True)
-            pdf_doc = add_document("%s-drawing.pdf" % code, "2d", "%s-PDF" % code, xml_id,
-                                   mimetype="application/pdf", used_for_spare=True)
+                                   mimetype="image/vnd.dxf", used_for_spare=True,
+                                   printout="%s-drawing.pdf" % code)
             relations.append({"parent": model_doc["xml_id"], "child": dxf_doc["xml_id"],
                               "link_kind": "LyTree"})
-            relations.append({"parent": dxf_doc["xml_id"], "child": pdf_doc["xml_id"],
-                              "link_kind": "ExtraTree"})
 
         boms.append({
             "xml_id": "bom_normal_%s" % slug(code), "code": None, "type": "normal",

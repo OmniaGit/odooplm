@@ -40,8 +40,9 @@ LSU-100  Linear shaft support unit
 |---|---|
 | Parts | 12, with engineering codes, revisions, materials and weights computed from the solids |
 | Bills of material | 3 — two manufacturing BOMs over three levels, one spare part BOM |
-| Documents | 30 — a 3MF and a STEP per part, plus DXF and PDF drawing sheets for the machined parts |
-| Document relations | 26 — `HiTree` assembly to component, `LyTree` drawing to model, `ExtraTree` model to its STEP export |
+| Documents | 29 — a 3MF and a STEP per part, plus DXF sheets for the machined parts and the two assemblies, each with its printable PDF in `printout` |
+| Document relations | 28 — the STEP model is the parent of everything: `HiTree` to its components, `LyTree` to its 2D sheet, `ExtraTree` to the 3MF the viewer renders |
+| Spare parts manual | the two assembly sheets are ballooned and flagged `used_for_spare`, so the report prints them |
 | 3D markups | 2 on the top assembly, each with its chatter message linking back to the viewer |
 | Chatter | engineering comments on parts and drawings |
 

@@ -111,11 +111,6 @@
    "parent": "doc_brg_hsg_001_step"
   },
   {
-   "child": "doc_brg_hsg_001_drawing_pdf",
-   "link_kind": "ExtraTree",
-   "parent": "doc_brg_hsg_001_drawing_dxf"
-  },
-  {
    "child": "doc_cvr_090_001_3mf",
    "link_kind": "ExtraTree",
    "parent": "doc_cvr_090_001_step"
@@ -156,11 +151,6 @@
    "parent": "doc_shf_020_001_step"
   },
   {
-   "child": "doc_shf_020_001_drawing_pdf",
-   "link_kind": "ExtraTree",
-   "parent": "doc_shf_020_001_drawing_dxf"
-  },
-  {
    "child": "doc_clp_020_001_3mf",
    "link_kind": "ExtraTree",
    "parent": "doc_clp_020_001_step"
@@ -174,11 +164,6 @@
    "child": "doc_base_100_drawing_dxf",
    "link_kind": "LyTree",
    "parent": "doc_base_100_step"
-  },
-  {
-   "child": "doc_base_100_drawing_pdf",
-   "link_kind": "ExtraTree",
-   "parent": "doc_base_100_drawing_dxf"
   },
   {
    "child": "doc_brg_unit_001_3mf",
@@ -221,11 +206,6 @@
    "parent": "doc_brg_unit_001_step"
   },
   {
-   "child": "doc_brg_unit_001_drawing_pdf",
-   "link_kind": "ExtraTree",
-   "parent": "doc_brg_unit_001_drawing_dxf"
-  },
-  {
    "child": "doc_lsu_100_3mf",
    "link_kind": "ExtraTree",
    "parent": "doc_lsu_100_step"
@@ -259,11 +239,6 @@
    "child": "doc_lsu_100_drawing_dxf",
    "link_kind": "LyTree",
    "parent": "doc_lsu_100_step"
-  },
-  {
-   "child": "doc_lsu_100_drawing_pdf",
-   "link_kind": "ExtraTree",
-   "parent": "doc_lsu_100_drawing_dxf"
   }
  ],
  "documents": [
@@ -282,6 +257,7 @@
    "mimetype": "model/3mf",
    "name": "BRG-HSG-001.3mf",
    "preview": "brg_hsg_001.png",
+   "printout": null,
    "sha1": "788e36401663816511385b0d8cc2bcb44590ce73",
    "used_for_spare": false,
    "xml_id": "doc_brg_hsg_001_3mf"
@@ -301,6 +277,7 @@
    "mimetype": "application/step",
    "name": "BRG-HSG-001.step",
    "preview": null,
+   "printout": null,
    "sha1": "bd081ed4981860bd157da53ca9c9a1c8a536ca73",
    "used_for_spare": false,
    "xml_id": "doc_brg_hsg_001_step"
@@ -320,28 +297,10 @@
    "mimetype": "image/vnd.dxf",
    "name": "BRG-HSG-001-drawing.dxf",
    "preview": "brg_hsg_001_drawing.png",
+   "printout": "BRG-HSG-001-drawing.pdf",
    "sha1": "75ef2ff652c587787d48ebcd9affc7cce2055973",
    "used_for_spare": false,
    "xml_id": "doc_brg_hsg_001_drawing_dxf"
-  },
-  {
-   "desc_modify": null,
-   "document_type": "2d",
-   "engineering_code": "BRG-HSG-001-PDF",
-   "engineering_revision": 0,
-   "engineering_revision_letter": "A",
-   "engineering_state": "draft",
-   "file": "BRG-HSG-001-drawing.pdf",
-   "is_library": false,
-   "linked_products": [
-    "part_brg_hsg_001"
-   ],
-   "mimetype": "application/pdf",
-   "name": "BRG-HSG-001-drawing.pdf",
-   "preview": null,
-   "sha1": "850fa2301451949531355dd3d39bff3f85ae9488",
-   "used_for_spare": false,
-   "xml_id": "doc_brg_hsg_001_drawing_pdf"
   },
   {
    "desc_modify": null,
@@ -358,6 +317,7 @@
    "mimetype": "model/3mf",
    "name": "CVR-090-001.3mf",
    "preview": "cvr_090_001.png",
+   "printout": null,
    "sha1": "8b01bc9770bf9adec78dcf2ee4c16db7b6d71619",
    "used_for_spare": false,
    "xml_id": "doc_cvr_090_001_3mf"
@@ -377,6 +337,7 @@
    "mimetype": "application/step",
    "name": "CVR-090-001.step",
    "preview": null,
+   "printout": null,
    "sha1": "e6d12cf22d4a06dc025cdcc4d5d9cfacba002c6d",
    "used_for_spare": false,
    "xml_id": "doc_cvr_090_001_step"
@@ -396,6 +357,7 @@
    "mimetype": "model/3mf",
    "name": "BSH-030-001.3mf",
    "preview": "bsh_030_001.png",
+   "printout": null,
    "sha1": "ca30c4fb0642cef7c12638905ffc5ea715063b68",
    "used_for_spare": false,
    "xml_id": "doc_bsh_030_001_3mf"
@@ -415,6 +377,7 @@
    "mimetype": "application/step",
    "name": "BSH-030-001.step",
    "preview": null,
+   "printout": null,
    "sha1": "831a3c1128b20296ca070be08a799f9a21ba465c",
    "used_for_spare": false,
    "xml_id": "doc_bsh_030_001_step"
@@ -434,6 +397,7 @@
    "mimetype": "model/3mf",
    "name": "SPC-030-001.3mf",
    "preview": "spc_030_001.png",
+   "printout": null,
    "sha1": "5f9d018b8b6ab14f5b252a247c8adcf1a29aaf0d",
    "used_for_spare": false,
    "xml_id": "doc_spc_030_001_3mf"
@@ -453,6 +417,7 @@
    "mimetype": "application/step",
    "name": "SPC-030-001.step",
    "preview": null,
+   "printout": null,
    "sha1": "0df5d0c554ad40e4a1a092e5765e8168bf71f01b",
    "used_for_spare": false,
    "xml_id": "doc_spc_030_001_step"
@@ -472,6 +437,7 @@
    "mimetype": "model/3mf",
    "name": "CAP-052-001.3mf",
    "preview": "cap_052_001.png",
+   "printout": null,
    "sha1": "e0c17f0a6a5fbc42f9a7016df78af6c853b0b4e1",
    "used_for_spare": false,
    "xml_id": "doc_cap_052_001_3mf"
@@ -491,6 +457,7 @@
    "mimetype": "application/step",
    "name": "CAP-052-001.step",
    "preview": null,
+   "printout": null,
    "sha1": "f0a23b92b03a3e60117a668d680eb32f8cc66e8d",
    "used_for_spare": false,
    "xml_id": "doc_cap_052_001_step"
@@ -510,6 +477,7 @@
    "mimetype": "model/3mf",
    "name": "SCR-M6-020.3mf",
    "preview": "scr_m6_020.png",
+   "printout": null,
    "sha1": "ae36d24cdd2351f3eadba3b774595ec580ee4c59",
    "used_for_spare": false,
    "xml_id": "doc_scr_m6_020_3mf"
@@ -529,6 +497,7 @@
    "mimetype": "application/step",
    "name": "SCR-M6-020.step",
    "preview": null,
+   "printout": null,
    "sha1": "63f3851ec99a2e7bfc37013f7039fc1ac93694e3",
    "used_for_spare": false,
    "xml_id": "doc_scr_m6_020_step"
@@ -548,6 +517,7 @@
    "mimetype": "model/3mf",
    "name": "SCR-M8-030.3mf",
    "preview": "scr_m8_030.png",
+   "printout": null,
    "sha1": "a85d342d577f144063315353e20f9ef50543d900",
    "used_for_spare": false,
    "xml_id": "doc_scr_m8_030_3mf"
@@ -567,6 +537,7 @@
    "mimetype": "application/step",
    "name": "SCR-M8-030.step",
    "preview": null,
+   "printout": null,
    "sha1": "513161a59bbea22fcadfb711a32a636b72d0f72f",
    "used_for_spare": false,
    "xml_id": "doc_scr_m8_030_step"
@@ -586,6 +557,7 @@
    "mimetype": "model/3mf",
    "name": "SHF-020-001.3mf",
    "preview": "shf_020_001.png",
+   "printout": null,
    "sha1": "20a5b86514d190201f9c34957caf2cb1627461cf",
    "used_for_spare": false,
    "xml_id": "doc_shf_020_001_3mf"
@@ -605,6 +577,7 @@
    "mimetype": "application/step",
    "name": "SHF-020-001.step",
    "preview": null,
+   "printout": null,
    "sha1": "a155ad12a39ec6c87eff875f4bca8002470ae050",
    "used_for_spare": false,
    "xml_id": "doc_shf_020_001_step"
@@ -624,28 +597,10 @@
    "mimetype": "image/vnd.dxf",
    "name": "SHF-020-001-drawing.dxf",
    "preview": "shf_020_001_drawing.png",
+   "printout": "SHF-020-001-drawing.pdf",
    "sha1": "5c881db0aaf32ddb29a395e2e45f73cd34c6a3e6",
    "used_for_spare": false,
    "xml_id": "doc_shf_020_001_drawing_dxf"
-  },
-  {
-   "desc_modify": null,
-   "document_type": "2d",
-   "engineering_code": "SHF-020-001-PDF",
-   "engineering_revision": 0,
-   "engineering_revision_letter": "A",
-   "engineering_state": "draft",
-   "file": "SHF-020-001-drawing.pdf",
-   "is_library": false,
-   "linked_products": [
-    "part_shf_020_001"
-   ],
-   "mimetype": "application/pdf",
-   "name": "SHF-020-001-drawing.pdf",
-   "preview": null,
-   "sha1": "014d9c7d2451fe1edfc08448f2f7bbb96b2dc3a1",
-   "used_for_spare": false,
-   "xml_id": "doc_shf_020_001_drawing_pdf"
   },
   {
    "desc_modify": null,
@@ -662,6 +617,7 @@
    "mimetype": "model/3mf",
    "name": "CLP-020-001.3mf",
    "preview": "clp_020_001.png",
+   "printout": null,
    "sha1": "e2a96cf498d8ce3e85bfefd83c8e07a995fa44ff",
    "used_for_spare": false,
    "xml_id": "doc_clp_020_001_3mf"
@@ -681,6 +637,7 @@
    "mimetype": "application/step",
    "name": "CLP-020-001.step",
    "preview": null,
+   "printout": null,
    "sha1": "c1e44ea3e942c24d1d1db502ede25dd3c00d8b84",
    "used_for_spare": false,
    "xml_id": "doc_clp_020_001_step"
@@ -700,6 +657,7 @@
    "mimetype": "model/3mf",
    "name": "BASE-100.3mf",
    "preview": "base_100.png",
+   "printout": null,
    "sha1": "267f4d1bb9f89221289f0b51c1664b931749747a",
    "used_for_spare": false,
    "xml_id": "doc_base_100_3mf"
@@ -719,6 +677,7 @@
    "mimetype": "application/step",
    "name": "BASE-100.step",
    "preview": null,
+   "printout": null,
    "sha1": "fc5c22b9f5516bc4d848e3033625da709a3d0747",
    "used_for_spare": false,
    "xml_id": "doc_base_100_step"
@@ -738,28 +697,10 @@
    "mimetype": "image/vnd.dxf",
    "name": "BASE-100-drawing.dxf",
    "preview": "base_100_drawing.png",
+   "printout": "BASE-100-drawing.pdf",
    "sha1": "0174063b6cadd0b50824364a0e596dc9f7cf49ec",
    "used_for_spare": false,
    "xml_id": "doc_base_100_drawing_dxf"
-  },
-  {
-   "desc_modify": null,
-   "document_type": "2d",
-   "engineering_code": "BASE-100-PDF",
-   "engineering_revision": 0,
-   "engineering_revision_letter": "A",
-   "engineering_state": "draft",
-   "file": "BASE-100-drawing.pdf",
-   "is_library": false,
-   "linked_products": [
-    "part_base_100"
-   ],
-   "mimetype": "application/pdf",
-   "name": "BASE-100-drawing.pdf",
-   "preview": null,
-   "sha1": "2aca8c2e002c58bf9118598004585dd0c814bc79",
-   "used_for_spare": false,
-   "xml_id": "doc_base_100_drawing_pdf"
   },
   {
    "desc_modify": null,
@@ -776,6 +717,7 @@
    "mimetype": "model/3mf",
    "name": "BRG-UNIT-001.3mf",
    "preview": "brg_unit_001.png",
+   "printout": null,
    "sha1": "ee70c9f0e4216d1de3f59e5732ad21780a37932e",
    "used_for_spare": false,
    "xml_id": "doc_brg_unit_001_3mf"
@@ -795,6 +737,7 @@
    "mimetype": "application/step",
    "name": "BRG-UNIT-001.step",
    "preview": null,
+   "printout": null,
    "sha1": "59c10b3cfaaf8e0a9614e69f32c3ed04c9a3478b",
    "used_for_spare": false,
    "xml_id": "doc_brg_unit_001_step"
@@ -814,28 +757,10 @@
    "mimetype": "image/vnd.dxf",
    "name": "BRG-UNIT-001-drawing.dxf",
    "preview": "brg_unit_001_drawing.png",
+   "printout": "BRG-UNIT-001-drawing.pdf",
    "sha1": "284568050e717e239012b902ad558ea8def2da54",
    "used_for_spare": true,
    "xml_id": "doc_brg_unit_001_drawing_dxf"
-  },
-  {
-   "desc_modify": null,
-   "document_type": "2d",
-   "engineering_code": "BRG-UNIT-001-PDF",
-   "engineering_revision": 0,
-   "engineering_revision_letter": "A",
-   "engineering_state": "draft",
-   "file": "BRG-UNIT-001-drawing.pdf",
-   "is_library": false,
-   "linked_products": [
-    "part_brg_unit_001"
-   ],
-   "mimetype": "application/pdf",
-   "name": "BRG-UNIT-001-drawing.pdf",
-   "preview": null,
-   "sha1": "cee96d46a7881e034a338f06c251b8670eeabcd4",
-   "used_for_spare": true,
-   "xml_id": "doc_brg_unit_001_drawing_pdf"
   },
   {
    "desc_modify": null,
@@ -852,6 +777,7 @@
    "mimetype": "model/3mf",
    "name": "LSU-100.3mf",
    "preview": "lsu_100.png",
+   "printout": null,
    "sha1": "22539286fe0067d15cc96f86ae50f4c60e9818b1",
    "used_for_spare": false,
    "xml_id": "doc_lsu_100_3mf"
@@ -871,6 +797,7 @@
    "mimetype": "application/step",
    "name": "LSU-100.step",
    "preview": null,
+   "printout": null,
    "sha1": "23675ed14e5c17b81ca06c6b39c3f0be8f39eb8d",
    "used_for_spare": false,
    "xml_id": "doc_lsu_100_step"
@@ -890,28 +817,10 @@
    "mimetype": "image/vnd.dxf",
    "name": "LSU-100-drawing.dxf",
    "preview": "lsu_100_drawing.png",
+   "printout": "LSU-100-drawing.pdf",
    "sha1": "83696d55582024fd494a58053213c494803fa32d",
    "used_for_spare": true,
    "xml_id": "doc_lsu_100_drawing_dxf"
-  },
-  {
-   "desc_modify": null,
-   "document_type": "2d",
-   "engineering_code": "LSU-100-PDF",
-   "engineering_revision": 0,
-   "engineering_revision_letter": "A",
-   "engineering_state": "draft",
-   "file": "LSU-100-drawing.pdf",
-   "is_library": false,
-   "linked_products": [
-    "part_lsu_100"
-   ],
-   "mimetype": "application/pdf",
-   "name": "LSU-100-drawing.pdf",
-   "preview": null,
-   "sha1": "8d1e9e0574f4987430fbd7d116b80192beb03c68",
-   "used_for_spare": true,
-   "xml_id": "doc_lsu_100_drawing_pdf"
   }
  ],
  "markups": [

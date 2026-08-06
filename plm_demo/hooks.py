@@ -166,6 +166,10 @@ class DemoLoader:
                 values["desc_modify"] = d["desc_modify"]
             if d.get("preview"):
                 values["preview"] = _b64("previews", d["preview"])
+            # a 2D document carries its printable sheet in printout, the way the
+            # CAD client publishes it; the file is not a document of its own
+            if d.get("printout"):
+                values["printout"] = _b64("documents", d["printout"])
             # plm_spare prints the documents flagged here in the Spare Parts Manual
             if d.get("used_for_spare"):
                 values["used_for_spare"] = True
