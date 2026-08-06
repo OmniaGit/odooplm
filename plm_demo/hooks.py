@@ -166,6 +166,9 @@ class DemoLoader:
                 values["desc_modify"] = d["desc_modify"]
             if d.get("preview"):
                 values["preview"] = _b64("previews", d["preview"])
+            # plm_spare prints the documents flagged here in the Spare Parts Manual
+            if d.get("used_for_spare"):
+                values["used_for_spare"] = True
             # The odooPLM context is what the CAD client uses: it flags the
             # attachment as a PLM document (is_plm), attaches it to the PLM access
             # model and runs the uniqueness checks. Without it the document is a

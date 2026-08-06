@@ -152,6 +152,11 @@ ASSEMBLIES = [
 # parts that are consumed in service -> spare part BOM of the bearing unit
 SPARES = ("BSH-030-001", "SPC-030-001", "SCR-M6-020")
 
+# assemblies that get a ballooned 2D sheet: the root of the spare BOM, which the
+# Spare Parts Manual prints, and the top assembly, which is what a customer asks
+# for first. Their drawings are the ones flagged used_for_spare.
+ASSEMBLY_DRAWINGS = ("BRG-UNIT-001", "LSU-100")
+
 DRAWN = tuple(code for code, _n, _b, _m, _d, drawing in CATALOG if drawing)
 
 
@@ -225,19 +230,12 @@ def render(stl_path, target, size=(4.6, 3.8), dpi=110, elev=24, azim=-58):
     plt.close(fig)
 
 
-def drawing_sheet(code, name, material, shape, dxf_path, pdf_path, png_path):
-    """An A4 sheet with two views and a title block — a real 2D PLM document."""
-    import ezdxf
-    from ezdxf.addons.drawing import RenderContext, Frontend
-    from ezdxf.addons.drawing.config import (BackgroundPolicy, ColorPolicy,
-                                             Configuration)
-    from ezdxf.addons.drawing.matplotlib import MatplotlibBackend
-    from ezdxf.addons.drawing.properties import LayoutProperties
+SHEET_W, SHEET_H = 297.0, 210.0
 
-    bb = shape.val().BoundingBox()
-    doc = ezdxf.new("R2010", setup=True)
-    msp = doc.modelspace()
-    W, H = 297.0, 210.0
+
+def sheet_frame(msp, code, name, material, scale_text="SCALE 1:2"):
+    """Border and title block, shared by the part and the assembly sheets."""
+    W, H = SHEET_W, SHEET_H
     msp.add_lwpolyline([(0, 0), (W, 0), (W, H), (0, H)], close=True)
     msp.add_lwpolyline([(5, 5), (W - 5, 5), (W - 5, H - 5), (5, H - 5)], close=True)
 
@@ -246,12 +244,141 @@ def drawing_sheet(code, name, material, shape, dxf_path, pdf_path, png_path):
                         (tb_x + tb_w, tb_y + tb_h), (tb_x, tb_y + tb_h)], close=True)
     for dy in (10, 20, 30):
         msp.add_line((tb_x, tb_y + dy), (tb_x + tb_w, tb_y + dy))
-    for dy, text in ((2, "SCALE 1:2        SHEET 1/1"),
+    for dy, text in ((2, "%s        SHEET 1/1" % scale_text),
                      (12, "MATERIAL  %s" % material),
                      (22, name.upper()[:34]),
                      (32, "%s            REV A" % code)):
         msp.add_text(text, height=3.0).set_placement((tb_x + 3, tb_y + dy))
     msp.add_text("OmniaSolutions — OdooPLM demo data", height=2.6).set_placement((10, H - 12))
+    return tb_x, tb_y, tb_w, tb_h
+
+
+def rasterise(doc, msp, pdf_path, png_path):
+    """White sheet, black linework — the dark ezdxf default is not a drawing."""
+    from ezdxf.addons.drawing import RenderContext, Frontend
+    from ezdxf.addons.drawing.config import (BackgroundPolicy, ColorPolicy,
+                                             Configuration)
+    from ezdxf.addons.drawing.matplotlib import MatplotlibBackend
+    from ezdxf.addons.drawing.properties import LayoutProperties
+
+    fig = plt.figure(figsize=(11.7, 8.3), facecolor="white")
+    ax = fig.add_axes([0, 0, 1, 1])
+    ax.set_facecolor("white")
+    context = RenderContext(doc)
+    layout_properties = LayoutProperties.from_layout(msp)
+    layout_properties.set_colors("#ffffff")
+    config = Configuration(color_policy=ColorPolicy.BLACK,
+                           background_policy=BackgroundPolicy.WHITE)
+    Frontend(context, MatplotlibBackend(ax), config=config).draw_layout(
+        msp, finalize=True, layout_properties=layout_properties)
+    fig.savefig(pdf_path)
+    fig.savefig(png_path, dpi=100)
+    plt.close(fig)
+
+
+def assembly_sheet(code, name, shape, items, dxf_path, pdf_path, png_path):
+    """An assembly sheet with ballooned positions and a parts list.
+
+    This is what the Spare Parts Manual prints: a front elevation of the assembly
+    where every component carries the balloon of its position in the bill of
+    material, so a reader can go from a number in the parts list to the part on
+    the drawing. `items` are dicts with pos, code, qty and the component box in
+    model space (x, z, w, h) — the placement the assembly was built from.
+    """
+    import ezdxf
+    from ezdxf.enums import TextEntityAlignment
+
+    doc = ezdxf.new("R2010", setup=True)
+    msp = doc.modelspace()
+
+    bb = shape.val().BoundingBox()
+    span_x = max(bb.xmax - bb.xmin, 1.0)
+    span_z = max(bb.zmax - bb.zmin, 1.0)
+    view_w, view_h = 150.0, 85.0
+    fit = min(view_w / span_x, view_h / span_z)
+    # a drawing states a standard scale, not the number that happened to fit
+    scale, label = 0.01, "1:100"
+    for nice, text in ((1.0, "1:1"), (0.5, "1:2"), (0.4, "1:2.5"), (0.2, "1:5"),
+                       (0.1, "1:10"), (0.05, "1:20"), (0.02, "1:50")):
+        if nice <= fit:
+            scale, label = nice, text
+            break
+    sheet_frame(msp, code, name, "ASSEMBLY", "SCALE %s" % label)
+
+    ox, oy = 95.0, 135.0
+    cx, cz = (bb.xmax + bb.xmin) / 2.0, (bb.zmax + bb.zmin) / 2.0
+
+    def to_sheet(x, z):
+        return ox + (x - cx) * scale, oy + (z - cz) * scale
+
+    # the assembly envelope, then every component as a projected box
+    x0, y0 = to_sheet(bb.xmin, bb.zmin)
+    x1, y1 = to_sheet(bb.xmax, bb.zmax)
+    msp.add_lwpolyline([(x0, y0), (x1, y0), (x1, y1), (x0, y1)], close=True,
+                       dxfattribs={"linetype": "DASHED"})
+    msp.add_line((x0 - 6, oy), (x1 + 6, oy), dxfattribs={"linetype": "CENTER"})
+
+    targets = {}
+    for item in items:
+        px0, py0 = to_sheet(item["x"] - item["w"] / 2.0, item["z"] - item["h"] / 2.0)
+        px1, py1 = to_sheet(item["x"] + item["w"] / 2.0, item["z"] + item["h"] / 2.0)
+        msp.add_lwpolyline([(px0, py0), (px1, py0), (px1, py1), (px0, py1)], close=True)
+        targets[item["pos"]] = ((px0 + px1) / 2.0, (py0 + py1) / 2.0)
+
+    # Balloons down both sides. They are spread over a fixed band rather than over
+    # the projected height: a long flat assembly would otherwise stack them on top
+    # of each other.
+    # side chosen by where the component actually sits, then ordered by height, so
+    # the leaders fan out instead of crossing each other
+    ordered = sorted(items, key=lambda i: -targets[i["pos"]][1])
+    left = [i for i in ordered if targets[i["pos"]][0] <= ox]
+    right = [i for i in ordered if targets[i["pos"]][0] > ox]
+    band = max(y1 - y0, 11.0 * max(len(left), len(right)))
+    top, bottom = oy + band / 2.0, oy - band / 2.0
+    for column, xb in ((left, x0 - 20.0), (right, x1 + 20.0)):
+        if not column:
+            continue
+        step = (top - bottom) / (len(column) + 1) if len(column) > 1 else 0
+        for n, item in enumerate(column):
+            yb = top - (n + 1) * step if step else oy
+            msp.add_circle((xb, yb), 4.0)
+            msp.add_text(str(item["pos"]), height=3.0).set_placement(
+                (xb, yb), align=TextEntityAlignment.MIDDLE_CENTER)
+            tx, ty = targets[item["pos"]]
+            lead_x = xb + (4.0 if xb < tx else -4.0)
+            msp.add_line((lead_x, yb), (tx, ty))
+            msp.add_circle((tx, ty), 0.8)
+
+    # parts list, read bottom-up like a real one, sitting on the title block
+    tb_x, tb_y, tb_w, tb_h = SHEET_W - 105, 5, 100, 40
+    row_h, ty0 = 6.0, tb_y + tb_h
+    columns = (0.0, 12.0, 74.0, 100.0)
+    for n in range(len(items) + 1):
+        y = ty0 + n * row_h
+        msp.add_lwpolyline([(tb_x, y), (tb_x + tb_w, y), (tb_x + tb_w, y + row_h),
+                            (tb_x, y + row_h)], close=True)
+        for dx in columns[1:-1]:
+            msp.add_line((tb_x + dx, y), (tb_x + dx, y + row_h))
+        if n < len(items):
+            item = items[n]
+            cells = (str(item["pos"]), item["code"], "%g" % item["qty"])
+        else:
+            cells = ("POS", "PART NUMBER", "QTY")
+        for dx, text in zip(columns[:-1], cells):
+            msp.add_text(text, height=2.6).set_placement((tb_x + dx + 2, y + 1.8))
+
+    doc.saveas(dxf_path)
+    rasterise(doc, msp, pdf_path, png_path)
+
+
+def drawing_sheet(code, name, material, shape, dxf_path, pdf_path, png_path):
+    """An A4 sheet with two views and a title block — a real 2D PLM document."""
+    import ezdxf
+
+    bb = shape.val().BoundingBox()
+    doc = ezdxf.new("R2010", setup=True)
+    msp = doc.modelspace()
+    sheet_frame(msp, code, name, material)
 
     # two orthographic outlines straight from the solid, at 1:2
     scale = 0.5
@@ -273,21 +400,7 @@ def drawing_sheet(code, name, material, shape, dxf_path, pdf_path, png_path):
     msp.add_text("FRONT", height=3.4).set_placement((66, 96))
     msp.add_text("SIDE", height=3.4).set_placement((193, 60))
     doc.saveas(dxf_path)
-
-    fig = plt.figure(figsize=(11.7, 8.3), facecolor="white")
-    ax = fig.add_axes([0, 0, 1, 1])
-    ax.set_facecolor("white")
-    # a white sheet with black linework, rather than the dark default
-    context = RenderContext(doc)
-    layout_properties = LayoutProperties.from_layout(msp)
-    layout_properties.set_colors("#ffffff")
-    config = Configuration(color_policy=ColorPolicy.BLACK,
-                           background_policy=BackgroundPolicy.WHITE)
-    Frontend(context, MatplotlibBackend(ax), config=config).draw_layout(
-        msp, finalize=True, layout_properties=layout_properties)
-    fig.savefig(pdf_path)
-    fig.savefig(png_path, dpi=100)
-    plt.close(fig)
+    rasterise(doc, msp, pdf_path, png_path)
 
 
 def markup_canvas(text, cx, cy):
@@ -330,7 +443,8 @@ def main():
     products, documents, relations, boms = [], [], [], []
     shapes, doc_by_code = {}, {}
 
-    def add_document(fname, doc_type, code, part_xml_id, preview=None, mimetype=None):
+    def add_document(fname, doc_type, code, part_xml_id, preview=None, mimetype=None,
+                     used_for_spare=False):
         with open(os.path.join(docs_dir, fname), "rb") as fh:
             payload = fh.read()
         entry = {
@@ -349,6 +463,9 @@ def main():
             "is_library": False,
             "sha1": hashlib.sha1(payload).hexdigest(),
             "preview": preview,
+            # what plm_spare prints in the Spare Parts Manual: the assembly sheets
+            # of the products a spare BOM hangs from, not the single part drawings
+            "used_for_spare": bool(used_for_spare),
             "linked_products": [part_xml_id],
         }
         documents.append(entry)
@@ -389,12 +506,16 @@ def main():
             "image": preview_name,
         })
 
-        model_doc = add_document("%s.3mf" % code, "3d", code, xml_id,
-                                 preview=preview_name, mimetype="model/3mf")
-        step_doc = add_document("%s.step" % code, "3d", "%s-STEP" % code, xml_id,
-                                mimetype="application/step")
+        # The STEP is the model: the hierarchy, the drawings and the support files
+        # all hang from it. The 3MF is what the web viewer renders — an extra file
+        # of the model, exactly like the CAD client uploads it (see the ExtraTree
+        # branch of plm/controllers/main.py) — and never a parent of anything.
+        view_doc = add_document("%s.3mf" % code, "3d", code, xml_id,
+                                preview=preview_name, mimetype="model/3mf")
+        model_doc = add_document("%s.step" % code, "3d", "%s-STEP" % code, xml_id,
+                                 mimetype="application/step")
         doc_by_code[code] = model_doc
-        relations.append({"parent": model_doc["xml_id"], "child": step_doc["xml_id"],
+        relations.append({"parent": model_doc["xml_id"], "child": view_doc["xml_id"],
                           "link_kind": "ExtraTree"})
 
         if wants_drawing:
@@ -405,10 +526,13 @@ def main():
             dxf_doc = add_document("%s-drawing.dxf" % code, "2d", "%s-DRW" % code, xml_id,
                                    preview="%s_drawing.png" % slug(code),
                                    mimetype="image/vnd.dxf")
-            add_document("%s-drawing.pdf" % code, "2d", "%s-PDF" % code, xml_id,
-                         mimetype="application/pdf")
-            relations.append({"parent": dxf_doc["xml_id"], "child": model_doc["xml_id"],
+            pdf_doc = add_document("%s-drawing.pdf" % code, "2d", "%s-PDF" % code, xml_id,
+                                   mimetype="application/pdf")
+            # model -> drawing (LyTree), drawing -> its printout (ExtraTree)
+            relations.append({"parent": model_doc["xml_id"], "child": dxf_doc["xml_id"],
                               "link_kind": "LyTree"})
+            relations.append({"parent": dxf_doc["xml_id"], "child": pdf_doc["xml_id"],
+                              "link_kind": "ExtraTree"})
 
     # ----------------------------------------------------------- assemblies
     # placement: (x, y, z) or (x, y, z, degrees about Y) for parts modelled along Z
@@ -463,19 +587,49 @@ def main():
             "weight": round(compound.Volume() * STEEL, 4), "description": None,
             "image": preview_name,
         })
-        model_doc = add_document("%s.3mf" % code, "3d", code, xml_id,
-                                 preview=preview_name, mimetype="model/3mf")
-        step_doc = add_document("%s.step" % code, "3d", "%s-STEP" % code, xml_id,
-                                mimetype="application/step")
+        view_doc = add_document("%s.3mf" % code, "3d", code, xml_id,
+                                preview=preview_name, mimetype="model/3mf")
+        model_doc = add_document("%s.step" % code, "3d", "%s-STEP" % code, xml_id,
+                                 mimetype="application/step")
         doc_by_code[code] = model_doc
-        relations.append({"parent": model_doc["xml_id"], "child": step_doc["xml_id"],
+        relations.append({"parent": model_doc["xml_id"], "child": view_doc["xml_id"],
                           "link_kind": "ExtraTree"})
-        # assembly document -> component documents
+        # the hierarchy runs model to model, never through the viewer files
         for child_code, _qty in children:
             child_doc = doc_by_code.get(child_code)
             if child_doc:
                 relations.append({"parent": model_doc["xml_id"],
                                   "child": child_doc["xml_id"], "link_kind": "HiTree"})
+
+        if code in ASSEMBLY_DRAWINGS:
+            items = []
+            for i, (child_code, qty) in enumerate(children):
+                place = placements[code].get(child_code, [(0, 0, 0)])[0]
+                child_shape = assembly_shapes.get(child_code) or shapes.get(child_code)
+                cbb = child_shape.val().BoundingBox()
+                mx = (cbb.xmax + cbb.xmin) / 2.0
+                mz = (cbb.zmax + cbb.zmin) / 2.0
+                w, h = cbb.xmax - cbb.xmin, cbb.zmax - cbb.zmin
+                if len(place) > 3 and place[3]:
+                    # laid down about Y: the local Z becomes the sheet's X
+                    w, h = h, w
+                    mx, mz = mz, -mx
+                items.append({"pos": i + 1, "code": child_code, "qty": float(qty),
+                              "x": place[0] + mx, "z": place[2] + mz, "w": w, "h": h})
+
+            dxf = os.path.join(docs_dir, "%s-drawing.dxf" % code)
+            pdf = os.path.join(docs_dir, "%s-drawing.pdf" % code)
+            png = os.path.join(prev_dir, "%s_drawing.png" % slug(code))
+            assembly_sheet(code, name, assembly_shapes[code], items, dxf, pdf, png)
+            dxf_doc = add_document("%s-drawing.dxf" % code, "2d", "%s-DRW" % code, xml_id,
+                                   preview="%s_drawing.png" % slug(code),
+                                   mimetype="image/vnd.dxf", used_for_spare=True)
+            pdf_doc = add_document("%s-drawing.pdf" % code, "2d", "%s-PDF" % code, xml_id,
+                                   mimetype="application/pdf", used_for_spare=True)
+            relations.append({"parent": model_doc["xml_id"], "child": dxf_doc["xml_id"],
+                              "link_kind": "LyTree"})
+            relations.append({"parent": dxf_doc["xml_id"], "child": pdf_doc["xml_id"],
+                              "link_kind": "ExtraTree"})
 
         boms.append({
             "xml_id": "bom_normal_%s" % slug(code), "code": None, "type": "normal",
