@@ -4,31 +4,37 @@
    "code": null,
    "lines": [
     {
+     "itemnum": 1,
      "product": "part_brg_hsg_001",
      "qty": 1.0,
      "sequence": 10
     },
     {
+     "itemnum": 2,
      "product": "part_bsh_030_001",
      "qty": 1.0,
      "sequence": 20
     },
     {
+     "itemnum": 3,
      "product": "part_spc_030_001",
      "qty": 1.0,
      "sequence": 30
     },
     {
+     "itemnum": 4,
      "product": "part_cvr_090_001",
      "qty": 1.0,
      "sequence": 40
     },
     {
+     "itemnum": 5,
      "product": "part_cap_052_001",
      "qty": 1.0,
      "sequence": 50
     },
     {
+     "itemnum": 6,
      "product": "part_scr_m6_020",
      "qty": 4.0,
      "sequence": 60
@@ -43,16 +49,19 @@
    "code": null,
    "lines": [
     {
+     "itemnum": 2,
      "product": "part_bsh_030_001",
      "qty": 1.0,
      "sequence": 20
     },
     {
+     "itemnum": 3,
      "product": "part_spc_030_001",
      "qty": 1.0,
      "sequence": 30
     },
     {
+     "itemnum": 6,
      "product": "part_scr_m6_020",
      "qty": 4.0,
      "sequence": 60
@@ -67,26 +76,31 @@
    "code": null,
    "lines": [
     {
+     "itemnum": 1,
      "product": "part_base_100",
      "qty": 1.0,
      "sequence": 10
     },
     {
+     "itemnum": 2,
      "product": "part_brg_unit_001",
      "qty": 2.0,
      "sequence": 20
     },
     {
+     "itemnum": 3,
      "product": "part_shf_020_001",
      "qty": 1.0,
      "sequence": 30
     },
     {
+     "itemnum": 4,
      "product": "part_clp_020_001",
      "qty": 2.0,
      "sequence": 40
     },
     {
+     "itemnum": 5,
      "product": "part_scr_m8_030",
      "qty": 8.0,
      "sequence": 50
@@ -96,6 +110,33 @@
    "product_qty": 1.0,
    "type": "normal",
    "xml_id": "bom_normal_lsu_100"
+  },
+  {
+   "code": null,
+   "lines": [
+    {
+     "itemnum": 2,
+     "product": "part_brg_unit_001",
+     "qty": 2.0,
+     "sequence": 20
+    },
+    {
+     "itemnum": 4,
+     "product": "part_clp_020_001",
+     "qty": 2.0,
+     "sequence": 40
+    },
+    {
+     "itemnum": 5,
+     "product": "part_scr_m8_030",
+     "qty": 8.0,
+     "sequence": 50
+    }
+   ],
+   "product": "part_lsu_100",
+   "product_qty": 1.0,
+   "type": "spbom",
+   "xml_id": "bom_spare_lsu_100"
   }
  ],
  "chatter": [],
@@ -758,7 +799,7 @@
    "name": "BRG-UNIT-001-drawing.dxf",
    "preview": "brg_unit_001_drawing.png",
    "printout": "BRG-UNIT-001-drawing.pdf",
-   "sha1": "284568050e717e239012b902ad558ea8def2da54",
+   "sha1": "b12e8d014624c871c9bdebd6847841b71c499a3f",
    "used_for_spare": true,
    "xml_id": "doc_brg_unit_001_drawing_dxf"
   },
@@ -818,7 +859,7 @@
    "name": "LSU-100-drawing.dxf",
    "preview": "lsu_100_drawing.png",
    "printout": "LSU-100-drawing.pdf",
-   "sha1": "83696d55582024fd494a58053213c494803fa32d",
+   "sha1": "dfafd0c50fd582c72459b90ca4d32c7369c10d41",
    "used_for_spare": true,
    "xml_id": "doc_lsu_100_drawing_dxf"
   }

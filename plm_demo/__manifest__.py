@@ -42,7 +42,8 @@ with a complete little product: **LSU-100**, a linear shaft support unit made of
 base plate, two bearing units and a shaft.
 
 * 12 parts over three BOM levels, with materials and weights taken from the solids
-* a spare part BOM for the wear items of the bearing unit
+* a spare part BOM for each assembly, whose rows keep the position they carry on
+  the drawing: the balloon on the sheet is the itemnum of the BOM line
 * 29 documents: a 3MF and a STEP for every part, DXF drawing sheets for the
   machined ones and for the two assemblies, each carrying its printable PDF in
   the printout field, all with previews

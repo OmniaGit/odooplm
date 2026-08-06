@@ -149,8 +149,13 @@ ASSEMBLIES = [
         ("CLP-020-001", 2), ("SCR-M8-030", 8)]),
 ]
 
-# parts that are consumed in service -> spare part BOM of the bearing unit
-SPARES = ("BSH-030-001", "SPC-030-001", "SCR-M6-020")
+# what is replaced in service, per assembly -> one spare BOM each. The lines keep
+# the position they have on the assembly drawing, so a reader goes from a balloon
+# on the sheet straight to the row of the spare BOM.
+SPARES = {
+    "BRG-UNIT-001": ("BSH-030-001", "SPC-030-001", "SCR-M6-020"),
+    "LSU-100": ("BRG-UNIT-001", "CLP-020-001", "SCR-M8-030"),
+}
 
 # assemblies that get a ballooned 2D sheet: the root of the spare BOM, which the
 # Spare Parts Manual prints, and the top assembly, which is what a customer asks
@@ -352,7 +357,7 @@ def assembly_sheet(code, name, shape, items, dxf_path, pdf_path, png_path):
     # parts list, read bottom-up like a real one, sitting on the title block
     tb_x, tb_y, tb_w, tb_h = SHEET_W - 105, 5, 100, 40
     row_h, ty0 = 6.0, tb_y + tb_h
-    columns = (0.0, 12.0, 74.0, 100.0)
+    columns = (0.0, 12.0, 64.0, 80.0, 100.0)
     for n in range(len(items) + 1):
         y = ty0 + n * row_h
         msp.add_lwpolyline([(tb_x, y), (tb_x + tb_w, y), (tb_x + tb_w, y + row_h),
@@ -361,9 +366,11 @@ def assembly_sheet(code, name, shape, items, dxf_path, pdf_path, png_path):
             msp.add_line((tb_x + dx, y), (tb_x + dx, y + row_h))
         if n < len(items):
             item = items[n]
-            cells = (str(item["pos"]), item["code"], "%g" % item["qty"])
+            # the spare column is the printed half of the spare BOM: same positions
+            cells = (str(item["pos"]), item["code"], "%g" % item["qty"],
+                     "YES" if item["spare"] else "")
         else:
-            cells = ("POS", "PART NUMBER", "QTY")
+            cells = ("POS", "PART NUMBER", "QTY", "SPARE")
         for dx, text in zip(columns[:-1], cells):
             msp.add_text(text, height=2.6).set_placement((tb_x + dx + 2, y + 1.8))
 
@@ -615,6 +622,7 @@ def main():
                     w, h = h, w
                     mx, mz = mz, -mx
                 items.append({"pos": i + 1, "code": child_code, "qty": float(qty),
+                              "spare": child_code in SPARES.get(code, ()),
                               "x": place[0] + mx, "z": place[2] + mz, "w": w, "h": h})
 
             dxf = os.path.join(docs_dir, "%s-drawing.dxf" % code)
@@ -628,20 +636,27 @@ def main():
             relations.append({"parent": model_doc["xml_id"], "child": dxf_doc["xml_id"],
                               "link_kind": "LyTree"})
 
+        # itemnum is what the CAD client writes: the balloon the component carries
+        # on the drawing that declares the BOM. Both BOMs quote the same number, so
+        # the spare rows read as a subset of the sheet rather than a new numbering.
+        def bom_line(position, child, qty):
+            return {"product": "part_%s" % slug(child), "qty": float(qty),
+                    "sequence": position * 10, "itemnum": position}
+
         boms.append({
             "xml_id": "bom_normal_%s" % slug(code), "code": None, "type": "normal",
             "product": xml_id, "product_qty": 1.0,
-            "lines": [{"product": "part_%s" % slug(child), "qty": float(qty),
-                       "sequence": (i + 1) * 10}
+            "lines": [bom_line(i + 1, child, qty)
                       for i, (child, qty) in enumerate(children)],
         })
-        if code == "BRG-UNIT-001":
+        spare_children = SPARES.get(code, ())
+        if spare_children:
             boms.append({
                 "xml_id": "bom_spare_%s" % slug(code), "code": None, "type": "spbom",
                 "product": xml_id, "product_qty": 1.0,
-                "lines": [{"product": "part_%s" % slug(child), "qty": float(qty),
-                           "sequence": (i + 1) * 10}
-                          for i, (child, qty) in enumerate(children) if child in SPARES],
+                "lines": [bom_line(i + 1, child, qty)
+                          for i, (child, qty) in enumerate(children)
+                          if child in spare_children],
             })
 
     # -------------------------------------------------------------- markups

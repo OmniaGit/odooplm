@@ -127,11 +127,17 @@ class DemoLoader:
                 component = self._get(line["product"])
                 if not component:
                     continue
-                lines.append((0, 0, {
+                values = {
                     "product_id": component.product_variant_id.id,
                     "product_qty": line["qty"],
                     "sequence": line["sequence"] or 1,
-                }))
+                }
+                # the balloon the component carries on the assembly drawing; the
+                # CAD client fills the same field on check-in
+                if line.get("itemnum"):
+                    values["itemnum"] = line["itemnum"]
+                    values["itemlbl"] = str(line["itemnum"])
+                lines.append((0, 0, values))
             if not lines:
                 continue
             self._register(b["xml_id"], self.env["mrp.bom"].create({
