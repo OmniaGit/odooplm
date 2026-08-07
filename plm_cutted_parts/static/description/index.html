@@ -1,61 +1,192 @@
+<!-- The Apps store rewrites every <a> of a module description into a <span>, so a
+     link here looks clickable and does nothing: addresses are printed as text.
+     Inline styles, the bootstrap grid and the oe_ classes survive. The palette is
+     the company one: #CC0000 for the accents, #000000 for the outlines. -->
+<div class="container">
+    <div class="oe_styling_v8">
+        <div class="container p-3 mb-3">
+            <div class="container pt-0 px-4 pb-5">
 
-<section class="oe_container oe_dark">
-    <div class="oe_row oe_spaced">
-        <h2 class="oe_slogan">Plm Cutted Part Extention</h2>
-        <div class="oe_span12">
-            <p class="oe_mt32">
-				This module allows you to improve the capability of your odoo plm for managing the cutted parts 
-            </p>
-            <p class="oe_mt32">
-            	How it works:
-            	<ul>
-					<li>Go to Search on Engineering Parts and select a product</li>
-					<li>Go to the action Menu and click on the Create Normal Bom
-						<img src="action_menu.PNG"/>
-					</li> 
-					<li>Here you can select the type of the action for row material that could be
-						<img src="wizard_0.PNG"/>
-					</li>
-            	</ul>
-            	<p>Options are</p>
-            	<ul>
-            	   <li>None:
-            	       <hr style="height:2px">
-            	       <br></br>
-            	       No change will be performed on the bom
-            	   </li>
-            	   <li>Explode:
-            	       <hr style="height:2px">
-            	       <div class="oe_span12">
-	            	       <div class="oe_span6">
-					            <p class="oe_mt32">
-					                The explose functionality will create an extra level of B.O.M  
-					            </p>
-				            </div>
-				            <div class="oe_span6">
-	                            <img src="cutted_explosed.png"/>
-	                       </div>
-                       </div>
-            	       <br></br>
-            	   </li>
-            	   <li>Replace:
-            	       <hr style="height:2px">
-                       <div class="oe_span12">
-                            <div class="oe_span6">
-                                <img src="cutted_replaced.png"/>
-                           </div>
-                           <div class="oe_span6">
-                                <p class="oe_mt32">
-                                    The replace functionality will repalce the product that own the raw materia replacing it  
-                                </p>
+                <div class="row">
+                    <div class="col-6 bg-white" style="padding:4rem 1rem !important;">
+                        <div class="d-md-flex justify-content-center mb-2">
+                            <img src="odooPLM_logo.png" style="width:60%">
+                        </div>
+                    </div>
+                    <div class="col-6 bg-white" style="padding:4rem 1rem !important;">
+                        <div class="d-md-flex justify-content-center mb-2">
+                            <div>
+                                <h2 class="oe_slogan" style="color:#CC0000">Cutted Parts</h2>
                             </div>
-                       </div>
-            	   </li>
-            	</ul>
-            	<p>
-            	After that you have your normal bom created
-            	</p>
-            <p>We also add a report on the bom in order to see all the cutted parts related to the B.O.M</p>
-         </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12 px-4">
+                        <h2 class="font-weight-bold"
+                            style="font-family:'Montserrat', sans-serif !important; font-size:2rem; color:#CC0000">
+                            Overview
+                        </h2>
+                        <hr style="border: 2px solid #000000 !important; background-color: #000000 !important; width: 50px !important; margin-left: 0 !important; margin-top: 8px;">
+                        <h3 class="oe_slogan" style="text-align:left; color:#000000">
+                            Raw material that becomes a part, handled in the structure instead of in someone's head.
+                        </h3>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12 px-4">
+                        <p style="font-size:18px; text-align:justify">
+                            This module improves the capability of your OdooPLM for managing the
+                            cutted parts.
+                        </p>
+                        <p style="font-size:18px; text-align:justify">
+                            A shaft is a bar cut to length, a plate is a sheet the laser cut out. On
+                            the drawing there is one part; in the warehouse there is raw material and
+                            an operation. Where that distinction is not in the structure it lives in
+                            the memory of whoever prepares the orders.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="row" style="margin-top:2rem">
+                    <div class="col-12 px-4">
+                        <h2 class="font-weight-bold"
+                            style="font-family:'Montserrat', sans-serif !important; font-size:2rem; color:#CC0000">
+                            What it does
+                        </h2>
+                        <hr style="border: 2px solid #000000 !important; background-color: #000000 !important; width: 50px !important; margin-left: 0 !important; margin-top: 8px;">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6 px-4">
+                        <h3 class="oe_slogan" style="color:#000000; text-align:left; font-size:1.3rem">From the part, in one action</h3>
+                        <p style="font-size:18px; text-align:justify">
+                            From <b>Search on Engineering Parts</b> select a product and run <b>Create
+                            Normal Bom</b> from the action menu. The treatment of the raw material is
+                            chosen there, when the structure is created.
+                        </p>
+                        <h3 class="oe_slogan" style="color:#000000; text-align:left; font-size:1.3rem">None</h3>
+                        <p style="font-size:18px; text-align:justify">
+                            No change is performed on the bill of material: the part stays as it is.
+                        </p>
+                    </div>
+                    <div class="col-6 px-4">
+                        <h3 class="oe_slogan" style="color:#000000; text-align:left; font-size:1.3rem">Explode</h3>
+                        <p style="font-size:18px; text-align:justify">
+                            The explode option creates an extra level of bill of material, so the raw
+                            material appears as its own step under the finished part.
+                        </p>
+                        <h3 class="oe_slogan" style="color:#000000; text-align:left; font-size:1.3rem">Replace</h3>
+                        <p style="font-size:18px; text-align:justify">
+                            The replace option replaces the product that owns the raw material with
+                            the raw material itself.
+                        </p>
+                        <h3 class="oe_slogan" style="color:#000000; text-align:left; font-size:1.3rem">And a report to check it</h3>
+                        <p style="font-size:18px; text-align:justify">
+                            A report on the bill of material lists all the cutted parts related to it,
+                            so what was exploded or replaced can be read at a glance instead of being
+                            inferred.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="row" style="margin-top:10px">
+                    <div class="col-12 px-4">
+                        <div style="max-width:520px; margin:0 0 26px 10%">
+                            <img class="oe_picture" src="action_menu.PNG"
+                                 style="width:100%; height:auto; border:2px solid #000000; border-radius:12px; box-shadow:0 3px 8px rgba(0,0,0,0.18)"/>
+                            <p style="font-size:15px; text-align:left; color:#000000; margin-top:8px">
+                                The action menu on the engineering parts, where the structure is created.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row" style="margin-top:10px">
+                    <div class="col-12 px-4">
+                        <div style="max-width:520px; margin:0 0 26px 10%">
+                            <img class="oe_picture" src="wizard_0.PNG"
+                                 style="width:100%; height:auto; border:2px solid #000000; border-radius:12px; box-shadow:0 3px 8px rgba(0,0,0,0.18)"/>
+                            <p style="font-size:15px; text-align:left; color:#000000; margin-top:8px">
+                                The choice that decides how raw material is treated: none, explode or
+                            replace.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row" style="margin-top:10px">
+                    <div class="col-12 px-4">
+                        <div style="max-width:520px; margin:0 0 26px 10%">
+                            <img class="oe_picture" src="cutted_explosed.png"
+                                 style="width:100%; height:auto; border:2px solid #000000; border-radius:12px; box-shadow:0 3px 8px rgba(0,0,0,0.18)"/>
+                            <p style="font-size:15px; text-align:left; color:#000000; margin-top:8px">
+                                Exploded: the raw material becomes an extra level of the structure.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row" style="margin-top:10px">
+                    <div class="col-12 px-4">
+                        <div style="max-width:520px; margin:0 0 26px 10%">
+                            <img class="oe_picture" src="cutted_replaced.png"
+                                 style="width:100%; height:auto; border:2px solid #000000; border-radius:12px; box-shadow:0 3px 8px rgba(0,0,0,0.18)"/>
+                            <p style="font-size:15px; text-align:left; color:#000000; margin-top:8px">
+                                Replaced: the part that owns the raw material gives way to the material
+                            itself.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row" style="margin-top:2rem">
+                    <div class="col-12 px-4">
+                        <ul style="padding-left:0; list-style-type:none; margin:0">
+                            <li style="font-size:18px; color:#000000; margin:12px 0">
+                                <span style="color:#CC0000; font-weight:700">&#9642;</span>&nbsp;&nbsp;Raw material handled when the normal BOM is created
+                            </li>
+                            <li style="font-size:18px; color:#000000; margin:12px 0">
+                                <span style="color:#CC0000; font-weight:700">&#9642;</span>&nbsp;&nbsp;Three treatments: none, explode, replace
+                            </li>
+                            <li style="font-size:18px; color:#000000; margin:12px 0">
+                                <span style="color:#CC0000; font-weight:700">&#9642;</span>&nbsp;&nbsp;An extra BOM level where the cut deserves one
+                            </li>
+                            <li style="font-size:18px; color:#000000; margin:12px 0">
+                                <span style="color:#CC0000; font-weight:700">&#9642;</span>&nbsp;&nbsp;A report listing the cutted parts of a structure
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="row" style="margin-top:2rem">
+                    <div class="col-12 px-4">
+                        <p style="font-size:18px; text-align:justify">
+                            Part of <b>OdooPLM</b>, the Product Lifecycle Management suite by
+                            OmniaSolutions. It requires the <b>plm</b> module, and it is released
+                            under AGPL-3.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="oe_centeralign" style="margin-top:24px">
+                    <div class="oe_spaced" style="display:inline-block; min-width:300px; margin:10px 12px; padding:14px 22px; border:2px solid #000000; border-radius:10px; text-align:center; vertical-align:top">
+                        <span style="font-size:15px; color:#000000">Try the whole suite with Docker</span><br/>
+                        <b style="font-size:17px; color:#CC0000">github.com/OmniaGit/DockerOdooPLM</b>
+                    </div>
+                    <div class="oe_spaced" style="display:inline-block; min-width:300px; margin:10px 12px; padding:14px 22px; border:2px solid #000000; border-radius:10px; text-align:center; vertical-align:top">
+                        <span style="font-size:15px; color:#000000">Website</span><br/>
+                        <b style="font-size:17px; color:#CC0000">odooplm.omniasolutions.website</b>
+                    </div>
+                    <div class="oe_spaced" style="display:inline-block; min-width:300px; margin:10px 12px; padding:14px 22px; border:2px solid #000000; border-radius:10px; text-align:center; vertical-align:top">
+                        <span style="font-size:15px; color:#000000">Contact us</span><br/>
+                        <b style="font-size:17px; color:#CC0000">www.omniasolutions.website/#contact</b>
+                    </div>
+                </div>
+
+            </div>
+        </div>
     </div>
-</section>
+</div>

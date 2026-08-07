@@ -1,11 +1,128 @@
+<!-- The Apps store rewrites every <a> of a module description into a <span>, so a
+     link here looks clickable and does nothing: addresses are printed as text.
+     Inline styles, the bootstrap grid and the oe_ classes survive. The palette is
+     the company one: #CC0000 for the accents, #000000 for the outlines. -->
+<div class="container">
+    <div class="oe_styling_v8">
+        <div class="container p-3 mb-3">
+            <div class="container pt-0 px-4 pb-5">
 
-<section class="oe_container oe_dark">
-    <div class="oe_row oe_spaced">
-        <h2 class="oe_slogan">Plm Web Revision</h2>
-        <div class="oe_span12">
-            <p class="oe_mt32">
-				This module allows you to create revise a component revisioning it's related document, engineering bom, normal bom and spare bom.
-            </p>
-         </div>
+                <div class="row">
+                    <div class="col-6 bg-white" style="padding:4rem 1rem !important;">
+                        <div class="d-md-flex justify-content-center mb-2">
+                            <img src="odooPLM_logo.png" style="width:60%">
+                        </div>
+                    </div>
+                    <div class="col-6 bg-white" style="padding:4rem 1rem !important;">
+                        <div class="d-md-flex justify-content-center mb-2">
+                            <div>
+                                <h2 class="oe_slogan" style="color:#CC0000">Web Revision</h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12 px-4">
+                        <h2 class="font-weight-bold"
+                            style="font-family:'Montserrat', sans-serif !important; font-size:2rem; color:#CC0000">
+                            Overview
+                        </h2>
+                        <hr style="border: 2px solid #000000 !important; background-color: #000000 !important; width: 50px !important; margin-left: 0 !important; margin-top: 8px;">
+                        <h3 class="oe_slogan" style="text-align:left; color:#000000">
+                            A new revision without opening the CAD.
+                        </h3>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12 px-4">
+                        <p style="font-size:18px; text-align:justify">
+                            A revision is the moment a company either keeps control of its product or loses it. Everything hangs off it: the drawing the supplier is quoting, the structure production is building, the spare parts a customer will order in five years. And in most companies only the few people with a CAD licence installed can start one, so every request from quality, sales or after sales queues up on the technical office.
+                        </p>
+                        <p style="font-size:18px; text-align:justify">
+                            This module moves that action to the browser. An authorised user creates the new revision from Odoo, chooses what has to travel with it, and the whole set moves together instead of drifting apart.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="row" style="margin-top:2rem">
+                    <div class="col-12 px-4">
+                        <h2 class="font-weight-bold"
+                            style="font-family:'Montserrat', sans-serif !important; font-size:2rem; color:#CC0000">
+                            What it does
+                        </h2>
+                        <hr style="border: 2px solid #000000 !important; background-color: #000000 !important; width: 50px !important; margin-left: 0 !important; margin-top: 8px;">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6 px-4">
+                        <h3 class="oe_slogan" style="color:#000000; text-align:left; font-size:1.3rem">Revise from the browser</h3>
+                        <p style="font-size:18px; text-align:justify">
+                            The new revision of a product or of a document is created from Odoo, with no CAD " "session involved. The previous revision is preserved, not replaced: history stays readable, and what was released to a supplier remains what it was.
+                        </p>
+                        <h3 class="oe_slogan" style="color:#000000; text-align:left; font-size:1.3rem">You choose what travels</h3>
+                        <p style="font-size:18px; text-align:justify">
+                            Four choices, made when you revise: the linked document, the engineering bill of material, the manufacturing one, the spare one. Take all of them for a design change, only the document for a drawing correction.
+                        </p>
+                    </div>
+                    <div class="col-6 px-4">
+                        <h3 class="oe_slogan" style="color:#000000; text-align:left; font-size:1.3rem">Rules that protect the data</h3>
+                        <p style="font-size:18px; text-align:justify">
+                            Only what has been released can be revised, and the module says so instead of failing quietly. A draft is still work in progress, and revising it would create a version of something that never existed.
+                        </p>
+                        <h3 class="oe_slogan" style="color:#000000; text-align:left; font-size:1.3rem">Documents follow their product</h3>
+                        <p style="font-size:18px; text-align:justify">
+                            The documents attached to the old revision are re-linked to the new one, so the new version is born complete rather than as an empty shell somebody has to fill again by hand.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="row" style="margin-top:2rem">
+                    <div class="col-12 px-4">
+                        <ul style="padding-left:0; list-style-type:none; margin:0">
+                            <li style="font-size:18px; color:#000000; margin:12px 0">
+                                <span style="color:#CC0000; font-weight:700">&#9642;</span>&nbsp;&nbsp;Revisions created from Odoo, without a CAD licence
+                            </li>
+                            <li style="font-size:18px; color:#000000; margin:12px 0">
+                                <span style="color:#CC0000; font-weight:700">&#9642;</span>&nbsp;&nbsp;Document, engineering, manufacturing and spare BOM revised together
+                            </li>
+                            <li style="font-size:18px; color:#000000; margin:12px 0">
+                                <span style="color:#CC0000; font-weight:700">&#9642;</span>&nbsp;&nbsp;Only released items can be revised, by design
+                            </li>
+                            <li style="font-size:18px; color:#000000; margin:12px 0">
+                                <span style="color:#CC0000; font-weight:700">&#9642;</span>&nbsp;&nbsp;The previous revision stays readable, and traceable
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="row" style="margin-top:2rem">
+                    <div class="col-12 px-4">
+                        <p style="font-size:18px; text-align:justify">
+                            Part of <b>OdooPLM</b>, the Product Lifecycle Management suite by
+                            OmniaSolutions. It requires the <b>plm</b> module, and it is released
+                            under AGPL-3.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="oe_centeralign" style="margin-top:24px">
+                    <div class="oe_spaced" style="display:inline-block; min-width:300px; margin:10px 12px; padding:14px 22px; border:2px solid #000000; border-radius:10px; text-align:center; vertical-align:top">
+                        <span style="font-size:15px; color:#000000">Try the whole suite with Docker</span><br/>
+                        <b style="font-size:17px; color:#CC0000">github.com/OmniaGit/DockerOdooPLM</b>
+                    </div>
+                    <div class="oe_spaced" style="display:inline-block; min-width:300px; margin:10px 12px; padding:14px 22px; border:2px solid #000000; border-radius:10px; text-align:center; vertical-align:top">
+                        <span style="font-size:15px; color:#000000">Website</span><br/>
+                        <b style="font-size:17px; color:#CC0000">odooplm.omniasolutions.website</b>
+                    </div>
+                    <div class="oe_spaced" style="display:inline-block; min-width:300px; margin:10px 12px; padding:14px 22px; border:2px solid #000000; border-radius:10px; text-align:center; vertical-align:top">
+                        <span style="font-size:15px; color:#000000">Contact us</span><br/>
+                        <b style="font-size:17px; color:#CC0000">www.omniasolutions.website/#contact</b>
+                    </div>
+                </div>
+
+            </div>
+        </div>
     </div>
-</section>
+</div>

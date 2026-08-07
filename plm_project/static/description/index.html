@@ -1,41 +1,187 @@
+<!-- The Apps store rewrites every <a> of a module description into a <span>, so a
+     link here looks clickable and does nothing: addresses are printed as text.
+     Inline styles, the bootstrap grid and the oe_ classes survive. The palette is
+     the company one: #CC0000 for the accents, #000000 for the outlines. -->
+<div class="container">
+    <div class="oe_styling_v8">
+        <div class="container p-3 mb-3">
+            <div class="container pt-0 px-4 pb-5">
 
-<section class="oe_container oe_dark">
-    <div class="oe_row oe_spaced">
-        <h1 class="oe_slogan">Plm Project</h1>
-        <h3 class="oe_centeralign">The module is developed and maintained by <b>OmniaSolutions</b>, Further information at <b>www.omniasolutions.website</b></h3>
-         <div class="oe_span12" >
-         	<p class="oe_mt32">
-         		The module add a progress bar to check the progress of the project based on the status of the products
-         	</p>	
-         	<div class="oe_span8">
-	            <div class="oe_demo oe_picture oe_screenshot" >
-	                <img src="project_filed_1.png">
-	            </div>
-	            <p>
-	           	 and extend the Project setting form adding a link with the product.
-         		</p>
-				<div class="oe_demo oe_picture oe_screenshot">
-	                <img src="project_filed_2.png">
-	            </div>
-	            <p>
-	         		and also allows you to see the link inside the products
-	         	</p>
-	            <div class="oe_demo oe_picture oe_screenshot">
-	                <img src="project_filed_3.png">
-	            </div>
-	            <p>
-	        		For any further information or live demo contact info@omniasolutions.eu
-	        	</p>
-	        </div>
-	        <div class="oe_span8">
-	           <p>
-	           We also create automatic action for moving the workflow.<br></br>
-	           </p>
-	           <div class="oe_demo oe_picture oe_screenshot">
-                    <img src="product_activity.gif">
+                <div class="row">
+                    <div class="col-6 bg-white" style="padding:4rem 1rem !important;">
+                        <div class="d-md-flex justify-content-center mb-2">
+                            <img src="odooPLM_logo.png" style="width:60%">
+                        </div>
+                    </div>
+                    <div class="col-6 bg-white" style="padding:4rem 1rem !important;">
+                        <div class="d-md-flex justify-content-center mb-2">
+                            <div>
+                                <h2 class="oe_slogan" style="color:#CC0000">PLM Project</h2>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                
-	        </div>
-       </div>
+
+                <div class="row">
+                    <div class="col-12 px-4">
+                        <h2 class="font-weight-bold"
+                            style="font-family:'Montserrat', sans-serif !important; font-size:2rem; color:#CC0000">
+                            Overview
+                        </h2>
+                        <hr style="border: 2px solid #000000 !important; background-color: #000000 !important; width: 50px !important; margin-left: 0 !important; margin-top: 8px;">
+                        <h3 class="oe_slogan" style="text-align:left; color:#000000">
+                            Project progress measured on the parts, not on an estimate.
+                        </h3>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12 px-4">
+                        <p style="font-size:18px; text-align:justify">
+                            Ask how a development project is going and you get a number somebody
+                            produced: the frame is seventy per cent, the hydraulics are almost there.
+                            It is not dishonest, it is simply the only answer available, because the
+                            plan lives in one tool and the parts live in another. Two weeks later the
+                            number is still seventy per cent and nobody can say what moved.
+                        </p>
+                        <p style="font-size:18px; text-align:justify">
+                            When the project and the product share a database the question has a real
+                            answer. This module ties the two together: a project knows which
+                            components belong to it, and how many of them have actually been released.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="row" style="margin-top:2rem">
+                    <div class="col-12 px-4">
+                        <h2 class="font-weight-bold"
+                            style="font-family:'Montserrat', sans-serif !important; font-size:2rem; color:#CC0000">
+                            What it does
+                        </h2>
+                        <hr style="border: 2px solid #000000 !important; background-color: #000000 !important; width: 50px !important; margin-left: 0 !important; margin-top: 8px;">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6 px-4">
+                        <h3 class="oe_slogan" style="color:#000000; text-align:left; font-size:1.3rem">Components belong to the project</h3>
+                        <p style="font-size:18px; text-align:justify">
+                            Parts are linked to the project they are developed for, and a project
+                            shows its own components as a list you can open, rather than as an
+                            attachment somebody keeps updated.
+                        </p>
+                        <h3 class="oe_slogan" style="color:#000000; text-align:left; font-size:1.3rem">Progress that is counted</h3>
+                        <p style="font-size:18px; text-align:justify">
+                            How many components the project has, and how many of them are released,
+                            are computed from the parts themselves. The completion figure follows the
+                            engineering state, so it moves when the work moves and not when somebody
+                            updates a slide.
+                        </p>
+                    </div>
+                    <div class="col-6 px-4">
+                        <h3 class="oe_slogan" style="color:#000000; text-align:left; font-size:1.3rem">Approvals become activities</h3>
+                        <p style="font-size:18px; text-align:justify">
+                            Confirming and releasing a part generates the activity for whoever has to
+                            approve it, attached to the task it belongs to. The approval lands in the
+                            inbox of a person, with a deadline, instead of living in a conversation.
+                        </p>
+                        <h3 class="oe_slogan" style="color:#000000; text-align:left; font-size:1.3rem">Approvals that cannot drift</h3>
+                        <p style="font-size:18px; text-align:justify">
+                            An activity can be completed only by the user it was assigned to, or by a
+                            PLM administrator, and only when the part is in the state the activity is
+                            about. What is signed off is what was actually reviewed.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="row" style="margin-top:10px">
+                    <div class="col-12 px-4">
+                        <div style="max-width:520px; margin:0 0 26px 10%">
+                            <img class="oe_picture" src="project_overview.png"
+                                 style="width:100%; height:auto; border:2px solid #000000; border-radius:12px; box-shadow:0 3px 8px rgba(0,0,0,0.18)"/>
+                            <p style="font-size:15px; text-align:left; color:#000000; margin-top:8px">
+                                The project with PLM switched on. <b>Plm Complete</b> is not typed in by
+                            anyone: it is the share of the project components that have been released,
+                            and the tab below lists the components it is computed from, with their
+                            engineering state.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row" style="margin-top:10px">
+                    <div class="col-12 px-4">
+                        <div style="max-width:520px; margin:0 0 26px 10%">
+                            <img class="oe_picture" src="project_filed_3.png"
+                                 style="width:100%; height:auto; border:2px solid #000000; border-radius:12px; box-shadow:0 3px 8px rgba(0,0,0,0.18)"/>
+                            <p style="font-size:15px; text-align:left; color:#000000; margin-top:8px">
+                                The same link seen from the part: which project it is developed for, on
+                            the product itself.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row" style="margin-top:10px">
+                    <div class="col-12 px-4">
+                        <div style="max-width:520px; margin:0 0 26px 10%">
+                            <img class="oe_picture" src="product_activity.gif"
+                                 style="width:100%; height:auto; border:2px solid #000000; border-radius:12px; box-shadow:0 3px 8px rgba(0,0,0,0.18)"/>
+                            <p style="font-size:15px; text-align:left; color:#000000; margin-top:8px">
+                                Confirming a part creates the approval activity for the person who has to
+                            sign it off, and moves the workflow along.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row" style="margin-top:2rem">
+                    <div class="col-12 px-4">
+                        <ul style="padding-left:0; list-style-type:none; margin:0">
+                            <li style="font-size:18px; color:#000000; margin:12px 0">
+                                <span style="color:#CC0000; font-weight:700">&#9642;</span>&nbsp;&nbsp;Products linked to the project that develops them
+                            </li>
+                            <li style="font-size:18px; color:#000000; margin:12px 0">
+                                <span style="color:#CC0000; font-weight:700">&#9642;</span>&nbsp;&nbsp;Completion computed from released components
+                            </li>
+                            <li style="font-size:18px; color:#000000; margin:12px 0">
+                                <span style="color:#CC0000; font-weight:700">&#9642;</span>&nbsp;&nbsp;Confirm and release generate approval activities on the tasks
+                            </li>
+                            <li style="font-size:18px; color:#000000; margin:12px 0">
+                                <span style="color:#CC0000; font-weight:700">&#9642;</span>&nbsp;&nbsp;Only the assigned user, or an administrator, can close them
+                            </li>
+                            <li style="font-size:18px; color:#000000; margin:12px 0">
+                                <span style="color:#CC0000; font-weight:700">&#9642;</span>&nbsp;&nbsp;Project, tasks, parts and documents in the same database
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="row" style="margin-top:2rem">
+                    <div class="col-12 px-4">
+                        <p style="font-size:18px; text-align:justify">
+                            Part of <b>OdooPLM</b>, the Product Lifecycle Management suite by
+                            OmniaSolutions. It requires the <b>plm</b> module, and it is released
+                            under AGPL-3.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="oe_centeralign" style="margin-top:24px">
+                    <div class="oe_spaced" style="display:inline-block; min-width:300px; margin:10px 12px; padding:14px 22px; border:2px solid #000000; border-radius:10px; text-align:center; vertical-align:top">
+                        <span style="font-size:15px; color:#000000">Try the whole suite with Docker</span><br/>
+                        <b style="font-size:17px; color:#CC0000">github.com/OmniaGit/DockerOdooPLM</b>
+                    </div>
+                    <div class="oe_spaced" style="display:inline-block; min-width:300px; margin:10px 12px; padding:14px 22px; border:2px solid #000000; border-radius:10px; text-align:center; vertical-align:top">
+                        <span style="font-size:15px; color:#000000">Website</span><br/>
+                        <b style="font-size:17px; color:#CC0000">odooplm.omniasolutions.website</b>
+                    </div>
+                    <div class="oe_spaced" style="display:inline-block; min-width:300px; margin:10px 12px; padding:14px 22px; border:2px solid #000000; border-radius:10px; text-align:center; vertical-align:top">
+                        <span style="font-size:15px; color:#000000">Contact us</span><br/>
+                        <b style="font-size:17px; color:#CC0000">www.omniasolutions.website/#contact</b>
+                    </div>
+                </div>
+
+            </div>
+        </div>
     </div>
-</section>
+</div>

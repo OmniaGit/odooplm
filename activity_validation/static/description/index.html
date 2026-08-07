@@ -1,45 +1,178 @@
-<section class="oe_container">
-    <div class="oe_row oe_spaced">
-        <div class="oe_span12">
-            <h2 class="oe_slogan" style="color:#875A7B">Activity validation<br>
-            </h2>
-            <h3 class="oe_slogan">Improve the comunication process on OdooPLM</h3>
-            <h3 class="oe_centeralign">The module is developed and maintained by <b>OmniaSolutions</b>, Further information at <a href="https://www.omniasolutions.website" style="text-decoration:none; color:#875A7B">www.omniasolutions.website</a></h3>
-        </div>
-        <div class="oe_span6">
-            <p style="font-size:18px; text-align:justify; margin-top:20px; margin-right:50px">
-				This module allows you:
-			    <ul>
-	                <li>Manage modifcation request from odoo and the cad application</li>
-	                <li>Manage the engineering request</li>
-	                <li>Manage the engineering order</li>
-	                <li>Control the status of your requests based on the bom</li>
-                </ul>
-            </p>
-         </div>
-         <div class="oe_span12" style="text-align:justify; margin-top:20px;">
-				<div class="oe_span8">
-                    <img class="image" src="plm_activity.gif" style="width:100%; display:inline-block; border:2px solid lightgrey; border-radius:15px; float:right">
-                </div>    
-                <div class="oe_span4">
-                    You can assign activity from odoo to each cad user.
+<!-- The Apps store rewrites every <a> of a module description into a <span>, so a
+     link here looks clickable and does nothing: addresses are printed as text.
+     Inline styles, the bootstrap grid and the oe_ classes survive. The palette is
+     the company one: #CC0000 for the accents, #000000 for the outlines. -->
+<div class="container">
+    <div class="oe_styling_v8">
+        <div class="container p-3 mb-3">
+            <div class="container pt-0 px-4 pb-5">
+
+                <div class="row">
+                    <div class="col-6 bg-white" style="padding:4rem 1rem !important;">
+                        <div class="d-md-flex justify-content-center mb-2">
+                            <img src="odooPLM_logo.png" style="width:60%">
+                        </div>
+                    </div>
+                    <div class="col-6 bg-white" style="padding:4rem 1rem !important;">
+                        <div class="d-md-flex justify-content-center mb-2">
+                            <div>
+                                <h2 class="oe_slogan" style="color:#CC0000">Activity Validation</h2>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-        </div>
-         <div class="oe_span12" style="text-align:justify; margin-top:20px;">
-                <div class="oe_span4">
-                    You can manage change request and order and inform the cad user about the modification
+
+                <div class="row">
+                    <div class="col-12 px-4">
+                        <h2 class="font-weight-bold"
+                            style="font-family:'Montserrat', sans-serif !important; font-size:2rem; color:#CC0000">
+                            Overview
+                        </h2>
+                        <hr style="border: 2px solid #000000 !important; background-color: #000000 !important; width: 50px !important; margin-left: 0 !important; margin-top: 8px;">
+                        <h3 class="oe_slogan" style="text-align:left; color:#000000">
+                            Change requests that travel as work, not as messages.
+                        </h3>
+                    </div>
                 </div>
-                <div class="oe_span8">
-                    <img class="image" src="change_request_order.gif" style="width:100%; display:inline-block; border:2px solid lightgrey; border-radius:15px; float:right">
-                </div>    
-        </div>
-         <div class="oe_span12" style="text-align:justify; margin-top:20px;">
-                <div class="oe_span8">
-                    <img class="image" src="activity_bom_report.gif" style="width:100%; display:inline-block; border:2px solid lightgrey; border-radius:15px; float:right">
-                </div>    
-                <div class="oe_span4">
-                    You can easely check your bom and see the modification that is involved in your bom
+
+                <div class="row">
+                    <div class="col-12 px-4">
+                        <p style="font-size:18px; text-align:justify">
+                            This module improves the communication process on OdooPLM. It lets you
+                            manage modification requests coming from Odoo and from the CAD
+                            application, manage the engineering request and the engineering order, and
+                            control the status of your requests against the bill of material.
+                        </p>
+                        <p style="font-size:18px; text-align:justify">
+                            A change starts as a sentence: this part interferes, this tolerance is
+                            wrong, the customer wants it shorter. What happens next decides whether it
+                            becomes a controlled modification or a conversation that ends in
+                            somebody's memory.
+                        </p>
+                    </div>
                 </div>
+
+                <div class="row" style="margin-top:2rem">
+                    <div class="col-12 px-4">
+                        <h2 class="font-weight-bold"
+                            style="font-family:'Montserrat', sans-serif !important; font-size:2rem; color:#CC0000">
+                            What it does
+                        </h2>
+                        <hr style="border: 2px solid #000000 !important; background-color: #000000 !important; width: 50px !important; margin-left: 0 !important; margin-top: 8px;">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6 px-4">
+                        <h3 class="oe_slogan" style="color:#000000; text-align:left; font-size:1.3rem">Requests from both sides</h3>
+                        <p style="font-size:18px; text-align:justify">
+                            A modification request can be raised from Odoo or from the CAD
+                            application, and lands in the same place either way. The designer at the
+                            workstation and the person in the office are working on one list.
+                        </p>
+                        <h3 class="oe_slogan" style="color:#000000; text-align:left; font-size:1.3rem">Request, then order</h3>
+                        <p style="font-size:18px; text-align:justify">
+                            The engineering request and the engineering order are distinct steps, so
+                            evaluating a change and authorising it are two decisions rather than one,
+                            and the second one leaves a record.
+                        </p>
+                    </div>
+                    <div class="col-6 px-4">
+                        <h3 class="oe_slogan" style="color:#000000; text-align:left; font-size:1.3rem">A state of its own</h3>
+                        <p style="font-size:18px; text-align:justify">
+                            Activities carry a PLM state of their own, moved by explicit actions: in
+                            progress, done, exception, cancelled, or escalated into an engineering
+                            change order. What was refused is as visible as what was approved.
+                        </p>
+                        <h3 class="oe_slogan" style="color:#000000; text-align:left; font-size:1.3rem">Checked against the structure</h3>
+                        <p style="font-size:18px; text-align:justify">
+                            The status of the requests is controlled against the bill of material, so
+                            a change is read in terms of the parts it touches rather than as an
+                            isolated ticket.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="row" style="margin-top:10px">
+                    <div class="col-12 px-4">
+                        <div style="max-width:520px; margin:0 0 26px 10%">
+                            <img class="oe_picture" src="plm_activity.gif"
+                                 style="width:100%; height:auto; border:2px solid #000000; border-radius:12px; box-shadow:0 3px 8px rgba(0,0,0,0.18)"/>
+                            <p style="font-size:15px; text-align:left; color:#000000; margin-top:8px">
+                                The activity on the part, with the PLM state that follows the change.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row" style="margin-top:10px">
+                    <div class="col-12 px-4">
+                        <div style="max-width:520px; margin:0 0 26px 10%">
+                            <img class="oe_picture" src="change_request_order.gif"
+                                 style="width:100%; height:auto; border:2px solid #000000; border-radius:12px; box-shadow:0 3px 8px rgba(0,0,0,0.18)"/>
+                            <p style="font-size:15px; text-align:left; color:#000000; margin-top:8px">
+                                From the modification request to the engineering order.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row" style="margin-top:10px">
+                    <div class="col-12 px-4">
+                        <div style="max-width:520px; margin:0 0 26px 10%">
+                            <img class="oe_picture" src="activity_bom_report.gif"
+                                 style="width:100%; height:auto; border:2px solid #000000; border-radius:12px; box-shadow:0 3px 8px rgba(0,0,0,0.18)"/>
+                            <p style="font-size:15px; text-align:left; color:#000000; margin-top:8px">
+                                The requests read against the bill of material they affect.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row" style="margin-top:2rem">
+                    <div class="col-12 px-4">
+                        <ul style="padding-left:0; list-style-type:none; margin:0">
+                            <li style="font-size:18px; color:#000000; margin:12px 0">
+                                <span style="color:#CC0000; font-weight:700">&#9642;</span>&nbsp;&nbsp;Modification requests from Odoo and from the CAD application
+                            </li>
+                            <li style="font-size:18px; color:#000000; margin:12px 0">
+                                <span style="color:#CC0000; font-weight:700">&#9642;</span>&nbsp;&nbsp;Engineering request and engineering order as separate steps
+                            </li>
+                            <li style="font-size:18px; color:#000000; margin:12px 0">
+                                <span style="color:#CC0000; font-weight:700">&#9642;</span>&nbsp;&nbsp;PLM states on the activity: in progress, done, exception, cancelled
+                            </li>
+                            <li style="font-size:18px; color:#000000; margin:12px 0">
+                                <span style="color:#CC0000; font-weight:700">&#9642;</span>&nbsp;&nbsp;Requests controlled against the bill of material
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="row" style="margin-top:2rem">
+                    <div class="col-12 px-4">
+                        <p style="font-size:18px; text-align:justify">
+                            Part of <b>OdooPLM</b>, the Product Lifecycle Management suite by
+                            OmniaSolutions. It requires the <b>plm</b> module, and it is released
+                            under AGPL-3.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="oe_centeralign" style="margin-top:24px">
+                    <div class="oe_spaced" style="display:inline-block; min-width:300px; margin:10px 12px; padding:14px 22px; border:2px solid #000000; border-radius:10px; text-align:center; vertical-align:top">
+                        <span style="font-size:15px; color:#000000">Try the whole suite with Docker</span><br/>
+                        <b style="font-size:17px; color:#CC0000">github.com/OmniaGit/DockerOdooPLM</b>
+                    </div>
+                    <div class="oe_spaced" style="display:inline-block; min-width:300px; margin:10px 12px; padding:14px 22px; border:2px solid #000000; border-radius:10px; text-align:center; vertical-align:top">
+                        <span style="font-size:15px; color:#000000">Website</span><br/>
+                        <b style="font-size:17px; color:#CC0000">odooplm.omniasolutions.website</b>
+                    </div>
+                    <div class="oe_spaced" style="display:inline-block; min-width:300px; margin:10px 12px; padding:14px 22px; border:2px solid #000000; border-radius:10px; text-align:center; vertical-align:top">
+                        <span style="font-size:15px; color:#000000">Contact us</span><br/>
+                        <b style="font-size:17px; color:#CC0000">www.omniasolutions.website/#contact</b>
+                    </div>
+                </div>
+
+            </div>
         </div>
     </div>
-</section>
+</div>

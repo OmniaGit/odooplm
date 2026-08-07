@@ -1,40 +1,187 @@
+<!-- The Apps store rewrites every <a> of a module description into a <span>, so a
+     link here looks clickable and does nothing: addresses are printed as text.
+     Inline styles, the bootstrap grid and the oe_ classes survive. The palette is
+     the company one: #CC0000 for the accents, #000000 for the outlines. -->
+<div class="container">
+    <div class="oe_styling_v8">
+        <div class="container p-3 mb-3">
+            <div class="container pt-0 px-4 pb-5">
 
-<section class="oe_container oe_dark">
-    <div class="oe_row oe_spaced">
-        <h2 class="oe_slogan">Plm Date Bom</h2>
-        <div class="oe_span12">
-            <p class="oe_mt32">
-				This module allows you view and/or update obsoleted components in a Normal Bill Of Materials using released components.
-            </p>
-        	
-            <p class="oe_mt32">
+                <div class="row">
+                    <div class="col-6 bg-white" style="padding:4rem 1rem !important;">
+                        <div class="d-md-flex justify-content-center mb-2">
+                            <img src="odooPLM_logo.png" style="width:60%">
+                        </div>
+                    </div>
+                    <div class="col-6 bg-white" style="padding:4rem 1rem !important;">
+                        <div class="d-md-flex justify-content-center mb-2">
+                            <div>
+                                <h2 class="oe_slogan" style="color:#CC0000">Obsolete BoM Control</h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-            	<ul>
-					<li>To start working with update procedure you have to navigate in the Normal BOM tree view:</li>
-					<br></br>
-					<li><img src="normal_bom_view.png"/></li>
-					<br></br>
-					<li>Here you can see all boms which are currently containing obsoleted components evaluated with red color. To view only the not updated boms you can use the provided filter here:</li>
-					<br></br>
-					<li><img src="only_normal.png"/></li>
-					<br></br>
-					<li>Then if you select a Bom in form view you can find two buttons.</li>
-					<br></br>
-						<ul>
-							<li><b>Update Bom</b>: Update the bom following the next choice.</li>
-							<li><b>All Related Boms to Update</b>: Open a tree bom view showing all child boms containing obsoleted components.</li>
-						</ul>
-					<li>Pressing Update Bom a wizard will appear:</li>
-					<br></br>
-					<li><img src="wizard.png"/></li>
-					<li>Here you have to select your favourite updating procedure.</li>
-						<ul>
-							<li><b>Update Bom replacing obsoleted bom lines with components at the latest revision</b> : Update all bom lines obsoleted using released components.</li>
-							<li><b>Create new bom using last revision of all components</b> : Clone current bom, update obsoleted components using released components and deactivate the obsoleted bom.</li>
-						</ul>
-				</ul>
-            	
-            </p>
-         </div>
+                <div class="row">
+                    <div class="col-12 px-4">
+                        <h2 class="font-weight-bold"
+                            style="font-family:'Montserrat', sans-serif !important; font-size:2rem; color:#CC0000">
+                            Overview
+                        </h2>
+                        <hr style="border: 2px solid #000000 !important; background-color: #000000 !important; width: 50px !important; margin-left: 0 !important; margin-top: 8px;">
+                        <h3 class="oe_slogan" style="text-align:left; color:#000000">
+                            Find the structures still pointing at a superseded part, before production does.
+                        </h3>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12 px-4">
+                        <p style="font-size:18px; text-align:justify">
+                            Parts get revised one at a time, structures do not. A component is
+                            released at revision B, and the twenty bills of material that use it keep
+                            pointing at revision A, quietly, until the day the shop floor picks the
+                            superseded item or purchasing orders a part that engineering replaced six
+                            months ago. Nobody made a mistake: the information was simply spread over
+                            too many structures for anyone to check.
+                        </p>
+                        <p style="font-size:18px; text-align:justify">
+                            This module does the checking. It knows which bills of material contain a
+                            component that is no longer at its latest revision, at any depth of the
+                            tree, and it can bring them back in line.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="row" style="margin-top:2rem">
+                    <div class="col-12 px-4">
+                        <h2 class="font-weight-bold"
+                            style="font-family:'Montserrat', sans-serif !important; font-size:2rem; color:#CC0000">
+                            What it does
+                        </h2>
+                        <hr style="border: 2px solid #000000 !important; background-color: #000000 !important; width: 50px !important; margin-left: 0 !important; margin-top: 8px;">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6 px-4">
+                        <h3 class="oe_slogan" style="color:#000000; text-align:left; font-size:1.3rem">Obsolescence made visible</h3>
+                        <p style="font-size:18px; text-align:justify">
+                            Each bill of material carries the answer to one question: does it contain
+                            a component that is not at the latest revision? Directly, or anywhere
+                            below it in the tree. The structures that need attention can be listed
+                            instead of hunted.
+                        </p>
+                        <h3 class="oe_slogan" style="color:#000000; text-align:left; font-size:1.3rem">Two ways to realign</h3>
+                        <p style="font-size:18px; text-align:justify">
+                            Either the obsolete lines are replaced in place with the current revision
+                            of each component, or a new bill of material is created using the latest
+                            revision of everything, leaving the old one untouched as the record of
+                            what was built before.
+                        </p>
+                    </div>
+                    <div class="col-6 px-4">
+                        <h3 class="oe_slogan" style="color:#000000; text-align:left; font-size:1.3rem">The whole tree, or one level</h3>
+                        <p style="font-size:18px; text-align:justify">
+                            The realignment can descend the structure, so a change deep in a sub
+                            assembly reaches the top level, rather than fixing the first level and
+                            leaving the problem one step down.
+                        </p>
+                        <h3 class="oe_slogan" style="color:#000000; text-align:left; font-size:1.3rem">It checks by itself</h3>
+                        <p style="font-size:18px; text-align:justify">
+                            Two scheduled jobs run the two strategies on their own, so obsolescence is
+                            found by the system overnight instead of by a customer complaint. The
+                            check is also available on demand, on a single structure.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="row" style="margin-top:10px">
+                    <div class="col-12 px-4">
+                        <div style="max-width:520px; margin:0 0 26px 10%">
+                            <img class="oe_picture" src="normal_bom_view.png"
+                                 style="width:100%; height:auto; border:2px solid #000000; border-radius:12px; box-shadow:0 3px 8px rgba(0,0,0,0.18)"/>
+                            <p style="font-size:15px; text-align:left; color:#000000; margin-top:8px">
+                                The bills of material: the ones in red hold a component that is no longer
+                            at its latest revision.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row" style="margin-top:10px">
+                    <div class="col-12 px-4">
+                        <div style="max-width:520px; margin:0 0 26px 10%">
+                            <img class="oe_picture" src="only_normal.png"
+                                 style="width:100%; height:auto; border:2px solid #000000; border-radius:12px; box-shadow:0 3px 8px rgba(0,0,0,0.18)"/>
+                            <p style="font-size:15px; text-align:left; color:#000000; margin-top:8px">
+                                The <b>Boms To Update</b> filter isolates exactly those, so the work to do
+                            is a list instead of a search.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row" style="margin-top:10px">
+                    <div class="col-12 px-4">
+                        <div style="max-width:520px; margin:0 0 26px 10%">
+                            <img class="oe_picture" src="wizard.png"
+                                 style="width:100%; height:auto; border:2px solid #000000; border-radius:12px; box-shadow:0 3px 8px rgba(0,0,0,0.18)"/>
+                            <p style="font-size:15px; text-align:left; color:#000000; margin-top:8px">
+                                The computation type decides how they are realigned: obsolete lines
+                            replaced in place, or a new bill of material at the latest revisions.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row" style="margin-top:2rem">
+                    <div class="col-12 px-4">
+                        <ul style="padding-left:0; list-style-type:none; margin:0">
+                            <li style="font-size:18px; color:#000000; margin:12px 0">
+                                <span style="color:#CC0000; font-weight:700">&#9642;</span>&nbsp;&nbsp;Every BOM says whether it holds an out of date component
+                            </li>
+                            <li style="font-size:18px; color:#000000; margin:12px 0">
+                                <span style="color:#CC0000; font-weight:700">&#9642;</span>&nbsp;&nbsp;Detection through the whole structure, not only the first level
+                            </li>
+                            <li style="font-size:18px; color:#000000; margin:12px 0">
+                                <span style="color:#CC0000; font-weight:700">&#9642;</span>&nbsp;&nbsp;Realign in place, or generate a new BOM at the latest revisions
+                            </li>
+                            <li style="font-size:18px; color:#000000; margin:12px 0">
+                                <span style="color:#CC0000; font-weight:700">&#9642;</span>&nbsp;&nbsp;Scheduled nightly, or run on demand on one structure
+                            </li>
+                            <li style="font-size:18px; color:#000000; margin:12px 0">
+                                <span style="color:#CC0000; font-weight:700">&#9642;</span>&nbsp;&nbsp;A dedicated report listing the obsolete lines
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="row" style="margin-top:2rem">
+                    <div class="col-12 px-4">
+                        <p style="font-size:18px; text-align:justify">
+                            Part of <b>OdooPLM</b>, the Product Lifecycle Management suite by
+                            OmniaSolutions. It requires the <b>plm</b> module, and it is released
+                            under AGPL-3.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="oe_centeralign" style="margin-top:24px">
+                    <div class="oe_spaced" style="display:inline-block; min-width:300px; margin:10px 12px; padding:14px 22px; border:2px solid #000000; border-radius:10px; text-align:center; vertical-align:top">
+                        <span style="font-size:15px; color:#000000">Try the whole suite with Docker</span><br/>
+                        <b style="font-size:17px; color:#CC0000">github.com/OmniaGit/DockerOdooPLM</b>
+                    </div>
+                    <div class="oe_spaced" style="display:inline-block; min-width:300px; margin:10px 12px; padding:14px 22px; border:2px solid #000000; border-radius:10px; text-align:center; vertical-align:top">
+                        <span style="font-size:15px; color:#000000">Website</span><br/>
+                        <b style="font-size:17px; color:#CC0000">odooplm.omniasolutions.website</b>
+                    </div>
+                    <div class="oe_spaced" style="display:inline-block; min-width:300px; margin:10px 12px; padding:14px 22px; border:2px solid #000000; border-radius:10px; text-align:center; vertical-align:top">
+                        <span style="font-size:15px; color:#000000">Contact us</span><br/>
+                        <b style="font-size:17px; color:#CC0000">www.omniasolutions.website/#contact</b>
+                    </div>
+                </div>
+
+            </div>
+        </div>
     </div>
-</section>
+</div>

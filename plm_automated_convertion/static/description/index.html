@@ -1,164 +1,157 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>PLM Automated Conversion</title>
-    <style>
-        body { font-family: Arial, sans-serif; color: #333; max-width: 900px; margin: 0 auto; padding: 24px; }
-        h1 { color: #714B67; border-bottom: 3px solid #714B67; padding-bottom: 8px; }
-        h2 { color: #572649; margin-top: 32px; border-left: 4px solid #714B67; padding-left: 10px; }
-        h3 { color: #714B67; margin-top: 20px; }
-        table { width: 100%; border-collapse: collapse; margin: 12px 0; }
-        th { background: #714B67; color: white; padding: 8px 12px; text-align: left; }
-        td { padding: 8px 12px; border-bottom: 1px solid #e0d0e0; vertical-align: top; }
-        tr:nth-child(even) td { background: #faf5fa; }
-        code { background: #f5f0f5; padding: 1px 5px; border-radius: 3px; font-size: 13px; }
-        pre  { background: #f5f0f5; padding: 14px; border-radius: 4px; overflow-x: auto; font-size: 13px;
-               border-left: 3px solid #714B67; }
-        .note    { background: #fff3cd; border-left: 4px solid #ffc107; padding: 10px 14px;
-                   border-radius: 0 4px 4px 0; margin: 12px 0; font-size: 13px; }
-        .success { background: #d4edda; border-left: 4px solid #28a745; padding: 10px 14px;
-                   border-radius: 0 4px 4px 0; margin: 12px 0; font-size: 13px; }
-        ul { padding-left: 20px; }
-        li { margin-bottom: 4px; }
-        .arrow { color: #714B67; font-weight: bold; }
-    </style>
-</head>
-<body>
+<!-- The Apps store rewrites every <a> of a module description into a <span>, so a
+     link here looks clickable and does nothing: addresses are printed as text.
+     Inline styles, the bootstrap grid and the oe_ classes survive. The palette is
+     the company one: #CC0000 for the accents, #000000 for the outlines. -->
+<div class="container">
+    <div class="oe_styling_v8">
+        <div class="container p-3 mb-3">
+            <div class="container pt-0 px-4 pb-5">
 
-<h1>PLM Automated Conversion</h1>
+                <div class="row">
+                    <div class="col-6 bg-white" style="padding:4rem 1rem !important;">
+                        <div class="d-md-flex justify-content-center mb-2">
+                            <img src="odooPLM_logo.png" style="width:60%">
+                        </div>
+                    </div>
+                    <div class="col-6 bg-white" style="padding:4rem 1rem !important;">
+                        <div class="d-md-flex justify-content-center mb-2">
+                            <div>
+                                <h2 class="oe_slogan" style="color:#CC0000">Automated CAD Conversion</h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-<p>
-    Background conversion engine for CAD files inside Odoo PLM.
-    Converts source documents to derivative formats (preview images, 3D web models)
-    automatically via a job queue, and on-demand when opening the 3D viewer.
-</p>
+                <div class="row">
+                    <div class="col-12 px-4">
+                        <h2 class="font-weight-bold"
+                            style="font-family:'Montserrat', sans-serif !important; font-size:2rem; color:#CC0000">
+                            Overview
+                        </h2>
+                        <hr style="border: 2px solid #000000 !important; background-color: #000000 !important; width: 50px !important; margin-left: 0 !important; margin-top: 8px;">
+                        <h3 class="oe_slogan" style="text-align:left; color:#000000">
+                            Every drawing readable by everyone, without an engineer exporting it.
+                        </h3>
+                    </div>
+                </div>
 
-<h2>Supported Conversions</h2>
-<table>
-    <tr><th>Source</th><th>Target</th><th>Method</th></tr>
-    <tr><td><code>.stp</code> / <code>.step</code></td><td><code>.3mf</code></td><td>CadQuery + OpenCASCADE — preserves original component names from STEP instance labels</td></tr>
-    <tr><td><code>.stp</code> / <code>.step</code></td><td><code>.gltf</code> / <code>.glb</code></td><td>CadQuery + OpenCASCADE — preserves original component names</td></tr>
-    <tr><td><code>.stp</code> / <code>.step</code></td><td><code>.stl</code></td><td>CadQuery exporters</td></tr>
-    <tr><td><code>.stp</code> / <code>.step</code></td><td><code>.png</code></td><td>numpy-stl + matplotlib</td></tr>
-    <tr><td><code>.stl</code></td><td><code>.3mf</code></td><td>to-3mf library</td></tr>
-    <tr><td><code>.stl</code></td><td><code>.png</code></td><td>numpy-stl + matplotlib</td></tr>
-    <tr><td><code>.dxf</code></td><td><code>.png</code> / <code>.pdf</code> / <code>.svg</code></td><td>ezdxf + matplotlib</td></tr>
-    <tr><td><code>.obj</code></td><td><code>.png</code></td><td>Internal OBJ renderer</td></tr>
-</table>
+                <div class="row">
+                    <div class="col-12 px-4">
+                        <p style="font-size:18px; text-align:justify">
+                            A native CAD file is useful to the three people who own a licence for
+                            that CAD. Everyone else &mdash; purchasing sending a drawing to a supplier,
+                            the shop floor reading a sheet, a customer asking for a model &mdash; needs
+                            a PDF, a STEP or a picture. So somebody in the technical office spends
+                            an afternoon exporting files by hand, and does it again after the next
+                            revision, and forgets one.
+                        </p>
+                        <p style="font-size:18px; text-align:justify">
+                            This module removes that afternoon. You describe once which format has
+                            to become which, and the conversion happens on its own, in the
+                            background, on the revision that is current.
+                        </p>
+                    </div>
+                </div>
 
-<h2>STEP Name Preservation</h2>
+                <div class="row" style="margin-top:2rem">
+                    <div class="col-12 px-4">
+                        <h2 class="font-weight-bold"
+                            style="font-family:'Montserrat', sans-serif !important; font-size:2rem; color:#CC0000">
+                            What it does
+                        </h2>
+                        <hr style="border: 2px solid #000000 !important; background-color: #000000 !important; width: 50px !important; margin-left: 0 !important; margin-top: 8px;">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6 px-4">
+                        <h3 class="oe_slogan" style="color:#000000; text-align:left; font-size:1.3rem">Rules, not clicks</h3>
+                        <p style="font-size:18px; text-align:justify">
+                            A conversion rule says what turns into what &mdash; a starting format, a
+                            resulting format &mdash; and can be limited to a product category, so
+                            castings are treated differently from sheet metal. The name of the
+                            produced file follows a rule of yours, not a default.
+                        </p>
+                        <h3 class="oe_slogan" style="color:#000000; text-align:left; font-size:1.3rem">A queue you can look into</h3>
+                        <p style="font-size:18px; text-align:justify">
+                            Every conversion is a line in a queue, with its source document, the
+                            document it produced, its state and, when something goes wrong, the
+                            error. Nothing is lost silently, and a failed job can be sent back in.
+                        </p>
+                    </div>
+                    <div class="col-6 px-4">
+                        <h3 class="oe_slogan" style="color:#000000; text-align:left; font-size:1.3rem">Conversion servers</h3>
+                        <p style="font-size:18px; text-align:justify">
+                            The heavy work is delegated to the machines that own the CAD licences.
+                            Each server is declared with its address and its timeout, jobs are
+                            distributed to it, and a hung CAD process can be recovered instead of
+                            blocking the queue.
+                        </p>
+                        <h3 class="oe_slogan" style="color:#000000; text-align:left; font-size:1.3rem">It runs by itself</h3>
+                        <p style="font-size:18px; text-align:justify">
+                            A scheduled action empties the queue on its own, so the conversions
+                            happen at night and the results are there in the morning. They can also
+                            be triggered by hand on a selection of documents, when something is
+                            urgent.
+                        </p>
+                    </div>
+                </div>
 
-<p>
-    Standard CadQuery STEP import uses the <em>definition label</em> (shared part name) for all
-    instances, causing duplicate-name errors in assemblies where the same part appears more
-    than once. This module includes a custom importer that reads the <em>instance label</em>
-    (<code>comp_label</code>) from the XCAF document for each placement, falling back to the
-    definition name only when the instance has none.
-</p>
+                <div class="row" style="margin-top:2rem">
+                    <div class="col-12 px-4">
+                        <h3 class="oe_slogan" style="color:#000000; text-align:left; font-size:1.3rem">The formats it produces</h3>
+                        <p style="font-size:18px; text-align:justify">
+                            <b>PDF</b> for the drawing that goes to a supplier, <b>STEP</b> for the
+                            model a customer can open in any CAD, <b>STL</b> and <b>3MF</b> for the
+                            web viewer and for printing, <b>DXF</b> for the 2D sheet, <b>PNG</b> for
+                            the preview that makes a product recognisable in a list. Formats beyond
+                            these are reached through a CAD exchange installation, when one is
+                            available on the conversion server.
+                        </p>
+                        <ul style="padding-left:0; list-style-type:none; margin:0">
+                            <li style="font-size:18px; color:#000000; margin:12px 0">
+                                <span style="color:#CC0000; font-weight:700">&#9642;</span>&nbsp;&nbsp;Conversion rules by format and by product category
+                            </li>
+                            <li style="font-size:18px; color:#000000; margin:12px 0">
+                                <span style="color:#CC0000; font-weight:700">&#9642;</span>&nbsp;&nbsp;A queue with states, results and errors, per document
+                            </li>
+                            <li style="font-size:18px; color:#000000; margin:12px 0">
+                                <span style="color:#CC0000; font-weight:700">&#9642;</span>&nbsp;&nbsp;Work distributed to the machines that hold the CAD licences
+                            </li>
+                            <li style="font-size:18px; color:#000000; margin:12px 0">
+                                <span style="color:#CC0000; font-weight:700">&#9642;</span>&nbsp;&nbsp;Scheduled overnight, or started by hand when it is urgent
+                            </li>
+                        </ul>
+                    </div>
+                </div>
 
-<pre>
-# Simplified logic inside _import_step_preserve_names()
-inst_name = _get_name(comp_label) or _get_name(ref_label) or f"part_{i}"
-# Guarantee uniqueness within this parent level
-if inst_name in name_counter:
-    name_counter[inst_name] += 1
-    inst_name = f"{inst_name}_{name_counter[inst_name]}"
-</pre>
+                <div class="row" style="margin-top:2rem">
+                    <div class="col-12 px-4">
+                        <p style="font-size:18px; text-align:justify">
+                            Part of <b>OdooPLM</b>, the Product Lifecycle Management suite by
+                            OmniaSolutions. It requires the <b>plm</b> module and a few python
+                            packages for the local conversions &mdash; cadquery, ezdxf, matplotlib,
+                            numpy-stl and to-3mf &mdash; which the OdooPLM Docker image already
+                            carries. Released under AGPL-3.
+                        </p>
+                    </div>
+                </div>
 
-<p>This ensures the component tree in glTF/3MF output matches the original CAD assembly structure.</p>
+                <div class="oe_centeralign" style="margin-top:24px">
+                    <div class="oe_spaced" style="display:inline-block; min-width:300px; margin:10px 12px; padding:14px 22px; border:2px solid #000000; border-radius:10px; text-align:center; vertical-align:top">
+                        <span style="font-size:15px; color:#000000">Try the whole suite with Docker</span><br/>
+                        <b style="font-size:17px; color:#CC0000">github.com/OmniaGit/DockerOdooPLM</b>
+                    </div>
+                    <div class="oe_spaced" style="display:inline-block; min-width:300px; margin:10px 12px; padding:14px 22px; border:2px solid #000000; border-radius:10px; text-align:center; vertical-align:top">
+                        <span style="font-size:15px; color:#000000">Website</span><br/>
+                        <b style="font-size:17px; color:#CC0000">odooplm.omniasolutions.website</b>
+                    </div>
+                    <div class="oe_spaced" style="display:inline-block; min-width:300px; margin:10px 12px; padding:14px 22px; border:2px solid #000000; border-radius:10px; text-align:center; vertical-align:top">
+                        <span style="font-size:15px; color:#000000">Contact us</span><br/>
+                        <b style="font-size:17px; color:#CC0000">www.omniasolutions.website/#contact</b>
+                    </div>
+                </div>
 
-<h2>3MF Export</h2>
-
-<p>
-    The built-in CadQuery 3MF exporter does not preserve assembly hierarchy or component names.
-    This module provides a custom exporter (<code>_export_assembly_to_3mf</code>) that:
-</p>
-<ul>
-    <li>Traverses the full assembly tree recursively</li>
-    <li>Tessellates each leaf shape with its accumulated world transform applied</li>
-    <li>Writes a valid 3MF ZIP with one named <code>&lt;object&gt;</code> per component</li>
-    <li>Registers the 3MF namespace as the default XML namespace so
-        <code>querySelectorAll('object')</code> in Three.js finds elements correctly
-        (avoids <code>ns0:</code> prefix issue from Python's ElementTree)</li>
-</ul>
-
-<h2>Preview Image Copying</h2>
-
-<p>
-    When a conversion job completes, the preview image (<code>ir.attachment.preview</code>)
-    from the source document is copied to the converted document. This allows the converted
-    3MF or glTF to display the same thumbnail as the original STEP file.
-</p>
-
-<h2>Job Queue (plm.convert.stack)</h2>
-
-<p>
-    Conversions are queued as <code>plm.convert.stack</code> records and processed by a
-    scheduled action. This prevents long-running CAD conversions from blocking the Odoo
-    web request.
-</p>
-
-<table>
-    <tr><th>Field</th><th>Description</th></tr>
-    <tr><td><code>start_document_id</code></td><td>Source <code>ir.attachment</code></td></tr>
-    <tr><td><code>end_document_id</code></td><td>Resulting <code>ir.attachment</code> after conversion</td></tr>
-    <tr><td><code>start_format</code></td><td>Source extension (e.g. <code>.stp</code>)</td></tr>
-    <tr><td><code>end_format</code></td><td>Target extension (e.g. <code>.3mf</code>)</td></tr>
-    <tr><td><code>conversion_done</code></td><td>Set to <code>True</code> once the job completes</td></tr>
-    <tr><td><code>operation_type</code></td><td><code>CONVERT</code> or <code>UPDATE</code> (preview update)</td></tr>
-</table>
-
-<h2>On-Demand Conversion (3D Web Integration)</h2>
-
-<p>
-    When a user clicks <strong>3D Web</strong> on a STEP attachment, the
-    <code>plm_web_3d</code> module calls <code>_get_or_create_3mf_from_step()</code>:
-</p>
-<ol>
-    <li>Search for an existing <code>ir.attachment</code> where
-        <code>source_convert_document = this_step</code> and name ends in <code>.3mf</code>.</li>
-    <li>If found — open it immediately (no re-conversion).</li>
-    <li>If not found — call <code>convert_from_step_to('.3mf')</code>, create a new
-        <code>ir.attachment</code>, copy the preview, and open the result.</li>
-</ol>
-
-<div class="success">
-    Converted files are cached: subsequent opens of the same STEP file are instant.
+            </div>
+        </div>
+    </div>
 </div>
-
-<h2>Python Dependencies</h2>
-<pre>
-pip install ezdxf
-pip install matplotlib
-pip install cadquery        # includes OpenCASCADE (OCP)
-pip install numpy-stl
-pip install to-3mf
-</pre>
-
-<div class="note">
-    CadQuery requires Python 3.10+ and a compatible OpenCASCADE build. On Odoo.sh use
-    <code>only_on_non_sh_requirements.txt</code> for environment-specific overrides.
-</div>
-
-<h2>Conversion Format Records</h2>
-
-<p>
-    <code>plm.convert.format</code> records in <code>data/data.xml</code> define which source
-    extensions are automatically queued for conversion. Pre-configured records include:
-</p>
-<table>
-    <tr><th>XML ID</th><th>Source</th><th>Target</th></tr>
-    <tr><td><code>update_stp_preview_png</code></td><td>.stp</td><td>.png (preview)</td></tr>
-    <tr><td><code>update_step_preview_png</code></td><td>.step</td><td>.png (preview)</td></tr>
-    <tr><td><code>update_stp_preview_3mf</code></td><td>.stp</td><td>.3mf</td></tr>
-    <tr><td><code>update_stp_preview_gltf</code></td><td>.stp</td><td>.gltf</td></tr>
-    <tr><td><code>update_stp_preview_glb</code></td><td>.stp</td><td>.glb</td></tr>
-    <tr><td><code>update_step_preview_3mf</code></td><td>.step</td><td>.3mf</td></tr>
-    <tr><td><code>update_step_preview_gltf</code></td><td>.step</td><td>.gltf</td></tr>
-    <tr><td><code>update_step_preview_glb</code></td><td>.step</td><td>.glb</td></tr>
-</table>
-
-</body>
-</html>

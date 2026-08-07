@@ -21,13 +21,13 @@
 ##############################################################################
 {
     "name": "PLM Suspended State",
-    "version": "19.0.1.0.1",
+    "version": "19.0.1.0.2",
     "author": "OmniaSolutions",
     "website": "https://odooplm.omniasolutions.website",
     "category": "Manufacturing/Product Lifecycle Management (PLM)",
     "sequence": 15,
     "license": "AGPL-3",
-    "summary": "Add obsolete status to the work flow",
+    "summary": "Add a suspended state to the engineering workflow, for products and documents",
     "depends": ["mrp", "plm"],
     "data": [
         # views

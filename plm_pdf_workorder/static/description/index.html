@@ -1,54 +1,177 @@
-<section class="oe_container">
-    <div class="oe_row oe_spaced">
-        <div class="oe_span12">
-            <h2 class="oe_slogan" style="color:#875A7B">PLM Report PDF Workorder</h2>
-            <h3 class="oe_centeralign">The module is developed and maintained by <b>OmniaSolutions</b>, Further information at <a href="https://www.omniasolutions.website" style="text-decoration:none; color:#875A7B">www.omniasolutions.website</a></h3>
+<!-- The Apps store rewrites every <a> of a module description into a <span>, so a
+     link here looks clickable and does nothing: addresses are printed as text.
+     Inline styles, the bootstrap grid and the oe_ classes survive. The palette is
+     the company one: #CC0000 for the accents, #000000 for the outlines. -->
+<div class="container">
+    <div class="oe_styling_v8">
+        <div class="container p-3 mb-3">
+            <div class="container pt-0 px-4 pb-5">
+
+                <div class="row">
+                    <div class="col-6 bg-white" style="padding:4rem 1rem !important;">
+                        <div class="d-md-flex justify-content-center mb-2">
+                            <img src="odooPLM_logo.png" style="width:60%">
+                        </div>
+                    </div>
+                    <div class="col-6 bg-white" style="padding:4rem 1rem !important;">
+                        <div class="d-md-flex justify-content-center mb-2">
+                            <div>
+                                <h2 class="oe_slogan" style="color:#CC0000">PDF on the Work Order</h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12 px-4">
+                        <h2 class="font-weight-bold"
+                            style="font-family:'Montserrat', sans-serif !important; font-size:2rem; color:#CC0000">
+                            Overview
+                        </h2>
+                        <hr style="border: 2px solid #000000 !important; background-color: #000000 !important; width: 50px !important; margin-left: 0 !important; margin-top: 8px;">
+                        <h3 class="oe_slogan" style="text-align:left; color:#000000">
+                            The drawing on the shop floor screen, next to the work instructions.
+                        </h3>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12 px-4">
+                        <p style="font-size:18px; text-align:justify">
+                            This module adds to the work orders the ability to switch the preview from
+                            the routing worksheet to the 2D drawing, and back.
+                        </p>
+                        <p style="font-size:18px; text-align:justify">
+                            The operator has a screen showing the work instructions, and a drawing
+                            that lives somewhere else — printed on a sheet that is two revisions old,
+                            or on a shared folder nobody opens with oily hands. The information needed
+                            to do the job is split in two, and only one half is under revision
+                            control.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="row" style="margin-top:2rem">
+                    <div class="col-12 px-4">
+                        <h2 class="font-weight-bold"
+                            style="font-family:'Montserrat', sans-serif !important; font-size:2rem; color:#CC0000">
+                            What it does
+                        </h2>
+                        <hr style="border: 2px solid #000000 !important; background-color: #000000 !important; width: 50px !important; margin-left: 0 !important; margin-top: 8px;">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6 px-4">
+                        <h3 class="oe_slogan" style="color:#000000; text-align:left; font-size:1.3rem">Two documents, one screen</h3>
+                        <p style="font-size:18px; text-align:justify">
+                            The preview of the work order switches between the routing worksheet and
+                            the 2D drawing of the part, so the operator reads both without leaving the
+                            order.
+                        </p>
+                        <h3 class="oe_slogan" style="color:#000000; text-align:left; font-size:1.3rem">The drawing is the current one</h3>
+                        <p style="font-size:18px; text-align:justify">
+                            The drawing shown is the PLM document of the part, at the revision the PLM
+                            holds. What is on the screen follows the revision instead of following the
+                            printer.
+                        </p>
+                    </div>
+                    <div class="col-6 px-4">
+                        <h3 class="oe_slogan" style="color:#000000; text-align:left; font-size:1.3rem">Worksheet under control</h3>
+                        <p style="font-size:18px; text-align:justify">
+                            From the routing tab the use of its worksheet when processing the work
+                            order can be enabled or disabled, so a routing that does not need a sheet
+                            does not impose one.
+                        </p>
+                        <h3 class="oe_slogan" style="color:#000000; text-align:left; font-size:1.3rem">Only where it applies</h3>
+                        <p style="font-size:18px; text-align:justify">
+                            This module is only available on the Enterprise version of Odoo, because
+                            it extends the shop floor work order interface that ships there.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="row" style="margin-top:10px">
+                    <div class="col-12 px-4">
+                        <div style="max-width:520px; margin:0 0 26px 10%">
+                            <img class="oe_picture" src="default_pdf.png"
+                                 style="width:100%; height:auto; border:2px solid #000000; border-radius:12px; box-shadow:0 3px 8px rgba(0,0,0,0.18)"/>
+                            <p style="font-size:15px; text-align:left; color:#000000; margin-top:8px">
+                                The work order showing its routing worksheet.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row" style="margin-top:10px">
+                    <div class="col-12 px-4">
+                        <div style="max-width:520px; margin:0 0 26px 10%">
+                            <img class="oe_picture" src="2d_drawing.png"
+                                 style="width:100%; height:auto; border:2px solid #000000; border-radius:12px; box-shadow:0 3px 8px rgba(0,0,0,0.18)"/>
+                            <p style="font-size:15px; text-align:left; color:#000000; margin-top:8px">
+                                The same work order switched to the 2D drawing of the part.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row" style="margin-top:10px">
+                    <div class="col-12 px-4">
+                        <div style="max-width:520px; margin:0 0 26px 10%">
+                            <img class="oe_picture" src="workorder_routing.png"
+                                 style="width:100%; height:auto; border:2px solid #000000; border-radius:12px; box-shadow:0 3px 8px rgba(0,0,0,0.18)"/>
+                            <p style="font-size:15px; text-align:left; color:#000000; margin-top:8px">
+                                On the routing, whether its worksheet is used when the work order is
+                            processed.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row" style="margin-top:2rem">
+                    <div class="col-12 px-4">
+                        <ul style="padding-left:0; list-style-type:none; margin:0">
+                            <li style="font-size:18px; color:#000000; margin:12px 0">
+                                <span style="color:#CC0000; font-weight:700">&#9642;</span>&nbsp;&nbsp;Routing worksheet and 2D drawing, switchable on the work order
+                            </li>
+                            <li style="font-size:18px; color:#000000; margin:12px 0">
+                                <span style="color:#CC0000; font-weight:700">&#9642;</span>&nbsp;&nbsp;The drawing comes from the PLM, at the current revision
+                            </li>
+                            <li style="font-size:18px; color:#000000; margin:12px 0">
+                                <span style="color:#CC0000; font-weight:700">&#9642;</span>&nbsp;&nbsp;Worksheet use enabled or disabled per routing
+                            </li>
+                            <li style="font-size:18px; color:#000000; margin:12px 0">
+                                <span style="color:#CC0000; font-weight:700">&#9642;</span>&nbsp;&nbsp;Requires the Enterprise version of Odoo
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="row" style="margin-top:2rem">
+                    <div class="col-12 px-4">
+                        <p style="font-size:18px; text-align:justify">
+                            Part of <b>OdooPLM</b>, the Product Lifecycle Management suite by
+                            OmniaSolutions. It requires the <b>plm</b> module, and it is released
+                            under AGPL-3.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="oe_centeralign" style="margin-top:24px">
+                    <div class="oe_spaced" style="display:inline-block; min-width:300px; margin:10px 12px; padding:14px 22px; border:2px solid #000000; border-radius:10px; text-align:center; vertical-align:top">
+                        <span style="font-size:15px; color:#000000">Try the whole suite with Docker</span><br/>
+                        <b style="font-size:17px; color:#CC0000">github.com/OmniaGit/DockerOdooPLM</b>
+                    </div>
+                    <div class="oe_spaced" style="display:inline-block; min-width:300px; margin:10px 12px; padding:14px 22px; border:2px solid #000000; border-radius:10px; text-align:center; vertical-align:top">
+                        <span style="font-size:15px; color:#000000">Website</span><br/>
+                        <b style="font-size:17px; color:#CC0000">odooplm.omniasolutions.website</b>
+                    </div>
+                    <div class="oe_spaced" style="display:inline-block; min-width:300px; margin:10px 12px; padding:14px 22px; border:2px solid #000000; border-radius:10px; text-align:center; vertical-align:top">
+                        <span style="font-size:15px; color:#000000">Contact us</span><br/>
+                        <b style="font-size:17px; color:#CC0000">www.omniasolutions.website/#contact</b>
+                    </div>
+                </div>
+
+            </div>
         </div>
     </div>
-</section>
-
-<section class="oe_container">
-    <div class="oe_row oe_spaced" style="margin-top:32px">
-        <div class="oe_span12">
-            <p style="font-size:18px; text-align:center; width:90%; margin-left:auto; margin-right:auto">
-				This module integrates the ability in the work orders to switch the preview from the routing worksheet to the 2D drawing, and vice versa.
-            </p>
-            <img src="Plm_pdf.png" style="width:60%; display:block; margin-top:20px; margin-left:auto; margin-right:auto; border-radius:10px; opacity:0.8">
-        </div>
-    </div>
-</section>
-
-<section class="oe_container">
-    <div class="oe_row oe_spaced" style="margin-top:64px">
-        <div class="oe_span" style="width:40%">
-	    	<img src="default_pdf.png" style="width:80%; border:2px solid lightgrey; border-radius:10px; float:right">
-	    </div>
-	    <div class="oe_span" style="width:20%; text-align:center; opacity:0.4">
-	    	<div style="margin-top:70%">
-	    		<img src="double_arrow.png" style="width:20%">
-	        </div>
-	        <div style="margin-top:70%">
-	        	<img src="double_arrow.png" style="width:20%; transform:rotate(180deg)">
-	        </div>
-	    </div> 
-	    <div class="oe_span" style="width:40%">
-	    	<img src="2d_drawing.png" style="width:80%; border:2px solid lightgrey; border-radius:10px; float:left">
-	    </div>
-    </div>
-</section>
-
-<section class="oe_container">
-    <div class="oe_row oe_spaced" style="margin-top:64px">
-        <div class="oe_span12">
-        <p style="font-size:18px; text-align:center; width:90%; margin-left:auto; margin-right:auto; margin-top:20px">
-        	Possibility from the routing tab to enable/disable the use of its worksheet when processing workorder
-        </p>
-        <img src="workorder_routing.png" style="width:30%; display:block; margin-left:auto; margin-right:auto; margin-top:30px; border:2px solid lightgrey; border-radius:10px">
-        <p style="font-size:18px; text-align:center; width:90%; margin-left:auto; margin-right:auto; margin-top:50px">
-        	<b>PLM Report PDF Workorder</b> is only available in Enterprise version of Odoo.
-        </p> 
-        </div>
-    </div>
-</section>
-
-
+</div>

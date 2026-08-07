@@ -1,18 +1,143 @@
-<section class="oe_container oe_dark">
-    <div class="oe_row oe_spaced">
-        <h1 class="oe_slogan">PLM Auto Internal Ref</h1>
-        <h3 class="oe_centeralign">The module is developed and maintained by <b>OmniaSolutions</b>, Further information
-            at <b>www.omniasolutions.website</b></h3>
-        <div class="oe_span12">
-            <p class="oe_mt32">
-                The module automatically fill up the internal reference field based on engineering_code and
-                engineering_revision field
-            </p>
-            <ul>
-                <li>engineering_code = "my_code"</li>
-                <li>engineering_revision = 0</li>
-                <li>default_code = '%s_%s' % (engineering_code, engineering_revision)</li>
-            </ul>
+<!-- The Apps store rewrites every <a> of a module description into a <span>, so a
+     link here looks clickable and does nothing: addresses are printed as text.
+     Inline styles, the bootstrap grid and the oe_ classes survive. The palette is
+     the company one: #CC0000 for the accents, #000000 for the outlines. -->
+<div class="container">
+    <div class="oe_styling_v8">
+        <div class="container p-3 mb-3">
+            <div class="container pt-0 px-4 pb-5">
+
+                <div class="row">
+                    <div class="col-6 bg-white" style="padding:4rem 1rem !important;">
+                        <div class="d-md-flex justify-content-center mb-2">
+                            <img src="odooPLM_logo.png" style="width:60%">
+                        </div>
+                    </div>
+                    <div class="col-6 bg-white" style="padding:4rem 1rem !important;">
+                        <div class="d-md-flex justify-content-center mb-2">
+                            <div>
+                                <h2 class="oe_slogan" style="color:#CC0000">Automatic Internal Reference</h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12 px-4">
+                        <h2 class="font-weight-bold"
+                            style="font-family:'Montserrat', sans-serif !important; font-size:2rem; color:#CC0000">
+                            Overview
+                        </h2>
+                        <hr style="border: 2px solid #000000 !important; background-color: #000000 !important; width: 50px !important; margin-left: 0 !important; margin-top: 8px;">
+                        <h3 class="oe_slogan" style="text-align:left; color:#000000">
+                            The internal reference written by the system, the same way every time.
+                        </h3>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12 px-4">
+                        <p style="font-size:18px; text-align:justify">
+                            The module automatically fills the internal reference field from the
+                            engineering code and the engineering revision of the product. With an
+                            engineering code of <b>my_code</b> at revision <b>0</b>, the internal
+                            reference becomes <b>my_code_0</b>.
+                        </p>
+                        <p style="font-size:18px; text-align:justify">
+                            The internal reference is the string everybody else in the company uses:
+                            it appears on orders, on labels, in the warehouse, in the accounting
+                            export. When it is typed by hand it drifts &mdash; a dash instead of an
+                            underscore, the revision forgotten, a space at the end &mdash; and every
+                            drift becomes a duplicate somewhere downstream.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="row" style="margin-top:2rem">
+                    <div class="col-12 px-4">
+                        <h2 class="font-weight-bold"
+                            style="font-family:'Montserrat', sans-serif !important; font-size:2rem; color:#CC0000">
+                            What it does
+                        </h2>
+                        <hr style="border: 2px solid #000000 !important; background-color: #000000 !important; width: 50px !important; margin-left: 0 !important; margin-top: 8px;">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6 px-4">
+                        <h3 class="oe_slogan" style="color:#000000; text-align:left; font-size:1.3rem">Written on creation and on revision</h3>
+                        <p style="font-size:18px; text-align:justify">
+                            The reference is computed when the product is created and kept in step
+                            when it changes, so a new revision does not inherit the reference of the
+                            previous one.
+                        </p>
+                        <h3 class="oe_slogan" style="color:#000000; text-align:left; font-size:1.3rem">One rule, applied everywhere</h3>
+                        <p style="font-size:18px; text-align:justify">
+                            The same rule applies to every part, which is what makes the reference
+                            usable as a key by the systems that read it: the warehouse, the labels,
+                            the exports.
+                        </p>
+                    </div>
+                    <div class="col-6 px-4">
+                        <h3 class="oe_slogan" style="color:#000000; text-align:left; font-size:1.3rem">The revision is part of the identity</h3>
+                        <p style="font-size:18px; text-align:justify">
+                            Carrying the revision inside the reference means that two revisions of the
+                            same part are two distinguishable items wherever the reference travels,
+                            and not the same string with a different meaning.
+                        </p>
+                        <h3 class="oe_slogan" style="color:#000000; text-align:left; font-size:1.3rem">Changeable when your rule differs</h3>
+                        <p style="font-size:18px; text-align:justify">
+                            The composition is isolated in a single function meant to be overridden,
+                            so a company with its own numbering convention adapts it in a few lines
+                            instead of giving up on automation.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="row" style="margin-top:2rem">
+                    <div class="col-12 px-4">
+                        <ul style="padding-left:0; list-style-type:none; margin:0">
+                            <li style="font-size:18px; color:#000000; margin:12px 0">
+                                <span style="color:#CC0000; font-weight:700">&#9642;</span>&nbsp;&nbsp;Internal reference built from engineering code and revision
+                            </li>
+                            <li style="font-size:18px; color:#000000; margin:12px 0">
+                                <span style="color:#CC0000; font-weight:700">&#9642;</span>&nbsp;&nbsp;Computed on creation and kept in step on revision
+                            </li>
+                            <li style="font-size:18px; color:#000000; margin:12px 0">
+                                <span style="color:#CC0000; font-weight:700">&#9642;</span>&nbsp;&nbsp;Consistent across the whole catalogue
+                            </li>
+                            <li style="font-size:18px; color:#000000; margin:12px 0">
+                                <span style="color:#CC0000; font-weight:700">&#9642;</span>&nbsp;&nbsp;The rule can be overridden for a different convention
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="row" style="margin-top:2rem">
+                    <div class="col-12 px-4">
+                        <p style="font-size:18px; text-align:justify">
+                            Part of <b>OdooPLM</b>, the Product Lifecycle Management suite by
+                            OmniaSolutions. It requires the <b>plm</b> module, and it is released
+                            under AGPL-3.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="oe_centeralign" style="margin-top:24px">
+                    <div class="oe_spaced" style="display:inline-block; min-width:300px; margin:10px 12px; padding:14px 22px; border:2px solid #000000; border-radius:10px; text-align:center; vertical-align:top">
+                        <span style="font-size:15px; color:#000000">Try the whole suite with Docker</span><br/>
+                        <b style="font-size:17px; color:#CC0000">github.com/OmniaGit/DockerOdooPLM</b>
+                    </div>
+                    <div class="oe_spaced" style="display:inline-block; min-width:300px; margin:10px 12px; padding:14px 22px; border:2px solid #000000; border-radius:10px; text-align:center; vertical-align:top">
+                        <span style="font-size:15px; color:#000000">Website</span><br/>
+                        <b style="font-size:17px; color:#CC0000">odooplm.omniasolutions.website</b>
+                    </div>
+                    <div class="oe_spaced" style="display:inline-block; min-width:300px; margin:10px 12px; padding:14px 22px; border:2px solid #000000; border-radius:10px; text-align:center; vertical-align:top">
+                        <span style="font-size:15px; color:#000000">Contact us</span><br/>
+                        <b style="font-size:17px; color:#CC0000">www.omniasolutions.website/#contact</b>
+                    </div>
+                </div>
+
+            </div>
         </div>
     </div>
-</section>
+</div>

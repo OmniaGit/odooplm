@@ -21,12 +21,12 @@
 ##############################################################################
 {
     "name": "PLM Consumption Plans",
-    "version": "19.0.1.0.0",
+    "version": "19.0.1.0.1",
     "author": "OmniaSolutions",
     "website": "https://odooplm.omniasolutions.website",
     "category": "Manufacturing/Product Lifecycle Management (PLM)",
     "sequence": 15,
-    "summary": "Manage and track reference and actual consumption plans for BoM lines",
+    "summary": "Manage reference maintenance and consumption plans for products and BoM lines",
     "description": """
         PLM Consumption Plans
         This module introduces a structured approach for defining and managing production consumption plans
