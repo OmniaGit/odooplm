@@ -108,12 +108,12 @@ class Web3DView(Controller):
             <li class="attribute_info"><b>Name:</b> <span class="plm_link" data-doc-id="%s">%s</span></li>
             <li class="attribute_info"><b>Revision:</b> %s</li>
             <li class="attribute_info"><b>Description:</b> %s</li>
-            """ % (
+            """) % (
                 info_doc.id,
                 doc_name,
                 info_doc.engineering_revision,
                 info_doc.engineering_state,
-            ))
+            )
             document = self.document_extra(document)
             out["document"] = document
             for component in info_doc.linkedcomponents:
@@ -121,13 +121,13 @@ class Web3DView(Controller):
                 <li class="attribute_info" id="linked_component_id" data-id="%s"><b>Product Name:</b> <span class="plm_link" data-prod-id="%s">%s</span></li>
                 <li class="attribute_info"><b>Product Revision:</b> %s</li>
                 <li class="attribute_info"><b>Description:</b> %s</li>
-                """ % (
+                """) % (
                     component.id,
                     component.id,
                     component.engineering_code or component.name,
                     component.engineering_revision,
                     component.name,
-                ))
+                )
                 components = self.component_extra(components)
                 out["component"] = components
         return json.dumps(out)
