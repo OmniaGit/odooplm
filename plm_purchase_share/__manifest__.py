@@ -35,7 +35,7 @@
         "security/data.xml",
         "views/portal_templates.xml",
     ],
-    "images": ["static/description/cover.png"],
+    "images": ["static/description/cover.gif"],
     "installable": True,
     "application": False,
     "auto_install": False,

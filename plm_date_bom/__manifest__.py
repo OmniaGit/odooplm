@@ -22,7 +22,7 @@
 {
     "name": "PLM Date Bom",
     "version": "19.0.1.0.0",
-    "images": ["static/description/cover.png"],
+    "images": ["static/description/cover.gif"],
     "author": "OmniaSolutions",
     "license": "AGPL-3",
     "website": "https://odooplm.omniasolutions.website",

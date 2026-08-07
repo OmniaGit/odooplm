@@ -22,7 +22,7 @@
 {
     "name": "Product Lifecycle Management Batch conversion",
     "version": "19.0.1.0.6",
-    "images": ["static/description/cover.png"],
+    "images": ["static/description/cover.gif"],
     "author": "OmniaSolutions",
     "website": "https://odooplm.omniasolutions.website",
     "category": "Manufacturing/Product Lifecycle Management (PLM)",
