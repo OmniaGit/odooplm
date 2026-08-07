@@ -22,6 +22,7 @@
 {
     "name": "PLM Auto Internal Reference",
     "version": "19.0.2.0.0",
+    "images": ["static/description/cover.png"],
     "author": "OmniaSolutions",
     "website": "https://odooplm.omniasolutions.website",
     "summary": """This Module Create Auto Internal Reference""",

@@ -22,6 +22,7 @@
 {
     "name": "Plm Box",
     "version": "19.0.1.1.1",
+    "images": ["static/description/cover.png"],
     "author": "OmniaSolutions",
     "website": "https://odooplm.omniasolutions.website",
     "category": "Productivity/Documents",

@@ -25,6 +25,7 @@
 {
     "name": "PLM Breakages Helpdesk",
     "version": "19.0.1.0.0",
+    "images": ["static/description/cover.png"],
     "author": "OmniaSolutions",
     "website": "https://www.omniasolutions.website",
     "category": "Helpdesk",

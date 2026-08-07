@@ -38,7 +38,7 @@
             "plm_pdf_workorder_enterprise/static/src/mrpDisplayRecord.xml",
         ]
     },
-    "images": ["static/src/img/main_image.gif"],
+    "images": ["static/description/cover.png"],
     "installable": True,
     "application": False,
     "auto_install": True,

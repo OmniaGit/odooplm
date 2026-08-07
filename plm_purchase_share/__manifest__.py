@@ -35,7 +35,7 @@
         "security/data.xml",
         "views/portal_templates.xml",
     ],
-    "images": ["static/img/odoo_plm.png"],
+    "images": ["static/description/cover.png"],
     "installable": True,
     "application": False,
     "auto_install": False,

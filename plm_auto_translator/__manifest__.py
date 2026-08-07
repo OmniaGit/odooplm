@@ -3,6 +3,7 @@
     "name": "PLM Auto Translator",
     "author": "OmniaSolutions",
     "version": "19.0.1.0.0",
+    "images": ["static/description/cover.png"],
     "summary": "PLM Auto Translator",
     "website": "https://odooplm.omniasolutions.website",
     "description": """Automatically update translation files for PLM modules""",

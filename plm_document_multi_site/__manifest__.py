@@ -20,13 +20,13 @@
 {
     "name": "PLM Document Syncronization",
     "version": "19.0.1.0.0",
+    "images": ["static/description/cover.png"],
     "author": "OmniaSolutions",
     "website": "https://odooplm.omniasolutions.website",
     "category": "Manufacturing/Product Lifecycle Management (PLM)",
     "sequence": 15,
     "license": "AGPL-3",
     "summary": "PLM document server syncronization",
-    "images": [],
     "depends": ["plm"],
     "data": [
         "views/ir_attachment.xml",
