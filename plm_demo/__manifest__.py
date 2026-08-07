@@ -25,9 +25,15 @@
     "author": "OmniaSolutions",
     "maintainer": "OmniaSolutions S.n.c di Boscolo Matteo & C",
     "website": "https://odooplm.omniasolutions.website",
+    "support": "https://github.com/OmniaGit/odooplm/issues",
+    "live_test_url": "https://v19.odooplm.cloud",
     "category": "Manufacturing/Product Lifecycle Management (PLM)",
     "sequence": 20,
     "license": "AGPL-3",
+    "development_status": "Production/Stable",
+    "contributors": [
+        "Matteo Boscolo <matteo.boscolo@omniasolutions.eu>",
+    ],
     "summary": """
     A populated PLM environment to look at, instead of an empty one.
 

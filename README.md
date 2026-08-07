@@ -5,7 +5,7 @@
   It integrates Odoo with the most popular CAD editors and provides document
   management, BOM versioning, revision workflows, and a browser-based 3D/2D viewer.
 
-  > For issues or support: **info@omniasolutions.eu**
+  > For issues or support: **https://github.com/OmniaGit/odooplm/issues**
   > Full documentation: **https://odooplm.omniasolutions.website**
 
   ---
@@ -166,11 +166,29 @@
   Commit message format: [TAG] | Description
   Tags: FIX, ADD, IMP, MOD
 
-  Code quality: pre-commit run --all-files (black, isort, flake8, pylint-odoo, prettier, eslint)
+  Code quality: pre-commit run --all-files
+
+  The hooks are deliberately small: the checks that find real breakage without
+  rewriting a line — check-xml, check-yaml, merge and case conflicts, broken
+  symlinks, debug statements, docstring first — plus flake8 as a report only.
+  The formatters (black, isort, prettier) were dropped: they no longer install on
+  current Python, and bringing them back means reformatting the repository in one
+  go. See the comment at the top of .pre-commit-config.yaml.
 
   ---
   License
 
-  LGPL-3 — see individual module manifests for details.
+  The suite is deliberately split in two.
+
+  The core module `plm` is **LGPL-3**: it can be integrated into other products,
+  including proprietary ones, without those products having to be published.
+
+  Every other module is **AGPL-3**: extending them, distributing the result or
+  serving it over a network carries the obligation to publish the work under the
+  same licence. The intent is simple — anyone is welcome to build on the core,
+  and whoever builds a business on top of the extensions gives back what they add.
+
+  The licence of each module is declared in its `__manifest__.py`, which is the
+  authoritative source, and repeated in the header of its sources.
 
   © OmniaSolutions — https://www.omniasolutions.website

@@ -4,9 +4,12 @@
     "author": "OmniaSolutions",
     "maintainer": "OmniaSolutions S.n.c di Boscolo Matteo & C",
     "version": "19.0.1.0.0",
+    "category": "Manufacturing/Product Lifecycle Management (PLM)",
     "images": ["static/description/cover.gif"],
     "summary": "PLM Auto Translator",
     "website": "https://odooplm.omniasolutions.website",
+    "support": "https://github.com/OmniaGit/odooplm/issues",
+    "live_test_url": "https://v19.odooplm.cloud",
     "description": """Automatically update translation files for PLM modules""",
     "depends": [
         "plm",
@@ -27,6 +30,11 @@
         },
     },
     "installable": True,
-    "application": True,
-    "license": "LGPL-3",
+    "application": False,
+    "license": "AGPL-3",
+    "development_status": "Production/Stable",
+    "contributors": [
+        "Matteo Boscolo <matteo.boscolo@omniasolutions.eu>",
+        "Kuldip Trapasiya <kuldip.trapasiya@aktivsoftware.com>",
+    ],
 }

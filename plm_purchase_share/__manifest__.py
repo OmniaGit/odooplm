@@ -6,28 +6,36 @@
 #    $Id$
 #
 #    This program is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU General Public License as published by
+#    it under the terms of the GNU Affero General Public License as published by
 #    the Free Software Foundation, either version 3 of the License, or
 #    (at your option) any later version.
 #
 #    This program is distributed in the hope that it will be useful,
 #    but WITHOUT ANY WARRANTY; without even the implied warranty of
 #    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU General Public License for more details.
+#    GNU Affero General Public License for more details.
 #
-#    You should have received a copy of the GNU General Public License
+#    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
 {
     "name": "PLM Purchase Share",
     "version": "19.0.1.0.1",
+    "category": "Manufacturing/Product Lifecycle Management (PLM)",
     "author": "OmniaSolutions",
     "maintainer": "OmniaSolutions S.n.c di Boscolo Matteo & C",
     "website": "https://odooplm.omniasolutions.website",
+    "support": "https://github.com/OmniaGit/odooplm/issues",
+    "live_test_url": "https://v19.odooplm.cloud",
     "sequence": 15,
     "license": "AGPL-3",
-    "summary": "Download the products document from the purchase orders on the portal.",
+    "development_status": "Production/Stable",
+    "contributors": [
+        "Matteo Boscolo <matteo.boscolo@omniasolutions.eu>",
+        "Aadil Belim <aadil.belim@aktivsoftware.com>",
+    ],
+    "summary": "Supplier document sharing: download the engineering documents of a purchase order from the portal, at the current revision",
     "description": """
         Allow to download documents from the portal.
         """,
