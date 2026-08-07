@@ -24,6 +24,7 @@
     "version": "19.0.1.0.0",
     "images": ["static/description/cover.gif"],
     "author": "OmniaSolutions",
+    "maintainer": "OmniaSolutions S.n.c di Boscolo Matteo & C",
     "license": "AGPL-3",
     "website": "https://odooplm.omniasolutions.website",
     "category": "Manufacturing/Product Lifecycle Management (PLM)",

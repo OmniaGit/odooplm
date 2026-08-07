@@ -23,6 +23,7 @@
     "name": "PLM Purchase Share",
     "version": "19.0.1.0.1",
     "author": "OmniaSolutions",
+    "maintainer": "OmniaSolutions S.n.c di Boscolo Matteo & C",
     "website": "https://odooplm.omniasolutions.website",
     "sequence": 15,
     "license": "AGPL-3",

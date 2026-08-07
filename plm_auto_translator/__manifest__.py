@@ -2,6 +2,7 @@
 {
     "name": "PLM Auto Translator",
     "author": "OmniaSolutions",
+    "maintainer": "OmniaSolutions S.n.c di Boscolo Matteo & C",
     "version": "19.0.1.0.0",
     "images": ["static/description/cover.gif"],
     "summary": "PLM Auto Translator",
