@@ -214,6 +214,26 @@ stack needs pinned:
 pip install -r aaa_requirements.txt
 ```
 
+### Install from PyPI
+
+The whole suite is published as a single wheel, versioned after the `plm`
+module:
+
+```bash
+pip install odooplm            # the modules alone
+pip install "odooplm[full]"    # with every optional module's dependency
+```
+
+Extras follow the modules that declare them: `cad` (the conversion stack),
+`pack` (`plm_pack_and_go`), `translate` (`plm_auto_translator`), `full` (all).
+The addons land in `odoo/addons`, so they are on the addons path with no
+further configuration.
+
+> `cadquery` is installed from git in `aaa_requirements.txt`, because no PyPI
+> release carries the OCP build the STEP reader needs. PyPI forbids a URL in a
+> wheel's dependencies, so `pip install "odooplm[cad]"` takes the PyPI release
+> instead. For server-side conversion, install from `aaa_requirements.txt`.
+
 ### Get the source
 
 The 3D and DXF viewer libraries are git submodules, so clone recursively:
@@ -265,6 +285,30 @@ repository in one go. See the comment at the top of `.pre-commit-config.yaml`.
 
 See the [Contributing](https://github.com/OmniaGit/odooplm/wiki/Contributing)
 wiki page before opening a pull request.
+
+### Python dependencies are generated
+
+`aaa_requirements.txt` is **generated** — do not edit it. A module's python
+packages are declared in the `external_dependencies` of its `__manifest__.py`,
+their versions in `scripts/requirements_pins.txt`, and the file is written from
+both:
+
+```bash
+python3 scripts/sync_requirements.py           # regenerate
+python3 scripts/sync_requirements.py --check   # fail if it drifted
+```
+
+The pre-commit hook regenerates and stages it whenever a manifest changes, and
+the same data feeds `extras_require` in `setup.py`, so the requirements file
+and the wheel cannot disagree.
+
+### Releasing
+
+Tag the commit `v19.0.<something>` and `.github/workflows/publish.yml` builds
+the sdist and wheel, verifies the requirements file matches the manifests, runs
+`twine check` and publishes to PyPI through an OIDC trusted publisher. The
+package version is the `plm` module's version, which a pre-commit hook bumps on
+every commit so a tag is always publishable.
 
 ---
 

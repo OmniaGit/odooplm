@@ -45,6 +45,25 @@ repos:
         language: system
         pass_filenames: true
         stages: [pre-commit]
+      # plm's version is the version of the odooplm pip package, and PyPI
+      # rejects a version it already holds. Runs after the hook above, and
+      # stands down when that one has already moved plm.
+      - id: bump-plm-version
+        name: bump plm/__manifest__.py so any tag stays publishable
+        entry: python3 .pre-commit-scripts/bump_plm_version.py
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [pre-commit]
+      # aaa_requirements.txt is generated from the external_dependencies of the
+      # manifests; editing it by hand is what let it drift in the first place.
+      - id: sync-requirements
+        name: regenerate aaa_requirements.txt from the manifests
+        entry: python3 scripts/sync_requirements.py
+        language: system
+        pass_filenames: false
+        files: (__manifest__\.py|scripts/requirements_pins\.txt|aaa_requirements\.txt)$
+        stages: [pre-commit]
       # These files are most likely copier diff rejection junks; if found,
       # review them manually, fix the problem (if needed) and remove them
       - id: forbidden-files

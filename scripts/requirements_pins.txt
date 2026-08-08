@@ -1,0 +1,30 @@
+# Versions for the packages the manifests declare, and for the indirect ones
+# they pull in. Read by scripts/sync_requirements.py, which merges these lines
+# into aaa_requirements.txt and into the extras of the wheel.
+#
+# An Odoo manifest says *what* a module imports, never *which release* works —
+# so this is where a version belongs. Two kinds of line live here:
+#
+#   * a package some manifest declares: the line replaces the bare name;
+#   * a package no manifest declares: an indirect constraint, written to its own
+#     section of aaa_requirements.txt.
+#
+# A bare name needs no line here at all — leave it out and it is installed
+# unpinned.
+
+# --- declared by a manifest -------------------------------------------------
+
+# The CAD conversion stack. matplotlib 3.9 dropped the 3D API this module draws
+# previews with, and cadquery has no release on PyPI carrying the OCP build the
+# STEP reader needs, so it is installed from git.
+matplotlib==3.8.4
+cadquery @ git+https://github.com/CadQuery/cadquery.git
+
+# --- indirect constraints ---------------------------------------------------
+# Nothing imports these directly; they are what the conversion stack resolves
+# against. Unpinning them breaks cadquery, not OdooPLM.
+
+numpy==1.26.4
+scipy==1.16.2
+nlopt==2.7.1
+pythonopenscad==2.1.3

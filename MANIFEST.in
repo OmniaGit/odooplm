@@ -1,0 +1,7 @@
+# setup.py imports scripts/sync_requirements.py to build extras_require, and
+# `python -m build` builds the wheel from the sdist — so the script has to be
+# inside the sdist or the wheel build fails with ImportError.
+include scripts/sync_requirements.py
+include scripts/requirements_pins.txt
+include aaa_requirements.txt
+include README.md
