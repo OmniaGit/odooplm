@@ -5,3 +5,6 @@ include scripts/sync_requirements.py
 include scripts/requirements_pins.txt
 include aaa_requirements.txt
 include README.md
+include LICENSE
+include LICENSING.md
+recursive-include LICENSES *.txt

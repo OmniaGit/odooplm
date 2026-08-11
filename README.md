@@ -330,4 +330,10 @@ authoritative source, and repeated in the header of its sources.
 The desktop CAD client is a separate, proprietary product and is not covered by
 these licences.
 
+[`LICENSING.md`](LICENSING.md) is the full reference: the module-by-module map,
+what the split means for integrators, hosters and researchers, the licensing of
+the aggregates (git, PyPI, Docker) and of the vendored third-party components.
+The root [`LICENSE`](LICENSE) carries the AGPL-3.0 text, the strongest
+obligation present in the aggregate; it does not relicense `plm`.
+
 © OmniaSolutions — https://www.omniasolutions.website

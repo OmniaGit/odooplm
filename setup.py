@@ -130,13 +130,19 @@ setup(
         "Bug Tracker": "https://github.com/OmniaGit/odooplm/issues",
         "Docker images": "https://github.com/OmniaGit/DockerOdooPLM",
     },
-    # The distribution bundles every module of the suite. The core plm module
-    # is LGPL-3, but the 35 add-ons shipped alongside it are AGPL-3, so the
-    # aggregate can only be offered under the stricter of the two. Per-module
-    # licensing is declared in each __manifest__.py.
-    license="AGPL-3",
+    # The distribution bundles every module of the suite: plm is LGPL-3, the 35
+    # add-ons shipped alongside it are AGPL-3. The SPDX `AND` says exactly that
+    # — both licences apply, to different parts — instead of flattening the
+    # aggregate to the stricter one and hiding the LGPL core from the metadata.
+    # Per-module licensing is declared in each __manifest__.py; LICENSING.md
+    # maps the whole suite.
+    #
+    # PEP 639 forbids `License ::` classifiers next to a license expression:
+    # setuptools raises InvalidConfigError if both are present, so the AGPL
+    # classifier that used to sit below is gone on purpose, not by oversight.
+    license_expression="AGPL-3.0-or-later AND LGPL-3.0-or-later",
+    license_files=["LICENSE", "LICENSES/*.txt"],
     classifiers=[
-        "License :: OSI Approved :: GNU Affero General Public License v3",
         "Programming Language :: Python :: 3",
         "Framework :: Odoo :: 19.0",
         "Topic :: Office/Business",

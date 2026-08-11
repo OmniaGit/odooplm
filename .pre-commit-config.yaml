@@ -64,6 +64,17 @@ repos:
         pass_filenames: false
         files: (__manifest__\.py|scripts/requirements_pins\.txt|aaa_requirements\.txt)$
         stages: [pre-commit]
+      # LICENSING.md is the single answer to "under what licence is this?".
+      # It is only worth that if it cannot drift from the manifests, which are
+      # authoritative. always_run because a module can also disappear, and a
+      # deletion reaches no hook through its filenames.
+      - id: check-licensing
+        name: manifests, LICENSING.md and LICENSES/ agree
+        entry: python3 .pre-commit-scripts/check_licensing.py
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [pre-commit]
       # These files are most likely copier diff rejection junks; if found,
       # review them manually, fix the problem (if needed) and remove them
       - id: forbidden-files
