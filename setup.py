@@ -26,6 +26,20 @@ EXCLUDE_DIR_FRAGMENTS = [
     os.path.join("static", "description"),
 ]
 
+# Modules that live in the repository but are deliberately not published.
+#
+# plm_demo is an evaluation artefact: its own manifest says not to install it on
+# a production database, which is what a pip install is for. It also carries ~5
+# MB of CAD payload that every installation would drag along. It stays available
+# where evaluation actually happens — a git clone and the Docker -demo tags.
+#
+# qt_views is local experimental work, never committed; excluding it keeps a
+# local `python -m build` producing the same distribution as CI does.
+EXCLUDE_ADDONS = {
+    "plm_demo",
+    "qt_views",
+}
+
 ASSET_EXTENSIONS = {
     ".xml", ".csv", ".po", ".pot",
     ".png", ".gif", ".jpg", ".jpeg", ".svg", ".ico",
@@ -50,6 +64,7 @@ def get_addons():
             os.path.isdir(path)
             and os.path.exists(os.path.join(path, "__manifest__.py"))
             and not item.startswith(".")
+            and item not in EXCLUDE_ADDONS
         ):
             addons.append(item)
     return addons

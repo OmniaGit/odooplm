@@ -116,10 +116,14 @@ documented REST API of `plm/controllers/main.py`.
 
 ## Aggregates
 
-Any artefact that bundles the whole suite — the git repository, the `odooplm`
-PyPI sdist and wheel, the Docker image — contains both licences. Redistributing
-such an aggregate means honouring the AGPL for the modules that carry it and the
-LGPL for `plm`. The per-module declaration in the manifests always governs; the
+Any artefact that bundles the suite — the git repository, the `odooplm` PyPI
+sdist and wheel, the Docker image — contains both licences. The PyPI package is
+the one exception to completeness: it leaves out `plm_demo`, an evaluation
+module that has no place on the production database a pip install targets. That
+changes what is shipped, not under what terms.
+
+Redistributing such an aggregate means honouring the AGPL for the modules that
+carry it and the LGPL for `plm`. The per-module declaration always governs; the
 aggregate label is the strongest obligation contained, never a relicensing of
 the parts.
 

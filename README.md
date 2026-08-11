@@ -234,6 +234,11 @@ further configuration.
 > wheel's dependencies, so `pip install "odooplm[cad]"` takes the PyPI release
 > instead. For server-side conversion, install from `aaa_requirements.txt`.
 
+> `plm_demo` is **not** in the PyPI package. It exists to be looked at, not to
+> be installed on the production database a pip install is meant for, and it
+> carries several MB of CAD payload. Get it from a git clone or from the Docker
+> `-demo` tags.
+
 ### Get the source
 
 The 3D and DXF viewer libraries are git submodules, so clone recursively:
@@ -252,7 +257,8 @@ odoo -d <database> -i plm
 # Core, web viewer and server-side conversion
 odoo -d <database> -i plm,plm_web_3d,plm_automated_convertion
 
-# A populated PLM to look at — evaluation and training only
+# A populated PLM to look at — evaluation and training only,
+# and only from a git clone: the PyPI package leaves plm_demo out
 odoo -d <database> -i plm_demo
 ```
 
