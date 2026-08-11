@@ -321,8 +321,8 @@
         <field name="active" eval="1"/>
         <field name="perm_read" eval="1"/>
         <field name="perm_create" eval="1"/>
-        <field name="perm_write" eval="0"/>
-        <field name="perm_unlink" eval="0"/>
+        <field name="perm_write" eval="1"/>
+        <field name="perm_unlink" eval="1"/>
         <field name="domain_force" eval="[('is_plm','=',False)]"/>
         <field name="groups" eval="[(4, ref('group_plm_view_user'))]"/>
     </record>
