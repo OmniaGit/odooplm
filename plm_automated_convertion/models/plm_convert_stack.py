@@ -59,7 +59,8 @@ class PlmConvertStack(models.Model):
         "ir.attachment",
         string="Starting Document",
         domain=[("document_type", "=", "3d")],
-        required=True
+        required=True,
+        ondelete="cascade",
     )
     end_document_id = fields.Many2one("ir.attachment", string="Converted Document")
     output_name_rule = fields.Char("Output Name Rule")
