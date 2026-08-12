@@ -21,7 +21,7 @@
 ##############################################################################
 {
     "name": "Product Lifecycle Management",
-    "version": "19.0.1.0.15",
+    "version": "19.0.1.0.16",
     "author": "OmniaSolutions",
     "maintainer": "OmniaSolutions S.n.c di Boscolo Matteo & C",
     "website": "https://odooplm.omniasolutions.website",

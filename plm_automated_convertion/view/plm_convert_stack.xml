@@ -54,6 +54,7 @@
                             <field name="start_document_id" readonly="state == 'done'"/>
 
                             <field name="server_id" invisible="operation_type=='update_Cad'" readonly="state == 'done'"/>
+                            <field name="convrsion_rule" required="1" readonly="state == 'done'"/>
 <!--                            <div>-->
 <!--                                <span>Converted ?</span>-->
 <!--                                <field name="conversion_done"/>-->
@@ -68,7 +69,6 @@
                         </group>
                         <group name="Convert"
                                invisible="operation_type=='UPDATE'">
-                            <field name="convrsion_rule" required="1" invisible="operation_type=='update_Cad'" readonly="state == 'done'"/>
                             <field name="product_category" invisible="operation_type=='update_Cad'"/>
                             <field name="end_document_id" readonly="True" invisible="operation_type=='update_Cad'"/>
                             <field name="output_name_rule" invisible="operation_type=='update_Cad'" readonly="state == 'done'"/>
