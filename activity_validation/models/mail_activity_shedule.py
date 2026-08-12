@@ -154,13 +154,6 @@ class MailActivitySchedule(models.TransientModel):
         ret = super(MailActivitySchedule, self).action_feedback(feedback, attachment_ids)
         return ret
 
-    def activity_format(self):
-        out = []
-        for res_dict in super(MailActivitySchedule, self).activity_format():
-            if res_dict.get('plm_state', 'draft') not in ['done', 'cancel']:
-                out.append(res_dict)
-        return out
-
     def isCustomType(self):
         for activity_id in self:
             if activity_id.activity_type_id.change_activity_type in ['request', 'plm_activity']:

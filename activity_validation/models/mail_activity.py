@@ -163,17 +163,6 @@ class MailActivity(models.Model):
         ret = super(MailActivity, self).action_feedback(feedback, attachment_ids)
         return ret
 
-    def activity_format(self):
-        out = []
-        super_res = super(MailActivity, self).activity_format()
-        if self.activity_type_id == self.env.ref("activity_validation.mail_activity_change_request").id:
-            for res_dict in super_res:
-                if res_dict.get('plm_state', 'draft') not in ['done', 'cancel']:
-                    out.append(res_dict)
-        else:
-            return super_res
-        return out
-
     def isCustomType(self):
         for activity_id in self:
             if activity_id.activity_type_id.change_activity_type in ['request', 'plm_activity']:
