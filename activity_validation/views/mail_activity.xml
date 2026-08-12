@@ -226,9 +226,27 @@
         <field name="priority" eval="15"/>
         <field name="arch" type="xml">
             <search string="Activities">
+                <!-- change_activity_type is declared in plm as
+                     [("request", "Request"), ("plm_activity", "Order")]; the
+                     'order' this filter used to look for is not one of them, so
+                     it never matched anything but requests. -->
                 <filter name="change_orders"
                         string="ECR / ECO"
-                        domain="[('activity_type_id.change_activity_type','in', ('request', 'order'))]"
+                        domain="[('activity_type_id.change_activity_type','in', ('request', 'plm_activity'))]"
+                        />
+                <separator/>
+                <!-- The action already brings in the closed ones, so these split
+                     what it shows. Closing an activity archives it — _action_done
+                     ends on action_archive, it does not delete — and naming
+                     active in a domain is what switches off the implicit
+                     active = True the orm would add otherwise. -->
+                <filter name="filter_open"
+                        string="Open"
+                        domain="[('active', '=', True)]"
+                        />
+                <filter name="filter_archived"
+                        string="Closed"
+                        domain="[('active', '=', False)]"
                         />
                         <field name="res_name"/>
                         <field name="user_id"/>
@@ -244,6 +262,13 @@
         <field name="name">Activities</field>
         <field name="res_model">mail.activity</field>
         <field name="view_mode">list,form</field>
+        <!-- This menu is the PLM one, so it shows the PLM activities: any type
+             that carries a change_activity_type, rather than a hardcoded list
+             that would go stale if a third one is added. Closed activities are
+             part of the history of a part, so they belong here too — without
+             ('active', ...) named in this domain the orm would hide them. -->
+        <field name="domain">[('activity_type_id.change_activity_type', '!=', False),
+                             ('active', 'in', (True, False))]</field>
     </record>
 
     <menuitem
