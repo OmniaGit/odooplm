@@ -16,6 +16,22 @@ jobs:
         with:
           submodules: recursive
 
+      # The package version is plm's, the tag is typed by hand, and nothing tied
+      # the two together: v19.0.1.0.13 was once pushed on a tree that declared
+      # 19.0.1.0.14. A package published under a number its tag does not carry
+      # cannot be rebuilt from the repository, and nobody notices until they try.
+      - name: Check the tag matches the package version
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          pkg=$(sed -n 's/.*"version"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' \
+                plm/__manifest__.py | head -1)
+          echo "tag: $tag   plm/__manifest__.py: $pkg"
+          if [ "$tag" != "$pkg" ]; then
+            echo "::error::tag $tag does not match the package version $pkg"
+            exit 1
+          fi
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
