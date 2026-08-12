@@ -84,7 +84,7 @@ port 80**.
 | Module | Description |
 |---|---|
 | `plm` | Foundation module — versioned products, engineering documents, BOM lifecycle, checkout system, CAD client REST API |
-| `plm_demo` | A populated PLM environment instead of an empty one: the LSU-100 sample product, 12 parts over three BOM levels, spare BOMs, 29 STEP/3MF/DXF/PDF documents with previews, ballooned assembly sheets, 3D markups. Evaluation and training only |
+| `plm_demo` | A populated PLM environment instead of an empty one: the LSU-100 sample product, 12 parts over three BOM levels, spare BOMs, 29 STEP/3MF/DXF/PDF documents with previews, ballooned assembly sheets, 3D markups, and the engineering workflow run over all of it — released revisions, a superseded part, one under modification, an open change order, a checked out sheet. Evaluation and training only |
 
 ### Document & Viewer
 

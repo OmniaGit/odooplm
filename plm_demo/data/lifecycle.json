@@ -1,0 +1,92 @@
+{
+  "comment": [
+    "What happens to the demo product after it is loaded.",
+    "",
+    "Unlike dataset.json, which tools/export_demo.py generates from a curated",
+    "database, this file is written by hand: it does not describe records, it",
+    "describes the workflow to run over them. hooks.py applies it through the",
+    "real PLM api — action_confirm, action_release, NewRevision, plm.checkout —",
+    "so what the demo shows is what the code actually does, not states written",
+    "into the database by hand.",
+    "",
+    "Order matters. Parts are released before any revision is taken, because a",
+    "revision starts from a released part; the checkout comes last, because a",
+    "checked out document blocks the state changes above it."
+  ],
+  "steps": [
+    {
+      "op": "workflow",
+      "part": "part_lsu_100",
+      "action": "confirm",
+      "why": "confirm is recursive: the whole LSU-100 tree moves with the top assembly"
+    },
+    {
+      "op": "workflow",
+      "part": "part_lsu_100",
+      "action": "release",
+      "why": "the product as it is manufactured today, revision 0, released"
+    },
+
+    {
+      "op": "part_revision",
+      "part": "part_scr_m6_020",
+      "xml_id": "part_scr_m6_020_rev1",
+      "desc_modify": "Supplier changed the head marking. Same thread, same length, same class: the part is interchangeable with revision 0.",
+      "documents": [
+        {"document": "doc_scr_m6_020_step", "xml_id": "doc_scr_m6_020_step_rev1"},
+        {"document": "doc_scr_m6_020_3mf", "xml_id": "doc_scr_m6_020_3mf_rev1"}
+      ],
+      "why": "a leaf part, so the full cycle can run to the end without disturbing the assemblies"
+    },
+    {
+      "op": "workflow",
+      "part": "part_scr_m6_020_rev1",
+      "action": "confirm"
+    },
+    {
+      "op": "workflow",
+      "part": "part_scr_m6_020_rev1",
+      "action": "release",
+      "why": "releasing revision 1 obsoletes revision 0 on its own — nothing sets that state by hand"
+    },
+
+    {
+      "op": "part_revision",
+      "part": "part_brg_hsg_001",
+      "xml_id": "part_brg_hsg_001_rev1",
+      "desc_modify": "Grease nipple moved to the top face: on the machine as built it ends up under the shaft and cannot be reached with the gun.",
+      "documents": [
+        {"document": "doc_brg_hsg_001_step", "xml_id": "doc_brg_hsg_001_step_rev1"},
+        {"document": "doc_brg_hsg_001_3mf", "xml_id": "doc_brg_hsg_001_3mf_rev1"},
+        {"document": "doc_brg_hsg_001_drawing_dxf", "xml_id": "doc_brg_hsg_001_drawing_dxf_rev1"}
+      ],
+      "why": "left in draft: this is the work in progress, and it puts revision 0 under modification"
+    },
+
+    {
+      "op": "change_request",
+      "part": "part_brg_hsg_001",
+      "xml_id": "ecr_brg_hsg_001",
+      "name": "BRG-HSG-001: grease nipple unreachable once assembled",
+      "note": "<p>Reported from the assembly line on the first production batch. With the shaft mounted, the grease gun does not fit on the nipple: the housing has to be greased before assembly, which the maintenance manual cannot ask a customer to do.</p><p>Requested: move the nipple to a face that stays accessible.</p>",
+      "close": true,
+      "why": "the request that started the modification, closed: _action_done archives the activity with plm_state done, it does not delete it. Being archived it drops out of the record's open activities, which is what closed means here, and it is still there to be read"
+    },
+    {
+      "op": "change_order",
+      "part": "part_brg_hsg_001",
+      "xml_id": "eco_brg_hsg_001",
+      "name": "ECO-001 BRG-HSG-001 revision 1",
+      "note": "<p>Nipple moved to the top face on revision 1. Open until the drawing is checked and the revision is released.</p><p>No interchangeability: revision 0 housings already assembled keep their nipple where it is.</p>",
+      "why": "an open change order, which is what a change in progress looks like"
+    },
+
+    {
+      "op": "checkout",
+      "document": "doc_brg_hsg_001_drawing_dxf_rev1",
+      "hostname": "CAD-WS-04",
+      "pws": "D:\\\\PLM\\\\workspace\\\\BRG-HSG-001",
+      "why": "the 2D sheet of the revision under design, open in someone's CAD session"
+    }
+  ]
+}

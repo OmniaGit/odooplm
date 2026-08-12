@@ -36,12 +36,15 @@ import logging
 import os
 from urllib.parse import quote
 
+from odoo import fields
+
 _logger = logging.getLogger(__name__)
 
 MODULE = "plm_demo"
 HERE = os.path.dirname(os.path.abspath(__file__))
 DATASET = os.path.join(HERE, "data", "dataset.json")
 CURATED_CHATTER = os.path.join(HERE, "data", "curated_chatter.json")
+LIFECYCLE = os.path.join(HERE, "data", "lifecycle.json")
 FILES = os.path.join(HERE, "files")
 
 VIEWER_LINK = (
@@ -273,6 +276,166 @@ class DemoLoader:
             posted += 1
         _logger.info("plm_demo: %s chatter messages posted", posted)
 
+    # ------------------------------------------------------------- lifecycle
+    # dataset.json describes records; lifecycle.json describes what happens to
+    # them. Everything below goes through the same api the buttons and the CAD
+    # client use, so the demo shows the workflow behaving, not states written
+    # into the database by hand.
+
+    WORKFLOW_ACTIONS = {
+        "confirm": "action_confirm",
+        "release": "action_release",
+        "draft": "action_draft",
+        "obsolete": "action_obsolete",
+    }
+
+    def _part(self, name):
+        """The product.product behind a dataset entry, which registers templates.
+
+        The engineering workflow and the revision api live on the variant, not
+        on the template.
+        """
+        template = self._get(name)
+        return template.product_variant_id if template else None
+
+    def _step_workflow(self, step):
+        part = self._part(step["part"])
+        if not part:
+            return False
+        getattr(part, self.WORKFLOW_ACTIONS[step["action"]])()
+        return True
+
+    def _step_part_revision(self, step):
+        """A new revision of a part, plus new revisions of its documents.
+
+        ``NewRevision`` clears the linked documents of the new revision — the CAD
+        client attaches them again when it checks the new geometry in — so the
+        documents are revised here and linked back.
+        """
+        if self._existing(step["xml_id"]):
+            return False
+        part = self._part(step["part"])
+        if not part:
+            return False
+
+        new_id, revision = part.NewRevision()
+        if not new_id:
+            _logger.warning("plm_demo: no revision created for %s", step["part"])
+            return False
+        new_part = self.env["product.product"].browse(new_id)
+        if step.get("desc_modify"):
+            new_part.desc_modify = step["desc_modify"]
+        # the dataset registers templates, so the revision is registered the
+        # same way and the uninstall hook takes it down with the rest
+        self._register(step["xml_id"], new_part.product_tmpl_id)
+
+        documents = self.env["ir.attachment"]
+        for spec in step.get("documents", []):
+            if self._existing(spec["xml_id"]):
+                continue
+            document = self._get(spec["document"])
+            if not document:
+                continue
+            new_doc_id, _revision = document.NewRevision(document.id)
+            if not new_doc_id:
+                continue
+            new_document = self.env["ir.attachment"].browse(new_doc_id)
+            if step.get("desc_modify"):
+                new_document.desc_modify = step["desc_modify"]
+            documents |= new_document
+            self._register(spec["xml_id"], new_document)
+
+        if documents:
+            documents.write({"linkedcomponents": [(6, 0, [new_part.id])]})
+        _logger.info(
+            "plm_demo: %s revision %s created with %s documents",
+            new_part.engineering_code, revision, len(documents),
+        )
+        return True
+
+    def _activity(self, step, is_eco):
+        """An ECR or an ECO on a part: activity_validation extends mail.activity."""
+        part = self._part(step["part"])
+        if not part:
+            return None
+        model = self.env["ir.model"]._get("product.product")
+        activity = self.env["mail.activity"].create({
+            "activity_type_id": self.env.ref(
+                "activity_validation.mail_activity_change_request"
+            ).id,
+            "res_model_id": model.id,
+            "res_id": part.id,
+            "user_id": self.env.uid,
+            "date_deadline": fields.Date.context_today(part),
+            "summary": step["name"],
+            "name": step["name"],
+            "note": step["note"],
+        })
+        # action_in_progress returns the action that reopens the activity form;
+        # here only its side effect matters
+        activity.action_in_progress()
+        if is_eco:
+            activity.action_to_eco()
+        return activity
+
+    def _step_change_request(self, step):
+        if step.get("xml_id") and self._existing(step["xml_id"]):
+            return False
+        activity = self._activity(step, is_eco=False)
+        if not activity:
+            return False
+        if step.get("close"):
+            # action_to_done posts the message and archives the activity —
+            # _action_done ends on action_archive(), it does not delete. The
+            # record survives with plm_state 'done', so it is registered like
+            # any other and the uninstall hook takes it down.
+            activity.action_to_done()
+        if step.get("xml_id"):
+            self._register(step["xml_id"], activity)
+        return True
+
+    def _step_change_order(self, step):
+        if step.get("xml_id") and self._existing(step["xml_id"]):
+            return False
+        activity = self._activity(step, is_eco=True)
+        if not activity:
+            return False
+        if step.get("xml_id"):
+            self._register(step["xml_id"], activity)
+        return True
+
+    def _step_checkout(self, step):
+        document = self._get(step["document"])
+        if not document:
+            return False
+        if self.env["plm.checkout"].search([("documentid", "=", document.id)], limit=1):
+            return False
+        self.env["plm.checkout"].create({
+            "documentid": document.id,
+            "userid": self.env.uid,
+            "hostname": step.get("hostname") or "",
+            "hostpws": step.get("pws") or "",
+        })
+        return True
+
+    def load_lifecycle(self, steps):
+        handlers = {
+            "workflow": self._step_workflow,
+            "part_revision": self._step_part_revision,
+            "change_request": self._step_change_request,
+            "change_order": self._step_change_order,
+            "checkout": self._step_checkout,
+        }
+        applied = 0
+        for step in steps:
+            handler = handlers.get(step["op"])
+            if handler is None:
+                _logger.warning("plm_demo: unknown lifecycle step %r", step["op"])
+                continue
+            if handler(step):
+                applied += 1
+        _logger.info("plm_demo: %s lifecycle steps applied", applied)
+
     # ----------------------------------------------------------------------- run
     def run(self):
         with open(DATASET) as fh:
@@ -288,6 +451,12 @@ class DemoLoader:
             with open(CURATED_CHATTER) as fh:
                 messages += json.load(fh).get("chatter", [])
         self.load_chatter(messages)
+
+        # last: the lifecycle runs the workflow over the records above, and a
+        # released or checked out record is no longer freely writable
+        if os.path.exists(LIFECYCLE):
+            with open(LIFECYCLE) as fh:
+                self.load_lifecycle(json.load(fh).get("steps", []))
 
 
 def post_init_hook(env):
@@ -316,6 +485,19 @@ def uninstall_hook(env):
 
     demo("mrp.bom").unlink()            # frees the parts used in their lines
     demo("plm.markup.log").unlink()
+    demo("mail.activity").unlink()      # the open change order
+    # a checked out document is flagged as being edited elsewhere; the checkout
+    # goes first so the document is releasable again
+    demo("plm.checkout").unlink()
+
+    # The lifecycle leaves records released, obsoleted or under modification,
+    # and those states are write protected — which would make the deletion below
+    # fail on exactly the records the lifecycle created. check=False is the same
+    # escape hatch action_un_release uses in the core.
+    for model in ("ir.attachment", "product.template"):
+        protected = demo(model)
+        if protected:
+            protected.with_context(check=False).write({"engineering_state": "draft"})
 
     documents = demo("ir.attachment")
     if documents:
