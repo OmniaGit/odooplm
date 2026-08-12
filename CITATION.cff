@@ -1,0 +1,39 @@
+cff-version: 1.2.0
+message: "If you use OdooPLM in your research, please cite it as below."
+title: "OdooPLM"
+abstract: >-
+  Product Lifecycle Management and engineering document management for Odoo.
+  OdooPLM adds part revisioning, engineering bills of material, an engineering
+  workflow with document check-out, and a browser based 3D and 2D viewer to the
+  Odoo ERP, and integrates with the main CAD editors (SolidWorks, Inventor,
+  Solid Edge, AutoCAD, ThinkDesign, FreeCAD, DraftSight) through a documented
+  REST API. The core module is LGPL so that other products can build on it; the
+  modules around it are AGPL.
+type: software
+authors:
+  - family-names: "Boscolo"
+    given-names: "Matteo"
+    orcid: "https://orcid.org/0009-0009-1557-8036"
+    email: "matteo.boscolo@omniasolutions.eu"
+    affiliation: "OmniaSolutions"
+  - name: "OmniaSolutions"
+    website: "https://www.omniasolutions.website"
+version: "19.0.1.0.17"
+date-released: "2026-08-12"
+license:
+  - AGPL-3.0-or-later
+  - LGPL-3.0-or-later
+repository-code: "https://github.com/OmniaGit/odooplm"
+repository-artifact: "https://pypi.org/project/odooplm/"
+url: "https://odooplm.omniasolutions.website"
+keywords:
+  - PLM
+  - PDM
+  - product lifecycle management
+  - engineering data management
+  - bill of materials
+  - CAD integration
+  - engineering change management
+  - Odoo
+  - ERP
+  - open source
