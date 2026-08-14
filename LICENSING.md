@@ -66,6 +66,9 @@ generated from those manifests.
 | `plm_document_multi_site` | AGPL-3.0-or-later | Multi site document management: synchronise engineering documents between plants |
 | `plm_engineering` | AGPL-3.0-or-later | Allow to use engineering boms |
 | `plm_ent_breakages_helpdesk` | AGPL-3.0-or-later | PLM Breakages, connected to Helpdesk |
+| `plm_mcp` | AGPL-3.0-or-later | Answer questions about the engineering data over the Model Context Protocol |
+| `plm_mcp_ecr` | AGPL-3.0-or-later | Ask the MCP server about engineering change requests and change orders |
+| `plm_mcp_odoo_ai` | AGPL-3.0-or-later | Answer PLM questions inside Odoo's own chat, with the tools of the MCP server |
 | `plm_pack_and_go` | AGPL-3.0-or-later | Download BOM structure files from a component |
 | `plm_pdf_workorder` | AGPL-3.0-or-later | Engineering document management on the shop floor: the PLM 2D drawing in the work order |
 | `plm_pdf_workorder_enterprise` | AGPL-3.0-or-later | The PLM pdf document available into the workorder workspace |

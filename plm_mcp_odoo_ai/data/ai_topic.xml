@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- The topic the generated tools are gathered in. Give it to an agent and
+         it can answer about parts, structures, documents and changes. -->
+    <record id="ai_topic_plm" model="ai.topic">
+        <field name="name">OdooPLM</field>
+        <field name="description">Engineering data: parts, bills of material, revisions, documents and changes.</field>
+        <field name="instructions">Answer from the PLM tools rather than from memory. Identify a part by its engineering code and revision — the two together, since the same code at another revision is a different part. When a question is about what a change would affect, use the impact tool before answering. Say which criterion you applied whenever you group parts by something the database does not record, such as which materials count as ferrous or which parts are bought rather than made.</field>
+    </record>
+</odoo>

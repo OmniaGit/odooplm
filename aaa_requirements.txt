@@ -22,6 +22,9 @@ base64io
 googletrans
 polib
 
+# other modules: plm_mcp
+mcp-types
+
 # indirect constraints — pinned in scripts/requirements_pins.txt,
 # declared by no manifest because no module imports them.
 nlopt==2.7.1

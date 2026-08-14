@@ -1,0 +1,2 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+plm_mcp.access_plm_mcp_key_admin,plm.mcp.key admin,plm_mcp.model_plm_mcp_key,plm.group_plm_admin,1,1,1,1
