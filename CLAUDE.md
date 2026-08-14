@@ -23,6 +23,7 @@ odoo --test-tags=odoo_plm,odoo_plm_web_revision,plm_automatic_weight
 odoo --test-tags=odoo_plm_suspended
 odoo --test-tags=odoo_pack_and_go
 odoo --test-tags=plm_date_bom
+odoo --test-tags=odoo_plm_mcp
 ```
 
 ## Code Quality

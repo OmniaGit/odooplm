@@ -88,8 +88,13 @@ def _result(request_id, result):
 
 class PlmMcpController(Controller):
 
+    # readonly=False is not decoration. Since 18.0 a route declared auth="none"
+    # is served with a read-only cursor unless it says otherwise, and this one
+    # writes on every call — _register_call stamps the key. Left implicit, each
+    # request would run, fail on that write and be replayed from the top by the
+    # framework with a read/write cursor: correct answers, twice the work.
     @route(ENDPOINT, type="http", auth="none", methods=["POST"], csrf=False,
-           save_session=False)
+           save_session=False, readonly=False)
     def mcp(self, **kwargs):
         key = self._authenticate()
         if not key:

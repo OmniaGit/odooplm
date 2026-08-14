@@ -83,9 +83,13 @@ class PlmMcpKey(models.Model):
     last_used_on = fields.Datetime(readonly=True, copy=False)
     call_count = fields.Integer(readonly=True, copy=False, default=0)
 
-    _sql_constraints = [
-        ("key_digest_uniq", "unique(key_digest)", "That key already exists."),
-    ]
+    # Declared as a Constraint, not through _sql_constraints: since 19.0 the ORM
+    # ignores that attribute — it logs a warning and creates nothing, which
+    # would leave two keys free to share a digest.
+    _key_digest_uniq = models.Constraint(
+        "unique (key_digest)",
+        "That key already exists.",
+    )
 
     # ------------------------------------------------------------------ issue
     @api.model_create_multi

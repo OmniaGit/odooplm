@@ -67,7 +67,12 @@ class PlmMcpToolsOverview(models.AbstractModel):
             "parts": self._overview_parts(),
             "bills_of_material": self._overview_boms(),
             "documents": self._overview_documents(),
-            "checked_out_documents": self.env["plm.checkout"].search_count([]),
+            # sudo, as everywhere else this module reads a checkout: the lock
+            # table is not readable by an ordinary engineering user, and without
+            # it the whole overview would be refused to exactly the people it is
+            # written for. What is exposed is a count of locks — who holds which
+            # document is still answered by plm_in_progress, under their rights.
+            "checked_out_documents": self.env["plm.checkout"].sudo().search_count([]),
         }
 
     # -------------------------------------------------------------- sections

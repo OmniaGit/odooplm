@@ -55,8 +55,10 @@
         <field name="view_mode">list,form</field>
     </record>
 
+    <!-- Under Configuration rather than at the top level: issuing a key is a
+         setup step done once per client, not something anyone opens daily. -->
     <menuitem id="plm_mcp_key_menu" name="MCP API Keys"
-              parent="plm.plm_menu" sequence="30"
+              parent="plm.plm_menu_dictionaries" sequence="60"
               action="plm_mcp_key_action"
               groups="plm.group_plm_admin"/>
 
