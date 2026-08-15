@@ -61,7 +61,6 @@ does not install this.
     "data": [
         "data/ai_topic.xml",
     ],
-    "post_init_hook": "post_init_hook",
     "installable": True,
     "application": False,
     "auto_install": False,

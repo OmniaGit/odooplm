@@ -52,11 +52,15 @@ _logger = logging.getLogger(__name__)
 
 ENDPOINT = "/plm/mcp"
 
-# The revisions this server answers on. The package supplies the constants; the
-# policy of which ones to accept is ours, and staying deliberately narrow means
-# there is no per-revision behaviour to maintain — a client asking for anything
-# else is told plainly which one it gets.
-SUPPORTED_VERSIONS = (LATEST_PROTOCOL_VERSION, DEFAULT_NEGOTIATED_VERSION)
+# The revisions this server answers on. Nothing here behaves differently from
+# one to the next — the surface is initialize, ping and tools — so the policy is
+# to agree with whatever the client asks for, bounded at both ends: never newer
+# than the revision the types package was built against, never older than the
+# floor it defines. A client that names a revision in between gets that same one
+# back and connects; naming only the newest, as a narrow list forces you to do,
+# disconnects every client that has not caught up yet.
+NEWEST_VERSION = LATEST_PROTOCOL_VERSION
+OLDEST_VERSION = DEFAULT_NEGOTIATED_VERSION
 
 # JSON-RPC 2.0 error codes, plus the one MCP adds for an unknown tool.
 PARSE_ERROR = -32700
@@ -180,8 +184,12 @@ class PlmMcpController(Controller):
         to continue — which is what the specification asks for, and is more
         useful than an error the user never sees.
         """
+        # Revisions are dated, so comparing the strings compares the dates.
         asked = (params or {}).get("protocolVersion")
-        version = asked if asked in SUPPORTED_VERSIONS else LATEST_PROTOCOL_VERSION
+        if not asked:
+            version = OLDEST_VERSION
+        else:
+            version = min(max(asked, OLDEST_VERSION), NEWEST_VERSION)
         if asked and asked != version:
             _logger.info("plm_mcp: client asked for %s, answering on %s",
                          asked, version)

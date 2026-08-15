@@ -7,4 +7,10 @@
         <field name="description">Engineering data: parts, bills of material, revisions, documents and changes.</field>
         <field name="instructions">Answer from the PLM tools rather than from memory. Identify a part by its engineering code and revision — the two together, since the same code at another revision is a different part. When a question is about what a change would affect, use the impact tool before answering. Say which criterion you applied whenever you group parts by something the database does not record, such as which materials count as ferrous or which parts are bought rather than made.</field>
     </record>
+
+    <!-- Publishing the tools belongs here rather than in a post_init_hook,
+         which Odoo runs on install only: a module updated to add a tool would
+         never publish it, and the actions generated last time would be dropped
+         as stale data. Declared after the topic, which the sync fills in. -->
+    <function model="plm.mcp.tool" name="_sync_odoo_ai_tools" />
 </odoo>

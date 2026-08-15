@@ -97,12 +97,19 @@ class PlmMcpTool(models.AbstractModel):
                 action.write(values)
             else:
                 action = self.env["ir.actions.server"].create(values)
-                self.env["ir.model.data"]._update_xmlids([{
-                    # The external id *is* the tool name the model will call.
-                    "xml_id": "%s.%s" % (MODULE, tool_name),
-                    "record": action,
-                    "noupdate": False,
-                }])
+
+            # Claimed on every run, not only when the action is new. At the end
+            # of a module load Odoo deletes the records whose external id
+            # belongs to an updated module and was not seen during that load
+            # (ir_model.py, _process_end). Registering the id here is what puts
+            # it in loaded_xmlids and keeps the whole set alive; without it a
+            # plain -u wiped all of them, and the agent silently lost its tools.
+            self.env["ir.model.data"]._update_xmlids([{
+                # The external id *is* the tool name the model will call.
+                "xml_id": "%s.%s" % (MODULE, tool_name),
+                "record": action,
+                "noupdate": False,
+            }])
             actions |= action
 
         topic = self.env.ref(TOPIC_XMLID, raise_if_not_found=False)

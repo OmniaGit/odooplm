@@ -109,6 +109,24 @@ class TestSync(TransactionCase):
         after = self.action_for("plm_overview")
         self.assertEqual(before, after)
 
+    def test_syncing_claims_every_external_id(self):
+        """The actions have to survive the end of a module load.
+
+        Odoo deletes records whose external id belongs to a module being
+        updated and was not seen during that load (ir_model.py, _process_end).
+        The sync therefore registers every id on every run, not only when it
+        creates the action — the first version claimed them only on creation,
+        so a plain -u dropped all fourteen and the agent lost its tools with no
+        error anywhere.
+        """
+        self.tool._sync_odoo_ai_tools()
+        loaded = self.env.registry.loaded_xmlids
+        for tool_name in self.specs:
+            self.assertIn(
+                "plm_mcp_odoo_ai.%s" % tool_name, loaded,
+                "%s was not claimed and would be deleted on update" % tool_name,
+            )
+
     def test_the_tools_are_gathered_in_a_topic(self):
         topic = self.env.ref("plm_mcp_odoo_ai.ai_topic_plm",
                              raise_if_not_found=False)

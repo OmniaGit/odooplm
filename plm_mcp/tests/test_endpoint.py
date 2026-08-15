@@ -97,6 +97,33 @@ class TestEndpoint(HttpCase):
         self.assertEqual(result["serverInfo"]["name"], "odooplm")
         self.assertIn("tools", result["capabilities"])
 
+    def test_initialize_agrees_with_the_revision_the_client_names(self):
+        """Anything between the floor and the newest is answered as asked.
+
+        Narrowing this to a list of two cost a real connection: a client asking
+        for a revision in between was answered with the newest one instead, and
+        disconnected rather than continue on a protocol it does not speak.
+        Nothing here behaves differently per revision, so there is nothing to
+        refuse.
+        """
+        for asked in ("2025-03-26", "2025-06-18", "2026-07-28"):
+            response = self.post({
+                "jsonrpc": "2.0", "id": 1, "method": "initialize",
+                "params": {"protocolVersion": asked},
+            })
+            self.assertEqual(
+                response.json()["result"]["protocolVersion"], asked,
+                "a client asking for %s was answered otherwise" % asked)
+
+    def test_initialize_does_not_promise_a_revision_it_cannot_speak(self):
+        """A client from the future is answered with the newest we know."""
+        response = self.post({
+            "jsonrpc": "2.0", "id": 1, "method": "initialize",
+            "params": {"protocolVersion": "2999-01-01"},
+        })
+        self.assertNotEqual(
+            response.json()["result"]["protocolVersion"], "2999-01-01")
+
     def test_initialize_keeps_a_version_it_supports(self):
         """Negotiation, not imposition: what the client asked for, if we answer it."""
         supported = self.post({
