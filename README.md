@@ -123,6 +123,7 @@ port 80**.
 | Module | Description |
 |---|---|
 | `plm_mcp` | Model Context Protocol server: 14 tools that let an AI assistant ask the engineering database real questions — where a part is used, what changed between revisions, what is missing a drawing, what a change would affect. Bearer-token keys, calls running as the key's user |
+| `plm_mcp_bot` | The same tools by typing `/plm` in a chat with OdooBot — no language model, no API key, no cost per question |
 | `plm_mcp_ecr` | Two more MCP tools for engineering changes: what is open, and what is waiting on you (needs `activity_validation`) |
 | `plm_mcp_odoo_ai` | Publishes the same tools to Odoo's own chat assistant, generated from the same registry (Enterprise) |
 
