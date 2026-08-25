@@ -238,7 +238,7 @@ class Plm_box(models.Model):
             Compute if box is readonly
         '''
         for boxBrws in self:
-            if boxBrws.engineering_state in ['released', 'undermodify', 'obsoleted']:
+            if boxBrws.state in ['released', 'undermodify', 'obsoleted']:
                 return True
         return False
 
@@ -293,11 +293,10 @@ class Plm_box(models.Model):
             for childBrws in childList:
                 if childBrws.id not in avaibleBoxIds:
                     avaibleBoxIds.append(childBrws.id)
-            writeVal = datetime.datetime.strptime(boxBrws.write_date,
-                                                  DEFAULT_SERVER_DATETIME_FORMAT)
+            writeVal = boxBrws.write_date
             outBoxDict[boxBrws.name] = {'boxVersion': boxBrws.version,
                                         'boxDesc': boxBrws.description,
-                                        'boxState': boxBrws.engineering_state,
+                                        'boxState': boxBrws.state,
                                         'boxReadonly': boxBrws.boxReadonlyCompute(),
                                         'boxWriteDate': correctDate(writeVal, self.env.context),
                                         'boxPrimary': False,
@@ -314,7 +313,7 @@ class Plm_box(models.Model):
         docState = plmDocObj.getDocumentState({'docName': docBrws.name})
         if docState in ['check-out', 'check-out-by-me']:
             getCheckOutUser = docBrws.getCheckOutUser()
-        writeVal = datetime.datetime.strptime(docBrws.write_date, DEFAULT_SERVER_DATETIME_FORMAT)
+        writeVal = docBrws.write_date
         return {'engineering_revision': docBrws.engineering_revision,
                 'datas_fname': docBrws.name,
                 'create_date': docBrws.create_date,
@@ -435,7 +434,7 @@ class Plm_box(models.Model):
             outList.append([boxBrwse.name,
                             boxBrwse.description,
                             boxBrwse.version,
-                            boxBrwse.engineering_state,
+                            boxBrwse.state,
                             ])
         return outList
 
@@ -491,9 +490,7 @@ class Plm_box(models.Model):
             boxId = boxBrws.id
             wr_date = boxBrws.write_date
             if wr_date != 'n/a':
-                wr_date = wr_date.split('.')[0]
-                serverDatetime = datetime.datetime.strptime(wr_date, DEFAULT_SERVER_DATETIME_FORMAT)
-                serverDatetime = correctDate(serverDatetime, self.env.context)
+                serverDatetime = correctDate(wr_date, self.env.context)
                 clientDatetime = datetime.datetime.strptime(datetimee.value, "%Y%m%dT%H:%M:%S")
                 if serverDatetime > clientDatetime:
                     deltaTime = serverDatetime - clientDatetime
@@ -514,9 +511,7 @@ class Plm_box(models.Model):
                 return [], docId
             wr_date = docBrws.write_date
             if wr_date != 'n/a':
-                wr_date = wr_date.split('.')[0]
-                serverDatetime = datetime.datetime.strptime(wr_date, DEFAULT_SERVER_DATETIME_FORMAT)
-                serverDatetime = correctDate(serverDatetime, self.env.context)
+                serverDatetime = correctDate(wr_date, self.env.context)
                 clientDatetime = datetime.datetime.strptime(datetimee.value, "%Y%m%dT%H:%M:%S")
                 if serverDatetime > clientDatetime:
                     deltaTime = serverDatetime - clientDatetime
@@ -564,11 +559,45 @@ class Plm_box(models.Model):
                 outDict['children'][boxChildBrws.name] = boxChildBrws.getBoxStructure(primary)
             for docBrws in boxBrws.document_rel:
                 outDict['documents'][docBrws.name] = self.getDocDictValues(docBrws)
+            outDict['document_rel'] = boxBrws.document_rel.ids
             outDict['entities'] = self.getRelatedEntities(boxBrws)
             outDict['description'] = boxBrws.description
-            outDict['state'] = boxBrws.engineering_state
+            outDict['state'] = boxBrws.state
             outDict['readonly'] = boxBrws.boxReadonlyCompute()
         return outDict
+
+    @api.model
+    def getBoxStructureForTree(self, box_ids=[]):
+        '''
+            *** CLIENT ***
+            Bulk box structure for the client's main box tree (TreeTreeView),
+            which calls this via execute_kw with box_ids as a positional arg
+            expecting an [headers, structure] result. getBoxStructure() above
+            can't serve that: execute_kw does not auto-browse ids onto self
+            the way the old execute() RPC did, so it only works when already
+            called on a bound single record (as getBoxesStructureFromServer
+            does above) - called this way it would run against an empty
+            recordset and return nothing.
+        '''
+        headers = {'name': 'Name', 'description': 'Description', 'state': 'State'}
+        available_boxes = self.getAvaiableBoxIds()
+
+        def buildStructure(ids):
+            out = []
+            for boxBrws in self.browse(ids):
+                if boxBrws.id not in available_boxes:
+                    continue
+                vals = {
+                    'id': boxBrws.id,
+                    'name': boxBrws.name,
+                    'description': boxBrws.description or '',
+                    'state': boxBrws.state,
+                }
+                children = buildStructure(boxBrws.plm_box_rel.ids)
+                out.append([vals, children])
+            return out
+
+        return [headers, buildStructure(box_ids)]
 
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
