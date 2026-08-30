@@ -1051,6 +1051,14 @@ class MrpBomExtension(models.Model):
             #
             # build index of existing BOM lines for this document
             #
+            # The same component can legitimately sit on several lines of one
+            # BOM: five occurrences of a sub-assembly in the CAD are five rows.
+            # Indexing one line per key therefore has to keep a pool of lines,
+            # not a single one -- with `existing_lines[k] = line` the repeats
+            # overwrote each other, the incoming rows all matched that single
+            # survivor and each rewrote its quantity, and five rows of 1
+            # collapsed into one line of 1.
+            #
             existing_lines = {}
             if mrp_bom_found_id:
                 bomType = mrp_bom_found_id.type
@@ -1062,8 +1070,7 @@ class MrpBomExtension(models.Model):
                         k = (line.product_id.id, parent_ir_attachment_id)
                         if line.cutted_type == "client":
                             k = k + (line.position,)
-                        existing_lines[k] = line
-            lines_to_delete = dict(existing_lines)
+                        existing_lines.setdefault(k, []).append(line)
             bom_changed = False
             #
             # diff-based update: update/keep/add rows
@@ -1095,24 +1102,32 @@ class MrpBomExtension(models.Model):
                     if summarize_bom and k in cache_row:
                         cache_row[k].product_qty += incoming_qty
                         bom_changed = True
-                    elif k in existing_lines:
-                        existing_line = existing_lines[k]
-                        lines_to_delete.pop(k, None)
-                        if existing_line.product_qty != incoming_qty:
-                            existing_line.product_qty = incoming_qty
-                            bom_changed = True
-                        if summarize_bom:
-                            cache_row[k] = existing_line
                     else:
-                        mrp_bom_line_id = mrp_bom_found_id.add_child_row(
-                            child_product_product_id,
-                            parent_ir_attachment_id,
-                            relationAttributes,
-                            bomType,
-                        )
-                        bom_changed = True
-                        if summarize_bom:
-                            cache_row[k] = mrp_bom_line_id
+                        #
+                        # One incoming row consumes one existing line.  Rows
+                        # with no line left to reuse create a new one, so N
+                        # occurrences give N lines when SUMMARIZE_BOM is off,
+                        # and lines left unconsumed are the surplus deleted
+                        # below.
+                        #
+                        reusable_lines = existing_lines.get(k)
+                        if reusable_lines:
+                            existing_line = reusable_lines.pop(0)
+                            if existing_line.product_qty != incoming_qty:
+                                existing_line.product_qty = incoming_qty
+                                bom_changed = True
+                            if summarize_bom:
+                                cache_row[k] = existing_line
+                        else:
+                            mrp_bom_line_id = mrp_bom_found_id.add_child_row(
+                                child_product_product_id,
+                                parent_ir_attachment_id,
+                                relationAttributes,
+                                bomType,
+                            )
+                            bom_changed = True
+                            if summarize_bom:
+                                cache_row[k] = mrp_bom_line_id
                 #
                 # Manage attachment attachment relation
                 #
@@ -1133,9 +1148,14 @@ class MrpBomExtension(models.Model):
             #
             # batch-delete lines no longer present in incoming data
             #
+            lines_to_delete = [
+                line
+                for reusable_lines in existing_lines.values()
+                for line in reusable_lines
+            ]
             if lines_to_delete:
                 to_unlink = self.env["mrp.bom.line"]
-                for line in lines_to_delete.values():
+                for line in lines_to_delete:
                     to_unlink |= line
                 to_unlink.unlink()
                 bom_changed = True
