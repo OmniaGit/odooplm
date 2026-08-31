@@ -933,14 +933,22 @@ class MrpBomExtension(models.Model):
         }
 
     def saveRelationNewGetBom(
-        self, product_tmpl_id, bomType, parent_product_product_id
+        self,
+        product_tmpl_id,
+        bomType,
+        parent_product_product_id,
+        n_child_row=1,  # default is 1 for back compatibility
     ):
         return self._saveRelationNewGetBom(
-            product_tmpl_id, bomType, parent_product_product_id
+            product_tmpl_id, bomType, parent_product_product_id, n_child_row
         )
 
     def _saveRelationNewGetBom(
-        self, product_tmpl_id, bomType, parent_product_product_id
+        self,
+        product_tmpl_id,
+        bomType,
+        parent_product_product_id,
+        n_child_row=1,
     ):
         prod_template = self.env["product.template"].browse(product_tmpl_id)
         if parent_product_product_id.kit_bom:
@@ -956,7 +964,7 @@ class MrpBomExtension(models.Model):
             [("product_tmpl_id", "=", product_tmpl_id), ("type", "=", bomType)]
         ):
             mrp_bom_found_id = mrp_bom_id
-        if not mrp_bom_found_id:
+        if not mrp_bom_found_id and n_child_row > 0:
             if product_tmpl_id:
                 mrp_bom_found_id = self.create(
                     {
@@ -1016,12 +1024,35 @@ class MrpBomExtension(models.Model):
                 parent_ir_attachment_id, linkType="RfTree"
             )
             mrp_bom_found_id = self.saveRelationNewGetBom(
-                product_tmpl_id, bomType, parent_product_product_id
+                product_tmpl_id, bomType, parent_product_product_id,
+                len(childrenOdooTuple)
             )
-            if mrp_bom_found_id:
-                mrp_bom_found_id.delete_child_row(parent_ir_attachment_id)
             #
-            # add rows
+            # build index of existing BOM lines for this document
+            #
+            # Reuse the existing lines instead of deleting and recreating them:
+            # a production order points at the bom line, and recreating the
+            # rows breaks that link.
+            #
+            # The same component can legitimately sit on several lines of one
+            # BOM -- five occurrences of a sub-assembly in the CAD are five
+            # rows -- so the index keeps a pool of lines per key, not a single
+            # line.  Keying one line per component is what let repeats
+            # overwrite each other on the 18.0 branch.
+            #
+            existing_lines = {}
+            if mrp_bom_found_id:
+                bomType = mrp_bom_found_id.type
+                for line in mrp_bom_found_id.bom_line_ids:
+                    if (line.source_id.id == parent_ir_attachment_id
+                            and line.type == bomType):
+                        line_key = f"{line.product_id.id}_{parent_ir_attachment_id}"
+                        if line.cutted_type == "client":
+                            line_key = f"{line_key}_{line.position}"
+                        existing_lines.setdefault(line_key, []).append(line)
+            bom_changed = False
+            #
+            # diff-based update: update/keep/add rows
             #
             summarize_bom = self.env.context.get("SUMMARIZE_BOM", False)
             cache_row = {}
@@ -1040,13 +1071,30 @@ class MrpBomExtension(models.Model):
                         if relationAttributes.get('CUTTED_COMP'):
                             position = relationAttributes.get('POSITION')
                             key = f"{key}_{position}"
+                        incoming_qty = relationAttributes.get('product_qty', 1)
                         if summarize_bom and key in cache_row:
-                            cache_row[key].product_qty += relationAttributes.get('product_qty', 1)
+                            cache_row[key].product_qty += incoming_qty
+                            bom_changed = True
                         else:
-                            mrp_bom_line_id = mrp_bom_found_id.add_child_row(child_product_product_id,
-                                                                             parent_ir_attachment_id,
-                                                                             relationAttributes,
-                                                                             bomType)
+                            #
+                            # One incoming row consumes one existing line.
+                            # Rows with no line left to reuse create a new one,
+                            # so N occurrences give N lines when SUMMARIZE_BOM
+                            # is off, and lines left unconsumed are the surplus
+                            # deleted below.
+                            #
+                            reusable_lines = existing_lines.get(key)
+                            if reusable_lines:
+                                mrp_bom_line_id = reusable_lines.pop(0)
+                                if mrp_bom_line_id.product_qty != incoming_qty:
+                                    mrp_bom_line_id.product_qty = incoming_qty
+                                    bom_changed = True
+                            else:
+                                mrp_bom_line_id = mrp_bom_found_id.add_child_row(child_product_product_id,
+                                                                                 parent_ir_attachment_id,
+                                                                                 relationAttributes,
+                                                                                 bomType)
+                                bom_changed = True
                             if summarize_bom:
                                 cache_row[key] = mrp_bom_line_id
                 #
@@ -1065,8 +1113,25 @@ class MrpBomExtension(models.Model):
                     self.env['plm.component.document.rel'].createFromIds(
                         self.env['product.product'].browse(child_product_product_id),
                         self.env['ir.attachment'].browse(l_tree_document_id))
+            #
+            # batch-delete lines no longer present in incoming data
+            #
+            lines_to_delete = [line
+                               for reusable_lines in existing_lines.values()
+                               for line in reusable_lines]
+            if lines_to_delete:
+                to_unlink = self.env["mrp.bom.line"]
+                for line in lines_to_delete:
+                    to_unlink |= line
+                to_unlink.unlink()
+                bom_changed = True
             if mrp_bom_found_id and not mrp_bom_found_id.bom_line_ids:
                 mrp_bom_found_id.unlink()
+            #
+            # notify productions if BOM structure changed
+            #
+            elif bom_changed and mrp_bom_found_id:
+                mrp_bom_found_id._set_outdated_bom_in_productions()
             return True
         except Exception as ex:
             logging.error(ex)
