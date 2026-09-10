@@ -4252,6 +4252,33 @@ class IrAttachment(models.Model):
         else:
             return get_all_ids(self, ["HiTree", "RfTree"], latest)
 
+    def get_2d_documents_in_doc_structure(self):
+        """
+        Walk the doc structure (same RfTree/LyTree/HiTree traversal as
+        getDocBom) starting from this document, and return every 2D
+        document found in it, flattened, deduplicated.
+        """
+        self.ensure_one()
+        visited = set()
+        out = self.browse()
+
+        def _walk(attachment_id):
+            if attachment_id.id in visited:
+                return
+            visited.add(attachment_id.id)
+            nonlocal out
+            if attachment_id.document_type == "2d":
+                out |= attachment_id
+            for child_id in attachment_id.getRelatedOneLevelLinks(
+                attachment_id.id, ["RfTree", "LyTree", "HiTree"]
+            ):
+                child = self.browse(child_id)
+                if child.exists():
+                    _walk(child)
+
+        _walk(self)
+        return out
+
     def getDocBomFlatSql(self):
         """
         gat a flat bom list of all the document

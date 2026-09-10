@@ -36,7 +36,8 @@ def getDocumentStream(docRepository, objDoc):
         if (not objDoc.store_fname) and (objDoc.db_datas):
             content = base64.b64decode(objDoc.db_datas)
         else:
-            content = file(os.path.join(docRepository, objDoc.store_fname), "rb").read()
+            with open(os.path.join(docRepository, objDoc.store_fname), "rb") as f:
+                content = f.read()
     except Exception as ex:
         logging.error(
             "getFileStream : Exception (%s)reading  stream on file : %s."
@@ -68,9 +69,9 @@ class BookCollector:
                 if "doc_obj" in val:
                     val = safe_eval(val,locals_dict={'doc_obj':doc_obj})
                 elif "page_count" in val:
-                    val = int(val)
+                    val = safe_eval(val, locals_dict={'page_count': page_count})
                 elif "user_id" in val:
-                    val = int(val)
+                    val = safe_eval(val, locals_dict={'user_id': user_id})
             except Exception as ex:
                 logging.error(
                     "Cannot eval attribute %r for report due to error %r" % (val, ex)

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<template id="plm.doc_2d_pdf">
+	   <t t-foreach="docs" t-as="o">
+	   		<div class="o_composer_container">
+	   			<embed width="100%" height="100%" t-att-src="get_content(o)"/>
+	   		</div>
+	   </t>
+	</template>
+
+	<record id="action_report_doc_2d_pdf" model="ir.actions.report">
+		<field name="name">2D PDF Report</field>
+        <field name="model">ir.attachment</field>
+        <field name="report_type">qweb-html</field>
+        <field name="report_name">plm.doc_2d_pdf</field>
+        <field name="binding_model_id" ref="model_ir_attachment"/>
+        <field name="binding_type">report</field>
+  	</record>
+</odoo>
