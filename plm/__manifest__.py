@@ -21,7 +21,7 @@
 ##############################################################################
 {
     "name": "Product Lifecycle Management",
-    "version": "19.0.1.0.20",
+    "version": "19.0.1.0.21",
     "author": "OmniaSolutions",
     "maintainer": "OmniaSolutions S.n.c di Boscolo Matteo & C",
     "website": "https://odooplm.omniasolutions.website",
@@ -58,6 +58,7 @@
         "report/product_report_templates.xml",
         "report/bom_structure.xml",
         "report/component_report.xml",
+        "report/doc_2d_pdf.xml",
         "report/document_report.xml",
         "report/product_change_impact_template.xml",
         "report/attachment_change_impact_template.xml",
