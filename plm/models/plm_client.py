@@ -146,6 +146,24 @@ class PlmClient(models.TransientModel):
             #
         return out
 
+    @api.model
+    def get_file_structure(self, ir_attachemnt_id, hostname, pws_path, latest=False):
+        """
+        The door onto getFileStructure for a client that calls it the way it
+        calls everything else on this model: plain positional arguments.
+
+        Without @api.model Odoo reads the first positional argument as the ids of
+        the recordset the method runs on, so a client that puts the attachment id
+        there leaves the method one argument short and the server answers
+        "missing 1 required positional argument: 'pws_path'".
+
+        getFileStructure itself is left exactly as it is: the 2019 client sends an
+        empty id list and the rest by name, and that form works only undecorated.
+        """
+        return self.getFileStructure(
+            ir_attachemnt_id, hostname, pws_path, latest=latest
+        )
+
     def getAttachmentFromProp(self, document_attributes):
         """
         Get The attachment from a dictionary
