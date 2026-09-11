@@ -164,6 +164,33 @@ class PlmClient(models.TransientModel):
             ir_attachemnt_id, hostname, pws_path, latest=latest
         )
 
+    @api.model
+    def pre_check_in_recursive_all(self, doc_props_json):
+        """The check-in analysis, reached through this model like everything else.
+
+        ir.attachment.preCheckInRecursive_all reads the first element of a list,
+        which is how the 2019 client happened to call it. The shape is adapted
+        here, so a client passes the one thing it has -- the document's
+        attributes as JSON -- and gets the answer back as JSON.
+
+        preCheckInRecursive, which the previous client called, raises
+        DeprecationWarning("this function must be cancelled in the 20 version").
+        """
+        return (
+            self.env["ir.attachment"]
+            .preCheckInRecursive_all([doc_props_json])
+        )
+
+    @api.model
+    def check_in_documents(self, to_check_in_json, force=False):
+        """Check in the documents the analysis and the user agreed on.
+
+        `to_check_in_json` is {"to_check_in": [<doc_vals>, ...]} as JSON -- the
+        same thing CheckIn2 wants -- and each entry needs either an id or enough
+        properties for getDocId to find the document.
+        """
+        return self.env["ir.attachment"].CheckIn2([to_check_in_json], force=force)
+
     def getAttachmentFromProp(self, document_attributes):
         """
         Get The attachment from a dictionary
