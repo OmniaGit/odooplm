@@ -287,44 +287,83 @@
         <field name="groups" eval="[(4, ref('group_plm_readonly_released'))]" />
     </record>
 
+    <!--
+        Rule 1 baseline: every internal user (base.group_user) may operate only
+        on NON-PLM attachments (is_plm = False), for every mode.
+
+        This is the linchpin of the whole model. Core Odoo grants base.group_user
+        full CRUD on ir.attachment at the ACL layer (access_ir_attachment_group_user),
+        and ACLs are OR-combined, so ACLs cannot restrict PLM documents. Record
+        rules for the same model+group are OR-combined too: this baseline rule
+        confines every internal user to is_plm = False, and the PLM group rules
+        below re-grant is_plm access (per mode) to their members only. A user in
+        no PLM group therefore cannot read, write, create or delete any PLM
+        document; a view user gets is_plm READ only (no write/create/unlink rule
+        matches them, so those modes stay is_plm = False); an integration user
+        gets is_plm read/write/create but NOT unlink (no is_plm unlink rule
+        matches them); only admin re-grants is_plm unlink.
+        Non-PLM attachments keep exactly their base-Odoo behaviour (this rule is
+        always-true for them). The Python ir_attachment.check() override remains
+        a hard backstop on top.
+    -->
+    <record id="plm_base_user_non_plm_document" model="ir.rule">
+        <field name="name">Non-PLM Document baseline</field>
+        <field name="model_id" ref="model_ir_attachment" />
+        <field name="active" eval="1" />
+        <field name="perm_read" eval="1" />
+        <field name="perm_create" eval="1" />
+        <field name="perm_write" eval="1" />
+        <field name="perm_unlink" eval="1" />
+        <field name="domain_force" eval="[('is_plm','=',False)]" />
+        <field name="groups" eval="[(4, ref('base.group_user'))]" />
+    </record>
+
+    <!--
+        Rule 2: View users may READ PLM documents, subject to the company
+        visibility clause (plm_share_scope / company_id). No write/create/unlink.
+    -->
     <record id="group_plm_view_plm_document" model="ir.rule">
         <field name="name">View only plm Documnet</field>
         <field name="model_id" ref="model_ir_attachment" />
         <field name="active" eval="1" />
         <field name="perm_read" eval="1" />
-        <field name="perm_create" eval="1" />
+        <field name="perm_create" eval="0" />
         <field name="perm_write" eval="0" />
         <field name="perm_unlink" eval="0" />
-        <field name="domain_force" eval="[('is_plm','=',True)]" />
+        <field name="domain_force">['&amp;', ('is_plm', '=', True), '|', '|', ('company_id', '=', False), ('plm_share_scope', '=', 'all'), '|', '&amp;', ('plm_share_scope', 'in', ['standard', False]), ('company_id', 'parent_of', company_ids), '&amp;', ('plm_share_scope', '=', 'own'), ('company_id', 'in', company_ids)]</field>
         <field name="groups" eval="[(4, ref('group_plm_view_user'))]" />
     </record>
 
+    <!--
+        Rule 3: Integration users may READ / WRITE / CREATE PLM documents,
+        subject to the company visibility clause. No unlink (only admin deletes).
+    -->
     <record id="group_plm_admin_plm_document" model="ir.rule">
-        <field name="name">Admin rule PLM documnet</field>
+        <field name="name">Integration rule PLM documnet</field>
         <field name="model_id" ref="model_ir_attachment" />
         <field name="active" eval="1" />
         <field name="perm_read" eval="1" />
         <field name="perm_create" eval="1" />
         <field name="perm_write" eval="1" />
-        <field name="perm_unlink" eval="1" />
-        <field name="domain_force" eval="[('is_plm','=',True)]" />
+        <field name="perm_unlink" eval="0" />
+        <field name="domain_force">['&amp;', ('is_plm', '=', True), '|', '|', ('company_id', '=', False), ('plm_share_scope', '=', 'all'), '|', '&amp;', ('plm_share_scope', 'in', ['standard', False]), ('company_id', 'parent_of', company_ids), '&amp;', ('plm_share_scope', '=', 'own'), ('company_id', 'in', company_ids)]</field>
         <field name="groups" eval="[(4, ref('group_plm_integration_user'))]" />
     </record>
 
-    <record id="group_non_plm_view_plm_document" model="ir.rule">
-        <field name="name">Manage PLM Document</field>
+    <!--
+        Rule 4: Administrators see and manage ALL PLM documents, ignoring the
+        company visibility clause entirely (no company_id / plm_share_scope terms).
+    -->
+    <record id="group_plm_admin_plm_document_full" model="ir.rule">
+        <field name="name">Admin full PLM documnet (no company)</field>
         <field name="model_id" ref="model_ir_attachment" />
         <field name="active" eval="1" />
         <field name="perm_read" eval="1" />
         <field name="perm_create" eval="1" />
         <field name="perm_write" eval="1" />
         <field name="perm_unlink" eval="1" />
-        <!-- Scope write/unlink to PLM documents only. A previous domain of
-             is_plm=False widened this OR-combined group rule so PLM viewers
-             could write/delete every non-PLM attachment (invoices, HR, mail,
-             ...) system-wide. -->
         <field name="domain_force" eval="[('is_plm','=',True)]" />
-        <field name="groups" eval="[(4, ref('group_plm_view_user'))]" />
+        <field name="groups" eval="[(4, ref('group_plm_admin'))]" />
     </record>
 
     <record id="group_plm_view_released_document" model="ir.rule">
@@ -342,6 +381,14 @@
         <field name="groups" eval="[(4, ref('group_plm_release_document'))]" />
     </record>
 
+    <!--
+        Company isolation for PLM documents is now enforced inside the per-group
+        rules above (view + integration carry the plm_share_scope / company_id
+        clause; admin deliberately omits it). The former global
+        plm_document_multicompany_rule was removed so that group_plm_admin can
+        bypass company visibility (a global rule is AND-ed with everything and
+        would also constrain admin).
+    -->
 
 <!-- plm.backupdoc  -->
     <record id="plm_backupdoc_view" model="ir.model.access">

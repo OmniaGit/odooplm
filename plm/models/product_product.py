@@ -1227,6 +1227,11 @@ class ProductProduct(models.Model):
             vals_dict.update(self.checkMany2oneClient(vals_dict))
             vals_dict = self.checkSetupDueToVariants(vals_dict)
             vals_dict = self.plm_sanitize(vals_dict)
+            # Scope engineering components to the active company so multi-company
+            # record rules can isolate them. Products are otherwise created with an
+            # empty company_id (Odoo default = shared/global, visible everywhere).
+            if vals_dict.get("engineering_code") and not vals_dict.get("company_id"):
+                vals_dict["company_id"] = self.env.company.id
             to_write.append(vals_dict)
         try:
             res = super().create(to_write)

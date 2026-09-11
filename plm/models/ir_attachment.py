@@ -102,6 +102,21 @@ class IrAttachment(models.Model):
         "Is A Plm Document",
         help="If the flag is set, the document is managed by the plm module, and imply its backup at each save and the visibility on some views.",
     )
+    plm_share_scope = fields.Selection(
+        [
+            ("own", "This company only"),
+            ("standard", "Standard (share to child companies)"),
+            ("all", "All companies"),
+        ],
+        string="Company sharing",
+        default="standard",
+        help="Controls the multi-company visibility of this PLM document:\n"
+        "- This company only: visible only where the document's company is one of "
+        "the user's allowed companies (no parent/child sharing).\n"
+        "- Standard: visible to the owning company and its child companies "
+        "(default Odoo parent_of behavior).\n"
+        "- All companies: visible to every company, bypassing company isolation.",
+    )
     attachment_revision_count = fields.Integer(compute="_attachment_revision_count")
     first_source_path = fields.Char("Source path of the first time save")
     cad_name = fields.Char("Cad Name")
@@ -1271,10 +1286,11 @@ class IrAttachment(models.Model):
             fields.extend(customFields)
             fields = list(set(fields))
             fields = self.plm_sanitize(fields)
-            ctx = self.env.context.copy()
-            plm_flag = ctx.get("odooPLM", False)
-            if plm_flag and self.env.user.has_group("plm.group_plm_view_user"):
-                self = self.sudo()
+            # NOTE: previously view users read under sudo() when in the odooPLM
+            # context, which bypassed both the company visibility rule and the
+            # check() backstop. Company isolation for PLM documents is now
+            # enforced by the per-group record rules, so the elevation is gone:
+            # view users read PLM documents within their company scope only.
             res = super().read(fields=fields, load=load)
             res = self.readMany2oneFields(res, fields)
             return res
@@ -2220,8 +2236,26 @@ class IrAttachment(models.Model):
         #
         if eng_code:
             documentName = eng_code
-        nextDocNum = self.env["ir.sequence"].next_by_code("ir.attachment.progress")
+        nextDocNum = self._next_attachment_progress()
         return documentName + "-" + nextDocNum
+
+    def _next_attachment_progress(self):
+        """
+        Return the next value of the global document progress sequence.
+
+        ir.sequence is company dependent, so next_by_code() only finds the
+        sequence when a copy exists for env.company, and otherwise returns
+        False (which would break string concatenation or produce a wrong
+        "...-False" code). Document engineering codes are meant to be globally
+        unique across companies, so resolve the sequence company-independently
+        and never return a non-string value.
+        """
+        sequence = (
+            self.env["ir.sequence"]
+            .sudo()
+            .search([("code", "=", "ir.attachment.progress")], limit=1)
+        )
+        return sequence._next() if sequence else ""
 
     @api.model
     def canBeSavedClient(self, documentValues={}, returnCode=False):
@@ -4630,11 +4664,11 @@ class IrAttachment(models.Model):
             engineering_code = new_product_attrs.get("engineering_code", "")
             if engineering_code:
                 out_attachment_value["engineering_code"] = (
-                    f"{engineering_code}-{self.env['ir.sequence'].next_by_code('ir.attachment.progress')}"
+                    f"{engineering_code}-{self._next_attachment_progress()}"
                 )
             else:
                 out_attachment_value["engineering_code"] = (
-                    f"{self.env['ir.sequence'].next_by_code('ir.attachment.progress')}"
+                    f"{self._next_attachment_progress()}"
                 )
             out_attachment_value["engineering_revision"] = 0
             #
