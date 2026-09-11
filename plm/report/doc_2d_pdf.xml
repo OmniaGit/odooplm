@@ -9,7 +9,7 @@
 	</template>
 
 	<record id="action_report_doc_2d_pdf" model="ir.actions.report">
-		<field name="name">2D PDF Structure</field>
+		<field name="name">2D PDF Report</field>
         <field name="model">ir.attachment</field>
         <field name="report_type">qweb-html</field>
         <field name="report_name">plm.doc_2d_pdf</field>
