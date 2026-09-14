@@ -232,6 +232,15 @@ class PlmClient(models.TransientModel):
         attach_id = document_attributes.get("id")
         if attach_id:
             ir_browse = attach_object.browse(attach_id)
+        elif self.env.context.get("odooPLM") and not document_attributes.get(
+            "engineering_code"
+        ):
+            # No code is no document. Odoo reads `= ''` as "this field is empty",
+            # so searching anyway returns every attachment that has no code --
+            # web assets included -- and the caller answers about the first of
+            # them: a new drawing was refused as "in check-in" that way. Only for
+            # the CAD client, so no other Odoo flow is touched.
+            ir_browse = attach_object
         else:
             ir_browse = attach_object.search(
                 [

@@ -91,6 +91,18 @@ class PlmDateBom(TransactionCase, PlmEntityCreator):
         document.action_confirm()
         self.assertEqual(document.engineering_state, "confirmed")
 
+    def test_a_document_without_a_code_is_not_another_one(self):
+        """A drawing with no code asks the client door about nothing.
+
+        Searching with an empty code matched every attachment without one, web
+        assets included, and the save was refused as "in check-in" on behalf of
+        the first of them (2026-09-14). For the CAD client only.
+        """
+        client = self.env["plm.client"].with_context(odooPLM=True)
+        props = {"engineering_code": "", "engineering_revision": ""}
+        self.assertFalse(client.getAttachmentFromProp(props))
+        self.assertEqual(client.attachmentCanBeSaved(props), (True, ""))
+
     def test_check_in(self):
         level_0_3d = self.create_document("document_level_0_3d", doc_type="3d")
         level_0_3d.checkout("web", "-", True)
