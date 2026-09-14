@@ -883,16 +883,24 @@ class ProductProduct(models.Model):
         attachment = self.env["ir.attachment"]
         for documentBrws in linkeddocuments:
             if documentBrws.engineering_state in check_state:
-                if check_in_check and documentBrws.is_checkout:
+                if documentBrws.is_checkout:
+                    # The check is what `check_in_check` asks for, and the jump
+                    # is what asking for none of it means. The two were the
+                    # other way round until 2026-09-14: the outer condition
+                    # already required check_in_check, so the inner one was
+                    # always true, the error was appended in a branch nothing
+                    # could reach, and every caller -- none of them passes
+                    # False -- moved the component while the document stayed
+                    # behind, checked out, in silence.
                     if check_in_check:
-                        logging.info(
-                            f"{documentBrws.name} workflow jump for custom rule check_in_check"
-                        )
-                    else:
                         docInError.append(
                             _(
                                 f"Document {documentBrws.name} : {documentBrws.engineering_revision} is checked out by user {documentBrws.checkout_user}"
                             )
+                        )
+                    else:
+                        logging.info(
+                            f"{documentBrws.name} workflow jump for custom rule check_in_check"
                         )
                     continue
                 if self._jump_document_wf(documentBrws, check_state):

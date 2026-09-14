@@ -64,6 +64,12 @@ class IrAttachment(models.Model):
         string="Checked-Out to", compute="_get_checkout_state"
     )
 
+    checkout_ids = fields.One2many(
+        "plm.checkout",
+        "documentid",
+        string="Check-Out",
+        readonly=True,
+    )
     is_checkout = fields.Boolean(
         string="Is Checked-Out", compute="_is_checkout", store=False
     )
@@ -1059,12 +1065,40 @@ class IrAttachment(models.Model):
                 return False
         return True
 
+    def refuseIfCheckedOut(self):
+        """Every workflow move is made on documents that are checked in.
+
+        One rule, at the one door every action goes through -- draft, confirm,
+        release, obsolete, reactivate -- rather than in each of them. Release
+        was the only one that looked, and it did not refuse: it dropped the
+        document from the move and said nothing, so the user pressed the button
+        and watched nothing happen.
+
+        A document somebody still has out is a file nobody else has seen, and a
+        state is a statement about the file everybody can see.
+        """
+        checked_out = []
+        for ir_attachment_id in self:
+            if ir_attachment_id.is_checkout:
+                checked_out.append(
+                    _(
+                        f"Document {ir_attachment_id.name} : {ir_attachment_id.engineering_revision} is checked out by user {ir_attachment_id.checkout_user}"
+                    )
+                )
+        if checked_out:
+            msg = _("Workflow action cannot be performed")
+            for line in list(set(checked_out)):
+                msg = msg + "\n" + line
+            msg = msg + _("\n\nCheck-In All the document in order to proceed !!")
+            raise UserError(msg)
+
     def commonWFAction(self, writable, state, check):
         """
         :writable set writable flag for component
         :state define new product state
         :check do state verification in component write
         """
+        self.refuseIfCheckedOut()
         self.with_context(check=check)._commonWFAction(writable, state, check)
 
     def _commonWFAction(self, writable, state, check):
@@ -1097,12 +1131,10 @@ class IrAttachment(models.Model):
         """
         release the object
         """
-        to_release = self.env["ir.attachment"]
-        for oldObject in self:
-            if oldObject.ischecked_in():
-                to_release += oldObject
-        if to_release:
-            to_release.commonWFAction(False, RELEASED_STATUS, False)
+        # No sieve of its own any more: what it used to drop in silence is what
+        # commonWFAction now refuses out loud, for this action and for every
+        # other one.
+        self.commonWFAction(False, RELEASED_STATUS, False)
         return False
 
     def action_obsolete(self):
@@ -1569,15 +1601,30 @@ class IrAttachment(models.Model):
                         attachment_id.must_update_from_cad = True
 
     @api.model
+    @api.depends("checkout_ids")
     def _is_checkout(self):
+        """Whether somebody has this document out.
+
+        Read off `checkout_ids` and not asked one document at a time: this is
+        the field the workflow checks before it moves anything, and a workflow
+        moves a tree. getCheckedOut does a search per record -- 60 documents,
+        60 queries, measured -- while the one2many is fetched for the whole
+        recordset at once. Existence of a plm.checkout row is what `ischecked_in`
+        has always meant by it, so nothing about the answer changes.
+
+        The dependency is what was missing, and it is the whole of the bug:
+        nothing told Odoo that a `plm.checkout` appearing has anything to do
+        with this field, so a document read before the check-out went on
+        answering False out of the cache for the rest of the transaction --
+        measured on 2026-09-14, where getCheckedOut named the user and
+        is_checkout said False until the record was invalidated by hand.
+
+        Which is why the workflow released a component whose drawing somebody
+        still had out: the check was asking a field that could not have changed
+        its mind.
+        """
         for ir_attachment_id in self:
-            _docName, _docRev, chekOutUser, _hostName = self.env[
-                "ir.attachment"
-            ].getCheckedOut(ir_attachment_id.id, None)
-            if chekOutUser:
-                ir_attachment_id.with_context(check=False).is_checkout = True
-            else:
-                ir_attachment_id.with_context(check=False).is_checkout = False
+            ir_attachment_id.is_checkout = bool(ir_attachment_id.checkout_ids)
 
     def getFileExtension(self, docBrws):
         fileExtension = ""
