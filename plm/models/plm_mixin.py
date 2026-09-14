@@ -329,7 +329,7 @@ class RevisionBaseMixin(models.AbstractModel):
 
             """
 
-    def _new_version(self):
+    def _new_version(self, extra_values=None):
         self.ensure_one()
         obj_latest = self.get_latest_version()
         new_revision_index = obj_latest.engineering_revision + 1
@@ -340,6 +340,7 @@ class RevisionBaseMixin(models.AbstractModel):
             "engineering_revision_letter": self.get_revision_letter(new_revision_index),
             "engineering_state": START_STATUS,
         }
+        write_context.update(extra_values or {})
         obj_new = self.with_context(copy_context=write_context).copy(write_context)
         return obj_new
 
@@ -384,14 +385,19 @@ class RevisionBaseMixin(models.AbstractModel):
 
     def _new_branch(self):
         self.ensure_one()
-        obj_new = self._new_version()
-        obj_new.engineering_branch_revision = 0
-        obj_new.engineering_branch_parent_id = self.id
         if not self.engineering_branch_parent_id:
             parnet_path = self.engineering_revision
         else:
             parnet_path = self.engineering_sub_revision_letter
-        obj_new.engineering_sub_revision_letter = "%s.0" % parnet_path
+        # Passed to the copy rather than written after it: the revision chain
+        # check in create must already see that this record is a branch.
+        self._new_version(
+            {
+                "engineering_branch_revision": 0,
+                "engineering_branch_parent_id": self.id,
+                "engineering_sub_revision_letter": "%s.0" % parnet_path,
+            }
+        )
 
     def get_engineering_branch_parent(self):
         self.ensure_one()
@@ -448,12 +454,16 @@ class RevisionBaseMixin(models.AbstractModel):
         )
 
     def get_previus_version(self):
+        """The nearest lower revision of the same code, not strictly rev - 1:
+        a history recovered from a CAD can have gaps (3 in the db, 5 saved).
+        """
         self.ensure_one()
         return self.search(
             [
                 ("engineering_code", "=", self.engineering_code),
-                ("engineering_revision", "=", self.engineering_revision - 1),
+                ("engineering_revision", "<", self.engineering_revision),
             ],
+            order="engineering_revision DESC",
             limit=1,
         )
 
@@ -514,7 +524,70 @@ class RevisionBaseMixin(models.AbstractModel):
                 "engineering_code"
             ] not in [False, "-", ""]:
                 record_val["engineering_code_editable"] = False
-        return super(RevisionBaseMixin, self).create(vals)
+        records = super(RevisionBaseMixin, self).create(vals)
+        records._fix_previous_revisions_state()
+        return records
+
+    def _refuse_revision_chain_if_checked_out(self):
+        """Hook: only documents can be checked out, see ir.attachment."""
+
+    def _fix_previous_revisions_state(self):
+        """Whoever creates a revision (new_version, the CAD client, a historical
+        import) leaves the chain of that code consistent.
+
+        A draft below it means the code was never settled: the new revision
+        would stand on nothing, so it is refused. Everything above draft is
+        released ex officio, then the nearest lower revision goes under
+        modification and every older one is obsoleted.
+
+        Branches are left out: they are parallel lines of one code, not a
+        sequence, and their rules are still to be designed (see CLAUDE.md).
+        """
+        for record in self:
+            if not record.engineering_code or not record.engineering_revision:
+                continue
+            if record.engineering_branch_parent_id:
+                continue
+            older = record.search(
+                [
+                    ("engineering_code", "=", record.engineering_code),
+                    ("engineering_revision", "<", record.engineering_revision),
+                    ("id", "!=", record.id),
+                ],
+                order="engineering_revision DESC",
+            ).filtered(lambda r: not r.engineering_branch_parent_id)
+            if not older:
+                continue
+            drafts = older.filtered(lambda r: r.engineering_state == START_STATUS)
+            if drafts:
+                raise UserError(
+                    _(
+                        "Cannot create %(code)s revision %(rev)s: revisions %(drafts)s "
+                        "are still in draft. Release or remove them first.",
+                        code=record.engineering_code,
+                        rev=record.engineering_revision,
+                        drafts=", ".join(
+                            str(rev) for rev in drafts.mapped("engineering_revision")
+                        ),
+                    )
+                )
+            older._refuse_revision_chain_if_checked_out()
+            for confirmed in older.filtered(
+                lambda r: r.engineering_state == CONFIRMED_STATUS
+            ):
+                confirmed.action_from_confirmed_to_released()
+                confirmed.message_post(
+                    body=_(
+                        "Released ex officio: revision %s of the same code was created",
+                        record.engineering_revision,
+                    )
+                )
+            previous, rest = older[0], older[1:]
+            if previous.engineering_state == RELEASED_STATUS:
+                previous._mark_under_modifie()
+            rest.filtered(
+                lambda r: r.engineering_state in (RELEASED_STATUS, UNDER_MODIFY_STATUS)
+            )._mark_obsolare()
 
     def get_display_notification(self, message):
         return {

@@ -1092,6 +1092,9 @@ class IrAttachment(models.Model):
             msg = msg + _("\n\nCheck-In All the document in order to proceed !!")
             raise UserError(msg)
 
+    def _refuse_revision_chain_if_checked_out(self):
+        self.refuseIfCheckedOut()
+
     def commonWFAction(self, writable, state, check):
         """
         :writable set writable flag for component

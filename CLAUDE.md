@@ -60,6 +60,18 @@ draft → confirmed → released ↔ undermodify → obsoleted
 ```
 Records in `confirmed`, `released`, `undermodify`, or `obsoleted` states are **write-protected** (`PLM_NO_WRITE_STATE`).
 
+**Revisions are linked only by `engineering_code` + `engineering_revision`**, never by a key, and they can be created by anyone: `new_version()`, the CAD client computing its own revision, a historical import. Revision numbers can have gaps (3 in the db, 5 saved from the CAD), so `get_previus_version()` returns the nearest *lower* revision, not `revision - 1`.
+
+**Revision chain rule** (decided 2026-09-14, `RevisionBaseMixin._fix_previous_revisions_state`, called from `create`, tests tagged `odoo_plm_revision_chain`). When a record with a code and a revision > 0 is created, the lower revisions of that code are brought in line:
+
+1. any of them in `draft` → the creation is refused with a `UserError`: the code was never settled;
+2. any document among them checked out → refused (`refuseIfCheckedOut`), as for every workflow move;
+3. `confirmed` ones are released ex officio, with a chatter line;
+4. the nearest lower revision, if `released`, goes to `undermodify`;
+5. every older `released` / `undermodify` one goes to `obsoleted`.
+
+**Branches are out of this rule, on purpose.** `new_branch()` / `_new_branch_version()` create parallel lines of one code (`engineering_branch_parent_id`, sub revision paths like `0.1`), not a sequence, and the feature is still to be designed properly: nothing in the modules or in the CAD client uses it yet. So a branch record is neither checked when created nor touched when a normal revision is created. `_new_branch` passes the branch fields to the copy, so `create` already sees them. When branches are developed, their own chain rule has to be decided and this exclusion revisited.
+
 ### Key Models
 
 | Model | File | Role |
@@ -122,3 +134,7 @@ The `PlmEntityCreator` mixin provides: `create_product_product()`, `create_produ
 The Python 2.7 CAD client, its Solid Edge test VM, and the shared-folder setup are documented in the client repository. That file is the single source of truth — do not duplicate those paths here:
 
 @/home/mboscolo/workspace_virtual_machine/Client2019/CLAUDE.md
+
+The current Python 3 / PySide6 CAD client (OdooPLM, CoreBom) is a separate workspace; its decisions and this module's bind each other:
+
+@/media/TwoTDisk/workspace_new_client/CLAUDE.md
