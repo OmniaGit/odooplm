@@ -191,6 +191,38 @@ class PlmClient(models.TransientModel):
         """
         return self.env["ir.attachment"].CheckIn2([to_check_in_json], force=force)
 
+    @api.model
+    def client_can_check_out(self, doc_props):
+        """(document_id, flag, message) for the document those attributes name.
+
+        `doc_props` is a list whose first entry carries HOST_NAME and HOST_PWS:
+        who holds a check-out is a question about a machine and not only about a
+        user, and clientCanCheckOut reads them straight out of it.
+
+        The flags are check_in (it can be taken), check_out_by_me,
+        check_out_by_user, check_out_released and not_found.
+        """
+        return self.env["ir.attachment"].clientCanCheckOut(doc_props)
+
+    @api.model
+    def pre_check_out_recursive(self, structure_json):
+        """What a check-out would involve, and which files here are behind Odoo."""
+        return self.env["ir.attachment"].preCheckOutRecursive(structure_json)
+
+    @api.model
+    def check_out_recursive(self, structure_json, pws_path="", hostname="", force=False):
+        """Take the documents the analysis and the user agreed on."""
+        return self.env["ir.attachment"].CheckOutRecursive(
+            structure_json, pws_path=pws_path, hostname=hostname, force=force
+        )
+
+    @api.model
+    def send_check_out_request(self, document_id, host_name, host_pws):
+        """Ask whoever holds the document to check it in."""
+        return self.env["ir.attachment"].sent_check_out_requests(
+            document_id, host_name, host_pws
+        )
+
     def getAttachmentFromProp(self, document_attributes):
         """
         Get The attachment from a dictionary

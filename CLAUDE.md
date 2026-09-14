@@ -117,3 +117,8 @@ The `PlmEntityCreator` mixin provides: `create_product_product()`, `create_produ
 ## Workflow
   Always present a written plan and wait for explicit approval before writing or editing any code.
 
+
+## CAD Client (separate project)
+The Python 2.7 CAD client, its Solid Edge test VM, and the shared-folder setup are documented in the client repository. That file is the single source of truth — do not duplicate those paths here:
+
+@/home/mboscolo/workspace_virtual_machine/Client2019/CLAUDE.md
