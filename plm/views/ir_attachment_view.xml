@@ -17,7 +17,7 @@
                             class="oe_highlight"
                             type="object"
                             groups="plm.group_plm_release_users"
-                            invisible="is_checkout == True or engineering_state != engineering_state"/>
+                            invisible="is_checkout == True or engineering_state != 'confirmed'"/>
                     <button name="action_draft"
                             invisible="engineering_state!='confirmed'"
                             type="object"
