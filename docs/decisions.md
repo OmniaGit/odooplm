@@ -193,6 +193,32 @@ asking. Naming one dates the text and reads as an endorsement.
 
 ---
 
+## 2026-09-15 — Module versions are bumped when pushing
+
+**Decision.** The `bump-manifest-version` and `bump-plm-version` commit hooks
+are gone. `scripts/push.py` raises the versions of the modules a push carries —
+and `plm`, whose version is the pip package's — in one commit, then pushes; the
+`check-pushed-versions` pre-push hook refuses a plain `git push` that skipped it.
+
+**Why.** A module version is meant to count what reached the server: bumping at
+every commit raised it several times for one delivered change. The commit hook
+also could not work with git 2.30.2 — `git commit` holds `.git/index.lock`
+while hooks run, so its `git add` failed (see 2026-08-14) — and every failed
+attempt bumped the manifests once more. Bumping outside any hook removes that
+too. The version a push gives a module is now predictable, the remote one plus
+one, which is what an upgrade script folder has to be named after.
+
+**Alternatives rejected.**
+
+- *Bump in the pre-push hook.* A pre-push hook cannot change what is being
+  pushed: a commit it creates is left out of the push in progress.
+- *A GitHub Action bumping after the push.* It would commit on the server at
+  every push, leaving every local clone behind until the next pull.
+- *Keep the commit hooks with `require_serial`.* It does not cure the
+  `index.lock` failure, and the version would still count commits.
+
+---
+
 ## Open
 
 Not decided yet, recorded so the question is not lost.

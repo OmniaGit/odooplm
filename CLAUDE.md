@@ -31,12 +31,14 @@ odoo --test-tags=odoo_plm_mcp
 The pre-commit configuration is deliberately small. black, isort, prettier, eslint and pylint-odoo were **removed**: the pinned 2020 versions no longer build on Python 3.12, and reinstating them would mean a repository-wide reformat (128 files for black, 151 for isort, 167 XML files for prettier). Do not assume the repository is black-formatted. What actually runs (`.pre-commit-config.yaml`):
 
 - **flake8**, report only (`--exit-zero`) — it reports but never blocks; there is a backlog of ~1300 findings. Python: max line length 88, max complexity 16 (`.flake8`)
-- **local hooks** — `bump-manifest-version` and `bump-plm-version` (version bumps), `sync-requirements` (regenerates `aaa_requirements.txt` from the manifests), `check-licensing` (manifests ↔ `LICENSING.md` ↔ `LICENSES/`), `forbidden-files`
+- **local hooks** — `check-pushed-versions` (pre-push, see below), `sync-requirements` (regenerates `aaa_requirements.txt` from the manifests), `check-licensing` (manifests ↔ `LICENSING.md` ↔ `LICENSES/`), `forbidden-files`
 - **from pre-commit-hooks** — `check-xml`, `check-yaml`, `check-merge-conflict`, `check-case-conflict`, `check-symlinks`, `check-docstring-first`, `debug-statements`
 
 `.editorconfig` still asks for UTF-8, LF line endings and 4-space indent (2-space for JSON/YAML/RST/MD), but no hook enforces it.
 
-`pre-commit run --all-files` is not side-effect free: `bump-plm-version` always runs and bumps `plm/__manifest__.py`, staging it. To check without that, run a hook by id — `pre-commit run flake8 --files <paths>`. CI runs pre-commit through `.github/workflows/pre-commit.yml`.
+CI runs pre-commit through `.github/workflows/pre-commit.yml`. To check a few files, run a hook by id — `pre-commit run flake8 --files <paths>`.
+
+**Module versions are bumped when pushing, not when committing** (decided 2026-09-15). Push with `python3 scripts/push.py` (`--dry-run` to preview): for the commits between `origin/<branch>` and `HEAD` it raises the patch of every module they touch whose version is still the remote one, always raises `plm` (the `odooplm` pip package version, so any tag stays publishable), commits the manifests in one `[MOD]` commit and pushes. A version raised by hand is left alone. The `check-pushed-versions` pre-push hook refuses a plain `git push` that skips it; `pre-commit install` installs both hook types. So an upgrade script is named after the **remote** version plus one, however many commits the push carries. Do not bump manifests in feature commits.
 
 Commit message format: `[TAG] | Description` where TAG is `FIX`, `ADD`, `IMP`, or `MOD`.
 
