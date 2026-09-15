@@ -25,11 +25,19 @@ Created on 25 Aug 2016
 
 @author: Daniel Smerghetto
 """
-from odoo import models, api
+from odoo import api, fields, models
 
 
 class ResUsers(models.Model):
     _inherit = "res.users"
+
+    plm_access_id = fields.Many2one(
+        "plm.access",
+        "Default PLM Access",
+        help="Where the PLM documents this user creates go, when nothing else "
+        "decides it: a new revision stays with the previous ones. Empty means "
+        "the root node of the company the user is working in.",
+    )
 
     def getMacros(self):
         """

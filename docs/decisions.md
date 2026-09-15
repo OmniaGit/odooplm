@@ -219,6 +219,88 @@ one, which is what an upgrade script folder has to be named after.
 
 ---
 
+## 2026-09-15 — PLM documents in a multi-company database
+
+### Documents are attached to a tree of `plm.access` nodes
+
+**Decision.** Every company has a root `plm.access` node and may add department
+nodes below it. A PLM document is attached to a node; the node says which groups
+may read, write, create and delete its documents.
+
+**Why.** Every PLM document was attached to one `plm.access` record for the
+whole database, and the record rules on `ir.attachment` never looked at the
+company: every user read, wrote and checked out every company's drawings. Odoo
+19 already grants an attachment through the record it is attached to, so
+giving that record a company and groups uses the core mechanism instead of
+repeating a company clause in every PLM rule — it also covers the searches, and
+the downloads through `ir.binary`.
+
+**Alternatives rejected.**
+
+- *A company clause and a `plm_share_scope` field on each document*, the 18.0
+  approach (`83261af`). The clause has to be repeated in every PLM rule, it
+  rests on a `check()` override Odoo 19 never calls, and sharing is decided
+  document by document.
+- *One `plm.access` per company, 1 to 1.* No room for departments.
+- *A many2many between `plm.access` and companies.* Documents could become more
+  visible than their products, which have a single company or none.
+
+### Groups are inherited until a node redefines them
+
+**Decision.** For each permission a node either names its groups or names none
+and takes its parent's; a root naming none leaves the whole company open. The
+record rules read the resolved, stored `effective_*_group_ids`.
+
+**Alternatives rejected.**
+
+- *Additive inheritance* (a group on a node counts for every descendant). Once a
+  root is open to the company no branch below can be restricted.
+- *Restrictive inheritance* (every node of the path must allow the user). It
+  works, but each rule has to walk every ancestor, and it is harder to explain.
+
+A node a user can read may sit under one they cannot: the hierarchy view does
+not reach it, the list view does. Accepted: the tree is the administrator's
+tool, and forbidding it would take away what this inheritance model is for.
+
+### No bypass for the PLM administrator
+
+**Decision.** The PLM administrator sees the documents of the companies and
+departments they belong to, as any user; they manage every node of their
+companies through `plm.access.write`.
+
+**Alternatives rejected.**
+
+- *See every company, as in 18.0.* The administrator would see documents whose
+  products and bills of materials the company rules still hide.
+
+### Products keep the standard Odoo company
+
+**Decision.** A product created by the CAD client or in PLM gets no company,
+unless one is set on it, exactly as in standard Odoo; only documents are placed
+in the company chosen at login.
+
+**Why.** It is how Odoo itself treats products. A product with a company can
+only be a component of that company's bills of materials, so components used
+across companies would have to be made shared one by one, or the CAD client
+would fail saving the BoM.
+
+**Alternatives rejected.**
+
+- *A new component takes the active company*, as the 18.0 commit `83261af`
+  did, with a setting to keep components shared. Possible later, together with
+  the shared tree for commercial components (see Open).
+
+### Users outside the PLM groups see no PLM document
+
+**Decision.** A rule for `base.group_user` confines every internal user to the
+attachments that are not PLM documents; the PLM rules add the documents back for
+the PLM groups.
+
+**Why.** Group rules only restrict the users of the group: an internal user in
+no PLM group had no rule at all and read and downloaded every PLM document.
+
+---
+
 ## 2026-09-15 — Engineering codes in a multi-company database
 
 ### A code is unique in the whole database, visible only to its company
@@ -331,6 +413,10 @@ Not decided yet, recorded so the question is not lost.
   prefix), or with engineering codes unique per company rather than
   database-wide, which is still to be decided. Not a priority: the documented
   manual copy reaches the same result.
+- **A shared `plm.access` tree with no company**, for commercial components used
+  by every company: a product with no company is visible everywhere, but its
+  documents live in one company's tree. To take up when the module description
+  is updated.
 
 - **Whether `plm_mcp` should sit on `ai_oca_mcp` instead of carrying its own
   transport.** It would cost two OCA dependencies and give up the protocol

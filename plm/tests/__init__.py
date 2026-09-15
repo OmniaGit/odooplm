@@ -24,5 +24,6 @@ from . import test_check_in
 from . import test_revision_chain
 from . import test_multicompany_sequence
 from . import test_multicompany_code
+from . import test_multicompany_access
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

@@ -28,6 +28,14 @@ The unique index of ir_attachment was declared with
 the same as ``IS NOT NULL`` but reads as something else; it is dropped here and
 RevisionBaseMixin.init recreates it with the plain condition, on product_template
 too, which never had it.
+
+ir_attachment.plm_access_id is a new stored field computed from res_model and
+res_id: its column is created and filled here, so that the update does not
+recompute it in Python for every attachment of the database.
+
+plm.access gets a company, which every node must have: the nodes already there,
+plm_basic_access_model first, belong to the main company until the data of the
+module and the post-migrate script give each company its own root.
 """
 import logging
 
@@ -44,3 +52,22 @@ def migrate(cr, version):
         )
         _logger.info("plm: %s %s placeholder codes cleared", cr.rowcount, table)
         cr.execute("DROP INDEX IF EXISTS unique_index_{table}".format(table=table))
+    cr.execute("ALTER TABLE plm_access ADD COLUMN IF NOT EXISTS company_id int4")
+    cr.execute(
+        """
+        UPDATE plm_access
+           SET company_id = (SELECT res_id FROM ir_model_data
+                              WHERE module = 'base' AND name = 'main_company')
+         WHERE company_id IS NULL
+        """
+    )
+    cr.execute("ALTER TABLE ir_attachment ADD COLUMN IF NOT EXISTS plm_access_id int4")
+    cr.execute(
+        """
+        UPDATE ir_attachment
+           SET plm_access_id = res_id
+         WHERE res_model = 'plm.access'
+           AND res_id IN (SELECT id FROM plm_access)
+        """
+    )
+    _logger.info("plm: %s documents attached to their PLM access", cr.rowcount)

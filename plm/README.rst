@@ -33,6 +33,15 @@ Multi-company :
     that its codes cannot clash with the ones of the other companies. Odoo uses
     the copy of the current company in place of the global sequence.
 
+    PLM documents are attached to *PLM Access* nodes (*PLM > Configuration >
+    PLM Access*): every company has its root node, and departments can be added
+    below it. A node lists the groups allowed to read, write, create and delete
+    its documents; a permission with no groups inherits the groups of the parent
+    node, and on a root it means the whole company. A new document goes to the
+    node of the previous revisions of its code, otherwise to the default node of
+    the user (*Settings > Users > Preferences*), otherwise to the root of the
+    company. Users outside the PLM groups see no PLM document.
+
 
 Supported Editors :
 -------------------

@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="plm_access_view_list" model="ir.ui.view">
+        <field name="name">plm.access.list</field>
+        <field name="model">plm.access</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="complete_name"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="effective_read_group_ids" widget="many2many_tags" optional="show"/>
+                <field name="effective_write_group_ids" widget="many2many_tags" optional="hide"/>
+                <field name="document_count" optional="show"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="plm_access_view_hierarchy" model="ir.ui.view">
+        <field name="name">plm.access.hierarchy</field>
+        <field name="model">plm.access</field>
+        <field name="arch" type="xml">
+            <!-- One tree per company: the roots are the nodes with no parent. A
+                 node whose parent the user cannot read is not reachable here;
+                 the list view shows it with its full name. -->
+            <hierarchy child_field="child_ids" draggable="1">
+                <field name="name"/>
+                <field name="company_id"/>
+                <field name="document_count"/>
+                <templates>
+                    <t t-name="hierarchy-box">
+                        <div class="o_hierarchy_node_header d-flex justify-content-center align-items-center">
+                            <field name="name"/>
+                        </div>
+                        <div class="o_hierarchy_node_body d-flex flex-column text-center">
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <span><t t-out="record.document_count.raw_value"/> documents</span>
+                        </div>
+                    </t>
+                </templates>
+            </hierarchy>
+        </field>
+    </record>
+
+    <record id="plm_access_view_form" model="ir.ui.view">
+        <field name="name">plm.access.form</field>
+        <field name="model">plm.access</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_open_documents" type="object"
+                                class="oe_stat_button" icon="fa-files-o">
+                            <field name="document_count" widget="statinfo" string="Documents"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="parent_id" options="{'no_create': True}"/>
+                            <field name="company_id" readonly="parent_id" required="not parent_id"
+                                   groups="base.group_multi_company"/>
+                            <field name="complete_name"/>
+                        </group>
+                    </group>
+                    <separator string="Groups"/>
+                    <p class="text-muted">
+                        A permission naming no groups inherits the groups of the parent node;
+                        on a root, no groups means the whole company.
+                    </p>
+                    <group>
+                        <group string="Own">
+                            <field name="read_group_ids" widget="many2many_tags" string="Read"/>
+                            <field name="write_group_ids" widget="many2many_tags" string="Write"/>
+                            <field name="create_group_ids" widget="many2many_tags" string="Create"/>
+                            <field name="unlink_group_ids" widget="many2many_tags" string="Delete"/>
+                        </group>
+                        <group string="Effective">
+                            <field name="effective_read_group_ids" widget="many2many_tags" string="Read" readonly="1"/>
+                            <field name="effective_write_group_ids" widget="many2many_tags" string="Write" readonly="1"/>
+                            <field name="effective_create_group_ids" widget="many2many_tags" string="Create" readonly="1"/>
+                            <field name="effective_unlink_group_ids" widget="many2many_tags" string="Delete" readonly="1"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="plm_access_view_search" model="ir.ui.view">
+        <field name="name">plm.access.search</field>
+        <field name="model">plm.access</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="complete_name"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+                <filter name="roots" string="Company roots" domain="[('parent_id', '=', False)]"/>
+                <group>
+                    <filter name="group_company" string="Company" context="{'group_by': 'company_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="plm_access_action" model="ir.actions.act_window">
+        <field name="name">PLM Access</field>
+        <field name="res_model">plm.access</field>
+        <field name="view_mode">hierarchy,list,form</field>
+    </record>
+
+    <menuitem id="menu_plm_access"
+              name="PLM Access"
+              action="plm_access_action"
+              parent="plm.plm_menu_dictionaries"
+              sequence="0"
+              groups="plm.group_plm_admin"/>
+
+    <record id="plm_view_company_form" model="ir.ui.view">
+        <field name="name">res.company.form.plm.access</field>
+        <field name="model">res.company</field>
+        <field name="inherit_id" ref="base.view_company_form"/>
+        <field name="arch" type="xml">
+            <field name="company_registry" position="after">
+                <field name="plm_access_id" readonly="1" groups="plm.group_plm_admin"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="plm_view_users_form" model="ir.ui.view">
+        <field name="name">res.users.form.plm.access</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_form"/>
+        <field name="arch" type="xml">
+            <group name="other_preferences" position="inside">
+                <field name="plm_access_id" options="{'no_create': True}" groups="plm.group_plm_admin"/>
+            </group>
+        </field>
+    </record>
+
+</odoo>

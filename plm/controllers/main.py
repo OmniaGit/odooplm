@@ -317,8 +317,12 @@ class UploadDocument(Controller):
             if not zip_ir_attachment_id:
                 if from_ir_attachment_id.engineering_code == zip_name:
                     to_write['engineering_code'] = filename
+                # The extra file lives where the document it belongs to lives.
                 to_write['res_model'] = 'plm.access'
-                to_write['res_id'] = request.env.ref('plm.plm_basic_access_model').id
+                to_write['res_id'] = (
+                    from_ir_attachment_id.plm_access_id
+                    or contex_brw._get_plm_access_for(to_write['engineering_code'])
+                ).id
                 zip_ir_attachment_id  = contex_brw.create(to_write)
             else:
                 del to_write["name"]
@@ -441,7 +445,7 @@ class UploadDocument(Controller):
             to_write["is_plm"] = True
             if not ir_attachment_id:
                 to_write['res_model'] = 'plm.access'
-                to_write['res_id'] = request.env.ref('plm.plm_basic_access_model').id
+                to_write['res_id'] = contex_brw._get_plm_access_for(doc_name).id
                 ir_attachment_id = contex_brw.create(to_write)
             else:
                 ir_attachment_id.with_context(new_context).write(to_write)

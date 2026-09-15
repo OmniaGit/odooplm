@@ -153,6 +153,11 @@
                             <field string="Engineering revision" name="engineering_revision" readonly="True"/>
                             <field string="Is a Plm Document" name="is_plm" visible="0" widget="boolean_toggle"
                                    readonly="True"/>
+                            <field name="plm_access_id"
+                                   invisible="not is_plm"
+                                   readonly="engineering_state != 'draft'"
+                                   options="{'no_create': True}"/>
+                            <field name="company_id" groups="base.group_multi_company" readonly="True"/>
                         </group>
                         <group name="doc_preview">
                             <field name="preview"

@@ -46,7 +46,7 @@
     ],
     "summary": "PLM, PDM and engineering document management, integrated with the main CAD editors (SolidWorks, SolidEdge, Inventor, AutoCAD, ThinkDesign, FreeCAD, DraftSight)",
     "images": ["static/img/odoo_plm.png"],
-    "depends": ["base", "board", "product", "mrp", "stock_account"],
+    "depends": ["base", "board", "product", "mrp", "stock_account", "web_hierarchy"],
     "data": [
         "security/base_plm_security.xml",
         "report/product_report_document.xml",
@@ -82,6 +82,7 @@
         "views/plm_cad_open_bck.xml",
         "views/mail_activity_type.xml",
         "views/menu.xml",
+        "views/plm_access_view.xml",
         "views/product_category.xml",
         "views/plm_temporaty.xml",
         "views/mrp_production.xml",
