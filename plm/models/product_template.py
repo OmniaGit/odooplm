@@ -243,13 +243,18 @@ class ProductTemplate(models.Model):
 
     def getSequenceFrom(self, prefix, digit, start_number=0):
         plm_prefix = f"PLM_SEQUENCE_{prefix}"
-        sequence = None
-        for sequence in (
-            self.env["ir.sequence"].sudo().search([("code", "=", plm_prefix)])
-        ):
-            break
-            return sequence.next_by_id()
+        sequences = self.env["ir.sequence"].sudo().search([("code", "=", plm_prefix)])
+        # As next_by_code: the company's own copy first, then the global one. Any
+        # other is still better than a new counter restarting from start_number,
+        # which would hand out codes already used.
+        sequence = (
+            sequences.filtered(lambda seq: seq.company_id == self.env.company)[:1]
+            or sequences.filtered(lambda seq: not seq.company_id)[:1]
+            or sequences[:1]
+        )
         if not sequence:
+            # Global, like every PLM sequence: without company_id False it would
+            # be bound to env.company.
             sequence = (
                 self.env["ir.sequence"]
                 .sudo()
@@ -257,6 +262,7 @@ class ProductTemplate(models.Model):
                     {
                         "name": f"Plm Autocreate sequence {prefix} ",
                         "code": plm_prefix,
+                        "company_id": False,
                         "prefix": prefix,
                         "number_increment": 1,
                         "number_next_actual": start_number,

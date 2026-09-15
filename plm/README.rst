@@ -20,6 +20,20 @@ Key Features :
     * Compare BoMs
 
 
+Multi-company :
+---------------
+
+    All the PLM sequences (document codes, database threads, materials,
+    finishings, treatments, descriptions) are global: every company draws from
+    the same counter, so codes stay unique across the companies.
+
+    A company that needs its own numbering must be given it explicitly: in
+    *Settings > Technical > Sequences & Identifiers > Sequences*, duplicate
+    the PLM sequence, set the company on the copy and change its prefix, so
+    that its codes cannot clash with the ones of the other companies. Odoo uses
+    the copy of the current company in place of the global sequence.
+
+
 Supported Editors :
 -------------------
 

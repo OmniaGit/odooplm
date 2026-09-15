@@ -27,6 +27,14 @@ Key Features
 * CSV structure definition for expected box content
 * Extends ``plm.checkout`` and ``ir.attachment`` for box-aware document checkout
 
+Multi-company
+-------------
+
+The ``plm.box`` and box document sequences are global: every company draws
+from the same counter. To give a company its own series, duplicate the
+sequence, set the company on the copy and change its prefix: Odoo uses the copy
+of the current company in place of the global one.
+
 Dependencies
 ------------
 

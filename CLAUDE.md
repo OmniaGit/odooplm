@@ -74,6 +74,12 @@ Records in `confirmed`, `released`, `undermodify`, or `obsoleted` states are **w
 
 **Branches are out of this rule, on purpose.** `new_branch()` / `_new_branch_version()` create parallel lines of one code (`engineering_branch_parent_id`, sub revision paths like `0.1`), not a sequence, and the feature is still to be designed properly: nothing in the modules or in the CAD client uses it yet. So a branch record is neither checked when created nor touched when a normal revision is created. `_new_branch` passes the branch fields to the copy, so `create` already sees them. When branches are developed, their own chain rule has to be decided and this exclusion revisited.
 
+### Multi-company
+
+The suite is being made multi-company aware; the decisions so far are in [`docs/decisions.md`](docs/decisions.md), tests tagged `odoo_plm_multicompany`.
+
+**Sequences are global** (decided 2026-09-15). Every `ir.sequence` a PLM module creates, in its data XML or from code, declares `company_id` False: without it the sequence takes `env.company` and `next_by_code` returns `False` in every other company. A company gets its own numbering only when an administrator copies the sequence and sets the company on the copy, which `next_by_code` then prefers. A new data sequence needs `<field name="company_id" eval="False"/>`; data sequences are `noupdate`, so changing an existing one needs an upgrade script under `upgrades/<version>/`, named after the remote version plus one (see Code Quality).
+
 ### Key Models
 
 | Model | File | Role |

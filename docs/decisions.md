@@ -219,9 +219,53 @@ one, which is what an upgrade script folder has to be named after.
 
 ---
 
+## 2026-09-15 — Sequences in a multi-company database
+
+### The PLM sequences are global
+
+**Decision.** Every sequence the PLM modules create — the ones in
+`plm/data/sequence.xml`, `plm_auto_engcode/data/ir_sequence.xml`,
+`plm_box/data/plm_box_sequence_data.xml`, and the `PLM_SEQUENCE_<prefix>` ones
+`product.template.getSequenceFrom` makes on the fly — has `company_id` False:
+one counter, shared by every company. A company gets its own numbering only if
+an administrator gives it one explicitly, by copying the sequence and setting
+the company on the copy. `next_by_code` orders by `company_id`, so the copy of
+the current company wins over the global sequence.
+
+**Why.** `ir.sequence.company_id` defaults to `env.company`, so the sequences
+declared without a company were bound to the company the module was installed
+in, and `next_by_code` — which looks only for the current company's sequence or
+a global one — returned `False` everywhere else: `GetNextDocumentName` raised
+`TypeError`, a cloned document got the code `XXX-False`, `plm_auto_engcode`
+gave products no code. A global counter is also what the database-wide unique
+index on `(engineering_code, engineering_revision)` needs: two companies
+counting from 1 with the same prefix would collide on it. `plm_breakages`
+already declared its sequence this way.
+
+Databases installed before are brought in line by an upgrade script per module
+(`upgrades/<version>/post-migrate.py`), since the records are `noupdate`. It
+runs once and only on the sequences the modules created; tests are tagged
+`odoo_plm_multicompany`.
+
+**Alternatives rejected.**
+
+- *A `<function>` in the data file resetting the company.* It would run at
+  every update and undo a company an administrator set on purpose.
+- *Create the sequences per company automatically.* Without a prefix per
+  company the codes collide on the unique index; see Open.
+
+---
+
 ## Open
 
 Not decided yet, recorded so the question is not lost.
+
+- **A company flag to create its own PLM sequences automatically.** When set, the
+  new company would get a copy of the PLM sequences. It only works with a
+  prefix per company (a field on the company, prepended to the sequence
+  prefix), or with engineering codes unique per company rather than
+  database-wide, which is still to be decided. Not a priority: the documented
+  manual copy reaches the same result.
 
 - **Whether `plm_mcp` should sit on `ai_oca_mcp` instead of carrying its own
   transport.** It would cost two OCA dependencies and give up the protocol

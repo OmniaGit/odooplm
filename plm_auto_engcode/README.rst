@@ -29,6 +29,13 @@ Assign a sequence to one or more product categories via the
 sequence with code ``plm.eng.code`` is used when no category-level sequence
 is configured.
 
+In a multi-company database the ``plm.eng.code`` sequence is global: every
+company draws from the same counter, so part numbers stay unique across the
+companies. To give a company its own series, duplicate the sequence, set the
+company on the copy and change its prefix: Odoo uses the copy of the current
+company in place of the global one. A sequence assigned to a product category
+is used as it is, whatever company it belongs to.
+
 Dependencies
 ------------
 
