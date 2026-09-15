@@ -25,6 +25,8 @@ Created on 28 Sep 2022
 """
 import logging
 
+import psycopg2
+
 from odoo import models, fields, api, _
 from datetime import datetime
 
@@ -120,7 +122,9 @@ class RevisionBaseMixin(models.AbstractModel):
                     ("engineering_revision", "=", rec.engineering_revision),
                     ("id", "!=", rec.id),
                 ]
-                if self.search_count(domain):
+                # An engineering code is unique in the whole database, whatever
+                # company holds it: look past the record rules.
+                if self.sudo().search_count(domain):
                     raise ValidationError(
                         _(
                             "This Engineering Code and Revision combination already exists: '%s' - Rev %s"
@@ -128,20 +132,81 @@ class RevisionBaseMixin(models.AbstractModel):
                         % (rec.engineering_code, rec.engineering_revision)
                     )
 
-    def init(self):
-        """Ensure there is at most one active variant for each combination.
+    @api.model
+    def _normalize_engineering_code(self, vals):
+        """'' and '-' once stood for "no code", to skip the checks while cloning
+        and revising. A code is either set or False now, so that the single
+        database rule, a set code is unique per revision, holds."""
+        if vals.get("engineering_code") in ("", "-"):
+            vals["engineering_code"] = False
+        return vals
 
-        There could be no variant for a combination if using dynamic attributes.
+    @api.model
+    def _refuse_engineering_code_in_use(self, vals_list):
+        """Refuse a code and revision already in use, before the insert: the
+        unique index would only raise an IntegrityError. The code may belong to a
+        company the user cannot see, so the search looks past the record rules,
+        and the message does not say where it is."""
+        for vals in vals_list:
+            code = vals.get("engineering_code")
+            if not code:
+                continue
+            revision = vals.get("engineering_revision", 0)
+            if self.sudo().search_count(
+                [
+                    ("engineering_code", "=", code),
+                    ("engineering_revision", "=", revision),
+                ],
+                limit=1,
+            ):
+                raise UserError(
+                    _(
+                        "Engineering code %(code)s revision %(revision)s is already in use.",
+                        code=code,
+                        revision=revision,
+                    )
+                )
+
+    def init(self):
+        """One record per engineering code and revision in the whole database,
+        whatever the company: two companies cannot create the same code.
+
+        A database holding duplicates cannot take the index. The update goes on
+        without it, and the duplicates are logged to be fixed; the next update
+        creates the index.
         """
-        if self._name != "revision.plm.mixin":
-            sql = """
-            CREATE UNIQUE INDEX IF NOT EXISTS {unique_name}
-            ON {table_name} (engineering_code, engineering_revision)
-            WHERE (engineering_code is not null or engineering_code not in ('-',''))
-            """.format(
-                unique_name="unique_index_%s" % self._table, table_name=self._table
+        if self._name == "revision.plm.mixin":
+            return
+        unique_name = "unique_index_%s" % self._table
+        try:
+            with self.env.cr.savepoint(flush=False):
+                self.env.cr.execute(
+                    """
+                    CREATE UNIQUE INDEX IF NOT EXISTS {unique_name}
+                    ON {table_name} (engineering_code, engineering_revision)
+                    WHERE engineering_code IS NOT NULL
+                    """.format(unique_name=unique_name, table_name=self._table)
+                )
+        except psycopg2.IntegrityError:
+            self.env.cr.execute(
+                """
+                SELECT engineering_code, engineering_revision, count(*)
+                  FROM {table_name}
+                 WHERE engineering_code IS NOT NULL
+              GROUP BY engineering_code, engineering_revision
+                HAVING count(*) > 1
+              ORDER BY engineering_code, engineering_revision
+                """.format(table_name=self._table)
             )
-            self.env.cr.execute(sql)
+            _logger.error(
+                "%s not created: %s holds engineering codes used more than once "
+                "for the same revision. Fix them and update the module again:\n%s",
+                unique_name,
+                self._table,
+                "\n".join(
+                    "%s rev %s: %s records" % row for row in self.env.cr.fetchall()
+                ),
+            )
 
     def _engineering_revision_count(self):
         """
@@ -331,7 +396,9 @@ class RevisionBaseMixin(models.AbstractModel):
 
     def _new_version(self, extra_values=None):
         self.ensure_one()
-        obj_latest = self.get_latest_version()
+        # The number follows every revision of the code, not only the ones the
+        # record rules let this user see.
+        obj_latest = self.sudo().get_latest_version()
         new_revision_index = obj_latest.engineering_revision + 1
         write_context = {
             "name": self.name,
@@ -505,6 +572,7 @@ class RevisionBaseMixin(models.AbstractModel):
             )
 
     def write(self, vals):
+        vals = self._normalize_engineering_code(vals)
         if "engineering_code" in vals and vals["engineering_code"] not in [
             False,
             "-",
@@ -519,6 +587,9 @@ class RevisionBaseMixin(models.AbstractModel):
 
     @api.model_create_multi
     def create(self, vals):
+        for record_val in vals:
+            self._normalize_engineering_code(record_val)
+        self._refuse_engineering_code_in_use(vals)
         for record_val in vals:
             if "engineering_code" in record_val and record_val[
                 "engineering_code"

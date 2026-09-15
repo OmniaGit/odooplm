@@ -1255,7 +1255,9 @@ class ProductProduct(models.Model):
             eng_rev = vals_dict.get("engineering_revision", 0)
             eng_code = vals_dict.get("engineering_code")
             if eng_code:
-                prodBrwsList = self.search_count(
+                # Unique in the whole database: the code may belong to a company
+                # this user cannot see, so look past the record rules.
+                prodBrwsList = self.sudo().search_count(
                     [
                         ("engineering_code", "=", eng_code),
                         ("engineering_revision", "=", eng_rev),
@@ -1280,8 +1282,9 @@ class ProductProduct(models.Model):
 
             if isinstance(ex, psycopg2.IntegrityError):
                 msg = _("Error during component creation with values:\n")
-                for key, value in vals.items():
-                    msg = msg + "%r = %r\n" % (key, value)
+                for vals_dict in to_write:
+                    for key, value in vals_dict.items():
+                        msg = msg + "%r = %r\n" % (key, value)
                 try:
                     msg = msg + str(ex.message) + "\n"
                 except Exception:

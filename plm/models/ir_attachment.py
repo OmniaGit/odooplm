@@ -1188,8 +1188,10 @@ class IrAttachment(models.Model):
 
     def check_unique(self):
         for ir_attachment_id in self:
+            # Engineering codes are unique in the whole database, whatever
+            # company holds them: look past the record rules.
             if (
-                self.search_count(
+                self.sudo().search_count(
                     [
                         ("engineering_code", "=", ir_attachment_id.name),
                         (
@@ -1221,8 +1223,9 @@ class IrAttachment(models.Model):
 
     def _check_unique_document(self, vals):
         if self.env.context.get("odooPLM"):
-            if "name" in vals and "engineering_code" in vals:
-                if self.search_count(
+            if "name" in vals and vals.get("engineering_code"):
+                # The code may belong to a company this user cannot see.
+                if self.sudo().search_count(
                     [
                         ("engineering_code", "=", vals["engineering_code"]),
                         ("name", "not ilike", vals["name"]),

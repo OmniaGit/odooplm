@@ -219,6 +219,71 @@ one, which is what an upgrade script folder has to be named after.
 
 ---
 
+## 2026-09-15 — Engineering codes in a multi-company database
+
+### A code is unique in the whole database, visible only to its company
+
+**Decision.** Two companies cannot create the same engineering code and
+revision; a code is seen only by the users of the company that holds it. The
+checks that decide whether a code exists, or which revision is the latest, look
+past the record rules (`sudo()`); their message is generic and does not name the
+other company. What users are shown keeps following the record rules.
+
+**Why.** The unique index was on `ir_attachment` only: `product_template`
+overrode `init` without calling the mixin's, so for products nothing but a
+Python `search_count` stood between two companies and the same code, and that
+search only saw the user's companies. A company could create a code another one
+already had, silently. The index now exists on every table of the mixin, and
+the existence checks see every company.
+
+**Alternatives rejected.**
+
+- *Codes unique per company.* The index, the constraint and the ~60 searches by
+  code — CAD client doors included — would all have to carry the company.
+- *Name the company holding the code in the message.* It tells a user something
+  about a company they have no access to.
+
+### One rule for the index: a set code
+
+**Decision.** The index condition is `engineering_code IS NOT NULL`. `''` and
+`'-'` are stored as `False` by the mixin, and turned to NULL on existing data.
+
+**Why.** The old condition, `IS NOT NULL OR NOT IN ('-','')`, already meant
+`IS NOT NULL` — the second half never excluded anything — while reading as if
+placeholders were exempt. Those placeholders date from when cloning and revising
+needed codes that skipped the checks; neither does any more, and no database
+examined holds one.
+
+### The revisions of a code share its company
+
+**Decision.** Every revision of a product code belongs to the same company. A
+revision created without a company joins the one of the existing revisions; a
+product changes company only while it is a draft with no bill of materials, not
+used in one, and with no linked document.
+
+**Why.** If a user sees one revision, they see the whole chain: the searches
+that walk revisions (`_getlastrev`, the revision chain rule) stay consistent
+without being rewritten. Past draft, or once something is bound to it, moving a
+product would leave its BoMs and documents in the old company.
+
+**Alternatives rejected.**
+
+- *Propagate a company change to every revision.* It writes records the user
+  may not see, without saying so.
+
+### A database holding duplicates is updated without the index
+
+**Decision.** When the unique index cannot be created because of duplicates,
+the update goes on, the index is not created and the duplicate codes are logged;
+the next update creates it once they are fixed.
+
+**Alternatives rejected.**
+
+- *Stop the update.* It would block a customer's upgrade on data only they can
+  fix.
+
+---
+
 ## 2026-09-15 — Sequences in a multi-company database
 
 ### The PLM sequences are global

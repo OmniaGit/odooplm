@@ -29,7 +29,8 @@ from odoo import models
 from odoo import fields
 from odoo import api
 from odoo import _
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
+from odoo.addons.plm.models.plm_mixin import START_STATUS
 
 
 class ProductTemplate(models.Model):
@@ -208,12 +209,69 @@ class ProductTemplate(models.Model):
     def create(self, vals):
         to_create = []
         for val_dict in vals:
-            to_create.append(self.plm_sanitize(val_dict))
+            val_dict = self.plm_sanitize(val_dict)
+            code = val_dict.get("engineering_code")
+            if code and "company_id" not in val_dict:
+                # A revision created from scratch, by the CAD client or an
+                # import, joins the company of the revisions already there.
+                existing = self.sudo().search(
+                    [("engineering_code", "=", code)], limit=1
+                )
+                if existing:
+                    val_dict["company_id"] = existing.company_id.id
+            to_create.append(val_dict)
         return super().create(to_create)
 
     def write(self, vals):
         vals = self.plm_sanitize(vals)
+        if "company_id" in vals:
+            self._refuse_company_change(vals["company_id"])
         return super(ProductTemplate, self).write(vals)
+
+    def _refuse_company_change(self, company_id):
+        """A component with an engineering code moves to another company only
+        while it is a draft that nothing binds yet: no bill of materials of its
+        own, not a component of one, no linked document. Past that, the records
+        bound to it would be left in the old company."""
+        company = self.env["res.company"].browse(company_id or [])
+        for template in self.filtered("engineering_code"):
+            if template.company_id == company:
+                continue
+            sudo_template = template.sudo()
+            if (
+                template.engineering_state != START_STATUS
+                or sudo_template.bom_ids
+                or sudo_template.bom_line_ids
+                or sudo_template.linkeddocuments
+            ):
+                raise UserError(
+                    _(
+                        "The company of %(code)s revision %(revision)s cannot be "
+                        "changed: only a draft component with no bill of materials "
+                        "and no linked documents can move to another company.",
+                        code=template.engineering_code,
+                        revision=template.engineering_revision,
+                    )
+                )
+
+    @api.constrains("company_id", "engineering_code")
+    def _check_company_of_the_revisions(self):
+        """Every revision of a code belongs to the same company, or none has one:
+        whoever can see a revision can see the whole chain."""
+        for template in self.filtered("engineering_code"):
+            others = self.sudo().search(
+                [
+                    ("engineering_code", "=", template.engineering_code),
+                    ("id", "!=", template.id),
+                ]
+            )
+            if any(other.company_id != template.company_id for other in others):
+                raise ValidationError(
+                    _(
+                        "Every revision of %(code)s must belong to the same company.",
+                        code=template.engineering_code,
+                    )
+                )
 
     @api.model
     def init(self):
@@ -240,6 +298,9 @@ class ProductTemplate(models.Model):
           (engineering_code, engineering_revision);
         """
         )
+        # The unique index of the mixin: this override used to skip it, so
+        # nothing in the database stopped a code being created twice.
+        super().init()
 
     def getSequenceFrom(self, prefix, digit, start_number=0):
         plm_prefix = f"PLM_SEQUENCE_{prefix}"
