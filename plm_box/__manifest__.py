@@ -21,7 +21,7 @@
 ##############################################################################
 {
     "name": "Plm Box",
-    "version": "19.0.1.1.1",
+    "version": "19.0.1.1.2",
     "images": ["static/description/cover.gif"],
     "author": "OmniaSolutions",
     "maintainer": "OmniaSolutions S.n.c di Boscolo Matteo & C",
