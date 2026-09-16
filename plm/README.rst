@@ -43,6 +43,14 @@ Multi-company :
     company. Users outside the PLM groups see no PLM document.
 
 
+    Access to the PLM data has four levels, lowest first: *PLM Integration
+    Readonly* reads only the released and under modification records, *View
+    User* reads them all, *Integration User* also writes and creates and deletes
+    its own drafts, and *Administrator* may delete anything. They apply to PLM
+    documents, components, their templates and their bills of materials.
+    *PLM / Release Users* and *Unrelease User* are service groups, given on top
+    of any level.
+
 Supported Editors :
 -------------------
 

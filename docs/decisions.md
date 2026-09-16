@@ -219,6 +219,49 @@ one, which is what an upgrade script folder has to be named after.
 
 ---
 
+## 2026-09-16 — The four PLM permission levels
+
+### The levels are readonly state, readonly, integration, admin
+
+**Decision.** The PLM groups are a scale: read the released records only, read
+everything, read/write/create with deletion of one's own drafts, and everything.
+It applies to PLM documents, to components, their templates and their bills of
+materials. `group_plm_release_users` and `group_plm_admin_unrelease` stay
+service groups, orthogonal to the scale.
+
+**Why.** The groups already carried these names and access rights, but the rules
+said something else: "PLM Integration Readonly" implied the integration group,
+so the read-only level could write and create; the View User level could write
+and delete PLM documents through `group_non_plm_view_plm_document`; and every
+integration user could delete any document, released ones included.
+
+### A restriction is a global rule, not a group rule
+
+**Decision.** The released-only level is enforced by global rules
+(`plm_readonly_state_*`), one per model, whose domain is empty for every user
+outside that level.
+
+**Why.** Record rules of a group are OR-ed: a group rule can only grant. A level
+that must see *less* than another cannot be expressed as a group rule at all —
+which is exactly how the group ended up granting what its name denied.
+
+**Alternatives rejected.**
+
+- *Give the level its own access rights instead of implying View User.* The same
+  dozen access records, copied and kept in step by hand.
+
+### Deleting is for one's own drafts, and for the administrator
+
+**Decision.** An integration user deletes only what they created and only while
+it is a draft (`plm_integration_unlink_*`); the administrator deletes anything
+(`plm_admin_*`).
+
+**Why.** A released record is history: whoever needs it gone has to be an
+administrator. The CAD client never deletes records through RPC, so nothing in
+the client flow depends on this.
+
+---
+
 ## 2026-09-15 — PLM documents in a multi-company database
 
 ### Documents are attached to a tree of `plm.access` nodes

@@ -84,6 +84,21 @@ The suite is being made multi-company aware; the decisions so far are in [`docs/
 
 **PLM documents live in `plm.access` nodes** (decided 2026-09-15, `plm/models/plm_access.py`). Odoo 19 grants an attachment through its res record: reading it needs read on that record, writing, creating or deleting it needs write. Every PLM document is attached to a `plm.access` node (`res_model`/`res_id`, mirrored in the stored `ir.attachment.plm_access_id`), and the nodes form one tree per company: the root is `res.company.plm_access_id` (`plm_basic_access_model` for the main company), the children are departments. Each node names the groups allowed to read, write, create and unlink its documents, or names none and inherits its parent's (`effective_*_group_ids`, stored and recursive); a root naming none means the whole company. Read and write are enforced by the global rules on `plm.access` (company + effective groups), create and unlink by global rules on `ir.attachment` through `plm_access_id`; the PLM role rules on `ir.attachment` still apply on top, and internal users outside the PLM groups see no PLM document (`plm_base_user_non_plm_document`). A new document goes to the node of the revisions of its code, else the user's `plm_access_id`, else the root of `env.company` (`ir.attachment._get_plm_access_for`); never hardcode `plm_basic_access_model`. The revisions of a code share their node, a document moves only while a draft with no linked component, and a document of a product with a company lives in that company's tree. Only a PLM administrator changes nodes (`plm.access.write` goes through sudo after that check); the PLM administrator has no bypass on the documents. The `check()` override of `ir.attachment` is gone: Odoo 19 never calls it.
 
+### PLM permission levels
+
+Four levels, lowest first (`plm/security/base_plm_security.xml`, tests tagged `odoo_plm_permission_levels`), on documents with `is_plm`, on components, their templates and their bills of materials:
+
+| Level | Group | What it may do |
+|---|---|---|
+| 1 | `group_plm_readonly_released` ("PLM Integration Readonly") | read the records in `released` and `undermodify` only |
+| 2 | `group_plm_view_user` ("View User") | read every PLM record |
+| 3 | `group_plm_integration_user` | read, write and create every PLM record; delete only **its own drafts** (`create_uid` and state `draft`) |
+| 4 | `group_plm_admin` | everything, deleting included |
+
+Level 1 implies level 2 for its access rights, and `group_plm_release_document` ("View only released document") implies level 1: it is the same level, kept for the databases using it. `group_plm_release_users` (release) and `group_plm_admin_unrelease` (forced un-release) are service groups on top of the scale, not levels of it.
+
+A record rule can only grant, never take away, so the level 1 restriction is a **global** rule per model whose domain is empty for everybody else (`plm_readonly_state_*`). On top of all of this the `plm.access` node of a document decides as well: both must allow.
+
 ### Key Models
 
 | Model | File | Role |
