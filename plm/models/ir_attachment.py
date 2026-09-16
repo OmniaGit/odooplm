@@ -1814,6 +1814,44 @@ class IrAttachment(models.Model):
     def getHtmlDocument(self, attachment_id):
         return self.browse(attachment_id)._getHtmlDocument()
 
+    @api.model
+    def getHtmlDocuments(self, attachment_ids, with_tooltip=False):
+        """The search window's previews, as many as are shown, in one call.
+
+        getHtmlDocument answers one id, so a client showing ten documents made
+        ten round trips; measured from the CAD client on 2026-09-16, a call costs
+        30 to 100 ms whatever it carries, against 1.4 ms to render one preview.
+
+        `with_tooltip` is off by default because the tooltip is the expensive
+        half -- 95 KB against 102 for ten documents -- and it is seen only when
+        somebody hovers a button. The client asks for it then, one document at a
+        time, and keeps it.
+
+        A document that cannot be rendered costs its own entry, not the call.
+
+        :return: [(ir_attachment.id, html_rendered, html_tooltip), ...]
+        """
+        out = []
+        view_obj = self.env["ir.ui.view"]
+        for ir_attachment_id in self.browse(attachment_ids):
+            html_tooltip = ""
+            try:
+                html_rendered = view_obj._render_template(
+                    "plm.document_search_button", {"doc": ir_attachment_id}
+                )
+                if with_tooltip:
+                    html_tooltip = view_obj._render_template(
+                        "plm.document_search_tooltip", {"doc": ir_attachment_id}
+                    )
+            except Exception as ex:
+                logging.error(
+                    "getHtmlDocuments: %r on attachment %r", ex, ir_attachment_id.id
+                )
+                html_rendered = "<div>no data</div>"
+                html_tooltip = "<div>%s</div>" % ex
+            out.append((ir_attachment_id.id, html_rendered, html_tooltip))
+        return out
+
     has_error = fields.Boolean("Has Error", compute="_checkSavingError", store=True)
 
     #

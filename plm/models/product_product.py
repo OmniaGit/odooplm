@@ -2314,6 +2314,75 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
         #
         return (header, out)
 
+    @api.model
+    def getImplodedBom(self, ids):
+        """Where a product is used, all the way up: the client's where-used tree.
+
+        The twin of getExpodedBom, walking the other way. Same header and same
+        (row, children) pairs, so the client draws it with the same view; each
+        row is an assembly that uses the product below it, with the quantity and
+        the source of that bill of materials line.
+
+        Every type of bill of materials is followed. An assembly that uses the
+        same part in more than one of its bills -- normal and engineering, say --
+        appears once under it, since the question is where the part is used and
+        not how many lines say so. A part already on the way up is not walked
+        again, so a cycle in the data cannot loop.
+        """
+        bom_line_obj = self.env["mrp.bom.line"]
+        header = {
+            "engineering_code": _("Code"),
+            "engineering_revision": _("Revision"),
+            "name": _("Description"),
+            "qty": _("Quantity"),
+            "source_name": _("Rel.Source"),
+        }
+
+        def getProductData(product_tmpl_id):
+            return {
+                "id": product_tmpl_id.id,
+                "engineering_code": product_tmpl_id.engineering_code,
+                "engineering_revision": product_tmpl_id.engineering_revision,
+                "name": product_tmpl_id.name,
+            }
+
+        def computeParentLevel(product_tmpl_id, path):
+            parents = []
+            seen = set()
+            lines = bom_line_obj.search(
+                [("product_id.product_tmpl_id", "=", product_tmpl_id.id)]
+            )
+            for bom_line_id in lines:
+                parent_tmpl_id = bom_line_id.bom_id.product_tmpl_id
+                if not parent_tmpl_id or parent_tmpl_id.id in seen:
+                    continue
+                seen.add(parent_tmpl_id.id)
+                row = getProductData(parent_tmpl_id)
+                row.update(
+                    {
+                        "qty": bom_line_id.product_qty,
+                        "source_name": bom_line_id.source_id.name,
+                    }
+                )
+                if parent_tmpl_id.id in path:
+                    parents.append((row, []))
+                    continue
+                parents.append(
+                    (row, computeParentLevel(parent_tmpl_id, path | {parent_tmpl_id.id}))
+                )
+            return parents
+
+        out = []
+        for product_id in self.browse(ids):
+            product_tmpl_id = product_id.product_tmpl_id
+            out.append(
+                (
+                    getProductData(product_tmpl_id),
+                    computeParentLevel(product_tmpl_id, {product_tmpl_id.id}),
+                )
+            )
+        return (header, out)
+
     def get_product_bom_flat_ids(self, bom_type="normal"):
         """
         get the product browser flat list
