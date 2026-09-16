@@ -218,12 +218,10 @@ class plm_compare_bom(models.TransientModel):
 
     bom_are_equal = fields.Boolean(compute="_are_equal")
 
-    def name_get(self):
-        result = []
+    def _compute_display_name(self):
         for r in self:
             name = "%s .. %s.." % (r.part_id1.name[:8], r.part_id2.name[:8])
-            result.append((r.id, name))
-        return result
+            self.display_name = name
 
     def update_bom(self):
         def process_bom_line(records, bom_id, bom_type):
