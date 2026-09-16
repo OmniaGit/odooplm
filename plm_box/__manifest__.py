@@ -20,7 +20,7 @@
 ##############################################################################
 {
     "name": "Plm Box",
-    "version": "18.0.1.3.6",
+    "version": "18.0.1.3.7",
     "author": "OmniaSolutions",
     "website": "https://github.com/OmniaGit/odooplm",
     "category": "Productivity/Documents",

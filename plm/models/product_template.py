@@ -239,6 +239,9 @@ class ProductTemplate(models.Model):
           (engineering_code, engineering_revision);
         """
         )
+        # The unique index of the mixin: this override used to skip it, so
+        # nothing in the database stopped a code being created twice.
+        super().init()
 
     def getSequenceFrom(self, prefix, digit, start_number=0):
         plm_prefix = f"PLM_SEQUENCE_{prefix}"
