@@ -99,6 +99,8 @@ Level 1 implies level 2 for its access rights, and `group_plm_release_document` 
 
 A record rule can only grant, never take away, so the level 1 restriction is a **global** rule per model whose domain is empty for everybody else (`plm_readonly_state_*`). On top of all of this the `plm.access` node of a document decides as well: both must allow.
 
+**The `odooPLM` context grants nothing.** It says the call comes from the CAD client, nothing more: `ir.attachment.read` used to run it as the superuser (decided 2026-09-17, removed). `ir.ui.view.search` keeps its sudo on purpose — Odoo gives no group but system read access on `ir.ui.view`, and the client reads the view definitions to build its dialogs.
+
 ### Key Models
 
 | Model | File | Role |

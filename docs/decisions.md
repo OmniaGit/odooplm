@@ -219,6 +219,37 @@ one, which is what an upgrade script folder has to be named after.
 
 ---
 
+## 2026-09-17 — The CAD context is not a permission
+
+### `ir.attachment.read` no longer runs as the superuser
+
+**Decision.** The `sudo()` in `ir.attachment.read`, applied whenever the call
+carried the `odooPLM` context and the user was in a PLM group, is gone.
+
+**Why.** Both conditions are met by every CAD client call and every PLM user, so
+the escalation was the rule, not the exception: measured on a test database, a
+View User read the content of another user's private attachment, and of a
+document of a department they are not in, where the same read without the
+context was refused. It also went past the company and node isolation added the
+day before. What a user may read is what the rules say; the levels and the
+`plm.access` nodes now say it properly, which is what the sudo was covering for.
+
+**Alternatives rejected.**
+
+- *Narrow the sudo to PLM documents.* It would still hand every PLM document of
+  every company and department to every PLM user.
+
+### `ir.ui.view.search` keeps its sudo
+
+**Decision.** The same context still elevates the search of view definitions
+(`plm/models/ir_ui_view.py`).
+
+**Why.** Odoo grants read on `ir.ui.view` to no group but the system one
+(`base/security/ir.model.access.csv`), and the CAD client reads the definitions
+to build its dialogs. Those are interface metadata, not data.
+
+---
+
 ## 2026-09-16 — The four PLM permission levels
 
 ### The levels are readonly state, readonly, integration, admin

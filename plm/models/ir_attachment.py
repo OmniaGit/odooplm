@@ -1395,10 +1395,14 @@ class IrAttachment(models.Model):
             fields.extend(customFields)
             fields = list(set(fields))
             fields = self.plm_sanitize(fields)
-            ctx = self.env.context.copy()
-            plm_flag = ctx.get("odooPLM", False)
-            if plm_flag and self.env.user.has_group("plm.group_plm_view_user"):
-                self = self.sudo()
+            #
+            # No sudo here: reading used to run as the superuser whenever the
+            # call carried the odooPLM context and the user was in a PLM group,
+            # which is every call of the CAD client and every PLM user. It read
+            # any attachment of the database, PLM or not, past the access
+            # rights, the permission levels and the plm.access nodes. What a
+            # user may read is what the rules say.
+            #
             res = super(IrAttachment, self).read(fields=fields, load=load)
             res = self.readMany2oneFields(res, fields)
             return res

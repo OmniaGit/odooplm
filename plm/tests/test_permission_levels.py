@@ -167,6 +167,60 @@ class PlmPermissionLevels(TransactionCase):
         own_draft.with_user(self.integration).unlink()
         self.assertFalse(own_draft.exists())
 
+    # the odooPLM context
+
+    def test_the_cad_context_grants_nothing(self):
+        """Reading used to run as the superuser when the call carried the
+        odooPLM context, which the CAD client puts on every call."""
+        private = self.env["ir.attachment"].with_user(self.other_integration).create(
+            {"name": "payslip.pdf", "datas": DUMMY_CONTENT}
+        )
+        released = self._document("LVL-CAD1", user=self.integration, state="released")
+        self.env.flush_all()
+        for user in (self.readonly, self.integration):
+            for context in ({}, {"odooPLM": True}):
+                self.env.invalidate_all()
+                record = (
+                    self.env["ir.attachment"]
+                    .with_user(user)
+                    .with_context(**context)
+                    .browse(private.id)
+                )
+                with mute_logger("odoo.addons.base.models.ir_rule"), self.assertRaises(
+                    AccessError
+                ):
+                    record.read(["datas"])
+        self.env.invalidate_all()
+        readable = (
+            self.env["ir.attachment"]
+            .with_user(self.integration)
+            .with_context(odooPLM=True)
+            .browse(released.id)
+        )
+        self.assertEqual(readable.read(["name"])[0]["name"], "LVL-CAD1")
+
+    def test_the_cad_context_does_not_open_another_node(self):
+        group = self.env["res.groups"].create({"name": "PLM test node group"})
+        node = self.env["plm.access"].create(
+            {
+                "name": "Another department",
+                "parent_id": self.env.company.plm_access_id.id,
+                "read_group_ids": [Command.set(group.ids)],
+            }
+        )
+        document = self._document("LVL-CAD2")
+        document.sudo().plm_access_id = node
+        self.env.flush_all()
+        self.env.invalidate_all()
+        record = (
+            self.env["ir.attachment"]
+            .with_user(self.integration)
+            .with_context(odooPLM=True)
+            .browse(document.id)
+        )
+        with mute_logger("odoo.addons.base.models.ir_rule"), self.assertRaises(AccessError):
+            record.read(["datas"])
+
     # level 4: admin
 
     def test_admin_deletes_anything(self):
