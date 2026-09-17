@@ -219,6 +219,28 @@ one, which is what an upgrade script folder has to be named after.
 
 ---
 
+## 2026-09-17 — The preview and image routes answer what the user may read
+
+**Decision.** `/plm/ir_attachment_preview`, `/plm/product_product_image_1920`,
+`/plm/product_product_preview` and `/plm/ir_attachment_printout` read their
+record as the user, through `_readable()`: no record, or no read access, and the
+answer is "not found".
+
+**Why.** They are `auth="user"` and answered under `sudo()`, so anybody with an
+Odoo account, PLM groups or not, could walk the ids and collect the previews and
+the printouts of every drawing of every company and department -- the very
+content the nodes exist to separate.
+
+**Alternatives rejected.**
+
+- *Require a PLM group.* The right question is whether this user may read this
+  record, which is what the levels and the nodes already answer; a group check
+  would also break the product images for the rest of Odoo.
+- *Answer "forbidden" instead of "not found".* It would tell whoever walks the
+  ids which ones exist.
+
+---
+
 ## 2026-09-17 — The CAD context is not a permission
 
 ### `ir.attachment.read` no longer runs as the superuser
