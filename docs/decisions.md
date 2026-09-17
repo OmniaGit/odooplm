@@ -219,6 +219,26 @@ one, which is what an upgrade script folder has to be named after.
 
 ---
 
+## 2026-09-17 — The CAD download routes read as the user
+
+**Decision.** `/plm/download` and `/plm/download_structure` search their
+document as the user. The `has_group` check and the `is_plm` filter stay; the
+`sudo()` on the search, on `download_structure()` and on
+`ir.binary._get_stream_from` is gone.
+
+**Why.** Belonging to the lowest PLM group and knowing an id was enough to
+download any PLM document of any company or department, in any state, and to
+get its whole structure with the codes, revisions and states of its children.
+Reading as the user also filters the children the structure carries, so a
+document nobody may see does not travel inside it either.
+
+**Alternatives rejected.**
+
+- *Keep the sudo and add a company check.* It would repeat, in a controller,
+  the decision the rules already make -- and miss the departments.
+
+---
+
 ## 2026-09-17 — The preview and image routes answer what the user may read
 
 **Decision.** `/plm/ir_attachment_preview`, `/plm/product_product_image_1920`,

@@ -207,10 +207,14 @@ class UploadDocument(Controller):
         if not request.env.user.has_group("plm.group_plm_view_user"):
             return Response(status=403,
                             response=f"No permissions to download {attachment_id}")
-        for ir_attachment_id in request.env['ir.attachment'].sudo().search([('id','=', attachment_id),
-                                                                            ('is_plm','=', True)]):
+        # As the user, not sudo: the access rights, the PLM levels and the
+        # plm.access node decide. A document the user may not read is not found,
+        # the same answer an unknown id gets, and the structure it builds is
+        # read the same way, so a child nobody may see does not travel either.
+        for ir_attachment_id in request.env['ir.attachment'].search([('id','=', attachment_id),
+                                                                     ('is_plm','=', True)]):
             try:
-                return Response(json.dumps(ir_attachment_id.sudo().download_structure(hostname,
+                return Response(json.dumps(ir_attachment_id.download_structure(hostname,
                                                                                hostpws,
                                                                                latest)))
             except Exception as ex:
@@ -233,10 +237,11 @@ class UploadDocument(Controller):
         if not request.env.user.has_group("plm.group_plm_view_user"):
             return Response(status=403,
                             response=f"No permissions to download {attachment_id}")
-        for ir_attachment_id in request.env['ir.attachment'].sudo().search([('id','=', attachment_id),
-                                                                            ('is_plm','=', True)]):
-            return request.env['ir.binary'].sudo()._get_stream_from(ir_attachment_id,
-                                                                    field_name='datas').get_response()
+        # As the user: see plm_download_structure above.
+        for ir_attachment_id in request.env['ir.attachment'].search([('id','=', attachment_id),
+                                                                     ('is_plm','=', True)]):
+            return request.env['ir.binary']._get_stream_from(ir_attachment_id,
+                                                             field_name='datas').get_response()
         return Response(status=500,
                         qcontext=f"Attachment {attachment_id} not found")
 

@@ -107,6 +107,30 @@ class PlmPreviewRoutes(HttpCase):
         ):
             self.assertEqual(self._status("plm_route_insider", url), 200)
 
+    def test_the_download_routes_follow_the_node(self):
+        """The CAD client's download: a PLM group was enough, and the search ran
+        under sudo, so any document of any company came out by its id."""
+        for route in ("/plm/download", "/plm/download_structure"):
+            url = "%s?attachment_id=%s&hostname=host&hostpws=pws" % (
+                route,
+                self.document.id,
+            )
+            self.assertNotEqual(self._status("plm_route_outsider", url), 200, route)
+            self.assertEqual(self._status("plm_route_insider", url), 200, route)
+
+    def test_the_download_routes_need_a_plm_group(self):
+        outsider = self.env["res.users"].create(
+            {
+                "name": "plm_route_no_plm",
+                "login": "plm_route_no_plm",
+                "password": "plm_route_no_plm",
+                "group_ids": [Command.set(self.env.ref("base.group_user").ids)],
+            }
+        )
+        self.assertTrue(outsider)
+        url = "/plm/download?attachment_id=%s" % self.document.id
+        self.assertEqual(self._status("plm_route_no_plm", url), 403)
+
     def test_an_unknown_id_is_not_found(self):
         self.assertEqual(
             self._status("plm_route_insider", "/plm/ir_attachment_preview/999999999"),
