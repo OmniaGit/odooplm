@@ -45,16 +45,22 @@ def webservice(f):
     return wrap
 
 
-def _plm_document(document_id, route):
-    """The PLM document with that id, read as the user, or an empty recordset.
+def _plm_document(document_id, route, purpose="view3d"):
+    """The PLM document with that id, or an empty recordset.
 
-    These routes are auth="user" and used to browse whatever id they were given
-    under sudo: the ids could be walked for the engineering data, the structure
-    and the part colours of every document of every company and department. The
-    access rights, the PLM levels and the plm.access node decide instead, and a
-    document that cannot be read answers like a missing one.
+    An internal user gets it read as themselves: the access rights, the PLM
+    levels and the plm.access node decide, and a document they may not read
+    answers like a missing one. These routes are auth="user" and used to browse
+    whatever id they were given under sudo, so the ids could be walked for the
+    engineering data, the structure and the part colours of every document of
+    every company and department.
 
-    A request for a document the user may not read is either a stale link or
+    A portal user -- a customer, a vendor -- has no access to attachments at
+    all, so their scope answers instead: what is on their own order lines, and
+    what the format policy allows of it (see res.users._plm_portal_may). What
+    comes back is then a sudo recordset, since the portal cannot read it.
+
+    A request for a document one may not read is either a stale link or
     somebody collecting data: it gets a line in the log either way.
     """
     attachments = request.env["ir.attachment"]
@@ -63,36 +69,65 @@ def _plm_document(document_id, route):
     document = attachments.search(
         [("id", "=", int(document_id)), ("is_plm", "=", True)], limit=1
     )
+    if document:
+        return document
+    shared = attachments.sudo().browse(int(document_id))
+    if shared.exists() and request.env.user._plm_portal_may(shared, purpose):
+        return shared
+    _logger.warning(
+        "%s: user %s (id %s) asked for the document %s, which does not "
+        "exist or is not theirs to read",
+        route,
+        request.env.user.login,
+        request.env.uid,
+        document_id,
+    )
+    return attachments.browse()
+
+
+def _can_markup(document):
+    """Whether this user may annotate that document from the viewer.
+
+    Reading it is enough for an internal user: a markup is a note beside the
+    drawing, not a change to it. A portal user needs the markup level of their
+    partner, or their own.
+    """
     if not document:
-        _logger.warning(
-            "%s: user %s (id %s) asked for the document %s, which does not "
-            "exist or is not theirs to read",
-            route,
-            request.env.user.login,
-            request.env.uid,
-            document_id,
-        )
-    return document
+        return False
+    user = request.env.user
+    # _plm_document hands a sudo recordset to a portal user, and has_access is
+    # always true on one of those: ask in the environment of the request.
+    if document.with_env(request.env).has_access("read"):
+        return True
+    return user._plm_portal_can_markup() and user._plm_portal_may(document, "view3d")
 
 
 class Web3DView(Controller):
     @route("/plm/show_treejs_model", type="http", auth="user")
     @webservice
     def show_treejs_model(self, document_id, document_name):
+        # The viewer used to open on any id: the data came from the other
+        # routes, but the page itself said what the document was called.
+        document = _plm_document(document_id, "show_treejs_model")
+        if not document:
+            return request.not_found()
         return request.render(
             "plm_web_3d.main_treejs_view",
-            {"document_id": document_id, "document_name": document_name},
+            {
+                "document_id": document_id,
+                "document_name": document_name,
+                "can_markup": _can_markup(document),
+            },
         )
 
     @route("/plm/download_treejs_model", type="http", auth="user")
     @webservice
     def download_treejs_model(self, document_id):
-        if not request.env.user.has_group("plm.group_plm_view_user"):
-            return Response(response="Access denied", status=403)
-        # No sudo: record rules decide which attachments this user may read,
-        # so a user cannot download CAD files they have no access to.
-        for ir_attachment in request.env["ir.attachment"].search(
-            [("id", "=", int(document_id))]
+        # No sudo for an internal user: the record rules decide. A portal user
+        # holds no PLM group and cannot read attachments, so their scope
+        # answers, and only for the file the viewer shows.
+        for ir_attachment in _plm_document(
+            document_id, "download_treejs_model", purpose="view3d"
         ):
             if ir_attachment.has_web3d:
                 headers = []
@@ -253,9 +288,10 @@ class Web3DView(Controller):
         doc = _plm_document(document_id, "part_colors/save")
         if not doc:
             return {'success': False}
-        if not doc.has_access("write"):
+        if not doc.with_env(request.env).has_access("write"):
             # Reading the document is not writing it: the PLM level and the
-            # write groups of the node say who may.
+            # write groups of the node say who may. Asked in the environment of
+            # the request, because a portal user holds a sudo recordset here.
             _logger.warning(
                 "part_colors/save: user %s (id %s) may not write the document %s",
                 request.env.user.login,

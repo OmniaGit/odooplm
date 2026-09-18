@@ -240,6 +240,27 @@ The remaining routes of the module, `save_markup` above all, are the next steps.
 
 ---
 
+## 2026-09-18 — The viewer routes ask the portal scope
+
+**Decision.** `_plm_document` answers an internal user by reading the document
+as them, and a portal user from their scope, handing back a sudo recordset
+since the portal cannot read attachments at all. `show_treejs_model` checks the
+access before rendering and tells the page whether markup is allowed;
+`download_treejs_model` serves the viewer file to a customer in scope and never
+the native CAD file. Saving the part colours stays a write, so a customer does
+not do it.
+
+**Why.** The viewer opened on any id, and its routes answered under sudo. Now
+the same helper answers both kinds of user, and a document one may not read is
+not found, which is also what a stale link gets.
+
+Two traps met on the way, worth remembering: `has_access` is always true on a
+sudo recordset, so both checks ask in the environment of the request; and the
+markup commands are not rendered at all rather than hidden, so a shared viewer
+has no markup in its page.
+
+---
+
 ## 2026-09-18 — What a customer or a vendor reaches from the portal
 
 **Decision.** The scope is derived from the order lines the portal user may

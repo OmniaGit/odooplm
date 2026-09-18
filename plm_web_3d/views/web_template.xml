@@ -63,12 +63,17 @@
                         <div class="plm_button_per" id="save_view_perm" title="Save Screenshot">
                             <i class="fa fa-save"></i>
                         </div>
-                        <div class="plm_button_per" id="markup_button_perm" title="Markup">
-                            <i class="fa fa-edit"></i>
-                        </div>
-                        <div class="plm_button_per" id="markup_logs_perm" title="Markup Logs">
-                            <i class="fa fa-history"></i>
-                        </div>
+                        <!-- Not rendered at all without the right, rather than
+                             hidden: a viewer shared with a customer who may
+                             only look has no markup in its page. -->
+                        <t t-if="can_markup">
+                            <div class="plm_button_per" id="markup_button_perm" title="Markup">
+                                <i class="fa fa-edit"></i>
+                            </div>
+                            <div class="plm_button_per" id="markup_logs_perm" title="Markup Logs">
+                                <i class="fa fa-history"></i>
+                            </div>
+                        </t>
                         <div class="plm_button_per" id="show_all_perm" title="Show All">
                             <i class="fa fa-lightbulb-o"></i>
                         </div>
@@ -172,7 +177,7 @@
                     <div class="viewer_container">
                         <canvas id="odoo_canvas"></canvas>
 
-                        <div id="markup_editor">
+                        <div id="markup_editor" t-if="can_markup">
                             <div id="markup_toolbar">
                                 <button id="draw_btn">✏️ Draw</button>
                                 <button id="rect_btn">▭ Rect</button>

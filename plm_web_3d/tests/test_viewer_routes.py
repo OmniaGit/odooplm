@@ -157,6 +157,106 @@ class PlmWeb3dRoutes(HttpCase):
                 {"success": False},
             )
 
+    # the portal
+
+    def _portal_customer(self, level, login="web3d_portal"):
+        partner = self.env["res.partner"].create({"name": "3d portal customer"})
+        partner.plm_portal_access = level
+        user = self.env["res.users"].create(
+            {
+                "name": login,
+                "login": login,
+                "password": login,
+                "partner_id": partner.id,
+                "group_ids": [Command.set(self.env.ref("base.group_portal").ids)],
+            }
+        )
+        self.env["sale.order"].create(
+            {
+                "partner_id": partner.id,
+                "order_line": [Command.create({"product_id": self.component.id})],
+            }
+        )
+        return user
+
+    def test_a_customer_opens_what_was_sold_to_them(self):
+        """The viewer file of their own machine, and nothing else."""
+        viewer_document = self.env["ir.attachment"].create(
+            {
+                "name": "WEB3D-1.3mf",
+                "engineering_code": "WEB3D-1-3MF",
+                "datas": CONTENT,
+                "is_plm": True,
+                "plm_access_id": self.node.id,
+            }
+        )
+        viewer_document.linkedcomponents = self.component
+        self._portal_customer("view")
+        self.authenticate("web3d_portal", "web3d_portal")
+        page = self.url_open(
+            "/plm/show_treejs_model?document_id=%s&document_name=WEB3D-1.3mf"
+            % viewer_document.id
+        )
+        self.assertEqual(page.status_code, 200)
+        self.assertNotIn("markup_button_perm", page.text, "view only: no markup")
+        model = self.url_open(
+            "/plm/download_treejs_model?document_id=%s" % viewer_document.id
+        )
+        self.assertEqual(model.status_code, 200)
+        with mute_logger("odoo.addons.plm_web_3d.controllers.main"):
+            native = self.url_open(
+                "/plm/download_treejs_model?document_id=%s" % self.document.id
+            )
+        self.assertNotEqual(native.status_code, 200, "never the native CAD file")
+
+    def test_a_customer_allowed_to_markup_gets_the_commands(self):
+        viewer_document = self.env["ir.attachment"].create(
+            {
+                "name": "WEB3D-2.3mf",
+                "engineering_code": "WEB3D-2-3MF",
+                "datas": CONTENT,
+                "is_plm": True,
+                "plm_access_id": self.node.id,
+            }
+        )
+        viewer_document.linkedcomponents = self.component
+        self._portal_customer("markup", login="web3d_portal_markup")
+        self.authenticate("web3d_portal_markup", "web3d_portal_markup")
+        page = self.url_open(
+            "/plm/show_treejs_model?document_id=%s&document_name=WEB3D-2.3mf"
+            % viewer_document.id
+        )
+        self.assertIn("markup_button_perm", page.text)
+
+    def test_a_customer_does_not_paint_the_model(self):
+        """Saving the part colours writes on the document: the viewer of a
+        customer looks, it does not change what the drawing office keeps."""
+        self._portal_customer("markup", login="web3d_portal_colors")
+        self.document.sudo().linkedcomponents = self.component
+        with mute_logger("odoo.addons.plm_web_3d.controllers.main"):
+            self.assertEqual(
+                self._save_colors("web3d_portal_colors", {"part-1": "#123456"}),
+                {"success": False},
+            )
+
+    def test_a_stranger_opens_nothing(self):
+        stranger = self.env["res.users"].create(
+            {
+                "name": "web3d_stranger",
+                "login": "web3d_stranger",
+                "password": "web3d_stranger",
+                "group_ids": [Command.set(self.env.ref("base.group_portal").ids)],
+            }
+        )
+        self.assertTrue(stranger)
+        self.authenticate("web3d_stranger", "web3d_stranger")
+        with mute_logger("odoo.addons.plm_web_3d.controllers.main"):
+            page = self.url_open(
+                "/plm/show_treejs_model?document_id=%s&document_name=x"
+                % self.document.id
+            )
+        self.assertEqual(page.status_code, 404)
+
     def test_product_info_hides_the_engineering_data(self):
         with mute_logger("odoo.addons.plm_web_3d.controllers.main"):
             answer = json.dumps(self._product_info("web3d_outsider"))
