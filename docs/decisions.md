@@ -219,6 +219,30 @@ one, which is what an upgrade script folder has to be named after.
 
 ---
 
+## 2026-09-18 — The 3D libraries live in `static/lib/`
+
+**Decision.** `three.js`, `dxf-viewer` (both submodules) and `odoocad` moved
+from `plm_web_3d/static/src/js/lib/` to `plm_web_3d/static/lib/`.
+
+**Why.** Odoo's asset pregeneration globs `**/src/**/*.js` under each installed
+module's `static/` and opens every match
+(`odoo/addons/base/models/ir_qweb.py:_get_lazy_bundles_from_js`). The `three.js`
+submodule is a *directory* whose name ends in `.js`, so it matched and the run
+died on `IsADirectoryError`. That pregeneration runs whenever a test suite holds
+an HttpCase: with plm_web_3d installed, no HTTP test of any module could run,
+which is exactly what the controller fixes need. `static/lib/` is also where
+Odoo keeps third party libraries, and it is outside that glob.
+
+**Alternatives rejected.**
+
+- *Rename the submodule directory to `threejs`.* Smaller, but it leaves the
+  libraries under `static/src/`, against the convention, and the next submodule
+  with a dotted name brings the problem back.
+- *Leave it and test the controllers without HTTP.* The routes are the thing
+  under test; a test that does not go through HTTP would not be one.
+
+---
+
 ## 2026-09-18 — The CAD upload routes take PLM documents only
 
 **Decision.** `/plm_document_upload/upload` and `/plm_document_upload/upload_pdf`

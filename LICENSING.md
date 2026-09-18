@@ -151,8 +151,8 @@ compatible with the above and are not changed by inclusion here.
 
 | Component | Location | Licence |
 |---|---|---|
-| three.js | `plm_web_3d/static/src/js/lib/three.js` | MIT |
-| dxf-viewer (OmniaGit fork) | `plm_web_3d/static/src/js/lib/dxf-viewer` | MPL-2.0 |
+| three.js | `plm_web_3d/static/lib/three.js` | MIT |
+| dxf-viewer (OmniaGit fork) | `plm_web_3d/static/lib/dxf-viewer` | MPL-2.0 |
 | CadQuery | `plm_automated_convertion/cadquery` | Apache-2.0 |
 
 Python dependencies declared in the manifests' `external_dependencies` and

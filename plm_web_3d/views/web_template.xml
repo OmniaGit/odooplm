@@ -9,7 +9,7 @@
                 <title>OdooPLM WebGl View</title>
                 <script type="importmap">
                     {"imports": {
-                    "three": "../plm_web_3d/static/src/js/lib/three.js/build/three.module.js"
+                    "three": "../plm_web_3d/static/lib/three.js/build/three.module.js"
                     }
                     }
                 </script>

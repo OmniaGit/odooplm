@@ -136,7 +136,7 @@ A record rule can only grant, never take away, so the level 1 restriction is a *
 
 ### 3D Viewer (`plm_web_3d/`)
 
-Uses Three.js and a DXF viewer (both as git submodules under `static/src/js/lib/`). The submodule at `plm_web_3d/static/src/js/lib/dxf-viewer` may appear dirty in git status — this is expected.
+Uses Three.js and a DXF viewer (both as git submodules under `static/lib/`, with `odoocad` beside them). The submodule at `plm_web_3d/static/lib/dxf-viewer` may appear dirty in git status — this is expected. They live in `static/lib/`, not under `static/src/`, because Odoo's asset pregeneration globs `**/src/**/*.js` and opens every match: the `three.js` submodule is a *directory* whose name ends in `.js`, so every HTTP test run on a database with this module installed died on `IsADirectoryError` (decided 2026-09-18).
 
 ### External Python Dependencies
 

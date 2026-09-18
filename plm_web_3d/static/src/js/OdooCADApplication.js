@@ -2,16 +2,16 @@
 // https://github.com/leemun1/three-viewcube
 // thanks https://github.com/leemun1
 
-import * as THREE from './lib/three.js/build/three.module.js';
-import * as ODOOCAD from './lib/odoocad/odoocad.js';
+import * as THREE from '../../lib/three.js/build/three.module.js';
+import * as ODOOCAD from '../../lib/odoocad/odoocad.js';
 // controls
-import { OrbitControls } from './lib/three.js/examples/jsm/controls/OrbitControls.js';
-import { TransformControls } from './lib/three.js/examples/jsm/controls/TransformControls.js';
-import Stats from './lib/three.js/examples/jsm/libs/stats.module.js';
+import { OrbitControls } from '../../lib/three.js/examples/jsm/controls/OrbitControls.js';
+import { TransformControls } from '../../lib/three.js/examples/jsm/controls/TransformControls.js';
+import Stats from '../../lib/three.js/examples/jsm/libs/stats.module.js';
 import {
 	CSS2DRenderer,
 	CSS2DObject,
-} from './lib/three.js/examples/jsm/renderers/CSS2DRenderer.js'
+} from '../../lib/three.js/examples/jsm/renderers/CSS2DRenderer.js'
 
 var debug_3d = false;
 let OdooCad;
