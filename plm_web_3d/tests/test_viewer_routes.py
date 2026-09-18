@@ -92,6 +92,71 @@ class PlmWeb3dRoutes(HttpCase):
         with mute_logger("odoo.addons.plm_web_3d.controllers.main"):
             self.assertEqual(self._product_info("web3d_outsider"), {})
 
+    def test_part_colors_load_follows_the_node(self):
+        self.document.sudo().web3d_part_colors = '{"part-1": "#ff0000"}'
+        self.authenticate("web3d_insider", "web3d_insider")
+        mine = self.url_open(
+            "/plm/part_colors/load?document_id=%s" % self.document.id
+        )
+        self.assertIn("part-1", mine.text)
+        self.authenticate("web3d_outsider", "web3d_outsider")
+        with mute_logger("odoo.addons.plm_web_3d.controllers.main"):
+            theirs = self.url_open(
+                "/plm/part_colors/load?document_id=%s" % self.document.id
+            )
+        self.assertEqual(json.loads(theirs.text), {})
+
+    def _save_colors(self, login, colors):
+        self.authenticate(login, login)
+        response = self.url_open(
+            "/plm/part_colors/save",
+            json={
+                "params": {
+                    "document_id": self.document.id,
+                    "colors": colors,
+                }
+            },
+        )
+        return json.loads(response.content)["result"]
+
+    def test_part_colors_save_follows_the_node(self):
+        with mute_logger("odoo.addons.plm_web_3d.controllers.main"):
+            self.assertEqual(
+                self._save_colors("web3d_outsider", {"part-1": "#00ff00"}),
+                {"success": False},
+            )
+        self.assertFalse(self.document.web3d_part_colors)
+        self.assertEqual(
+            self._save_colors("web3d_insider", {"part-1": "#00ff00"}),
+            {"success": True},
+        )
+        self.assertIn("#00ff00", self.document.web3d_part_colors)
+
+    def test_part_colors_save_needs_the_write_right(self):
+        """Reading the document is not writing it: a readonly level may not."""
+        reader = self.env["res.users"].create(
+            {
+                "name": "web3d_reader",
+                "login": "web3d_reader",
+                "password": "web3d_reader",
+                "group_ids": [
+                    Command.set(
+                        (
+                            self.env.ref("base.group_user")
+                            | self.env.ref("plm.group_plm_view_user")
+                            | self.group_rd
+                        ).ids
+                    )
+                ],
+            }
+        )
+        self.assertTrue(reader)
+        with mute_logger("odoo.addons.plm_web_3d.controllers.main"):
+            self.assertEqual(
+                self._save_colors("web3d_reader", {"part-1": "#0000ff"}),
+                {"success": False},
+            )
+
     def test_product_info_hides_the_engineering_data(self):
         with mute_logger("odoo.addons.plm_web_3d.controllers.main"):
             answer = json.dumps(self._product_info("web3d_outsider"))

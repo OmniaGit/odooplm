@@ -232,7 +232,11 @@ revision and description of every component linked to it. The warning is there
 because a request for a document one may not read is worth a line: it is either
 a stale link or somebody collecting data.
 
-The other routes of the module are the next steps; this is the first.
+The part colour routes follow it: `part_colors/load` reads through the same
+helper, and `part_colors/save` also asks for the write right, because reading a
+document is not writing it. Their sudo went the same way.
+
+The remaining routes of the module, `save_markup` above all, are the next steps.
 
 ---
 

@@ -45,6 +45,36 @@ def webservice(f):
     return wrap
 
 
+def _plm_document(document_id, route):
+    """The PLM document with that id, read as the user, or an empty recordset.
+
+    These routes are auth="user" and used to browse whatever id they were given
+    under sudo: the ids could be walked for the engineering data, the structure
+    and the part colours of every document of every company and department. The
+    access rights, the PLM levels and the plm.access node decide instead, and a
+    document that cannot be read answers like a missing one.
+
+    A request for a document the user may not read is either a stale link or
+    somebody collecting data: it gets a line in the log either way.
+    """
+    attachments = request.env["ir.attachment"]
+    if not document_id or not str(document_id).isdigit():
+        return attachments.browse()
+    document = attachments.search(
+        [("id", "=", int(document_id)), ("is_plm", "=", True)], limit=1
+    )
+    if not document:
+        _logger.warning(
+            "%s: user %s (id %s) asked for the document %s, which does not "
+            "exist or is not theirs to read",
+            route,
+            request.env.user.login,
+            request.env.uid,
+            document_id,
+        )
+    return document
+
+
 class Web3DView(Controller):
     @route("/plm/show_treejs_model", type="http", auth="user")
     @webservice
@@ -91,25 +121,8 @@ class Web3DView(Controller):
         if not document_id:
             return json.dumps({})
         out = {}
-        #
-        # As the user, not sudo: the access rights, the PLM levels and the
-        # plm.access node decide. This is a GET, so under sudo the ids could be
-        # walked for the engineering code, revision and state of every document
-        # and component of every company.
-        #
-        ir_attachment = request.env["ir.attachment"].search(
-            [("id", "=", int(document_id)), ("is_plm", "=", True)], limit=1
-        )
+        ir_attachment = _plm_document(document_id, "get_product_info")
         if not ir_attachment:
-            # Whoever is asking is either following a stale link or looking for
-            # data they may not read: worth a line either way.
-            _logger.warning(
-                "get_product_info: user %s (id %s) asked for the document %s, "
-                "which does not exist or is not theirs to read",
-                request.env.user.login,
-                request.env.uid,
-                document_id,
-            )
             return json.dumps(out)
         if ir_attachment.has_web3d:
             # For 3mf conversions, follow source document for PLM metadata and linked product
@@ -225,10 +238,8 @@ class Web3DView(Controller):
 
     @http.route('/plm/part_colors/load', type='http', auth='user')
     def part_colors_load(self, document_id=None):
-        if not document_id or not str(document_id).isdigit():
-            return json.dumps({})
-        doc = request.env['ir.attachment'].sudo().browse(int(document_id))
-        if not doc.exists() or not doc.web3d_part_colors:
+        doc = _plm_document(document_id, "part_colors/load")
+        if not doc or not doc.web3d_part_colors:
             return json.dumps({})
         try:
             return doc.web3d_part_colors
@@ -237,13 +248,23 @@ class Web3DView(Controller):
 
     @http.route('/plm/part_colors/save', type='jsonrpc', auth='user')
     def part_colors_save(self, document_id=None, colors=None):
-        if not document_id or not colors:
+        if not colors:
             return {'success': False}
-        doc = request.env['ir.attachment'].sudo().browse(int(document_id))
-        if not doc.exists():
+        doc = _plm_document(document_id, "part_colors/save")
+        if not doc:
+            return {'success': False}
+        if not doc.has_access("write"):
+            # Reading the document is not writing it: the PLM level and the
+            # write groups of the node say who may.
+            _logger.warning(
+                "part_colors/save: user %s (id %s) may not write the document %s",
+                request.env.user.login,
+                request.env.uid,
+                doc.id,
+            )
             return {'success': False}
         try:
-            doc.sudo().write({'web3d_part_colors': json.dumps(colors)})
+            doc.write({'web3d_part_colors': json.dumps(colors)})
             return {'success': True}
         except Exception as e:
             _logger.warning("Failed to save part colors: %s", e)
