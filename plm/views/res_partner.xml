@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- What the portal users of a customer or a vendor may reach of the PLM
+         documents: nothing by default. The scope itself comes from their own
+         order lines, see res.users._plm_portal_products. -->
+    <record id="plm_view_partner_form" model="ir.ui.view">
+        <field name="name">res.partner.form.plm.portal</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <page name="sales_purchases" position="inside">
+                <group name="plm_portal" string="PLM Portal" groups="plm.group_plm_admin">
+                    <field name="plm_portal_access"/>
+                    <field name="plm_portal_spares" invisible="plm_portal_access == 'none'"/>
+                </group>
+            </page>
+        </field>
+    </record>
+
+</odoo>

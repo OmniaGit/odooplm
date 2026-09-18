@@ -4477,3 +4477,64 @@ msgid ""
 msgstr ""
 "save_parent :  impossibile creare una relazione per la parte ({0}) con "
 "sorgente ({1}) : {2}."
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_res_partner__plm_portal_access
+#: model:ir.model.fields,field_description:plm.field_res_users__plm_portal_access
+msgid "PLM Portal Access"
+msgstr "Accesso PLM da portale"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_res_partner__plm_portal_spares
+#: model:ir.model.fields,field_description:plm.field_res_users__plm_portal_spares
+msgid "PLM Portal Spare Parts"
+msgstr "Ricambi PLM da portale"
+
+#. module: plm
+#: model:ir.model.fields.selection,name:plm.selection__res_partner__plm_portal_access__none
+#: model:ir.model.fields.selection,name:plm.selection__res_users__plm_portal_access__none
+msgid "No PLM documents"
+msgstr "Nessun documento PLM"
+
+#. module: plm
+#: model:ir.model.fields.selection,name:plm.selection__res_partner__plm_portal_access__view
+#: model:ir.model.fields.selection,name:plm.selection__res_users__plm_portal_access__view
+msgid "View only"
+msgstr "Sola visualizzazione"
+
+#. module: plm
+#: model:ir.model.fields.selection,name:plm.selection__res_partner__plm_portal_access__markup
+#: model:ir.model.fields.selection,name:plm.selection__res_users__plm_portal_access__markup
+msgid "View and markup"
+msgstr "Visualizzazione e annotazione"
+
+#. module: plm
+#: model:ir.model.fields.selection,name:plm.selection__res_users__plm_portal_access__inherit
+msgid "From the partner"
+msgstr "Dal partner"
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_res_partner__plm_portal_access
+#: model:ir.model.fields,help:plm.field_res_users__plm_portal_access
+msgid ""
+"What the portal users of this partner may do with the PLM documents of what "
+"they bought or sold: nothing, look at them, or also annotate them in the 3D "
+"viewer. It is set on the company of the contact; a single user can be given "
+"another level on their own form."
+msgstr ""
+"Cosa possono fare gli utenti da portale di questo partner con i documenti "
+"PLM di ciò che hanno comprato o venduto: niente, guardarli, oppure anche "
+"annotarli nel visualizzatore 3D. Si imposta sull'azienda del contatto; a un "
+"singolo utente si può dare un livello diverso dalla sua scheda."
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_res_partner__plm_portal_spares
+#: model:ir.model.fields,help:plm.field_res_users__plm_portal_spares
+msgid ""
+"A customer with this set walks the spare parts of what they bought: the "
+"components of its spare bill of materials, and of theirs, down to the last "
+"level. Without it they see the products of their order lines only."
+msgstr ""
+"Un cliente con questa opzione naviga i ricambi di ciò che ha comprato: i "
+"componenti della sua distinta di ricambio, e di quelle sotto, fino "
+"all'ultimo livello. Senza, vede solo i prodotti delle sue righe d'ordine."

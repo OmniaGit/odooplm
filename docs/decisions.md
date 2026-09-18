@@ -240,6 +240,36 @@ The remaining routes of the module, `save_markup` above all, are the next steps.
 
 ---
 
+## 2026-09-18 — What a customer or a vendor reaches from the portal
+
+**Decision.** The scope is derived from the order lines the portal user may
+read: sold to a customer, bought from a vendor, in the revision on the line.
+A level on the partner (`none`, `view`, `markup`), overridable per user, says
+what they may do with it. A customer with the spare parts option also walks the
+spare BoMs, at every level; a subcontractor walks what is under the BoMs that
+name them. The formats are decided by one overridable method: the viewer file
+and the drawing PDF, never the native CAD file.
+
+**Why.** The 3D viewer routes were open to any logged-in user under `sudo`, so
+a portal customer could reach every document of the database. Deriving the
+scope from the order lines means Odoo's own portal rules answer the hard
+question -- which orders are this partner's -- and the PLM side only follows
+the links. A revision being a product of its own gives the 1 to 1 with what was
+sold for free: no state filter, because what was bought stays what was bought.
+
+**Alternatives rejected.**
+
+- *An access token per shared link, or a flag per order.* More to build and to
+  keep in step, and it answers per link what the customer relationship already
+  answers.
+- *A `plm.access` node opened to the portal.* Folder granularity, not customer
+  granularity: every portal user would see the same.
+- *Depending on `mrp_subcontracting`.* The link it holds is the right one, but
+  a dependency for a feature that may not be used is not: the field is checked
+  at runtime instead.
+
+---
+
 ## 2026-09-18 — The 3D libraries live in `static/lib/`
 
 **Decision.** `three.js`, `dxf-viewer` (both submodules) and `odoocad` moved

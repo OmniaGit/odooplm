@@ -21,7 +21,7 @@
 ##############################################################################
 {
     "name": "Product Lifecycle Management",
-    "version": "19.0.1.0.30",
+    "version": "19.0.1.0.31",
     "author": "OmniaSolutions",
     "maintainer": "OmniaSolutions S.n.c di Boscolo Matteo & C",
     "website": "https://odooplm.omniasolutions.website",
@@ -83,6 +83,7 @@
         "views/mail_activity_type.xml",
         "views/menu.xml",
         "views/plm_access_view.xml",
+        "views/res_partner.xml",
         "views/product_category.xml",
         "views/plm_temporaty.xml",
         "views/mrp_production.xml",

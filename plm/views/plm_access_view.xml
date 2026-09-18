@@ -135,6 +135,9 @@
         <field name="arch" type="xml">
             <group name="other_preferences" position="inside">
                 <field name="plm_access_id" options="{'no_create': True}" groups="plm.group_plm_admin"/>
+                <!-- 'From the partner' for everybody, until one user of a
+                     customer or a vendor has to be given more, or nothing. -->
+                <field name="plm_portal_access" groups="plm.group_plm_admin"/>
             </group>
         </field>
     </record>

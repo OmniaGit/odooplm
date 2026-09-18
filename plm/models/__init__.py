@@ -51,6 +51,7 @@ from . import mrp_bom_line
 from . import report_on_document
 from . import plm_temporary
 from . import plm_dbthread
+from . import res_partner
 from . import res_users
 from . import plm_cad_open
 from . import ir_ui_view

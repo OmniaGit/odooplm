@@ -101,6 +101,14 @@ A record rule can only grant, never take away, so the level 1 restriction is a *
 
 **The `odooPLM` context grants nothing.** It says the call comes from the CAD client, nothing more: `ir.attachment.read` used to run it as the superuser (decided 2026-09-17, removed). `ir.ui.view.search` keeps its sudo on purpose — Odoo gives no group but system read access on `ir.ui.view`, and the client reads the view definitions to build its dialogs.
 
+### Portal access to PLM documents
+
+A customer or a vendor reaches PLM documents from the portal through what is on **their own order lines** (decided 2026-09-18, `res.users._plm_portal_products`, tests tagged `odoo_plm_portal`). The order lines are searched **as the user**, so Odoo's portal rules decide which orders are theirs; everything after that is read with `sudo`, because the portal has no access to products, BoMs or attachments. A revision is a product of its own, so a line pins the revision that was sold or bought: one obsoleted later stays visible to whoever bought it.
+
+The level is `plm_portal_access` on `res.partner` (`none`, `view`, `markup`) with the same field on `res.users` plus `inherit`, its default, so one user of a customer can be given more, or nothing. A customer with `plm_portal_spares` also walks the components of the spare BoMs (`type = 'spbom'`), at every level. A partner named in `mrp.bom.subcontractor_ids` walks what is under the BoMs they make — only when `mrp_subcontracting` is installed, which is checked on the field, not declared as a dependency.
+
+`_plm_portal_document_policy` says what may be got of a document: `view3d` for a `.3mf`, `pdf` for the printout of a 2D drawing. **The native CAD file is never given.** Override that method to narrow or widen the formats for a customer; `_plm_portal_may(document, purpose)` is the one question the controllers ask.
+
 ### Key Models
 
 | Model | File | Role |
