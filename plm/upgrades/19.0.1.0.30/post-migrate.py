@@ -90,7 +90,8 @@ def _attach_documents_to_company_roots(cr):
     cr.execute(
         """
         UPDATE ir_attachment SET res_model = 'plm.access', res_id = %s
-         WHERE is_plm AND res_model IS NULL AND res_id IS NULL AND res_field IS NULL
+         WHERE is_plm AND res_model IS NULL AND coalesce(res_id, 0) = 0
+           AND res_field IS NULL
         """,
         (basic.id,),
     )

@@ -18,11 +18,14 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
+import importlib.util
+
 from odoo import Command
 from odoo.exceptions import AccessError, UserError, ValidationError
 from odoo.tests import tagged
 from odoo.tests.common import TransactionCase
 from odoo.tools import mute_logger
+from odoo.tools.misc import file_path
 
 from odoo.addons.plm.tests.entity_creator import DUMMY_CONTENT
 
@@ -300,3 +303,27 @@ class PlmMultiCompanyAccess(TransactionCase):
     def test_the_hierarchy_view_loads(self):
         views = self.env["plm.access"].get_views([(False, "hierarchy"), (False, "list")])
         self.assertIn("hierarchy", views["views"])
+
+    # the upgrade
+
+    def test_upgrade_attaches_documents_left_with_res_id_zero(self):
+        """A document attached to nothing carries res_id 0 as often as NULL, and
+        the scripts before 19.0.1.0.31 looked for NULL alone. Those documents
+        kept no node, and since read access is granted through the node they
+        hang from, no company rule ever reached them."""
+        document = self._document("ACC-ZERO", self.root_a)
+        self.env.flush_all()
+        self.env.cr.execute(
+            "UPDATE ir_attachment SET res_model = NULL, res_id = 0,"
+            " plm_access_id = NULL WHERE id = %s",
+            (document.id,),
+        )
+        self.env.invalidate_all()
+        self.assertFalse(document.plm_access_id)
+        path = file_path("plm/upgrades/19.0.1.0.31/post-migrate.py")
+        spec = importlib.util.spec_from_file_location("plm_post_migrate_31", path)
+        script = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(script)
+        script.migrate(self.env.cr, "19.0.1.0.30")
+        self.env.invalidate_all()
+        self.assertEqual(document.plm_access_id, self.root_a)

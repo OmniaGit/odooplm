@@ -117,6 +117,26 @@ class PlmMultiCompanyCode(TransactionCase):
             self.assertIn("(engineering_code IS NOT NULL)", indexdef)
             self.assertNotIn("OR", indexdef)
 
+    def test_init_drops_the_constraint_of_an_older_version(self):
+        """A table constraint on the same two columns, declared by no model any
+        more: Odoo neither recreates nor removes it, so init has to."""
+        self.env.cr.execute(
+            "ALTER TABLE product_template ADD CONSTRAINT product_template_legacy_uniq"
+            " UNIQUE (engineering_code, engineering_revision)"
+        )
+        self.env["product.template"].init()
+        self.env.cr.execute(
+            "SELECT count(*) FROM pg_constraint"
+            " WHERE conrelid = 'product_template'::regclass AND contype = 'u'"
+            "   AND conname = 'product_template_legacy_uniq'"
+        )
+        self.assertEqual(self.env.cr.fetchone()[0], 0)
+        self.env.cr.execute(
+            "SELECT count(*) FROM pg_indexes"
+            " WHERE indexname = 'unique_index_product_template'"
+        )
+        self.assertEqual(self.env.cr.fetchone()[0], 1)
+
     def test_the_index_stops_a_duplicate_past_the_checks(self):
         template = self._template("MC-P102")
         with mute_logger("odoo.sql_db"), self.assertRaises(psycopg2.IntegrityError):

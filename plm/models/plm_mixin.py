@@ -177,6 +177,7 @@ class RevisionBaseMixin(models.AbstractModel):
         """
         if self._name == "revision.plm.mixin":
             return
+        self._drop_legacy_engineering_constraint()
         unique_name = "unique_index_%s" % self._table
         try:
             with self.env.cr.savepoint(flush=False):
@@ -206,6 +207,48 @@ class RevisionBaseMixin(models.AbstractModel):
                 "\n".join(
                     "%s rev %s: %s records" % row for row in self.env.cr.fetchall()
                 ),
+            )
+
+    def _drop_legacy_engineering_constraint(self):
+        """Drop the unique table constraint an older version of the module left.
+
+        product_template_partnumber_uniq, UNIQUE (engineering_code,
+        engineering_revision), is declared nowhere any more: _reflect_constraints
+        only knows the constraints a model declares, so Odoo neither recreates it
+        nor removes it. Databases installed years ago still carry it, one of them
+        with no ir_model_constraint row at all, which puts it out of reach of
+        anything working from the metadata.
+
+        It says almost what the partial index says, since Postgres keeps NULLs
+        distinct, which is why it went unnoticed. But it is a second rule the code
+        knows nothing about, and whatever reaches the table without passing
+        create() answers with a raw IntegrityError instead of the message naming
+        the code already in use.
+        """
+        self.env.cr.execute(
+            """
+            SELECT c.conname
+              FROM pg_constraint c
+             WHERE c.conrelid = %s::regclass
+               AND c.contype = 'u'
+               AND (SELECT array_agg(a.attname::text ORDER BY a.attname)
+                      FROM pg_attribute a
+                     WHERE a.attrelid = c.conrelid
+                       AND a.attnum = ANY(c.conkey))
+                   = ARRAY['engineering_code', 'engineering_revision']
+            """,
+            (self._table,),
+        )
+        for (conname,) in self.env.cr.fetchall():
+            self.env.cr.execute(
+                'ALTER TABLE "%s" DROP CONSTRAINT "%s"' % (self._table, conname)
+            )
+            _logger.info(
+                "%s: %s dropped, the unique constraint of an older version;"
+                " unique_index_%s is the rule now",
+                self._table,
+                conname,
+                self._table,
             )
 
     def _engineering_revision_count(self):
