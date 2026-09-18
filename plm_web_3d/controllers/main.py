@@ -109,6 +109,31 @@ def _can_markup(record):
     )
 
 
+def _markup_log(markup_id, route):
+    """The markup with that id, when its target is one this user may reach.
+
+    The four markup routes browsed the id under sudo: the snapshots and the
+    comments drawn on any document of any company came back to anybody with an
+    account, and markup/load listed them all when the caller left the model out
+    of its filter.
+    """
+    logs = request.env["plm.markup.log"].sudo()
+    if not markup_id or not str(markup_id).isdigit():
+        return logs.browse()
+    log = logs.browse(int(markup_id))
+    if log.exists() and _markup_target(log.res_model, log.res_id, route):
+        return log
+    _logger.warning(
+        "%s: user %s (id %s) asked for the markup %s, which does not exist or "
+        "is not theirs to see",
+        route,
+        request.env.user.login,
+        request.env.uid,
+        markup_id,
+    )
+    return logs.browse()
+
+
 def _activity_user(activity_user_id, record):
     """Who the markup activity is for: whoever the caller named, as long as
     they are an internal user; the author when they are one themselves; else
@@ -494,13 +519,14 @@ class Web3DView(Controller):
 
     @http.route('/plm/markup/load', type='jsonrpc', auth='user')
     def load_markup(self, res_id=None, res_model=None):
-        domain = []
-        if res_id:
-            domain.append(('res_id', '=', int(res_id)))
-        if res_model:
-            domain.append(('res_model', '=', res_model))
-
-        logs = request.env['plm.markup.log'].sudo().search(domain, order='create_date desc')
+        # Both are needed now: without the model the search used to walk every
+        # markup of the database whose res_id happened to match.
+        if not _markup_target(res_model, res_id, "markup/load"):
+            return {'markups': []}
+        logs = request.env['plm.markup.log'].sudo().search(
+            [('res_model', '=', res_model), ('res_id', '=', int(res_id))],
+            order='create_date desc',
+        )
 
         return {
             'markups': [{
@@ -519,8 +545,8 @@ class Web3DView(Controller):
         if not markup_id:
             return {'success': False}
 
-        log = request.env['plm.markup.log'].sudo().browse(int(markup_id))
-        if not log.exists():
+        log = _markup_log(markup_id, "markup/delete")
+        if not log:
             return {'success': False}
 
         user = request.env.user
@@ -541,8 +567,8 @@ class Web3DView(Controller):
         if not markup_id:
             return {'markup': False}
 
-        log = request.env['plm.markup.log'].sudo().browse(int(markup_id))
-        if not log.exists():
+        log = _markup_log(markup_id, "markup/addon")
+        if not log:
             return {'markup': False}
 
         return {
@@ -560,8 +586,8 @@ class Web3DView(Controller):
         if not markup_id:
             return {'success': False}
 
-        log = request.env['plm.markup.log'].sudo().browse(int(markup_id))
-        if not log.exists():
+        log = _markup_log(markup_id, "markup/update")
+        if not log:
             return {'success': False}
 
         user = request.env.user

@@ -240,6 +240,27 @@ The remaining routes of the module, `save_markup` above all, are the next steps.
 
 ---
 
+## 2026-09-18 — A markup is seen by whoever may see its document
+
+**Decision.** `plm.markup.log` carries a `document_id`, computed from its
+target, and a global rule keeps a markup with its document: the company of the
+document and the read groups of its `plm.access` node. The four markup routes
+go through `_markup_log`, which answers only when the target is one this user
+may reach, and `markup/load` needs both the model and the id. The access rights
+of the model move from every internal user to the PLM levels.
+
+**Why.** The routes browsed the id under sudo, so the snapshots and the
+comments drawn on any document of any company came back to anybody with an
+account; `markup/load` listed every markup whose `res_id` happened to match
+when the caller left the model out. The rule closes the same door outside the
+viewer, where the model was readable and writable by every internal user.
+
+The rule spells the condition out on the data rather than delegating it to
+`ir.attachment`: a sub-domain does not apply the record rules of the model it
+walks into, which the first version of this rule assumed and a test caught.
+
+---
+
 ## 2026-09-18 — A markup is filed against a record one may reach
 
 **Decision.** `save_markup` takes its target from four models only --

@@ -55,6 +55,7 @@
     "depends": ["plm"],
     "data": [
         'security/ir.model.access.csv',
+        'security/plm_web_3d_security.xml',
         "views/ir_attachment.xml",
         "views/web_template.xml",
     ],

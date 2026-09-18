@@ -218,6 +218,59 @@ class PlmWeb3dRoutes(HttpCase):
         self.assertTrue(activity)
         self.assertEqual(activity.user_id, self.insider, "not the portal user named")
 
+    # the markups already saved
+
+    def _saved_markup(self):
+        answer = self._markup("web3d_insider", "ir.attachment", self.document.id)
+        self.assertTrue(answer["success"])
+        return answer["markup_id"]
+
+    def _call(self, login, route, params):
+        self.authenticate(login, login)
+        response = self.url_open(route, json={"params": params})
+        return json.loads(response.content)["result"]
+
+    def test_the_markups_of_a_document_follow_it(self):
+        markup_id = self._saved_markup()
+        mine = self._call(
+            "web3d_insider",
+            "/plm/markup/load",
+            {"res_model": "ir.attachment", "res_id": self.document.id},
+        )
+        self.assertEqual([m["id"] for m in mine["markups"]], [markup_id])
+        with mute_logger("odoo.addons.plm_web_3d.controllers.main"):
+            theirs = self._call(
+                "web3d_outsider",
+                "/plm/markup/load",
+                {"res_model": "ir.attachment", "res_id": self.document.id},
+            )
+        self.assertEqual(theirs, {"markups": []})
+
+    def test_a_markup_is_not_read_by_its_id_alone(self):
+        markup_id = self._saved_markup()
+        with mute_logger("odoo.addons.plm_web_3d.controllers.main"):
+            theirs = self._call(
+                "web3d_outsider", "/plm/markup/addon", {"markup_id": markup_id}
+            )
+            deleted = self._call(
+                "web3d_outsider", "/plm/markup/delete", {"markup_id": markup_id}
+            )
+        self.assertEqual(theirs, {"markup": False})
+        self.assertEqual(deleted, {"success": False})
+        self.assertTrue(self.env["plm.markup.log"].sudo().browse(markup_id).exists())
+
+    def test_the_markups_are_not_read_around_the_viewer(self):
+        """Not only through the routes: the record rule keeps a markup with
+        the document it was drawn on."""
+        markup_id = self._saved_markup()
+        markups = self.env["plm.markup.log"].with_user(self.outsider)
+        self.assertFalse(markups.search([("id", "=", markup_id)]))
+        self.assertTrue(
+            self.env["plm.markup.log"]
+            .with_user(self.insider)
+            .search([("id", "=", markup_id)])
+        )
+
     # the portal
 
     def _portal_customer(self, level, login="web3d_portal"):
