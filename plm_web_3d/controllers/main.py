@@ -91,8 +91,25 @@ class Web3DView(Controller):
         if not document_id:
             return json.dumps({})
         out = {}
-        ir_attachment = request.env["ir.attachment"].sudo().browse(int(document_id))
-        if not ir_attachment.exists():
+        #
+        # As the user, not sudo: the access rights, the PLM levels and the
+        # plm.access node decide. This is a GET, so under sudo the ids could be
+        # walked for the engineering code, revision and state of every document
+        # and component of every company.
+        #
+        ir_attachment = request.env["ir.attachment"].search(
+            [("id", "=", int(document_id)), ("is_plm", "=", True)], limit=1
+        )
+        if not ir_attachment:
+            # Whoever is asking is either following a stale link or looking for
+            # data they may not read: worth a line either way.
+            _logger.warning(
+                "get_product_info: user %s (id %s) asked for the document %s, "
+                "which does not exist or is not theirs to read",
+                request.env.user.login,
+                request.env.uid,
+                document_id,
+            )
             return json.dumps(out)
         if ir_attachment.has_web3d:
             # For 3mf conversions, follow source document for PLM metadata and linked product

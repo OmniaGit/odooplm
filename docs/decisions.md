@@ -219,6 +219,23 @@ one, which is what an upgrade script folder has to be named after.
 
 ---
 
+## 2026-09-18 — The 3D viewer routes read as the user
+
+**Decision.** `/plm/get_product_info` searches its document as the user, with
+`is_plm = True`, and logs a warning naming the user and the id it was asked for
+when there is nothing to answer.
+
+**Why.** It is a GET under `auth="user"` that read the document with `sudo()`:
+anybody with an Odoo account, PLM groups or not, could walk the ids and collect
+the engineering code, revision and state of every document, and the code,
+revision and description of every component linked to it. The warning is there
+because a request for a document one may not read is worth a line: it is either
+a stale link or somebody collecting data.
+
+The other routes of the module are the next steps; this is the first.
+
+---
+
 ## 2026-09-18 — The 3D libraries live in `static/lib/`
 
 **Decision.** `three.js`, `dxf-viewer` (both submodules) and `odoocad` moved
