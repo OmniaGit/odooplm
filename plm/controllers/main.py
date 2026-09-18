@@ -10,6 +10,19 @@ from odoo.http import Controller, route, request, Response
 from odoo.tools.misc import DEFAULT_SERVER_DATETIME_FORMAT
 
 
+def _plm_document(doc_id):
+    """The PLM document with that id, as the user, or an empty recordset.
+
+    These are the CAD client's routes: they write the file, the preview and the
+    printout of a PLM document. Browsing whatever id was given let them write
+    on any attachment the user may write -- the one of an invoice, say. The
+    write access itself has always been checked by the ORM.
+    """
+    return request.env["ir.attachment"].search(
+        [("id", "=", doc_id), ("is_plm", "=", True)], limit=1
+    )
+
+
 def _readable(record):
     """The record when the user may read it, an empty recordset otherwise.
 
@@ -122,7 +135,11 @@ class UploadDocument(Controller):
             doc_id = json.loads(doc_id)
             logging.info("start write %r" % (doc_id))
             value1 = file_stream.stream.read()
-            request.env["ir.attachment"].browse(doc_id).write(
+            ir_attachment_id = _plm_document(doc_id)
+            if not ir_attachment_id:
+                logging.info("no plm document %r" % (doc_id))
+                return Response("Failed upload", status=400)
+            ir_attachment_id.write(
                 {
                     "printout": base64.b64encode(value1),
                 }
@@ -151,7 +168,10 @@ class UploadDocument(Controller):
             preview = kw.get("preview", "")
             if preview:
                 to_write["preview"] = base64.b64encode(preview.stream.read())
-            ir_attachment_id = request.env["ir.attachment"].browse(doc_id)
+            ir_attachment_id = _plm_document(doc_id)
+            if not ir_attachment_id:
+                logging.info("no plm document %r" % (doc_id))
+                return Response("Failed upload", status=400)
             ir_attachment_id.write(to_write)
             ir_attachment_id.sudo().update_component_preview()
             ir_attachment_id.setupCadOpen(hostname=kw.get('hostname', ''),

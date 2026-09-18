@@ -219,6 +219,24 @@ one, which is what an upgrade script folder has to be named after.
 
 ---
 
+## 2026-09-18 — The CAD upload routes take PLM documents only
+
+**Decision.** `/plm_document_upload/upload` and `/plm_document_upload/upload_pdf`
+look their document up with `('is_plm', '=', True)` instead of browsing the id
+they are given, and answer 400 when there is none.
+
+**Why.** They write the file, the preview and the printout by id. The write
+access was checked by the ORM, but an internal user may write ordinary
+attachments, so these routes could overwrite the content of any non-PLM
+attachment -- an invoice's, say. They are the CAD client's routes: their subject
+is a PLM document.
+
+The `sudo()` left on `update_component_preview()` in the upload route stays, on
+purpose: it copies the preview of the document onto the image of its linked
+components, and it is the same picture the user has just uploaded.
+
+---
+
 ## 2026-09-17 — The CAD download routes read as the user
 
 **Decision.** `/plm/download` and `/plm/download_structure` search their

@@ -131,6 +131,24 @@ class PlmPreviewRoutes(HttpCase):
         url = "/plm/download?attachment_id=%s" % self.document.id
         self.assertEqual(self._status("plm_route_no_plm", url), 403)
 
+    def test_the_upload_routes_take_plm_documents_only(self):
+        """They write the file, the preview and the printout by id: an ordinary
+        attachment the user may write is not theirs to overwrite."""
+        plain = self.env["ir.attachment"].create({"name": "invoice.pdf", "datas": PIXEL})
+        self.authenticate("plm_route_insider", "plm_route_insider")
+        for route, field in (
+            ("/plm_document_upload/upload", "mod_file"),
+            ("/plm_document_upload/upload_pdf", "file_stream"),
+        ):
+            for document, expected in ((plain, 400), (self.document, 200)):
+                response = self.url_open(
+                    route,
+                    data={"doc_id": str(document.id), "filename": "x.sldprt"},
+                    files={field: ("x.sldprt", b"x")},
+                )
+                self.assertEqual(response.status_code, expected, "%s %s" % (route, expected))
+        self.assertEqual(plain.datas, PIXEL)
+
     def test_an_unknown_id_is_not_found(self):
         self.assertEqual(
             self._status("plm_route_insider", "/plm/ir_attachment_preview/999999999"),
