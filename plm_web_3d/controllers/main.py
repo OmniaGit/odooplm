@@ -3,11 +3,14 @@ import base64
 import functools
 import json
 import logging
-from odoo import http
+from odoo import fields, http
 from odoo.http import Controller, route, request, Response
 from markupsafe import Markup
 
 _logger = logging.getLogger(__name__)
+
+# What the 3D viewer works on, and so what a markup may be filed against.
+MARKUP_MODELS = ("ir.attachment", "product.product", "product.template", "mrp.bom")
 
 
 def _resolve_components(record):
@@ -85,21 +88,77 @@ def _plm_document(document_id, route, purpose="view3d"):
     return attachments.browse()
 
 
-def _can_markup(document):
-    """Whether this user may annotate that document from the viewer.
+def _can_markup(record):
+    """Whether this user may annotate that record from the viewer.
 
     Reading it is enough for an internal user: a markup is a note beside the
     drawing, not a change to it. A portal user needs the markup level of their
-    partner, or their own.
+    partner, or their own, and the document has to be in their scope.
     """
-    if not document:
+    if not record:
         return False
     user = request.env.user
     # _plm_document hands a sudo recordset to a portal user, and has_access is
     # always true on one of those: ask in the environment of the request.
-    if document.with_env(request.env).has_access("read"):
+    if record.with_env(request.env).has_access("read"):
         return True
-    return user._plm_portal_can_markup() and user._plm_portal_may(document, "view3d")
+    return (
+        record._name == "ir.attachment"
+        and user._plm_portal_can_markup()
+        and user._plm_portal_may(record, "view3d")
+    )
+
+
+def _activity_user(activity_user_id, record):
+    """Who the markup activity is for: whoever the caller named, as long as
+    they are an internal user; the author when they are one themselves; else
+    whoever created the record, so that a customer's markup lands on a desk."""
+    users = request.env["res.users"].sudo()
+    named = users.browse(int(activity_user_id)) if activity_user_id else users.browse()
+    if named.exists() and not named.share:
+        return named.id
+    if not request.env.user.share:
+        return request.env.uid
+    return record.sudo().create_uid.id or request.env.uid
+
+
+def _markup_target(res_model, res_id, route="save_markup"):
+    """The record a markup may be filed against.
+
+    save_markup took the model and the id from the caller and browsed them
+    under sudo: any record of any model of the database could be given an
+    attachment, a chatter message and an activity that way. These four models
+    are what the viewer works on, and the record still has to be one this user
+    may reach.
+    """
+    if not res_id or not str(res_id).isdigit() or res_model not in MARKUP_MODELS:
+        _logger.warning(
+            "%s: user %s (id %s) asked to annotate %r %r, which is not a model "
+            "the viewer works on",
+            route,
+            request.env.user.login,
+            request.env.uid,
+            res_model,
+            res_id,
+        )
+        return request.env["ir.attachment"].browse()
+    if res_model == "ir.attachment":
+        return _plm_document(res_id, route)
+    record = request.env[res_model].browse(int(res_id))
+    if record.exists() and record.has_access("read"):
+        return record
+    # A portal user reaches no product or bill of materials of their own: their
+    # markup is filed against the document, which is what the viewer sends.
+    _logger.warning(
+        "%s: user %s (id %s) asked to annotate the %s %s, which is not theirs "
+        "to read",
+        route,
+        request.env.user.login,
+        request.env.uid,
+        res_model,
+        res_id,
+    )
+    return request.env[res_model].browse()
 
 
 class Web3DView(Controller):
@@ -314,6 +373,17 @@ class Web3DView(Controller):
                     activity_due_date=None,
                     activity_user_id=None):
 
+        target = _markup_target(res_model, res_id)
+        if not target or not _can_markup(target):
+            _logger.warning(
+                "save_markup: user %s (id %s) may not annotate %r %r",
+                request.env.user.login,
+                request.env.uid,
+                res_model,
+                res_id,
+            )
+            return {'success': False}
+
         image_binary = base64.b64decode(image.split(',')[1])
         base_binary = base64.b64decode(base_image.split(',')[1]) if base_image else image_binary
 
@@ -338,7 +408,12 @@ class Web3DView(Controller):
         })
 
         if res_model and res_id:
-            record = request.env[res_model].sudo().browse(int(res_id))
+            # Everything below is written with sudo, as before: a portal
+            # customer cannot create an attachment or post a message, and an
+            # internal user may annotate a document they only read. What is new
+            # is that the record was checked above. sudo() keeps the uid, so
+            # each record still carries its real author.
+            record = target.sudo()
 
             if record.exists():
                 viewer_url = (
@@ -384,8 +459,10 @@ class Web3DView(Controller):
                                 'activity_type_id': activity_type_id,
                                 'summary': activity_summary or 'Markup Activity',
                                 'note': Markup(note_html),
-                                'user_id': int(activity_user_id) if activity_user_id else request.env.user.id,
-                                'date_deadline': activity_due_date or False,
+                                'user_id': _activity_user(activity_user_id, record),
+                                # date_deadline is required: without one the
+                                # whole markup used to fail on the database.
+                                'date_deadline': activity_due_date or fields.Date.context_today(Activity),
                             })
 
                     create_activity(record)

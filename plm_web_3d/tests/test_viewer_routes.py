@@ -157,6 +157,67 @@ class PlmWeb3dRoutes(HttpCase):
                 {"success": False},
             )
 
+    # the markup
+
+    def _markup(self, login, res_model, res_id, **values):
+        self.authenticate(login, login)
+        payload = {
+            "image": "data:image/jpeg;base64,%s" % CONTENT.decode(),
+            "filename": "markup.jpg",
+            "comment": "a note",
+            "res_model": res_model,
+            "res_id": res_id,
+        }
+        payload.update(values)
+        response = self.url_open("/plm/save_markup", json={"params": payload})
+        return json.loads(response.content)["result"]
+
+    def test_a_markup_lands_on_the_document(self):
+        answer = self._markup("web3d_insider", "ir.attachment", self.document.id)
+        self.assertTrue(answer["success"])
+        log = self.env["plm.markup.log"].sudo().browse(answer["markup_id"])
+        self.assertEqual(log.create_uid, self.insider, "the author is the user")
+        self.assertEqual(log.res_id, self.document.id)
+
+    def test_no_markup_on_a_document_that_is_not_theirs(self):
+        with mute_logger("odoo.addons.plm_web_3d.controllers.main"):
+            answer = self._markup("web3d_outsider", "ir.attachment", self.document.id)
+        self.assertEqual(answer, {"success": False})
+        self.assertFalse(
+            self.env["plm.markup.log"].sudo().search_count([("res_id", "=", self.document.id)])
+        )
+
+    def test_no_markup_on_a_model_the_viewer_does_not_work_on(self):
+        """It took the model and the id from the caller and browsed them under
+        sudo: any record of the database could be given a message."""
+        partner = self.env["res.partner"].create({"name": "3d markup target"})
+        with mute_logger("odoo.addons.plm_web_3d.controllers.main"):
+            answer = self._markup("web3d_insider", "res.partner", partner.id)
+        self.assertEqual(answer, {"success": False})
+        self.assertFalse(partner.message_ids.filtered(lambda m: "a note" in (m.body or "")))
+
+    def test_the_activity_goes_to_an_internal_user(self):
+        portal = self.env["res.users"].create(
+            {
+                "name": "web3d_activity_portal",
+                "login": "web3d_activity_portal",
+                "group_ids": [Command.set(self.env.ref("base.group_portal").ids)],
+            }
+        )
+        answer = self._markup(
+            "web3d_insider",
+            "ir.attachment",
+            self.document.id,
+            schedule_activity=True,
+            activity_user_id=portal.id,
+        )
+        self.assertTrue(answer["success"])
+        activity = self.env["mail.activity"].sudo().search(
+            [("res_id", "=", self.document.id)], limit=1
+        )
+        self.assertTrue(activity)
+        self.assertEqual(activity.user_id, self.insider, "not the portal user named")
+
     # the portal
 
     def _portal_customer(self, level, login="web3d_portal"):

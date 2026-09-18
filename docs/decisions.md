@@ -240,6 +240,28 @@ The remaining routes of the module, `save_markup` above all, are the next steps.
 
 ---
 
+## 2026-09-18 — A markup is filed against a record one may reach
+
+**Decision.** `save_markup` takes its target from four models only --
+`ir.attachment`, `product.product`, `product.template`, `mrp.bom` -- and the
+record has to be one the user may read, or a document in a portal user's scope
+with the markup level. The attachment, the chatter message and the activity are
+still written with `sudo`, but after that check; `sudo()` keeps the uid, so each
+record carries its real author. An activity goes to the internal user the caller
+named, else to the author when they are internal, else to whoever created the
+record, so a customer's markup lands on somebody's desk.
+
+**Why.** The route took the model and the id from the caller and browsed them
+under `sudo`: any record of the database -- an invoice, a contract -- could be
+given an attachment, a chatter message and an activity assigned to anybody, by
+anybody with an account.
+
+Annotating asks for read, not write: a markup is a note beside the drawing, not
+a change to it. Along the way, an activity without a due date was failing on the
+database instead of being saved: it now defaults to today.
+
+---
+
 ## 2026-09-18 — The viewer routes ask the portal scope
 
 **Decision.** `_plm_document` answers an internal user by reading the document
