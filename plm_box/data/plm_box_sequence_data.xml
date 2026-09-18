@@ -4,12 +4,14 @@
         <record id="seq_plm_box" model="ir.sequence">
             <field name="name">PLMBOX</field>
             <field name="code">plm.box</field>
+            <field name="company_id" eval="False" />
             <field name="prefix">PlmBox_</field>
         </record>
 
         <record id="seq_doc_name" model="ir.sequence">
             <field name="name">DOC</field>
             <field name="code">ir.attachment</field>
+            <field name="company_id" eval="False" />
             <field name="prefix">BoxDoc_</field>
         </record>
     </data>

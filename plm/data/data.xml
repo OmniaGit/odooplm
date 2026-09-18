@@ -54,8 +54,13 @@
 				(object.display_name)</field>
 		</record>
 
+		<!-- The root PLM access node of the main company. Every other company
+		     gets its own root, here for the ones already there and when it is
+		     created for the others. -->
 		<record id="plm_basic_access_model" model="plm.access">
 			<field name="name">Basic PLM access Model</field>
+			<field name="company_id" ref="base.main_company"/>
 		</record>
+		<function model="plm.access" name="_ensure_company_roots"/>
 	</data>
 </odoo>

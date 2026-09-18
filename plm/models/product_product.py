@@ -204,6 +204,12 @@ class ProductProduct(models.Model):
         string="Documents Checked-Out By",
     )
 
+    @api.constrains("linkeddocuments", "company_id")
+    def _check_plm_access_of_the_documents(self):
+        """The product side of ir.attachment._check_plm_access_of_the_components:
+        writing the link from here does not run the document's constraint."""
+        self.sudo().linkeddocuments._check_plm_access_of_the_components()
+
     @api.depends("linkeddocuments")
     def _compute_document_checkout_user_ids(self):
         checkout_model = self.env["plm.checkout"]

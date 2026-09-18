@@ -210,8 +210,8 @@
                                 readonly="True"
                             />
                             <field
-                                name="plm_share_scope"
-                                groups="base.group_multi_company"
+                                name="plm_access_id"
+                                groups="plm.group_plm_admin"
                             />
                         </group>
                         <group name="doc_preview">

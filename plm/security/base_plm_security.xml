@@ -319,8 +319,10 @@
     </record>
 
     <!--
-        Rule 2: View users may READ PLM documents, subject to the company
-        visibility clause (plm_share_scope / company_id). No write/create/unlink.
+        Rule 2: View users may READ PLM documents. Which ones is decided by the
+        PLM access node the document hangs from, not by a clause repeated here:
+        Odoo grants an attachment through the record it is attached to, and that
+        record is the node (see the plm.access rules at the end of this file).
     -->
     <record id="group_plm_view_plm_document" model="ir.rule">
         <field name="name">View only plm Documnet</field>
@@ -330,13 +332,13 @@
         <field name="perm_create" eval="0" />
         <field name="perm_write" eval="0" />
         <field name="perm_unlink" eval="0" />
-        <field name="domain_force">['&amp;', ('is_plm', '=', True), '|', '|', ('company_id', '=', False), ('plm_share_scope', '=', 'all'), '|', '&amp;', ('plm_share_scope', 'in', ['standard', False]), ('company_id', 'parent_of', company_ids), '&amp;', ('plm_share_scope', '=', 'own'), ('company_id', 'in', company_ids)]</field>
+        <field name="domain_force" eval="[('is_plm','=',True)]" />
         <field name="groups" eval="[(4, ref('group_plm_view_user'))]" />
     </record>
 
     <!--
-        Rule 3: Integration users may READ / WRITE / CREATE PLM documents,
-        subject to the company visibility clause. No unlink (only admin deletes).
+        Rule 3: Integration users may READ / WRITE / CREATE PLM documents. Which
+        ones the PLM access node decides, as for the rule above.
     -->
     <record id="group_plm_admin_plm_document" model="ir.rule">
         <field name="name">Integration rule PLM documnet</field>
@@ -346,13 +348,14 @@
         <field name="perm_create" eval="1" />
         <field name="perm_write" eval="1" />
         <field name="perm_unlink" eval="0" />
-        <field name="domain_force">['&amp;', ('is_plm', '=', True), '|', '|', ('company_id', '=', False), ('plm_share_scope', '=', 'all'), '|', '&amp;', ('plm_share_scope', 'in', ['standard', False]), ('company_id', 'parent_of', company_ids), '&amp;', ('plm_share_scope', '=', 'own'), ('company_id', 'in', company_ids)]</field>
+        <field name="domain_force" eval="[('is_plm','=',True)]" />
         <field name="groups" eval="[(4, ref('group_plm_integration_user'))]" />
     </record>
 
     <!--
         Rule 4: Administrators see and manage ALL PLM documents, ignoring the
-        company visibility clause entirely (no company_id / plm_share_scope terms).
+        state and ownership rules; which documents it reaches is still decided by
+        the PLM access nodes, whose rules are global.
     -->
     <record id="group_plm_admin_plm_document_full" model="ir.rule">
         <field name="name">Admin full PLM documnet (no company)</field>
@@ -382,13 +385,80 @@
     </record>
 
     <!--
-        Company isolation for PLM documents is now enforced inside the per-group
-        rules above (view + integration carry the plm_share_scope / company_id
-        clause; admin deliberately omits it). The former global
-        plm_document_multicompany_rule was removed so that group_plm_admin can
-        bypass company visibility (a global rule is AND-ed with everything and
-        would also constrain admin).
+        Company and department isolation for PLM documents comes from the
+        plm.access node each document is attached to. Odoo grants an attachment
+        through the record it hangs from: read on the node to read the document,
+        write to write it. So the rules on plm.access below carry the company
+        and the read/write groups, and the two rules after them carry create and
+        unlink, which Odoo checks on the attachment itself.
+
+        These are global rules, AND-ed with everything: the PLM administrator is
+        bound by them too, and sees the documents of the companies it belongs to.
     -->
+    <record id="plm_access_permission" model="ir.model.access">
+        <field name="name">PLM Access</field>
+        <field name="model_id" ref="plm.model_plm_access" />
+        <field name="group_id" ref="base.group_user" />
+        <field name="perm_read" eval="1" />
+        <field name="perm_write" eval="1" />
+        <field name="perm_create" eval="0" />
+        <field name="perm_unlink" eval="0" />
+    </record>
+    <record id="plm_access_permission_admin" model="ir.model.access">
+        <field name="name">PLM Access admin</field>
+        <field name="model_id" ref="plm.model_plm_access" />
+        <field name="group_id" ref="group_plm_admin" />
+        <field name="perm_read" eval="1" />
+        <field name="perm_write" eval="1" />
+        <field name="perm_create" eval="1" />
+        <field name="perm_unlink" eval="1" />
+    </record>
+
+    <record id="plm_access_company_rule" model="ir.rule">
+        <field name="name">PLM access: company</field>
+        <field name="model_id" ref="plm.model_plm_access" />
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="plm_access_read_rule" model="ir.rule">
+        <field name="name">PLM access: read groups</field>
+        <field name="model_id" ref="plm.model_plm_access" />
+        <field name="perm_read" eval="1" />
+        <field name="perm_create" eval="0" />
+        <field name="perm_write" eval="0" />
+        <field name="perm_unlink" eval="0" />
+        <field name="domain_force">['|', ('effective_read_group_ids', '=', False), ('effective_read_group_ids', 'in', user.groups_id.ids)]</field>
+    </record>
+
+    <record id="plm_access_write_rule" model="ir.rule">
+        <field name="name">PLM access: write groups</field>
+        <field name="model_id" ref="plm.model_plm_access" />
+        <field name="perm_read" eval="0" />
+        <field name="perm_create" eval="0" />
+        <field name="perm_write" eval="1" />
+        <field name="perm_unlink" eval="0" />
+        <field name="domain_force">['|', ('effective_write_group_ids', '=', False), ('effective_write_group_ids', 'in', user.groups_id.ids)]</field>
+    </record>
+
+    <record id="plm_access_document_create" model="ir.rule">
+        <field name="name">PLM access: create documents</field>
+        <field name="model_id" ref="model_ir_attachment" />
+        <field name="perm_read" eval="0" />
+        <field name="perm_create" eval="1" />
+        <field name="perm_write" eval="0" />
+        <field name="perm_unlink" eval="0" />
+        <field name="domain_force">['|', ('plm_access_id', '=', False), '|', ('plm_access_id.effective_create_group_ids', '=', False), ('plm_access_id.effective_create_group_ids', 'in', user.groups_id.ids)]</field>
+    </record>
+
+    <record id="plm_access_document_unlink" model="ir.rule">
+        <field name="name">PLM access: delete documents</field>
+        <field name="model_id" ref="model_ir_attachment" />
+        <field name="perm_read" eval="0" />
+        <field name="perm_create" eval="0" />
+        <field name="perm_write" eval="0" />
+        <field name="perm_unlink" eval="1" />
+        <field name="domain_force">['|', ('plm_access_id', '=', False), '|', ('plm_access_id.effective_unlink_group_ids', '=', False), ('plm_access_id.effective_unlink_group_ids', 'in', user.groups_id.ids)]</field>
+    </record>
 
 <!-- plm.backupdoc  -->
     <record id="plm_backupdoc_view" model="ir.model.access">
@@ -761,15 +831,6 @@
         <field name="perm_read" eval="1" />
         <field name="perm_write" eval="0" />
         <field name="perm_create" eval="0" />
-        <field name="perm_unlink" eval="0" />
-    </record>
-
-    <record id="plm_access_permission" model="ir.model.access">
-        <field name="name">PLM Act Window View</field>
-        <field name="model_id" ref="plm.model_plm_access" />
-        <field name="perm_read" eval="1" />
-        <field name="perm_write" eval="1" />
-        <field name="perm_create" eval="1" />
         <field name="perm_unlink" eval="0" />
     </record>
 

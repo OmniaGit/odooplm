@@ -22,5 +22,8 @@ from . import test_plm
 from . import test_check_in
 from . import test_pre_check_in_recursive_all
 from . import test_security_rules
+from . import test_multicompany_access
+from . import test_multicompany_code
+from . import test_multicompany_sequence
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

@@ -100,12 +100,6 @@ from odoo import api, fields, models
 #
 
 
-class PLMAccessObject(models.Model):
-    _name = "plm.access"
-    _description = "Min access module for the plm attachment"
-    name = fields.Char("Name")
-
-
 class PlmClient(models.TransientModel):
     _name = "plm.client"
     _description = "PLM Client Support object"
