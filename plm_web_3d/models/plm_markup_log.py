@@ -47,9 +47,20 @@ class PlmMarkupLog(models.Model):
 
     @api.depends('res_model', 'res_id')
     def _compute_document_id(self):
+        # res_id is a plain integer, and the document it names may be gone:
+        # markups outlive what they were drawn on. A dead reference leaves the
+        # field empty rather than pointing at a row that is not there.
+        attachments = self.env['ir.attachment'].sudo()
+        wanted = {
+            markup.res_id
+            for markup in self
+            if markup.res_model == 'ir.attachment' and markup.res_id
+        }
+        alive = set(attachments.browse(wanted).exists().ids) if wanted else set()
         for markup in self:
-            if markup.res_model == 'ir.attachment' and markup.res_id:
-                markup.document_id = markup.res_id
-            else:
-                markup.document_id = False
+            markup.document_id = (
+                markup.res_id
+                if markup.res_model == 'ir.attachment' and markup.res_id in alive
+                else False
+            )
 
