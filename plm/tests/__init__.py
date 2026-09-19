@@ -20,6 +20,7 @@
 ##############################################################################
 from . import test_plm
 from . import test_check_in
+from . import test_checkout_snapshot
 from . import test_pre_check_in_recursive_all
 from . import test_security_rules
 from . import test_multicompany_access
