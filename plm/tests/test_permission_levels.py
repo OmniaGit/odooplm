@@ -53,6 +53,9 @@ class PlmPermissionLevels(TransactionCase):
             {
                 "name": login,
                 "login": login,
+                # Releasing a check-out posts "Checked-In" on the document, and
+                # a user with no address cannot post.
+                "email": "%s@example.com" % login,
                 "group_ids": [
                     Command.set(
                         [cls.env.ref("base.group_user").id, cls.env.ref(group_xmlid).id]
@@ -230,3 +233,30 @@ class PlmPermissionLevels(TransactionCase):
         component = self._component("LVL-A2", user=self.integration, state="released")
         component.with_user(self.admin).unlink()
         self.assertFalse(component.exists())
+
+    # the lock on a document
+
+    def _checkout(self, document, user):
+        return self.env["plm.checkout"].create(
+            {
+                "documentid": document.id,
+                "userid": user.id,
+                "hostname": "test",
+                "hostpws": "C:\\test",
+            }
+        )
+
+    def test_a_check_out_is_released_by_whoever_took_it(self):
+        """Deleting a check-out is what checks the document back in. The access
+        right lets the integration level delete; the rules say whose, and the
+        administrator keeps a lock somebody left behind releasable."""
+        mine = self._checkout(self._document("LVL-CO1"), self.integration)
+        theirs = self._checkout(self._document("LVL-CO2"), self.other_integration)
+        Checkout = self.env["plm.checkout"]
+        with mute_logger("odoo.addons.base.models.ir_rule"), self.assertRaises(
+            AccessError
+        ):
+            Checkout.with_user(self.integration).browse(theirs.id).unlink()
+        Checkout.with_user(self.integration).browse(mine.id).unlink()
+        Checkout.with_user(self.admin).browse(theirs.id).unlink()
+        self.assertFalse(mine.exists() or theirs.exists())

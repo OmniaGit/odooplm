@@ -326,7 +326,7 @@
         <field name="perm_create" eval="0"/>
         <field name="perm_write" eval="0"/>
         <field name="perm_unlink" eval="0"/>
-        <field name="domain_force">['|', ('engineering_code', '=', False), ('engineering_state', 'in', ['released', 'undermodify'])] if user.has_group('plm.group_plm_readonly_released') and not user.has_group('plm.group_plm_integration_user') else []</field>
+        <field name="domain_force">['|', '&amp;', ('engineering_code', '=', False), ('engineering_code_archived', '=', False), ('engineering_state', 'in', ['released', 'undermodify'])] if user.has_group('plm.group_plm_readonly_released') and not user.has_group('plm.group_plm_integration_user') else []</field>
     </record>
 
     <!-- Level 3, integration: deletes only its own component templates, and only while
@@ -364,7 +364,7 @@
         <field name="perm_create" eval="0"/>
         <field name="perm_write" eval="0"/>
         <field name="perm_unlink" eval="0"/>
-        <field name="domain_force">['|', ('engineering_code', '=', False), ('engineering_state', 'in', ['released', 'undermodify'])] if user.has_group('plm.group_plm_readonly_released') and not user.has_group('plm.group_plm_integration_user') else []</field>
+        <field name="domain_force">['|', '&amp;', ('engineering_code', '=', False), ('engineering_code_archived', '=', False), ('engineering_state', 'in', ['released', 'undermodify'])] if user.has_group('plm.group_plm_readonly_released') and not user.has_group('plm.group_plm_integration_user') else []</field>
     </record>
 
     <!-- Level 3, integration: deletes only its own components, and only while
@@ -402,7 +402,7 @@
         <field name="perm_create" eval="0"/>
         <field name="perm_write" eval="0"/>
         <field name="perm_unlink" eval="0"/>
-        <field name="domain_force">['|', ('product_tmpl_id.engineering_code', '=', False), ('engineering_state', 'in', ['released', 'undermodify'])] if user.has_group('plm.group_plm_readonly_released') and not user.has_group('plm.group_plm_integration_user') else []</field>
+        <field name="domain_force">['|', '&amp;', ('product_tmpl_id.engineering_code', '=', False), ('product_tmpl_id.engineering_code_archived', '=', False), ('engineering_state', 'in', ['released', 'undermodify'])] if user.has_group('plm.group_plm_readonly_released') and not user.has_group('plm.group_plm_integration_user') else []</field>
     </record>
 
     <!-- Level 3, integration: deletes only its own bill of materialss, and only while
@@ -517,16 +517,40 @@
         <field name="perm_read" eval="1"/>
         <field name="perm_write" eval="1"/>
         <field name="perm_create" eval="1"/>
-        <field name="perm_unlink" eval="0"/>
-    </record>
-    <record id="plm_checkout_integration" model="ir.model.access">
-        <field name="name">PLM Check Out</field>
-        <field name="model_id" ref="model_plm_checkout"/>
-        <field name="group_id" ref="group_plm_integration_user"/>
-        <field name="perm_read" eval="1"/>
-        <field name="perm_write" eval="1"/>
-        <field name="perm_create" eval="1"/>
         <field name="perm_unlink" eval="1"/>
+    </record>
+
+    <!--
+        A check-out is the lock one user put on a document, and deleting it is
+        what checks the document back in. The access right above says the
+        integration level may delete; these rules say whose. Without them every
+        integration user released the locks of every other, and the model's
+        unlink() does not look at the owner either.
+
+        The administrator needs its own rule because it belongs to the
+        integration group by implication: group rules are OR-ed, so this is what
+        keeps it able to release a lock somebody left behind.
+    -->
+    <record id="plm_checkout_own_unlink" model="ir.rule">
+        <field name="name">PLM check-out: release your own</field>
+        <field name="model_id" ref="model_plm_checkout"/>
+        <field name="perm_read" eval="0"/>
+        <field name="perm_write" eval="0"/>
+        <field name="perm_create" eval="0"/>
+        <field name="perm_unlink" eval="1"/>
+        <field name="domain_force">[('userid', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_plm_integration_user'))]"/>
+    </record>
+
+    <record id="plm_checkout_admin_unlink" model="ir.rule">
+        <field name="name">PLM check-out: the administrator releases any</field>
+        <field name="model_id" ref="model_plm_checkout"/>
+        <field name="perm_read" eval="0"/>
+        <field name="perm_write" eval="0"/>
+        <field name="perm_create" eval="0"/>
+        <field name="perm_unlink" eval="1"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('group_plm_admin'))]"/>
     </record>
 
 

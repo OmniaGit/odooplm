@@ -82,6 +82,14 @@ class RevisionBaseMixin(models.AbstractModel):
     _description = "Revision Mixin"
 
     engineering_code = fields.Char(string="Engineering Code")
+    engineering_code_archived = fields.Char(
+        string="Archived Engineering Code",
+        copy=False,
+        help="The code this record carried when it was archived. An archived "
+        "record gives its code back, so that a new one may take it; "
+        "reactivating the record takes the code again, unless somebody else "
+        "has it by then.",
+    )
     engineering_revision = fields.Integer(
         string="Engineering Revision index", default=0
     )
@@ -179,25 +187,36 @@ class RevisionBaseMixin(models.AbstractModel):
             return
         self._drop_legacy_engineering_constraint()
         unique_name = "unique_index_%s" % self._table
+        # An archived record is out of the way: write() moves its code to
+        # engineering_code_archived, and the index leaves it alone in any case.
+        # search_count, which the checks in create and write go through, skips
+        # the archived records too, so the rule reads the same from both sides.
+        condition = "engineering_code IS NOT NULL"
+        if "active" in self._fields:
+            condition += " AND active"
         try:
             with self.env.cr.savepoint(flush=False):
                 self.env.cr.execute(
                     """
                     CREATE UNIQUE INDEX IF NOT EXISTS {unique_name}
                     ON {table_name} (engineering_code, engineering_revision)
-                    WHERE engineering_code IS NOT NULL
-                    """.format(unique_name=unique_name, table_name=self._table)
+                    WHERE {condition}
+                    """.format(
+                        unique_name=unique_name,
+                        table_name=self._table,
+                        condition=condition,
+                    )
                 )
         except psycopg2.IntegrityError:
             self.env.cr.execute(
                 """
                 SELECT engineering_code, engineering_revision, count(*)
                   FROM {table_name}
-                 WHERE engineering_code IS NOT NULL
+                 WHERE {condition}
               GROUP BY engineering_code, engineering_revision
                 HAVING count(*) > 1
               ORDER BY engineering_code, engineering_revision
-                """.format(table_name=self._table)
+                """.format(table_name=self._table, condition=condition)
             )
             _logger.error(
                 "%s not created: %s holds engineering codes used more than once "
@@ -614,7 +633,55 @@ class RevisionBaseMixin(models.AbstractModel):
             limit=1
             )
 
+    def _move_engineering_code_on_archive(self, active):
+        """Archiving hands the code back, reactivating takes it again.
+
+        A record nobody works on any more should not keep a code locked away:
+        archiving moves it to engineering_code_archived, so a new record may use
+        it. Reactivating puts it back, unless somebody took it meanwhile, which
+        has to be said out loud rather than leaving the record with no code.
+
+        Every way of archiving goes through write(), the button and the mass
+        action included, which is why this hangs there and not off an action.
+        """
+        for record in self:
+            if active and record.engineering_code_archived:
+                taken = self.sudo().search_count(
+                    [
+                        ("engineering_code", "=", record.engineering_code_archived),
+                        ("engineering_revision", "=", record.engineering_revision),
+                        ("id", "!=", record.id),
+                    ],
+                    limit=1,
+                )
+                if taken:
+                    raise UserError(
+                        _(
+                            "%(code)s revision %(revision)s belongs to another "
+                            "record now, so this one cannot take its code back. "
+                            "Ask for assistance before going on: the two have to "
+                            "be told apart before this one is used again.",
+                            code=record.engineering_code_archived,
+                            revision=record.engineering_revision,
+                        )
+                    )
+                super(RevisionBaseMixin, record).write(
+                    {
+                        "engineering_code": record.engineering_code_archived,
+                        "engineering_code_archived": False,
+                    }
+                )
+            elif not active and record.engineering_code:
+                super(RevisionBaseMixin, record).write(
+                    {
+                        "engineering_code_archived": record.engineering_code,
+                        "engineering_code": False,
+                    }
+                )
+
     def write(self, vals):
+        if "active" in vals and "active" in self._fields:
+            self._move_engineering_code_on_archive(vals["active"])
         vals = self._normalize_engineering_code(vals)
         if "engineering_code" in vals and vals["engineering_code"] not in [
             False,
