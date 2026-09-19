@@ -110,6 +110,31 @@ class PlmSecurityRules(TransactionCase):
         ):
             self._as(self.user_integration).unlink()
 
+    def _checkout(self, document, user):
+        return self.env["plm.checkout"].create(
+            {
+                "documentid": document.id,
+                "userid": user.id,
+                "hostname": "test",
+                "hostpws": "C:\\test",
+            }
+        )
+
+    def test_a_check_out_is_released_by_whoever_took_it(self):
+        """Deleting a check-out is what checks the document back in. The access
+        right lets the integration level delete; the rules say whose, and the
+        administrator keeps the lock somebody left behind releasable."""
+        mine = self._checkout(self.document, self.user_integration)
+        theirs = self._checkout(self._plm_doc("doc_sec_locked"), self.user_admin)
+        Checkout = self.env["plm.checkout"]
+        with mute_logger("odoo.addons.base.models.ir_rule"), self.assertRaises(
+            AccessError
+        ):
+            Checkout.with_user(self.user_integration).browse(theirs.id).unlink()
+        Checkout.with_user(self.user_integration).browse(mine.id).unlink()
+        Checkout.with_user(self.user_admin).browse(theirs.id).unlink()
+        self.assertFalse(mine.exists() or theirs.exists())
+
     def test_the_admin_level_deletes(self):
         document = self._plm_doc("doc_sec_delete")
         self.env["ir.attachment"].with_user(self.user_admin).browse(
