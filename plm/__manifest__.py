@@ -20,7 +20,7 @@
 ##############################################################################
 {
     "name": "Product Lifecycle Management",
-    "version": "18.0.21.0.29",
+    "version": "18.0.21.0.30",
     "author": "OmniaSolutions",
     "website": "https://github.com/OmniaGit/odooplm",
     "category": "Manufacturing/Product Lifecycle Management (PLM)",

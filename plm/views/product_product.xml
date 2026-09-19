@@ -25,7 +25,7 @@
 
                 <field
                     name="name"
-                    filter_domain="['|', ('engineering_code', 'ilike', self), ('name', 'ilike', self)]"
+                    filter_domain="['|', '|', ('engineering_code', 'ilike', self), ('engineering_code_archived', 'ilike', self), ('name', 'ilike', self)]"
                 />
 
                 <field name="engineering_code" />
