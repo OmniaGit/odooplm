@@ -114,8 +114,34 @@ class PlmMultiCompanyCode(TransactionCase):
             )
             (indexdef,) = self.env.cr.fetchone()
             self.assertIn("UNIQUE", indexdef)
-            self.assertIn("(engineering_code IS NOT NULL)", indexdef)
+            self.assertIn("engineering_code IS NOT NULL", indexdef)
             self.assertNotIn("OR", indexdef)
+            # A product template can be archived, and an archived record is out
+            # of the rule; ir.attachment has no active field, so nothing to add.
+            self.assertEqual("active" in indexdef, table == "product_template")
+
+    def test_archiving_hands_the_code_back(self):
+        template = self._template("MC-P120")
+        template.active = False
+        self.assertFalse(template.engineering_code)
+        self.assertEqual(template.engineering_code_archived, "MC-P120")
+        self.assertEqual(self._template("MC-P120").engineering_code, "MC-P120")
+
+    def test_reactivating_takes_the_code_back(self):
+        template = self._template("MC-P121")
+        template.active = False
+        template.active = True
+        self.assertEqual(template.engineering_code, "MC-P121")
+        self.assertFalse(template.engineering_code_archived)
+
+    def test_reactivating_says_so_when_the_code_is_taken(self):
+        """Archiving by mistake is the case this covers: the code comes back
+        unless somebody took it, and then it has to be said, not swallowed."""
+        template = self._template("MC-P122")
+        template.active = False
+        self._template("MC-P122")
+        with self.assertRaisesRegex(UserError, "cannot take its code back"):
+            template.active = True
 
     def test_init_drops_the_constraint_of_an_older_version(self):
         """A table constraint on the same two columns, declared by no model any
