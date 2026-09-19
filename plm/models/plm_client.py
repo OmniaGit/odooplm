@@ -23,6 +23,9 @@ Created on 1 Dec 2021
 
 @author: mboscolo
 """
+import hashlib
+import json
+
 from odoo import models, fields, api
 
 # SaveStructure
@@ -215,6 +218,78 @@ class PlmClient(models.TransientModel):
         return self.env["ir.attachment"].sent_check_out_requests(
             document_id, host_name, host_pws
         )
+
+    @api.model
+    def get_checkout_snapshot(self, stamp=""):
+        """Who holds each checked-out document, for the OdooPLM checkout helper.
+
+        The helper runs on the user's machine and keeps a local copy, so that the
+        CAD add-ins can say who holds a read-only file without asking the server.
+        plm.checkout only holds what is checked out right now, so the answer is
+        small.
+
+        Check-ins delete rows, so a date cannot tell whether anything changed:
+        `stamp` is a hash of the (document, user) pairs, as the previous answer
+        returned it. When it still matches, only {"stamp", "changed": False} comes
+        back and the rows are not sent again.
+
+        plm.checkout is read as superuser, because who holds a document is
+        something every PLM user may know, but only the documents this user can
+        read are kept: with several companies the file names of another company
+        stay out of the answer.
+
+        Each row: document_id, file_name (the attachment name, which is the file
+        name in the PWS), user, user_id, hostname, checkout_date.
+        """
+        checkouts = (
+            self.env["plm.checkout"]
+            .sudo()
+            .search_read([], ["documentid", "userid", "hostname", "create_date"])
+        )
+        readable_ids = set(
+            self.env["ir.attachment"]
+            .search(
+                [
+                    (
+                        "id",
+                        "in",
+                        [c["documentid"][0] for c in checkouts if c["documentid"]],
+                    )
+                ]
+            )
+            .ids
+        )
+        checkouts = [
+            c
+            for c in checkouts
+            if c["documentid"] and c["documentid"][0] in readable_ids
+        ]
+        pairs = sorted(
+            (c["documentid"][0], c["userid"][0] if c["userid"] else 0)
+            for c in checkouts
+        )
+        new_stamp = hashlib.sha1(json.dumps(pairs).encode("utf-8")).hexdigest()
+        if stamp and stamp == new_stamp:
+            return {"stamp": new_stamp, "changed": False, "rows": []}
+        file_names = {
+            attachment.id: attachment.name
+            for attachment in self.env["ir.attachment"]
+            .sudo()
+            .browse(sorted(readable_ids))
+        }
+        rows = [
+            {
+                "document_id": c["documentid"][0],
+                "file_name": file_names.get(c["documentid"][0], ""),
+                "user": c["userid"][1] if c["userid"] else "",
+                "user_id": c["userid"][0] if c["userid"] else 0,
+                "hostname": c["hostname"] or "",
+                "checkout_date": fields.Datetime.to_string(c["create_date"]),
+            }
+            for c in checkouts
+        ]
+        rows.sort(key=lambda row: row["file_name"].lower())
+        return {"stamp": new_stamp, "changed": True, "rows": rows}
 
     def getAttachmentFromProp(self, document_attributes):
         """

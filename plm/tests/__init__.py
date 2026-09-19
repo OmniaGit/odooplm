@@ -21,6 +21,7 @@
 ##############################################################################
 from . import test_plm
 from . import test_check_in
+from . import test_checkout_snapshot
 from . import test_revision_chain
 from . import test_multicompany_sequence
 from . import test_multicompany_code
