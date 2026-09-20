@@ -497,7 +497,7 @@ class OdooCAD {
 
         const group = this._dxfTextGroup
         const material = new THREE.MeshBasicMaterial({ color: 0x000000, side: THREE.DoubleSide })
-        const FONT_URL = '/plm_web_3d/static/src/js/lib/three.js/examples/fonts/helvetiker_regular.typeface.json'
+        const FONT_URL = '/plm_web_3d/static/lib/three.js/examples/fonts/helvetiker_regular.typeface.json'
         // DxfScene subtracts origin from every vertex; apply the same offset here.
         const ox = origin ? origin.x : 0
         const oy = origin ? origin.y : 0
