@@ -21,7 +21,7 @@
 ##############################################################################
 {
     "name": "PLM Web 3d Support",
-    "version": "19.0.1.0.11",
+    "version": "19.0.1.0.12",
     "author": "OmniaSolutions",
     "maintainer": "OmniaSolutions S.n.c di Boscolo Matteo & C",
     "website": "https://odooplm.omniasolutions.website",
