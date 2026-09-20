@@ -28,6 +28,8 @@ import json
 
 from odoo import models, fields, api
 
+from .plm_mixin import START_STATUS
+
 # SaveStructure
 # GetExploseSum
 # GetExplose
@@ -220,7 +222,7 @@ class PlmClient(models.TransientModel):
         )
 
     @api.model
-    def get_checkout_snapshot(self, stamp=""):
+    def get_checkout_snapshot(self, stamp="", file_names=None):
         """Who holds each checked-out document, for the OdooPLM checkout helper.
 
         The helper runs on the user's machine and keeps a local copy, so that the
@@ -240,6 +242,13 @@ class PlmClient(models.TransientModel):
 
         Each row: document_id, file_name (the attachment name, which is the file
         name in the PWS), user, user_id, hostname, checkout_date.
+
+        `file_names` are the files the helper found read-only in the local PWS.
+        Of those, the ones whose document has left the draft state come back in
+        `states` as {file_name, state}: they cannot be checked out, whoever asks,
+        and the CAD add-ins say so. They are read as the user, so a document this
+        user may not see says nothing. When several revisions share a name, the
+        last one answers.
         """
         checkouts = (
             self.env["plm.checkout"]
@@ -264,13 +273,36 @@ class PlmClient(models.TransientModel):
             for c in checkouts
             if c["documentid"] and c["documentid"][0] in readable_ids
         ]
+        states_by_name = {}
+        if file_names:
+            # Every revision carries the same file name, so the state of the last
+            # one answers for the file: an older revision out of draft says
+            # nothing when a draft revision of it exists.
+            seen = set()
+            for attachment in self.env["ir.attachment"].search_read(
+                [("name", "in", list(file_names))],
+                ["name", "engineering_state"],
+                order="engineering_revision desc",
+            ):
+                name = attachment["name"]
+                if name in seen:
+                    continue
+                seen.add(name)
+                if attachment["engineering_state"] != START_STATUS:
+                    states_by_name[name] = attachment["engineering_state"]
         pairs = sorted(
             (c["documentid"][0], c["userid"][0] if c["userid"] else 0)
             for c in checkouts
         )
-        new_stamp = hashlib.sha1(json.dumps(pairs).encode("utf-8")).hexdigest()
+        new_stamp = hashlib.sha1(
+            json.dumps([pairs, sorted(states_by_name.items())]).encode("utf-8")
+        ).hexdigest()
+        states = [
+            {"file_name": name, "state": states_by_name[name]}
+            for name in sorted(states_by_name)
+        ]
         if stamp and stamp == new_stamp:
-            return {"stamp": new_stamp, "changed": False, "rows": []}
+            return {"stamp": new_stamp, "changed": False, "rows": [], "states": []}
         file_names = {
             attachment.id: attachment.name
             for attachment in self.env["ir.attachment"]
@@ -289,7 +321,12 @@ class PlmClient(models.TransientModel):
             for c in checkouts
         ]
         rows.sort(key=lambda row: row["file_name"].lower())
-        return {"stamp": new_stamp, "changed": True, "rows": rows}
+        return {
+            "stamp": new_stamp,
+            "changed": True,
+            "rows": rows,
+            "states": states,
+        }
 
     def getAttachmentFromProp(self, document_attributes):
         """
