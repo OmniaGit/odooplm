@@ -26,6 +26,8 @@ Created on 25 Aug 2016
 """
 from . import base
 from . import plm_mixin
+from . import plm_access
+from . import res_company
 from . import product_product_document_rel
 from . import plm_treatment
 from . import plm_finishing
@@ -49,6 +51,7 @@ from . import mrp_bom_line
 from . import report_on_document
 from . import plm_temporary
 from . import plm_dbthread
+from . import res_partner
 from . import res_users
 from . import plm_cad_open
 from . import ir_ui_view

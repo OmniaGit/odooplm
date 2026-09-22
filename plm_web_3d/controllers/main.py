@@ -3,11 +3,14 @@ import base64
 import functools
 import json
 import logging
-from odoo import http
+from odoo import fields, http
 from odoo.http import Controller, route, request, Response
 from markupsafe import Markup
 
 _logger = logging.getLogger(__name__)
+
+# What the 3D viewer works on, and so what a markup may be filed against.
+MARKUP_MODELS = ("ir.attachment", "product.product", "product.template", "mrp.bom")
 
 
 def _resolve_components(record):
@@ -45,24 +48,170 @@ def webservice(f):
     return wrap
 
 
+def _plm_document(document_id, route, purpose="view3d"):
+    """The PLM document with that id, or an empty recordset.
+
+    An internal user gets it read as themselves: the access rights, the PLM
+    levels and the plm.access node decide, and a document they may not read
+    answers like a missing one. These routes are auth="user" and used to browse
+    whatever id they were given under sudo, so the ids could be walked for the
+    engineering data, the structure and the part colours of every document of
+    every company and department.
+
+    A portal user -- a customer, a vendor -- has no access to attachments at
+    all, so their scope answers instead: what is on their own order lines, and
+    what the format policy allows of it (see res.users._plm_portal_may). What
+    comes back is then a sudo recordset, since the portal cannot read it.
+
+    A request for a document one may not read is either a stale link or
+    somebody collecting data: it gets a line in the log either way.
+    """
+    attachments = request.env["ir.attachment"]
+    if not document_id or not str(document_id).isdigit():
+        return attachments.browse()
+    document = attachments.search(
+        [("id", "=", int(document_id)), ("is_plm", "=", True)], limit=1
+    )
+    if document:
+        return document
+    shared = attachments.sudo().browse(int(document_id))
+    if shared.exists() and request.env.user._plm_portal_may(shared, purpose):
+        return shared
+    _logger.warning(
+        "%s: user %s (id %s) asked for the document %s, which does not "
+        "exist or is not theirs to read",
+        route,
+        request.env.user.login,
+        request.env.uid,
+        document_id,
+    )
+    return attachments.browse()
+
+
+def _can_markup(record):
+    """Whether this user may annotate that record from the viewer.
+
+    Reading it is enough for an internal user: a markup is a note beside the
+    drawing, not a change to it. A portal user needs the markup level of their
+    partner, or their own, and the document has to be in their scope.
+    """
+    if not record:
+        return False
+    user = request.env.user
+    # _plm_document hands a sudo recordset to a portal user, and has_access is
+    # always true on one of those: ask in the environment of the request.
+    if record.with_env(request.env).has_access("read"):
+        return True
+    return (
+        record._name == "ir.attachment"
+        and user._plm_portal_can_markup()
+        and user._plm_portal_may(record, "view3d")
+    )
+
+
+def _markup_log(markup_id, route):
+    """The markup with that id, when its target is one this user may reach.
+
+    The four markup routes browsed the id under sudo: the snapshots and the
+    comments drawn on any document of any company came back to anybody with an
+    account, and markup/load listed them all when the caller left the model out
+    of its filter.
+    """
+    logs = request.env["plm.markup.log"].sudo()
+    if not markup_id or not str(markup_id).isdigit():
+        return logs.browse()
+    log = logs.browse(int(markup_id))
+    if log.exists() and _markup_target(log.res_model, log.res_id, route):
+        return log
+    _logger.warning(
+        "%s: user %s (id %s) asked for the markup %s, which does not exist or "
+        "is not theirs to see",
+        route,
+        request.env.user.login,
+        request.env.uid,
+        markup_id,
+    )
+    return logs.browse()
+
+
+def _activity_user(activity_user_id, record):
+    """Who the markup activity is for: whoever the caller named, as long as
+    they are an internal user; the author when they are one themselves; else
+    whoever created the record, so that a customer's markup lands on a desk."""
+    users = request.env["res.users"].sudo()
+    named = users.browse(int(activity_user_id)) if activity_user_id else users.browse()
+    if named.exists() and not named.share:
+        return named.id
+    if not request.env.user.share:
+        return request.env.uid
+    return record.sudo().create_uid.id or request.env.uid
+
+
+def _markup_target(res_model, res_id, route="save_markup"):
+    """The record a markup may be filed against.
+
+    save_markup took the model and the id from the caller and browsed them
+    under sudo: any record of any model of the database could be given an
+    attachment, a chatter message and an activity that way. These four models
+    are what the viewer works on, and the record still has to be one this user
+    may reach.
+    """
+    if not res_id or not str(res_id).isdigit() or res_model not in MARKUP_MODELS:
+        _logger.warning(
+            "%s: user %s (id %s) asked to annotate %r %r, which is not a model "
+            "the viewer works on",
+            route,
+            request.env.user.login,
+            request.env.uid,
+            res_model,
+            res_id,
+        )
+        return request.env["ir.attachment"].browse()
+    if res_model == "ir.attachment":
+        return _plm_document(res_id, route)
+    record = request.env[res_model].browse(int(res_id))
+    if record.exists() and record.has_access("read"):
+        return record
+    # A portal user reaches no product or bill of materials of their own: their
+    # markup is filed against the document, which is what the viewer sends.
+    _logger.warning(
+        "%s: user %s (id %s) asked to annotate the %s %s, which is not theirs "
+        "to read",
+        route,
+        request.env.user.login,
+        request.env.uid,
+        res_model,
+        res_id,
+    )
+    return request.env[res_model].browse()
+
+
 class Web3DView(Controller):
     @route("/plm/show_treejs_model", type="http", auth="user")
     @webservice
     def show_treejs_model(self, document_id, document_name):
+        # The viewer used to open on any id: the data came from the other
+        # routes, but the page itself said what the document was called.
+        document = _plm_document(document_id, "show_treejs_model")
+        if not document:
+            return request.not_found()
         return request.render(
             "plm_web_3d.main_treejs_view",
-            {"document_id": document_id, "document_name": document_name},
+            {
+                "document_id": document_id,
+                "document_name": document_name,
+                "can_markup": _can_markup(document),
+            },
         )
 
     @route("/plm/download_treejs_model", type="http", auth="user")
     @webservice
     def download_treejs_model(self, document_id):
-        if not request.env.user.has_group("plm.group_plm_view_user"):
-            return Response(response="Access denied", status=403)
-        # No sudo: record rules decide which attachments this user may read,
-        # so a user cannot download CAD files they have no access to.
-        for ir_attachment in request.env["ir.attachment"].search(
-            [("id", "=", int(document_id))]
+        # No sudo for an internal user: the record rules decide. A portal user
+        # holds no PLM group and cannot read attachments, so their scope
+        # answers, and only for the file the viewer shows.
+        for ir_attachment in _plm_document(
+            document_id, "download_treejs_model", purpose="view3d"
         ):
             if ir_attachment.has_web3d:
                 headers = []
@@ -91,8 +240,8 @@ class Web3DView(Controller):
         if not document_id:
             return json.dumps({})
         out = {}
-        ir_attachment = request.env["ir.attachment"].sudo().browse(int(document_id))
-        if not ir_attachment.exists():
+        ir_attachment = _plm_document(document_id, "get_product_info")
+        if not ir_attachment:
             return json.dumps(out)
         if ir_attachment.has_web3d:
             # For 3mf conversions, follow source document for PLM metadata and linked product
@@ -208,10 +357,8 @@ class Web3DView(Controller):
 
     @http.route('/plm/part_colors/load', type='http', auth='user')
     def part_colors_load(self, document_id=None):
-        if not document_id or not str(document_id).isdigit():
-            return json.dumps({})
-        doc = request.env['ir.attachment'].sudo().browse(int(document_id))
-        if not doc.exists() or not doc.web3d_part_colors:
+        doc = _plm_document(document_id, "part_colors/load")
+        if not doc or not doc.web3d_part_colors:
             return json.dumps({})
         try:
             return doc.web3d_part_colors
@@ -220,13 +367,24 @@ class Web3DView(Controller):
 
     @http.route('/plm/part_colors/save', type='jsonrpc', auth='user')
     def part_colors_save(self, document_id=None, colors=None):
-        if not document_id or not colors:
+        if not colors:
             return {'success': False}
-        doc = request.env['ir.attachment'].sudo().browse(int(document_id))
-        if not doc.exists():
+        doc = _plm_document(document_id, "part_colors/save")
+        if not doc:
+            return {'success': False}
+        if not doc.with_env(request.env).has_access("write"):
+            # Reading the document is not writing it: the PLM level and the
+            # write groups of the node say who may. Asked in the environment of
+            # the request, because a portal user holds a sudo recordset here.
+            _logger.warning(
+                "part_colors/save: user %s (id %s) may not write the document %s",
+                request.env.user.login,
+                request.env.uid,
+                doc.id,
+            )
             return {'success': False}
         try:
-            doc.sudo().write({'web3d_part_colors': json.dumps(colors)})
+            doc.write({'web3d_part_colors': json.dumps(colors)})
             return {'success': True}
         except Exception as e:
             _logger.warning("Failed to save part colors: %s", e)
@@ -239,6 +397,17 @@ class Web3DView(Controller):
                     activity_summary=None,
                     activity_due_date=None,
                     activity_user_id=None):
+
+        target = _markup_target(res_model, res_id)
+        if not target or not _can_markup(target):
+            _logger.warning(
+                "save_markup: user %s (id %s) may not annotate %r %r",
+                request.env.user.login,
+                request.env.uid,
+                res_model,
+                res_id,
+            )
+            return {'success': False}
 
         image_binary = base64.b64decode(image.split(',')[1])
         base_binary = base64.b64decode(base_image.split(',')[1]) if base_image else image_binary
@@ -264,7 +433,12 @@ class Web3DView(Controller):
         })
 
         if res_model and res_id:
-            record = request.env[res_model].sudo().browse(int(res_id))
+            # Everything below is written with sudo, as before: a portal
+            # customer cannot create an attachment or post a message, and an
+            # internal user may annotate a document they only read. What is new
+            # is that the record was checked above. sudo() keeps the uid, so
+            # each record still carries its real author.
+            record = target.sudo()
 
             if record.exists():
                 viewer_url = (
@@ -310,8 +484,10 @@ class Web3DView(Controller):
                                 'activity_type_id': activity_type_id,
                                 'summary': activity_summary or 'Markup Activity',
                                 'note': Markup(note_html),
-                                'user_id': int(activity_user_id) if activity_user_id else request.env.user.id,
-                                'date_deadline': activity_due_date or False,
+                                'user_id': _activity_user(activity_user_id, record),
+                                # date_deadline is required: without one the
+                                # whole markup used to fail on the database.
+                                'date_deadline': activity_due_date or fields.Date.context_today(Activity),
                             })
 
                     create_activity(record)
@@ -343,13 +519,14 @@ class Web3DView(Controller):
 
     @http.route('/plm/markup/load', type='jsonrpc', auth='user')
     def load_markup(self, res_id=None, res_model=None):
-        domain = []
-        if res_id:
-            domain.append(('res_id', '=', int(res_id)))
-        if res_model:
-            domain.append(('res_model', '=', res_model))
-
-        logs = request.env['plm.markup.log'].sudo().search(domain, order='create_date desc')
+        # Both are needed now: without the model the search used to walk every
+        # markup of the database whose res_id happened to match.
+        if not _markup_target(res_model, res_id, "markup/load"):
+            return {'markups': []}
+        logs = request.env['plm.markup.log'].sudo().search(
+            [('res_model', '=', res_model), ('res_id', '=', int(res_id))],
+            order='create_date desc',
+        )
 
         return {
             'markups': [{
@@ -368,8 +545,8 @@ class Web3DView(Controller):
         if not markup_id:
             return {'success': False}
 
-        log = request.env['plm.markup.log'].sudo().browse(int(markup_id))
-        if not log.exists():
+        log = _markup_log(markup_id, "markup/delete")
+        if not log:
             return {'success': False}
 
         user = request.env.user
@@ -390,8 +567,8 @@ class Web3DView(Controller):
         if not markup_id:
             return {'markup': False}
 
-        log = request.env['plm.markup.log'].sudo().browse(int(markup_id))
-        if not log.exists():
+        log = _markup_log(markup_id, "markup/addon")
+        if not log:
             return {'markup': False}
 
         return {
@@ -409,8 +586,8 @@ class Web3DView(Controller):
         if not markup_id:
             return {'success': False}
 
-        log = request.env['plm.markup.log'].sudo().browse(int(markup_id))
-        if not log.exists():
+        log = _markup_log(markup_id, "markup/update")
+        if not log:
             return {'success': False}
 
         user = request.env.user

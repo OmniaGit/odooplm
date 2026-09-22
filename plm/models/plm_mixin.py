@@ -25,6 +25,8 @@ Created on 28 Sep 2022
 """
 import logging
 
+import psycopg2
+
 from odoo import models, fields, api, _
 from datetime import datetime
 
@@ -80,6 +82,14 @@ class RevisionBaseMixin(models.AbstractModel):
     _description = "Revision Mixin"
 
     engineering_code = fields.Char(string="Engineering Code")
+    engineering_code_archived = fields.Char(
+        string="Archived Engineering Code",
+        copy=False,
+        help="The code this record carried when it was archived. An archived "
+        "record gives its code back, so that a new one may take it; "
+        "reactivating the record takes the code again, unless somebody else "
+        "has it by then.",
+    )
     engineering_revision = fields.Integer(
         string="Engineering Revision index", default=0
     )
@@ -120,7 +130,9 @@ class RevisionBaseMixin(models.AbstractModel):
                     ("engineering_revision", "=", rec.engineering_revision),
                     ("id", "!=", rec.id),
                 ]
-                if self.search_count(domain):
+                # An engineering code is unique in the whole database, whatever
+                # company holds it: look past the record rules.
+                if self.sudo().search_count(domain):
                     raise ValidationError(
                         _(
                             "This Engineering Code and Revision combination already exists: '%s' - Rev %s"
@@ -128,20 +140,135 @@ class RevisionBaseMixin(models.AbstractModel):
                         % (rec.engineering_code, rec.engineering_revision)
                     )
 
-    def init(self):
-        """Ensure there is at most one active variant for each combination.
+    @api.model
+    def _normalize_engineering_code(self, vals):
+        """'' and '-' once stood for "no code", to skip the checks while cloning
+        and revising. A code is either set or False now, so that the single
+        database rule, a set code is unique per revision, holds."""
+        if vals.get("engineering_code") in ("", "-"):
+            vals["engineering_code"] = False
+        return vals
 
-        There could be no variant for a combination if using dynamic attributes.
+    @api.model
+    def _refuse_engineering_code_in_use(self, vals_list):
+        """Refuse a code and revision already in use, before the insert: the
+        unique index would only raise an IntegrityError. The code may belong to a
+        company the user cannot see, so the search looks past the record rules,
+        and the message does not say where it is."""
+        for vals in vals_list:
+            code = vals.get("engineering_code")
+            if not code:
+                continue
+            revision = vals.get("engineering_revision", 0)
+            if self.sudo().search_count(
+                [
+                    ("engineering_code", "=", code),
+                    ("engineering_revision", "=", revision),
+                ],
+                limit=1,
+            ):
+                raise UserError(
+                    _(
+                        "Engineering code %(code)s revision %(revision)s is already in use.",
+                        code=code,
+                        revision=revision,
+                    )
+                )
+
+    def init(self):
+        """One record per engineering code and revision in the whole database,
+        whatever the company: two companies cannot create the same code.
+
+        A database holding duplicates cannot take the index. The update goes on
+        without it, and the duplicates are logged to be fixed; the next update
+        creates the index.
         """
-        if self._name != "revision.plm.mixin":
-            sql = """
-            CREATE UNIQUE INDEX IF NOT EXISTS {unique_name}
-            ON {table_name} (engineering_code, engineering_revision)
-            WHERE (engineering_code is not null or engineering_code not in ('-',''))
-            """.format(
-                unique_name="unique_index_%s" % self._table, table_name=self._table
+        if self._name == "revision.plm.mixin":
+            return
+        self._drop_legacy_engineering_constraint()
+        unique_name = "unique_index_%s" % self._table
+        # An archived record is out of the way: write() moves its code to
+        # engineering_code_archived, and the index leaves it alone in any case.
+        # search_count, which the checks in create and write go through, skips
+        # the archived records too, so the rule reads the same from both sides.
+        condition = "engineering_code IS NOT NULL"
+        if "active" in self._fields:
+            condition += " AND active"
+        try:
+            with self.env.cr.savepoint(flush=False):
+                self.env.cr.execute(
+                    """
+                    CREATE UNIQUE INDEX IF NOT EXISTS {unique_name}
+                    ON {table_name} (engineering_code, engineering_revision)
+                    WHERE {condition}
+                    """.format(
+                        unique_name=unique_name,
+                        table_name=self._table,
+                        condition=condition,
+                    )
+                )
+        except psycopg2.IntegrityError:
+            self.env.cr.execute(
+                """
+                SELECT engineering_code, engineering_revision, count(*)
+                  FROM {table_name}
+                 WHERE {condition}
+              GROUP BY engineering_code, engineering_revision
+                HAVING count(*) > 1
+              ORDER BY engineering_code, engineering_revision
+                """.format(table_name=self._table, condition=condition)
             )
-            self.env.cr.execute(sql)
+            _logger.error(
+                "%s not created: %s holds engineering codes used more than once "
+                "for the same revision. Fix them and update the module again:\n%s",
+                unique_name,
+                self._table,
+                "\n".join(
+                    "%s rev %s: %s records" % row for row in self.env.cr.fetchall()
+                ),
+            )
+
+    def _drop_legacy_engineering_constraint(self):
+        """Drop the unique table constraint an older version of the module left.
+
+        product_template_partnumber_uniq, UNIQUE (engineering_code,
+        engineering_revision), is declared nowhere any more: _reflect_constraints
+        only knows the constraints a model declares, so Odoo neither recreates it
+        nor removes it. Databases installed years ago still carry it, one of them
+        with no ir_model_constraint row at all, which puts it out of reach of
+        anything working from the metadata.
+
+        It says almost what the partial index says, since Postgres keeps NULLs
+        distinct, which is why it went unnoticed. But it is a second rule the code
+        knows nothing about, and whatever reaches the table without passing
+        create() answers with a raw IntegrityError instead of the message naming
+        the code already in use.
+        """
+        self.env.cr.execute(
+            """
+            SELECT c.conname
+              FROM pg_constraint c
+             WHERE c.conrelid = %s::regclass
+               AND c.contype = 'u'
+               AND (SELECT array_agg(a.attname::text ORDER BY a.attname)
+                      FROM pg_attribute a
+                     WHERE a.attrelid = c.conrelid
+                       AND a.attnum = ANY(c.conkey))
+                   = ARRAY['engineering_code', 'engineering_revision']
+            """,
+            (self._table,),
+        )
+        for (conname,) in self.env.cr.fetchall():
+            self.env.cr.execute(
+                'ALTER TABLE "%s" DROP CONSTRAINT "%s"' % (self._table, conname)
+            )
+            _logger.info(
+                "%s: %s dropped, the unique constraint of an older version;"
+                " unique_index_%s is the rule now",
+                self._table,
+                conname,
+                self._table,
+            )
 
     def _engineering_revision_count(self):
         """
@@ -329,9 +456,11 @@ class RevisionBaseMixin(models.AbstractModel):
 
             """
 
-    def _new_version(self):
+    def _new_version(self, extra_values=None):
         self.ensure_one()
-        obj_latest = self.get_latest_version()
+        # The number follows every revision of the code, not only the ones the
+        # record rules let this user see.
+        obj_latest = self.sudo().get_latest_version()
         new_revision_index = obj_latest.engineering_revision + 1
         write_context = {
             "name": self.name,
@@ -340,6 +469,7 @@ class RevisionBaseMixin(models.AbstractModel):
             "engineering_revision_letter": self.get_revision_letter(new_revision_index),
             "engineering_state": START_STATUS,
         }
+        write_context.update(extra_values or {})
         obj_new = self.with_context(copy_context=write_context).copy(write_context)
         return obj_new
 
@@ -384,14 +514,19 @@ class RevisionBaseMixin(models.AbstractModel):
 
     def _new_branch(self):
         self.ensure_one()
-        obj_new = self._new_version()
-        obj_new.engineering_branch_revision = 0
-        obj_new.engineering_branch_parent_id = self.id
         if not self.engineering_branch_parent_id:
             parnet_path = self.engineering_revision
         else:
             parnet_path = self.engineering_sub_revision_letter
-        obj_new.engineering_sub_revision_letter = "%s.0" % parnet_path
+        # Passed to the copy rather than written after it: the revision chain
+        # check in create must already see that this record is a branch.
+        self._new_version(
+            {
+                "engineering_branch_revision": 0,
+                "engineering_branch_parent_id": self.id,
+                "engineering_sub_revision_letter": "%s.0" % parnet_path,
+            }
+        )
 
     def get_engineering_branch_parent(self):
         self.ensure_one()
@@ -448,12 +583,16 @@ class RevisionBaseMixin(models.AbstractModel):
         )
 
     def get_previus_version(self):
+        """The nearest lower revision of the same code, not strictly rev - 1:
+        a history recovered from a CAD can have gaps (3 in the db, 5 saved).
+        """
         self.ensure_one()
         return self.search(
             [
                 ("engineering_code", "=", self.engineering_code),
-                ("engineering_revision", "=", self.engineering_revision - 1),
+                ("engineering_revision", "<", self.engineering_revision),
             ],
+            order="engineering_revision DESC",
             limit=1,
         )
 
@@ -494,7 +633,56 @@ class RevisionBaseMixin(models.AbstractModel):
             limit=1
             )
 
+    def _move_engineering_code_on_archive(self, active):
+        """Archiving hands the code back, reactivating takes it again.
+
+        A record nobody works on any more should not keep a code locked away:
+        archiving moves it to engineering_code_archived, so a new record may use
+        it. Reactivating puts it back, unless somebody took it meanwhile, which
+        has to be said out loud rather than leaving the record with no code.
+
+        Every way of archiving goes through write(), the button and the mass
+        action included, which is why this hangs there and not off an action.
+        """
+        for record in self:
+            if active and record.engineering_code_archived:
+                taken = self.sudo().search_count(
+                    [
+                        ("engineering_code", "=", record.engineering_code_archived),
+                        ("engineering_revision", "=", record.engineering_revision),
+                        ("id", "!=", record.id),
+                    ],
+                    limit=1,
+                )
+                if taken:
+                    raise UserError(
+                        _(
+                            "%(code)s revision %(revision)s belongs to another "
+                            "record now, so this one cannot take its code back. "
+                            "Ask for assistance before going on: the two have to "
+                            "be told apart before this one is used again.",
+                            code=record.engineering_code_archived,
+                            revision=record.engineering_revision,
+                        )
+                    )
+                super(RevisionBaseMixin, record).write(
+                    {
+                        "engineering_code": record.engineering_code_archived,
+                        "engineering_code_archived": False,
+                    }
+                )
+            elif not active and record.engineering_code:
+                super(RevisionBaseMixin, record).write(
+                    {
+                        "engineering_code_archived": record.engineering_code,
+                        "engineering_code": False,
+                    }
+                )
+
     def write(self, vals):
+        if "active" in vals and "active" in self._fields:
+            self._move_engineering_code_on_archive(vals["active"])
+        vals = self._normalize_engineering_code(vals)
         if "engineering_code" in vals and vals["engineering_code"] not in [
             False,
             "-",
@@ -510,11 +698,77 @@ class RevisionBaseMixin(models.AbstractModel):
     @api.model_create_multi
     def create(self, vals):
         for record_val in vals:
+            self._normalize_engineering_code(record_val)
+        self._refuse_engineering_code_in_use(vals)
+        for record_val in vals:
             if "engineering_code" in record_val and record_val[
                 "engineering_code"
             ] not in [False, "-", ""]:
                 record_val["engineering_code_editable"] = False
-        return super(RevisionBaseMixin, self).create(vals)
+        records = super(RevisionBaseMixin, self).create(vals)
+        records._fix_previous_revisions_state()
+        return records
+
+    def _refuse_revision_chain_if_checked_out(self):
+        """Hook: only documents can be checked out, see ir.attachment."""
+
+    def _fix_previous_revisions_state(self):
+        """Whoever creates a revision (new_version, the CAD client, a historical
+        import) leaves the chain of that code consistent.
+
+        A draft below it means the code was never settled: the new revision
+        would stand on nothing, so it is refused. Everything above draft is
+        released ex officio, then the nearest lower revision goes under
+        modification and every older one is obsoleted.
+
+        Branches are left out: they are parallel lines of one code, not a
+        sequence, and their rules are still to be designed (see CLAUDE.md).
+        """
+        for record in self:
+            if not record.engineering_code or not record.engineering_revision:
+                continue
+            if record.engineering_branch_parent_id:
+                continue
+            older = record.search(
+                [
+                    ("engineering_code", "=", record.engineering_code),
+                    ("engineering_revision", "<", record.engineering_revision),
+                    ("id", "!=", record.id),
+                ],
+                order="engineering_revision DESC",
+            ).filtered(lambda r: not r.engineering_branch_parent_id)
+            if not older:
+                continue
+            drafts = older.filtered(lambda r: r.engineering_state == START_STATUS)
+            if drafts:
+                raise UserError(
+                    _(
+                        "Cannot create %(code)s revision %(rev)s: revisions %(drafts)s "
+                        "are still in draft. Release or remove them first.",
+                        code=record.engineering_code,
+                        rev=record.engineering_revision,
+                        drafts=", ".join(
+                            str(rev) for rev in drafts.mapped("engineering_revision")
+                        ),
+                    )
+                )
+            older._refuse_revision_chain_if_checked_out()
+            for confirmed in older.filtered(
+                lambda r: r.engineering_state == CONFIRMED_STATUS
+            ):
+                confirmed.action_from_confirmed_to_released()
+                confirmed.message_post(
+                    body=_(
+                        "Released ex officio: revision %s of the same code was created",
+                        record.engineering_revision,
+                    )
+                )
+            previous, rest = older[0], older[1:]
+            if previous.engineering_state == RELEASED_STATUS:
+                previous._mark_under_modifie()
+            rest.filtered(
+                lambda r: r.engineering_state in (RELEASED_STATUS, UNDER_MODIFY_STATUS)
+            )._mark_obsolare()
 
     def get_display_notification(self, message):
         return {

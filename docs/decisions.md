@@ -193,9 +193,503 @@ asking. Naming one dates the text and reads as an endorsement.
 
 ---
 
+## 2026-09-15 — Module versions are bumped when pushing
+
+**Decision.** The `bump-manifest-version` and `bump-plm-version` commit hooks
+are gone. `scripts/push.py` raises the versions of the modules a push carries —
+and `plm`, whose version is the pip package's — in one commit, then pushes; the
+`check-pushed-versions` pre-push hook refuses a plain `git push` that skipped it.
+
+**Why.** A module version is meant to count what reached the server: bumping at
+every commit raised it several times for one delivered change. The commit hook
+also could not work with git 2.30.2 — `git commit` holds `.git/index.lock`
+while hooks run, so its `git add` failed (see 2026-08-14) — and every failed
+attempt bumped the manifests once more. Bumping outside any hook removes that
+too. The version a push gives a module is now predictable, the remote one plus
+one, which is what an upgrade script folder has to be named after.
+
+**Alternatives rejected.**
+
+- *Bump in the pre-push hook.* A pre-push hook cannot change what is being
+  pushed: a commit it creates is left out of the push in progress.
+- *A GitHub Action bumping after the push.* It would commit on the server at
+  every push, leaving every local clone behind until the next pull.
+- *Keep the commit hooks with `require_serial`.* It does not cure the
+  `index.lock` failure, and the version would still count commits.
+
+---
+
+## 2026-09-18 — The 3D viewer routes read as the user
+
+**Decision.** `/plm/get_product_info` searches its document as the user, with
+`is_plm = True`, and logs a warning naming the user and the id it was asked for
+when there is nothing to answer.
+
+**Why.** It is a GET under `auth="user"` that read the document with `sudo()`:
+anybody with an Odoo account, PLM groups or not, could walk the ids and collect
+the engineering code, revision and state of every document, and the code,
+revision and description of every component linked to it. The warning is there
+because a request for a document one may not read is worth a line: it is either
+a stale link or somebody collecting data.
+
+The part colour routes follow it: `part_colors/load` reads through the same
+helper, and `part_colors/save` also asks for the write right, because reading a
+document is not writing it. Their sudo went the same way.
+
+The remaining routes of the module, `save_markup` above all, are the next steps.
+
+---
+
+## 2026-09-18 — A markup is seen by whoever may see its document
+
+**Decision.** `plm.markup.log` carries a `document_id`, computed from its
+target, and a global rule keeps a markup with its document: the company of the
+document and the read groups of its `plm.access` node. The four markup routes
+go through `_markup_log`, which answers only when the target is one this user
+may reach, and `markup/load` needs both the model and the id. The access rights
+of the model move from every internal user to the PLM levels.
+
+**Why.** The routes browsed the id under sudo, so the snapshots and the
+comments drawn on any document of any company came back to anybody with an
+account; `markup/load` listed every markup whose `res_id` happened to match
+when the caller left the model out. The rule closes the same door outside the
+viewer, where the model was readable and writable by every internal user.
+
+The rule spells the condition out on the data rather than delegating it to
+`ir.attachment`: a sub-domain does not apply the record rules of the model it
+walks into, which the first version of this rule assumed and a test caught.
+
+---
+
+## 2026-09-18 — A markup is filed against a record one may reach
+
+**Decision.** `save_markup` takes its target from four models only --
+`ir.attachment`, `product.product`, `product.template`, `mrp.bom` -- and the
+record has to be one the user may read, or a document in a portal user's scope
+with the markup level. The attachment, the chatter message and the activity are
+still written with `sudo`, but after that check; `sudo()` keeps the uid, so each
+record carries its real author. An activity goes to the internal user the caller
+named, else to the author when they are internal, else to whoever created the
+record, so a customer's markup lands on somebody's desk.
+
+**Why.** The route took the model and the id from the caller and browsed them
+under `sudo`: any record of the database -- an invoice, a contract -- could be
+given an attachment, a chatter message and an activity assigned to anybody, by
+anybody with an account.
+
+Annotating asks for read, not write: a markup is a note beside the drawing, not
+a change to it. Along the way, an activity without a due date was failing on the
+database instead of being saved: it now defaults to today.
+
+---
+
+## 2026-09-18 — The viewer routes ask the portal scope
+
+**Decision.** `_plm_document` answers an internal user by reading the document
+as them, and a portal user from their scope, handing back a sudo recordset
+since the portal cannot read attachments at all. `show_treejs_model` checks the
+access before rendering and tells the page whether markup is allowed;
+`download_treejs_model` serves the viewer file to a customer in scope and never
+the native CAD file. Saving the part colours stays a write, so a customer does
+not do it.
+
+**Why.** The viewer opened on any id, and its routes answered under sudo. Now
+the same helper answers both kinds of user, and a document one may not read is
+not found, which is also what a stale link gets.
+
+Two traps met on the way, worth remembering: `has_access` is always true on a
+sudo recordset, so both checks ask in the environment of the request; and the
+markup commands are not rendered at all rather than hidden, so a shared viewer
+has no markup in its page.
+
+---
+
+## 2026-09-18 — What a customer or a vendor reaches from the portal
+
+**Decision.** The scope is derived from the order lines the portal user may
+read: sold to a customer, bought from a vendor, in the revision on the line.
+A level on the partner (`none`, `view`, `markup`), overridable per user, says
+what they may do with it. A customer with the spare parts option also walks the
+spare BoMs, at every level; a subcontractor walks what is under the BoMs that
+name them. The formats are decided by one overridable method: the viewer file
+and the drawing PDF, never the native CAD file.
+
+**Why.** The 3D viewer routes were open to any logged-in user under `sudo`, so
+a portal customer could reach every document of the database. Deriving the
+scope from the order lines means Odoo's own portal rules answer the hard
+question -- which orders are this partner's -- and the PLM side only follows
+the links. A revision being a product of its own gives the 1 to 1 with what was
+sold for free: no state filter, because what was bought stays what was bought.
+
+**Alternatives rejected.**
+
+- *An access token per shared link, or a flag per order.* More to build and to
+  keep in step, and it answers per link what the customer relationship already
+  answers.
+- *A `plm.access` node opened to the portal.* Folder granularity, not customer
+  granularity: every portal user would see the same.
+- *Depending on `mrp_subcontracting`.* The link it holds is the right one, but
+  a dependency for a feature that may not be used is not: the field is checked
+  at runtime instead.
+
+---
+
+## 2026-09-18 — The 3D libraries live in `static/lib/`
+
+**Decision.** `three.js`, `dxf-viewer` (both submodules) and `odoocad` moved
+from `plm_web_3d/static/src/js/lib/` to `plm_web_3d/static/lib/`.
+
+**Why.** Odoo's asset pregeneration globs `**/src/**/*.js` under each installed
+module's `static/` and opens every match
+(`odoo/addons/base/models/ir_qweb.py:_get_lazy_bundles_from_js`). The `three.js`
+submodule is a *directory* whose name ends in `.js`, so it matched and the run
+died on `IsADirectoryError`. That pregeneration runs whenever a test suite holds
+an HttpCase: with plm_web_3d installed, no HTTP test of any module could run,
+which is exactly what the controller fixes need. `static/lib/` is also where
+Odoo keeps third party libraries, and it is outside that glob.
+
+**Alternatives rejected.**
+
+- *Rename the submodule directory to `threejs`.* Smaller, but it leaves the
+  libraries under `static/src/`, against the convention, and the next submodule
+  with a dotted name brings the problem back.
+- *Leave it and test the controllers without HTTP.* The routes are the thing
+  under test; a test that does not go through HTTP would not be one.
+
+---
+
+## 2026-09-18 — The CAD upload routes take PLM documents only
+
+**Decision.** `/plm_document_upload/upload` and `/plm_document_upload/upload_pdf`
+look their document up with `('is_plm', '=', True)` instead of browsing the id
+they are given, and answer 400 when there is none.
+
+**Why.** They write the file, the preview and the printout by id. The write
+access was checked by the ORM, but an internal user may write ordinary
+attachments, so these routes could overwrite the content of any non-PLM
+attachment -- an invoice's, say. They are the CAD client's routes: their subject
+is a PLM document.
+
+The `sudo()` left on `update_component_preview()` in the upload route stays, on
+purpose: it copies the preview of the document onto the image of its linked
+components, and it is the same picture the user has just uploaded.
+
+---
+
+## 2026-09-17 — The CAD download routes read as the user
+
+**Decision.** `/plm/download` and `/plm/download_structure` search their
+document as the user. The `has_group` check and the `is_plm` filter stay; the
+`sudo()` on the search, on `download_structure()` and on
+`ir.binary._get_stream_from` is gone.
+
+**Why.** Belonging to the lowest PLM group and knowing an id was enough to
+download any PLM document of any company or department, in any state, and to
+get its whole structure with the codes, revisions and states of its children.
+Reading as the user also filters the children the structure carries, so a
+document nobody may see does not travel inside it either.
+
+**Alternatives rejected.**
+
+- *Keep the sudo and add a company check.* It would repeat, in a controller,
+  the decision the rules already make -- and miss the departments.
+
+---
+
+## 2026-09-17 — The preview and image routes answer what the user may read
+
+**Decision.** `/plm/ir_attachment_preview`, `/plm/product_product_image_1920`,
+`/plm/product_product_preview` and `/plm/ir_attachment_printout` read their
+record as the user, through `_readable()`: no record, or no read access, and the
+answer is "not found".
+
+**Why.** They are `auth="user"` and answered under `sudo()`, so anybody with an
+Odoo account, PLM groups or not, could walk the ids and collect the previews and
+the printouts of every drawing of every company and department -- the very
+content the nodes exist to separate.
+
+**Alternatives rejected.**
+
+- *Require a PLM group.* The right question is whether this user may read this
+  record, which is what the levels and the nodes already answer; a group check
+  would also break the product images for the rest of Odoo.
+- *Answer "forbidden" instead of "not found".* It would tell whoever walks the
+  ids which ones exist.
+
+---
+
+## 2026-09-17 — The CAD context is not a permission
+
+### `ir.attachment.read` no longer runs as the superuser
+
+**Decision.** The `sudo()` in `ir.attachment.read`, applied whenever the call
+carried the `odooPLM` context and the user was in a PLM group, is gone.
+
+**Why.** Both conditions are met by every CAD client call and every PLM user, so
+the escalation was the rule, not the exception: measured on a test database, a
+View User read the content of another user's private attachment, and of a
+document of a department they are not in, where the same read without the
+context was refused. It also went past the company and node isolation added the
+day before. What a user may read is what the rules say; the levels and the
+`plm.access` nodes now say it properly, which is what the sudo was covering for.
+
+**Alternatives rejected.**
+
+- *Narrow the sudo to PLM documents.* It would still hand every PLM document of
+  every company and department to every PLM user.
+
+### `ir.ui.view.search` keeps its sudo
+
+**Decision.** The same context still elevates the search of view definitions
+(`plm/models/ir_ui_view.py`).
+
+**Why.** Odoo grants read on `ir.ui.view` to no group but the system one
+(`base/security/ir.model.access.csv`), and the CAD client reads the definitions
+to build its dialogs. Those are interface metadata, not data.
+
+---
+
+## 2026-09-16 — The four PLM permission levels
+
+### The levels are readonly state, readonly, integration, admin
+
+**Decision.** The PLM groups are a scale: read the released records only, read
+everything, read/write/create with deletion of one's own drafts, and everything.
+It applies to PLM documents, to components, their templates and their bills of
+materials. `group_plm_release_users` and `group_plm_admin_unrelease` stay
+service groups, orthogonal to the scale.
+
+**Why.** The groups already carried these names and access rights, but the rules
+said something else: "PLM Integration Readonly" implied the integration group,
+so the read-only level could write and create; the View User level could write
+and delete PLM documents through `group_non_plm_view_plm_document`; and every
+integration user could delete any document, released ones included.
+
+### A restriction is a global rule, not a group rule
+
+**Decision.** The released-only level is enforced by global rules
+(`plm_readonly_state_*`), one per model, whose domain is empty for every user
+outside that level.
+
+**Why.** Record rules of a group are OR-ed: a group rule can only grant. A level
+that must see *less* than another cannot be expressed as a group rule at all —
+which is exactly how the group ended up granting what its name denied.
+
+**Alternatives rejected.**
+
+- *Give the level its own access rights instead of implying View User.* The same
+  dozen access records, copied and kept in step by hand.
+
+### Deleting is for one's own drafts, and for the administrator
+
+**Decision.** An integration user deletes only what they created and only while
+it is a draft (`plm_integration_unlink_*`); the administrator deletes anything
+(`plm_admin_*`).
+
+**Why.** A released record is history: whoever needs it gone has to be an
+administrator. The CAD client never deletes records through RPC, so nothing in
+the client flow depends on this.
+
+---
+
+## 2026-09-15 — PLM documents in a multi-company database
+
+### Documents are attached to a tree of `plm.access` nodes
+
+**Decision.** Every company has a root `plm.access` node and may add department
+nodes below it. A PLM document is attached to a node; the node says which groups
+may read, write, create and delete its documents.
+
+**Why.** Every PLM document was attached to one `plm.access` record for the
+whole database, and the record rules on `ir.attachment` never looked at the
+company: every user read, wrote and checked out every company's drawings. Odoo
+19 already grants an attachment through the record it is attached to, so
+giving that record a company and groups uses the core mechanism instead of
+repeating a company clause in every PLM rule — it also covers the searches, and
+the downloads through `ir.binary`.
+
+**Alternatives rejected.**
+
+- *A company clause and a `plm_share_scope` field on each document*, the 18.0
+  approach (`83261af`). The clause has to be repeated in every PLM rule, it
+  rests on a `check()` override Odoo 19 never calls, and sharing is decided
+  document by document.
+- *One `plm.access` per company, 1 to 1.* No room for departments.
+- *A many2many between `plm.access` and companies.* Documents could become more
+  visible than their products, which have a single company or none.
+
+### Groups are inherited until a node redefines them
+
+**Decision.** For each permission a node either names its groups or names none
+and takes its parent's; a root naming none leaves the whole company open. The
+record rules read the resolved, stored `effective_*_group_ids`.
+
+**Alternatives rejected.**
+
+- *Additive inheritance* (a group on a node counts for every descendant). Once a
+  root is open to the company no branch below can be restricted.
+- *Restrictive inheritance* (every node of the path must allow the user). It
+  works, but each rule has to walk every ancestor, and it is harder to explain.
+
+A node a user can read may sit under one they cannot: the hierarchy view does
+not reach it, the list view does. Accepted: the tree is the administrator's
+tool, and forbidding it would take away what this inheritance model is for.
+
+### No bypass for the PLM administrator
+
+**Decision.** The PLM administrator sees the documents of the companies and
+departments they belong to, as any user; they manage every node of their
+companies through `plm.access.write`.
+
+**Alternatives rejected.**
+
+- *See every company, as in 18.0.* The administrator would see documents whose
+  products and bills of materials the company rules still hide.
+
+### Products keep the standard Odoo company
+
+**Decision.** A product created by the CAD client or in PLM gets no company,
+unless one is set on it, exactly as in standard Odoo; only documents are placed
+in the company chosen at login.
+
+**Why.** It is how Odoo itself treats products. A product with a company can
+only be a component of that company's bills of materials, so components used
+across companies would have to be made shared one by one, or the CAD client
+would fail saving the BoM.
+
+**Alternatives rejected.**
+
+- *A new component takes the active company*, as the 18.0 commit `83261af`
+  did, with a setting to keep components shared. Possible later, together with
+  the shared tree for commercial components (see Open).
+
+### Users outside the PLM groups see no PLM document
+
+**Decision.** A rule for `base.group_user` confines every internal user to the
+attachments that are not PLM documents; the PLM rules add the documents back for
+the PLM groups.
+
+**Why.** Group rules only restrict the users of the group: an internal user in
+no PLM group had no rule at all and read and downloaded every PLM document.
+
+---
+
+## 2026-09-15 — Engineering codes in a multi-company database
+
+### A code is unique in the whole database, visible only to its company
+
+**Decision.** Two companies cannot create the same engineering code and
+revision; a code is seen only by the users of the company that holds it. The
+checks that decide whether a code exists, or which revision is the latest, look
+past the record rules (`sudo()`); their message is generic and does not name the
+other company. What users are shown keeps following the record rules.
+
+**Why.** The unique index was on `ir_attachment` only: `product_template`
+overrode `init` without calling the mixin's, so for products nothing but a
+Python `search_count` stood between two companies and the same code, and that
+search only saw the user's companies. A company could create a code another one
+already had, silently. The index now exists on every table of the mixin, and
+the existence checks see every company.
+
+**Alternatives rejected.**
+
+- *Codes unique per company.* The index, the constraint and the ~60 searches by
+  code — CAD client doors included — would all have to carry the company.
+- *Name the company holding the code in the message.* It tells a user something
+  about a company they have no access to.
+
+### One rule for the index: a set code
+
+**Decision.** The index condition is `engineering_code IS NOT NULL`. `''` and
+`'-'` are stored as `False` by the mixin, and turned to NULL on existing data.
+
+**Why.** The old condition, `IS NOT NULL OR NOT IN ('-','')`, already meant
+`IS NOT NULL` — the second half never excluded anything — while reading as if
+placeholders were exempt. Those placeholders date from when cloning and revising
+needed codes that skipped the checks; neither does any more, and no database
+examined holds one.
+
+### The revisions of a code share its company
+
+**Decision.** Every revision of a product code belongs to the same company. A
+revision created without a company joins the one of the existing revisions; a
+product changes company only while it is a draft with no bill of materials, not
+used in one, and with no linked document.
+
+**Why.** If a user sees one revision, they see the whole chain: the searches
+that walk revisions (`_getlastrev`, the revision chain rule) stay consistent
+without being rewritten. Past draft, or once something is bound to it, moving a
+product would leave its BoMs and documents in the old company.
+
+**Alternatives rejected.**
+
+- *Propagate a company change to every revision.* It writes records the user
+  may not see, without saying so.
+
+### A database holding duplicates is updated without the index
+
+**Decision.** When the unique index cannot be created because of duplicates,
+the update goes on, the index is not created and the duplicate codes are logged;
+the next update creates it once they are fixed.
+
+**Alternatives rejected.**
+
+- *Stop the update.* It would block a customer's upgrade on data only they can
+  fix.
+
+---
+
+## 2026-09-15 — Sequences in a multi-company database
+
+### The PLM sequences are global
+
+**Decision.** Every sequence the PLM modules create — the ones in
+`plm/data/sequence.xml`, `plm_auto_engcode/data/ir_sequence.xml`,
+`plm_box/data/plm_box_sequence_data.xml`, and the `PLM_SEQUENCE_<prefix>` ones
+`product.template.getSequenceFrom` makes on the fly — has `company_id` False:
+one counter, shared by every company. A company gets its own numbering only if
+an administrator gives it one explicitly, by copying the sequence and setting
+the company on the copy. `next_by_code` orders by `company_id`, so the copy of
+the current company wins over the global sequence.
+
+**Why.** `ir.sequence.company_id` defaults to `env.company`, so the sequences
+declared without a company were bound to the company the module was installed
+in, and `next_by_code` — which looks only for the current company's sequence or
+a global one — returned `False` everywhere else: `GetNextDocumentName` raised
+`TypeError`, a cloned document got the code `XXX-False`, `plm_auto_engcode`
+gave products no code. A global counter is also what the database-wide unique
+index on `(engineering_code, engineering_revision)` needs: two companies
+counting from 1 with the same prefix would collide on it. `plm_breakages`
+already declared its sequence this way.
+
+Databases installed before are brought in line by an upgrade script per module
+(`upgrades/<version>/post-migrate.py`), since the records are `noupdate`. It
+runs once and only on the sequences the modules created; tests are tagged
+`odoo_plm_multicompany`.
+
+**Alternatives rejected.**
+
+- *A `<function>` in the data file resetting the company.* It would run at
+  every update and undo a company an administrator set on purpose.
+- *Create the sequences per company automatically.* Without a prefix per
+  company the codes collide on the unique index; see Open.
+
+---
+
 ## Open
 
 Not decided yet, recorded so the question is not lost.
+
+- **A company flag to create its own PLM sequences automatically.** When set, the
+  new company would get a copy of the PLM sequences. It only works with a
+  prefix per company (a field on the company, prepended to the sequence
+  prefix), or with engineering codes unique per company rather than
+  database-wide, which is still to be decided. Not a priority: the documented
+  manual copy reaches the same result.
+- **A shared `plm.access` tree with no company**, for commercial components used
+  by every company: a product with no company is visible everywhere, but its
+  documents live in one company's tree. To take up when the module description
+  is updated.
 
 - **Whether `plm_mcp` should sit on `ai_oca_mcp` instead of carrying its own
   transport.** It would cost two OCA dependencies and give up the protocol

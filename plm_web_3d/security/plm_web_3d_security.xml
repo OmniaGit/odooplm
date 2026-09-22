@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!--
+        A markup is seen by whoever may see the document it was drawn on: the
+        company of the document and the read groups of its plm.access node,
+        the same clause the document rules carry. A sub-domain does not apply
+        the rules of the model it walks into, so the condition is written on
+        the data rather than delegated. A markup drawn on something else than
+        a document - a component, a bill of materials - carries no document
+        and is left to the access rights of the model.
+    -->
+    <record id="plm_markup_log_document_rule" model="ir.rule">
+        <field name="name">PLM markup: the document decides</field>
+        <field name="model_id" ref="plm_web_3d.model_plm_markup_log"/>
+        <field name="domain_force">['|', ('document_id', '=', False), '&amp;', ('document_id.company_id', 'in', company_ids), '|', ('document_id.plm_access_id.effective_read_group_ids', '=', False), ('document_id.plm_access_id.effective_read_group_ids', 'in', user.all_group_ids.ids)]</field>
+    </record>
+
+</odoo>

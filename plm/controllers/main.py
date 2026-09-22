@@ -11,6 +11,34 @@ from odoo.http import Controller, route, request, Response
 from odoo.tools.misc import DEFAULT_SERVER_DATETIME_FORMAT
 
 
+def _plm_document(doc_id):
+    """The PLM document with that id, as the user, or an empty recordset.
+
+    These are the CAD client's routes: they write the file, the preview and the
+    printout of a PLM document. Browsing whatever id was given let them write
+    on any attachment the user may write -- the one of an invoice, say. The
+    write access itself has always been checked by the ORM.
+    """
+    return request.env["ir.attachment"].search(
+        [("id", "=", doc_id), ("is_plm", "=", True)], limit=1
+    )
+
+
+def _readable(record):
+    """The record when the user may read it, an empty recordset otherwise.
+
+    These routes are auth="user", so anybody with an Odoo account reaches them,
+    and they used to answer under sudo: the previews, images and printouts of
+    every document and component of every company were served by id. What a
+    user may see here is what the access rights, the PLM levels and the
+    plm.access nodes allow. A record that may not be read answers as a missing
+    one, so the routes cannot be walked by id either.
+    """
+    if not record.exists() or not record.has_access("read"):
+        return record.browse()
+    return record
+
+
 def webservice(f):
     @functools.wraps(f)
     def wrap(*args, **kw):
@@ -108,7 +136,11 @@ class UploadDocument(Controller):
             doc_id = json.loads(doc_id)
             logging.info("start write %r" % (doc_id))
             value1 = file_stream.stream.read()
-            request.env["ir.attachment"].browse(doc_id).write(
+            ir_attachment_id = _plm_document(doc_id)
+            if not ir_attachment_id:
+                logging.info("no plm document %r" % (doc_id))
+                return Response("Failed upload", status=400)
+            ir_attachment_id.write(
                 {
                     "printout": base64.b64encode(value1).decode(),
                 }
@@ -193,10 +225,14 @@ class UploadDocument(Controller):
         if not request.env.user.has_group("plm.group_plm_view_user"):
             return Response(status=403,
                             response=f"No permissions to download {attachment_id}")
-        for ir_attachment_id in request.env['ir.attachment'].sudo().search([('id','=', attachment_id),
-                                                                            ('is_plm','=', True)]):
+        # As the user, not sudo: the access rights, the PLM levels and the
+        # plm.access node decide. A document the user may not read is not found,
+        # the same answer an unknown id gets, and the structure it builds is
+        # read the same way, so a child nobody may see does not travel either.
+        for ir_attachment_id in request.env['ir.attachment'].search([('id','=', attachment_id),
+                                                                     ('is_plm','=', True)]):
             try:
-                return Response(json.dumps(ir_attachment_id.sudo().download_structure(hostname,
+                return Response(json.dumps(ir_attachment_id.download_structure(hostname,
                                                                                hostpws,
                                                                                latest)))
             except Exception as ex:
@@ -318,8 +354,12 @@ class UploadDocument(Controller):
             if not zip_ir_attachment_id:
                 if from_ir_attachment_id.engineering_code == zip_name:
                     to_write['engineering_code'] = filename
+                # The extra file lives where the document it belongs to lives.
                 to_write['res_model'] = 'plm.access'
-                to_write['res_id'] = request.env.ref('plm.plm_basic_access_model').id
+                to_write['res_id'] = (
+                    from_ir_attachment_id.plm_access_id
+                    or contex_brw._get_plm_access_for(to_write['engineering_code'])
+                ).id
                 zip_ir_attachment_id  = contex_brw.create(to_write)
             else:
                 del to_write["name"]
@@ -442,7 +482,7 @@ class UploadDocument(Controller):
             to_write["is_plm"] = True
             if not ir_attachment_id:
                 to_write['res_model'] = 'plm.access'
-                to_write['res_id'] = request.env.ref('plm.plm_basic_access_model').id
+                to_write['res_id'] = contex_brw._get_plm_access_for(doc_name).id
                 ir_attachment_id = contex_brw.create(to_write)
             else:
                 ir_attachment_id.with_context(new_context).write(to_write)
@@ -491,10 +531,10 @@ class UploadDocument(Controller):
     )
     @webservice
     def get_preview(self, id):
-        ir_attachement = request.env["ir.attachment"].sudo()
-        for record in ir_attachement.search_read([("id", "=", id)], ["preview"]):
-            return image_response(record.get("preview"))
-        return request.not_found()
+        attachment = _readable(request.env["ir.attachment"].browse(id))
+        if not attachment:
+            return request.not_found()
+        return image_response(attachment.preview)
 
     @route(
         "/plm/product_product_image_1920/<int:id>",
@@ -505,10 +545,10 @@ class UploadDocument(Controller):
     )
     @webservice
     def get_product_preview(self, id):
-        productobj = request.env["product.product"].sudo()
-        for record in productobj.search_read([("id", "=", id)], ["image_1920"]):
-            return image_response(record.get("image_1920"))
-        return request.not_found()
+        product = _readable(request.env["product.product"].browse(id))
+        if not product:
+            return request.not_found()
+        return image_response(product.image_1920)
 
     @route(
         "/plm/product_product_preview/<int:product_id>",
@@ -519,12 +559,10 @@ class UploadDocument(Controller):
     )
     @webservice
     def get_pp_preview(self, product_id):
-        product_product_sudo = request.env["product.product"].sudo()
-        for product_product_id in product_product_sudo.search(
-            [("id", "=", product_id)]
-        ):
-            return image_response(product_product_id.image_1920)
-        return request.not_found()
+        product = _readable(request.env["product.product"].browse(product_id))
+        if not product:
+            return request.not_found()
+        return image_response(product.image_1920)
 
     @route(
         "/plm/ir_attachment_printout/<int:id>",
@@ -536,7 +574,7 @@ class UploadDocument(Controller):
     @webservice
     def get_printout(self, id):
         try:
-            for ir_attachement_id in request.env["ir.attachment"].sudo().browse(id):
+            for ir_attachement_id in _readable(request.env["ir.attachment"].browse(id)):
                 if ir_attachement_id.printout:
                     print_out_data = request.env[
                         "report.plm.ir_attachment_pdf"
@@ -560,5 +598,8 @@ class UploadDocument(Controller):
                     return request.not_found(
                         f"Pdf document {ir_attachement_id.engineering_code} not Available"
                     )
+            # The document does not exist, or the user may not read it: the two
+            # answer the same, so the route cannot be walked by id.
+            return request.not_found()
         except Exception as ex:
             return Response(f"{ex}", status=500)

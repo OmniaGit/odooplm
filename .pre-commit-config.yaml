@@ -34,27 +34,28 @@ exclude: |
   ^docs/_templates/.*\.html$|
   # You don't usually want a bot to modify your legal texts
   (LICENSE.*|COPYING.*)
+default_install_hook_types: [pre-commit, pre-push]
+# Hooks run at commit unless they say otherwise: the version check is the only
+# pre-push one.
+default_stages: [pre-commit]
 default_language_version:
   python: python3
 repos:
   - repo: local
     hooks:
-      - id: bump-manifest-version
-        name: bump __manifest__.py patch version for modified modules
-        entry: python3 .pre-commit-scripts/bump_manifest_version.py
-        language: system
-        pass_filenames: true
-        stages: [pre-commit]
-      # plm's version is the version of the odooplm pip package, and PyPI
-      # rejects a version it already holds. Runs after the hook above, and
-      # stands down when that one has already moved plm.
-      - id: bump-plm-version
-        name: bump plm/__manifest__.py so any tag stays publishable
-        entry: python3 .pre-commit-scripts/bump_plm_version.py
+      # Module versions are raised when pushing, not at every commit: a version
+      # counts what reached the server. scripts/push.py bumps the modules the
+      # push carries (and plm, the pip package version, so any tag stays
+      # publishable), commits and pushes; this hook only refuses a plain
+      # `git push` that would skip it. Install it with
+      # `pre-commit install --hook-type pre-push`.
+      - id: check-pushed-versions
+        name: modules pushed have a version higher than the remote
+        entry: python3 scripts/push.py --check
         language: system
         pass_filenames: false
         always_run: true
-        stages: [pre-commit]
+        stages: [pre-push]
       # aaa_requirements.txt is generated from the external_dependencies of the
       # manifests; editing it by hand is what let it drift in the first place.
       - id: sync-requirements

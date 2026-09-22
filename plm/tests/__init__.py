@@ -21,5 +21,13 @@
 ##############################################################################
 from . import test_plm
 from . import test_check_in
+from . import test_checkout_snapshot
+from . import test_revision_chain
+from . import test_multicompany_sequence
+from . import test_multicompany_code
+from . import test_multicompany_access
+from . import test_permission_levels
+from . import test_controllers
+from . import test_portal_scope
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

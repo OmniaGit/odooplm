@@ -180,6 +180,7 @@
             <field name="name">Settings</field>
             <field name="path">plm-settings</field>
             <field name="res_model">res.config.settings</field>
+            <field name="path">plm-settings</field>
             <field name="view_mode">form</field>
             <field name="target">current</field>
             <field name="context">{'module': 'plm'}</field>

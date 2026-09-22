@@ -50,7 +50,7 @@ Installation
 ------------
 
 Three.js and the DXF viewer are included as git submodules under
-``static/src/js/lib/``. Run ``git submodule update --init`` after cloning.
+``static/lib/``. Run ``git submodule update --init`` after cloning.
 
 Dependencies
 ------------

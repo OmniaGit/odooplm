@@ -4,6 +4,7 @@
         <record id="seq_plm_eng_code" model="ir.sequence">
             <field name="name">PLM Engineering Code Sequence</field>
             <field name="code">plm.eng.code</field>
+            <field name="company_id" eval="False"/>
             <field name="prefix">EG-</field>
             <field name="padding">5</field>
         </record>

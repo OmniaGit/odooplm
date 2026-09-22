@@ -11,7 +11,7 @@ core `plm` module.
 > 📖 Wiki (install, CAD client, user guide, FAQ): **https://github.com/OmniaGit/odooplm/wiki**
 > 🌐 Full documentation: **https://odooplm.omniasolutions.website**
 > 🐛 Issues and support: **https://github.com/OmniaGit/odooplm/issues**
-> 🚀 Live demo: **https://v19.odooplm.cloud** — `admin` / `admin`
+> 🚀 Live demo: **https://v19.odooplm.cloud** — `admin` / `admin`, database `odooplm`
 
 ---
 
@@ -72,8 +72,20 @@ The client supports the following CAD editors:
 | FreeCAD | Open-source integration |
 
 The client communicates with Odoo via the REST API exposed by the `plm` module
-(`/plm_document_upload/login`, `/plm_document_upload/upload`, etc.) over **HTTP on
-port 80**.
+(`/plm_document_upload/login`, `/plm_document_upload/upload`, etc.) and via
+XML-RPC. Connection parameters:
+
+| | Live demo | Docker (local) |
+|---|---|---|
+| Protocol | `https` | `http` |
+| Host | `v19.odooplm.cloud` | `localhost` |
+| Port | `443` | `8069` |
+| Database | `odooplm` | `odooplm` |
+| User / password | `admin` / `admin` | `admin` / `admin` |
+
+> Behind a TLS reverse proxy, point the client at **443 over `https`**, not at 80.
+> Port 80 answers `301` to the HTTPS URL and the client's XML-RPC layer does not
+> follow redirects, so the login fails.
 
 ---
 

@@ -36,7 +36,7 @@ from odoo.addons.plm.models.plm_mixin import (PLM_NO_WRITE_STATE,
                                               OBSOLATED_STATUS,
                                               UNDER_MODIFY_STATUS,
                                               START_STATUS)
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 from odoo.tools.safe_eval import safe_eval
 from pickle import FALSE
@@ -65,6 +65,12 @@ class IrAttachment(models.Model):
         string="Checked-Out to", compute="_get_checkout_state"
     )
 
+    checkout_ids = fields.One2many(
+        "plm.checkout",
+        "documentid",
+        string="Check-Out",
+        readonly=True,
+    )
     is_checkout = fields.Boolean(
         string="Is Checked-Out", compute="_is_checkout", store=False
     )
@@ -104,6 +110,16 @@ class IrAttachment(models.Model):
         "Is A Plm Document",
         help=
             "If the flag is set, the document is managed by the plm module, and imply its backup at each save and the visibility on some views."
+    )
+    plm_access_id = fields.Many2one(
+        "plm.access",
+        "PLM Access",
+        compute="_compute_plm_access_id",
+        store=True,
+        readonly=False,
+        index=True,
+        help="The PLM access node the document is attached to: its company, and "
+        "the department whose groups may read, write, create and delete it.",
     )
     attachment_revision_count = fields.Integer(compute="_attachment_revision_count")
     first_source_path = fields.Char("Source path of the first time save")
@@ -155,46 +171,6 @@ class IrAttachment(models.Model):
                 if lastDocId == docBrws.id:
                     return True
         return False
-
-    @api.model
-    def check(self, mode, values=None):
-        if self.env.context.get("plm_avoid_recursion"):
-            return True
-        if self.env.is_superuser():
-            return True
-        if self:
-            self.env["ir.attachment"].flush_model()
-            self._cr.execute(
-                "SELECT  id, is_plm, public FROM ir_attachment WHERE id IN %s",
-                [tuple(self.ids)],
-            )
-            attachment_id_toCheck = []
-            for attachment_id, is_plm, public in self._cr.fetchall():
-                if public and mode == "read":
-                    continue
-                if is_plm:
-                    if self.env.user.has_group("plm.group_plm_integration_user"):
-                        continue
-                    if (
-                        self.env.user.has_group("plm.group_plm_view_user")
-                        and mode == "read"
-                    ):
-                        continue
-                    if (
-                        self.env.user.has_group("plm.group_plm_readonly_released")
-                        and mode == "read"
-                    ):
-                        continue
-                    if self.env.user.has_group("plm.group_plm_admin"):
-                        continue
-                    raise UserError(
-                        "You are managing a document that dose not belong to any PLM group."
-                    )
-                else:
-                    attachment_id_toCheck.append(attachment_id)
-            #
-            if attachment_id_toCheck:
-                super().with_context(plm_avoid_recursion=True).check(mode, values)
 
     def get_checkout_user(self):
         lastDoc = self._getlastrev(self.ids)
@@ -1060,12 +1036,43 @@ class IrAttachment(models.Model):
                 return False
         return True
 
+    def refuseIfCheckedOut(self):
+        """Every workflow move is made on documents that are checked in.
+
+        One rule, at the one door every action goes through -- draft, confirm,
+        release, obsolete, reactivate -- rather than in each of them. Release
+        was the only one that looked, and it did not refuse: it dropped the
+        document from the move and said nothing, so the user pressed the button
+        and watched nothing happen.
+
+        A document somebody still has out is a file nobody else has seen, and a
+        state is a statement about the file everybody can see.
+        """
+        checked_out = []
+        for ir_attachment_id in self:
+            if ir_attachment_id.is_checkout:
+                checked_out.append(
+                    _(
+                        f"Document {ir_attachment_id.name} : {ir_attachment_id.engineering_revision} is checked out by user {ir_attachment_id.checkout_user}"
+                    )
+                )
+        if checked_out:
+            msg = _("Workflow action cannot be performed")
+            for line in list(set(checked_out)):
+                msg = msg + "\n" + line
+            msg = msg + _("\n\nCheck-In All the document in order to proceed !!")
+            raise UserError(msg)
+
+    def _refuse_revision_chain_if_checked_out(self):
+        self.refuseIfCheckedOut()
+
     def commonWFAction(self, writable, state, check):
         """
         :writable set writable flag for component
         :state define new product state
         :check do state verification in component write
         """
+        self.refuseIfCheckedOut()
         self.with_context(check=check)._commonWFAction(writable, state, check)
 
     def _commonWFAction(self, writable, state, check):
@@ -1098,12 +1105,10 @@ class IrAttachment(models.Model):
         """
         release the object
         """
-        to_release = self.env["ir.attachment"]
-        for oldObject in self:
-            if oldObject.ischecked_in():
-                to_release += oldObject
-        if to_release:
-            to_release.commonWFAction(False, RELEASED_STATUS, False)
+        # No sieve of its own any more: what it used to drop in silence is what
+        # commonWFAction now refuses out loud, for this action and for every
+        # other one.
+        self.commonWFAction(False, RELEASED_STATUS, False)
         return False
 
     def action_obsolete(self):
@@ -1154,8 +1159,10 @@ class IrAttachment(models.Model):
 
     def check_unique(self):
         for ir_attachment_id in self:
+            # Engineering codes are unique in the whole database, whatever
+            # company holds them: look past the record rules.
             if (
-                self.search_count(
+                self.sudo().search_count(
                     [
                         ("engineering_code", "=", ir_attachment_id.name),
                         (
@@ -1187,8 +1194,9 @@ class IrAttachment(models.Model):
 
     def _check_unique_document(self, vals):
         if self.env.context.get("odooPLM"):
-            if "name" in vals and "engineering_code" in vals:
-                if self.search_count(
+            if "name" in vals and vals.get("engineering_code"):
+                # The code may belong to a company this user cannot see.
+                if self.sudo().search_count(
                     [
                         ("engineering_code", "=", vals["engineering_code"]),
                         ("name", "not ilike", vals["name"]),
@@ -1202,13 +1210,28 @@ class IrAttachment(models.Model):
 
     @api.model_create_multi
     def create(self, vals):
+        for vals_dict in vals:
+            if (
+                vals_dict.get("is_plm")
+                and not vals_dict.get("res_model")
+                and not vals_dict.get("plm_access_id")
+            ):
+                # A PLM document created without a node, by a module converting
+                # files for instance, still goes where the CAD client's would.
+                vals_dict["plm_access_id"] = self._get_plm_access_for(
+                    vals_dict.get("engineering_code")
+                ).id
+            self._plm_access_to_res_record(vals_dict)
         if not self.env.context.get("odooPLM"):
             return super(IrAttachment, self).create(vals)
         to_create_vals = []
         for vals_dict in vals:
             if "res_model" not in vals_dict:
                 vals_dict["res_model"] = "plm.access"
-                vals_dict["res_id"] = self.env.ref("plm.plm_basic_access_model").id
+                vals_dict["res_id"] = self._get_plm_access_for(
+                    vals_dict.get("engineering_code")
+                ).id
+                self._plm_access_to_res_record(vals_dict)
             if "engineering_state" not in vals:
                 vals_dict["engineering_state"] = START_STATUS
             vals_dict["is_plm"] = True
@@ -1221,6 +1244,109 @@ class IrAttachment(models.Model):
         res = super(IrAttachment, self).create(to_create_vals)
         res.with_context(create=True).check_unique()
         return res
+
+    @api.depends("res_model", "res_id")
+    def _compute_plm_access_id(self):
+        for attachment in self:
+            if attachment.res_model == "plm.access" and attachment.res_id:
+                attachment.plm_access_id = attachment.res_id
+            else:
+                attachment.plm_access_id = False
+
+    @api.model
+    def _plm_access_to_res_record(self, vals):
+        """The node of a document is its res record, which is what Odoo checks
+        the access on: plm_access_id is written through res_model and res_id,
+        and the document takes the company of the node."""
+        if "plm_access_id" in vals:
+            node_id = vals.pop("plm_access_id")
+            vals["res_model"] = "plm.access" if node_id else False
+            vals["res_id"] = node_id or False
+        if vals.get("res_model") == "plm.access" and vals.get("res_id"):
+            node = self.env["plm.access"].sudo().browse(vals["res_id"])
+            vals["company_id"] = node.company_id.id
+        return vals
+
+    @api.model
+    def _get_plm_access_for(self, engineering_code=False):
+        """The node a new PLM document goes to: the one of the revisions of its
+        code already there, then the user's default node, then the root of the
+        company the user is working in."""
+        if engineering_code:
+            revision = self.sudo().search(
+                [
+                    ("engineering_code", "=", engineering_code),
+                    ("plm_access_id", "!=", False),
+                ],
+                limit=1,
+            )
+            if revision:
+                return revision.plm_access_id.sudo(False)
+        user_node = self.env.user.plm_access_id
+        if user_node and user_node.sudo().company_id in self.env.companies:
+            return user_node
+        company = self.env.company.sudo()
+        if not company.plm_access_id:
+            company._create_plm_access_root()
+        return company.plm_access_id.sudo(False)
+
+    def _refuse_plm_access_change(self, node_id):
+        """A document moves to another node, department or company, only while
+        it is a draft with no component linked: past that, the products and the
+        other revisions it goes with would be left behind."""
+        for attachment in self.filtered("is_plm"):
+            if attachment.plm_access_id.id == node_id or not attachment.plm_access_id:
+                continue
+            if attachment.engineering_state != START_STATUS or (
+                attachment.sudo().linkedcomponents
+            ):
+                raise UserError(
+                    _(
+                        "%(name)s cannot move to another PLM access: only a draft "
+                        "document with no linked component can.",
+                        name=attachment.engineering_code or attachment.name,
+                    )
+                )
+
+    @api.constrains("plm_access_id", "engineering_code")
+    def _check_plm_access_of_the_revisions(self):
+        """Every revision of a document code lives in the same node: whoever can
+        see a revision can see the whole chain."""
+        for attachment in self.filtered(
+            lambda attachment: attachment.engineering_code and attachment.plm_access_id
+        ):
+            others = self.sudo().search(
+                [
+                    ("engineering_code", "=", attachment.engineering_code),
+                    ("plm_access_id", "!=", False),
+                    ("id", "!=", attachment.id),
+                ]
+            )
+            if any(other.plm_access_id != attachment.plm_access_id for other in others):
+                raise ValidationError(
+                    _(
+                        "Every revision of %(code)s must live in the same PLM access.",
+                        code=attachment.engineering_code,
+                    )
+                )
+
+    @api.constrains("plm_access_id", "linkedcomponents")
+    def _check_plm_access_of_the_components(self):
+        """A document is never more visible than the products it describes: a
+        product of a company has its documents in that company's nodes."""
+        for attachment in self.sudo().filtered("plm_access_id"):
+            company = attachment.plm_access_id.company_id
+            for component in attachment.linkedcomponents:
+                if component.company_id and component.company_id != company:
+                    raise ValidationError(
+                        _(
+                            "%(document)s belongs to %(company)s, but the component "
+                            "%(component)s does not.",
+                            document=attachment.engineering_code or attachment.name,
+                            company=company.name,
+                            component=component.engineering_code or component.name,
+                        )
+                    )
 
     def update_component_preview(self,
                                  product_id=False):
@@ -1240,6 +1366,9 @@ class IrAttachment(models.Model):
                     to_update[max(to_update)].image_1920 = self.preview
 
     def write(self, vals):
+        self._plm_access_to_res_record(vals)
+        if vals.get("res_model") == "plm.access" and "res_id" in vals:
+            self._refuse_plm_access_change(vals["res_id"])
         if not self.env.context.get('odooPLM'):
             return super(IrAttachment, self).write(vals)
         check = self.env.context.get('check', True)
@@ -1267,10 +1396,14 @@ class IrAttachment(models.Model):
             fields.extend(customFields)
             fields = list(set(fields))
             fields = self.plm_sanitize(fields)
-            ctx = self.env.context.copy()
-            plm_flag = ctx.get("odooPLM", False)
-            if plm_flag and self.env.user.has_group("plm.group_plm_view_user"):
-                self = self.sudo()
+            #
+            # No sudo here: reading used to run as the superuser whenever the
+            # call carried the odooPLM context and the user was in a PLM group,
+            # which is every call of the CAD client and every PLM user. It read
+            # any attachment of the database, PLM or not, past the access
+            # rights, the permission levels and the plm.access nodes. What a
+            # user may read is what the rules say.
+            #
             res = super(IrAttachment, self).read(fields=fields, load=load)
             res = self.readMany2oneFields(res, fields)
             return res
@@ -1570,15 +1703,30 @@ class IrAttachment(models.Model):
                         attachment_id.must_update_from_cad = True
 
     @api.model
+    @api.depends("checkout_ids")
     def _is_checkout(self):
+        """Whether somebody has this document out.
+
+        Read off `checkout_ids` and not asked one document at a time: this is
+        the field the workflow checks before it moves anything, and a workflow
+        moves a tree. getCheckedOut does a search per record -- 60 documents,
+        60 queries, measured -- while the one2many is fetched for the whole
+        recordset at once. Existence of a plm.checkout row is what `ischecked_in`
+        has always meant by it, so nothing about the answer changes.
+
+        The dependency is what was missing, and it is the whole of the bug:
+        nothing told Odoo that a `plm.checkout` appearing has anything to do
+        with this field, so a document read before the check-out went on
+        answering False out of the cache for the rest of the transaction --
+        measured on 2026-09-14, where getCheckedOut named the user and
+        is_checkout said False until the record was invalidated by hand.
+
+        Which is why the workflow released a component whose drawing somebody
+        still had out: the check was asking a field that could not have changed
+        its mind.
+        """
         for ir_attachment_id in self:
-            _docName, _docRev, chekOutUser, _hostName = self.env[
-                "ir.attachment"
-            ].getCheckedOut(ir_attachment_id.id, None)
-            if chekOutUser:
-                ir_attachment_id.with_context(check=False).is_checkout = True
-            else:
-                ir_attachment_id.with_context(check=False).is_checkout = False
+            ir_attachment_id.is_checkout = bool(ir_attachment_id.checkout_ids)
 
     def getFileExtension(self, docBrws):
         fileExtension = ""
@@ -1670,6 +1818,44 @@ class IrAttachment(models.Model):
     @api.model
     def getHtmlDocument(self, attachment_id):
         return self.browse(attachment_id)._getHtmlDocument()
+
+    @api.model
+    def getHtmlDocuments(self, attachment_ids, with_tooltip=False):
+        """The search window's previews, as many as are shown, in one call.
+
+        getHtmlDocument answers one id, so a client showing ten documents made
+        ten round trips; measured from the CAD client on 2026-09-16, a call costs
+        30 to 100 ms whatever it carries, against 1.4 ms to render one preview.
+
+        `with_tooltip` is off by default because the tooltip is the expensive
+        half -- 95 KB against 102 for ten documents -- and it is seen only when
+        somebody hovers a button. The client asks for it then, one document at a
+        time, and keeps it.
+
+        A document that cannot be rendered costs its own entry, not the call.
+
+        :return: [(ir_attachment.id, html_rendered, html_tooltip), ...]
+        """
+        out = []
+        view_obj = self.env["ir.ui.view"]
+        for ir_attachment_id in self.browse(attachment_ids):
+            html_tooltip = ""
+            try:
+                html_rendered = view_obj._render_template(
+                    "plm.document_search_button", {"doc": ir_attachment_id}
+                )
+                if with_tooltip:
+                    html_tooltip = view_obj._render_template(
+                        "plm.document_search_tooltip", {"doc": ir_attachment_id}
+                    )
+            except Exception as ex:
+                logging.error(
+                    "getHtmlDocuments: %r on attachment %r", ex, ir_attachment_id.id
+                )
+                html_rendered = "<div>no data</div>"
+                html_tooltip = "<div>%s</div>" % ex
+            out.append((ir_attachment_id.id, html_rendered, html_tooltip))
+        return out
 
     has_error = fields.Boolean("Has Error", compute="_checkSavingError", store=True)
 
@@ -3988,6 +4174,32 @@ class IrAttachment(models.Model):
                              ['HiTree', 'RfTree'],
                              latest)
 
+    def get_2d_documents_in_doc_structure(self):
+        """
+        Walk the doc structure (same RfTree/LyTree/HiTree traversal as
+        getDocBom) starting from this document, and return every 2D
+        document found in it, flattened, deduplicated.
+        """
+        self.ensure_one()
+        visited = set()
+        out = self.browse()
+
+        def _walk(attachment_id):
+            if attachment_id.id in visited:
+                return
+            visited.add(attachment_id.id)
+            nonlocal out
+            if attachment_id.document_type == "2d":
+                out |= attachment_id
+            for child_id in attachment_id.getRelatedOneLevelLinks(
+                attachment_id.id, ["RfTree", "LyTree", "HiTree"]
+            ):
+                child = self.browse(child_id)
+                if child.exists():
+                    _walk(child)
+
+        _walk(self)
+        return out
 
     def getDocBomFlatSql(self):
         """

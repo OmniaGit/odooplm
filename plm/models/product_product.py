@@ -883,16 +883,24 @@ class ProductProduct(models.Model):
         attachment = self.env["ir.attachment"]
         for documentBrws in linkeddocuments:
             if documentBrws.engineering_state in check_state:
-                if check_in_check and documentBrws.is_checkout:
+                if documentBrws.is_checkout:
+                    # The check is what `check_in_check` asks for, and the jump
+                    # is what asking for none of it means. The two were the
+                    # other way round until 2026-09-14: the outer condition
+                    # already required check_in_check, so the inner one was
+                    # always true, the error was appended in a branch nothing
+                    # could reach, and every caller -- none of them passes
+                    # False -- moved the component while the document stayed
+                    # behind, checked out, in silence.
                     if check_in_check:
-                        logging.info(
-                            f"{documentBrws.name} workflow jump for custom rule check_in_check"
-                        )
-                    else:
                         docInError.append(
                             _(
                                 f"Document {documentBrws.name} : {documentBrws.engineering_revision} is checked out by user {documentBrws.checkout_user}"
                             )
+                        )
+                    else:
+                        logging.info(
+                            f"{documentBrws.name} workflow jump for custom rule check_in_check"
                         )
                     continue
                 if self._jump_document_wf(documentBrws, check_state):
@@ -1231,6 +1239,12 @@ class ProductProduct(models.Model):
                     )
                 )
 
+    @api.constrains("linkeddocuments", "company_id")
+    def _check_plm_access_of_the_documents(self):
+        """The product side of ir.attachment._check_plm_access_of_the_components:
+        writing the link from here does not run the document's constraint."""
+        self.sudo().linkeddocuments._check_plm_access_of_the_components()
+
     @api.model_create_multi
     def create(self, vals):
         to_write = []
@@ -1247,7 +1261,9 @@ class ProductProduct(models.Model):
             eng_rev = vals_dict.get("engineering_revision", 0)
             eng_code = vals_dict.get("engineering_code")
             if eng_code:
-                prodBrwsList = self.search_count(
+                # Unique in the whole database: the code may belong to a company
+                # this user cannot see, so look past the record rules.
+                prodBrwsList = self.sudo().search_count(
                     [
                         ("engineering_code", "=", eng_code),
                         ("engineering_revision", "=", eng_rev),
@@ -1272,8 +1288,9 @@ class ProductProduct(models.Model):
 
             if isinstance(ex, psycopg2.IntegrityError):
                 msg = _("Error during component creation with values:\n")
-                for key, value in vals.items():
-                    msg = msg + "%r = %r\n" % (key, value)
+                for vals_dict in to_write:
+                    for key, value in vals_dict.items():
+                        msg = msg + "%r = %r\n" % (key, value)
                 try:
                     msg = msg + str(ex.message) + "\n"
                 except Exception:
@@ -2295,6 +2312,75 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
                 (getProductData(product_tmpl_id), computeChildLevel(product_tmpl_id))
             )
         #
+        return (header, out)
+
+    @api.model
+    def getImplodedBom(self, ids):
+        """Where a product is used, all the way up: the client's where-used tree.
+
+        The twin of getExpodedBom, walking the other way. Same header and same
+        (row, children) pairs, so the client draws it with the same view; each
+        row is an assembly that uses the product below it, with the quantity and
+        the source of that bill of materials line.
+
+        Every type of bill of materials is followed. An assembly that uses the
+        same part in more than one of its bills -- normal and engineering, say --
+        appears once under it, since the question is where the part is used and
+        not how many lines say so. A part already on the way up is not walked
+        again, so a cycle in the data cannot loop.
+        """
+        bom_line_obj = self.env["mrp.bom.line"]
+        header = {
+            "engineering_code": _("Code"),
+            "engineering_revision": _("Revision"),
+            "name": _("Description"),
+            "qty": _("Quantity"),
+            "source_name": _("Rel.Source"),
+        }
+
+        def getProductData(product_tmpl_id):
+            return {
+                "id": product_tmpl_id.id,
+                "engineering_code": product_tmpl_id.engineering_code,
+                "engineering_revision": product_tmpl_id.engineering_revision,
+                "name": product_tmpl_id.name,
+            }
+
+        def computeParentLevel(product_tmpl_id, path):
+            parents = []
+            seen = set()
+            lines = bom_line_obj.search(
+                [("product_id.product_tmpl_id", "=", product_tmpl_id.id)]
+            )
+            for bom_line_id in lines:
+                parent_tmpl_id = bom_line_id.bom_id.product_tmpl_id
+                if not parent_tmpl_id or parent_tmpl_id.id in seen:
+                    continue
+                seen.add(parent_tmpl_id.id)
+                row = getProductData(parent_tmpl_id)
+                row.update(
+                    {
+                        "qty": bom_line_id.product_qty,
+                        "source_name": bom_line_id.source_id.name,
+                    }
+                )
+                if parent_tmpl_id.id in path:
+                    parents.append((row, []))
+                    continue
+                parents.append(
+                    (row, computeParentLevel(parent_tmpl_id, path | {parent_tmpl_id.id}))
+                )
+            return parents
+
+        out = []
+        for product_id in self.browse(ids):
+            product_tmpl_id = product_id.product_tmpl_id
+            out.append(
+                (
+                    getProductData(product_tmpl_id),
+                    computeParentLevel(product_tmpl_id, {product_tmpl_id.id}),
+                )
+            )
         return (header, out)
 
     def get_product_bom_flat_ids(self, bom_type="normal"):
