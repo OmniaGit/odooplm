@@ -3,7 +3,6 @@
     <record id="ir_attachment_new_revision" model="ir.ui.view">
         <field name="name">ir.attachment.new.revision</field>
         <field name="model">document.rev_wizard</field>
-        <field name="type">form</field>
         <field name="arch" type="xml">
             <form string="Creation of New Revision">
                 <separator string="" colspan="4"/>
@@ -17,10 +16,10 @@
         </field>
     </record>
 
-    <record model="ir.actions.act_window" id="action_document_new_revision">
+    <record id="action_document_new_revision" model="ir.actions.act_window">
         <field name="name">New Document Revision</field>
         <field name="res_model">document.rev_wizard</field>
-        <field name="view_mode">kanban,tree,form</field>
+        <field name="view_mode">kanban,list,form</field>
         <field name="target">new</field>
         <field name="binding_model_id" ref="base.model_ir_attachment"/>
         <field name="context">{'default_document_id': active_id}</field>

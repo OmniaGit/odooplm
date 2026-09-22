@@ -44,7 +44,7 @@
 									<td name="bom_prod_name_value_b" style="background-color: aliceblue; white-space: nowrap;"><span t-out="childDict.get('engineering_code')"/></td>
 									<td name="bom_description_value_b" style="background-color: aliceblue;"><span t-out="prodTmplBrws.name"/></td>
 									<td name="bom_qty_value_b" style="background-color: aliceblue;"><span t-out="childDict.get('pqty')"/></td>
-									<td name="bom_uom_value_b" style="background-color: aliceblue;"><span t-out="lineBrws.product_uom_id.name"/></td>
+									<td name="bom_uom_value_b" style="background-color: aliceblue;"><span t-out="lineBrws.uom_id.name"/></td>
 									<td name="bom_weight_value_b" style="background-color: aliceblue;"><span t-out="prodTmplBrws.weight"/></td>
 								</t>
 								<t t-if="i%2 != 1">
@@ -54,7 +54,7 @@
 									<td name="bom_prod_name_value" style='white-space: nowrap;'><span t-out="childDict.get('engineering_code')"/></td>
 									<td name="bom_description_value" ><span t-out="prodTmplBrws.name"/></td>
 									<td name="bom_qty_value" ><span t-out="childDict.get('pqty')"/></td>
-									<td name="bom_uom_value" ><span t-out="lineBrws.product_uom_id.name"/></td>
+									<td name="bom_uom_value" ><span t-out="lineBrws.uom_id.name"/></td>
 									<td name="bom_weight_value" ><span t-out="prodTmplBrws.weight"/></td>
 								</t>
 							</tr>

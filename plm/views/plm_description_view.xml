@@ -9,7 +9,8 @@
                     <button
                         name="action_see_help"
                         type="object"
-                        icon="fa-info fa-2x text-o-color-1"
+                        icon="info"
+                        icon_class="oi-2x text-o-color-1"
                         aria-label="Help"
                         title="Help"
                         class="float-right"

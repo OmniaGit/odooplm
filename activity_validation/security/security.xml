@@ -26,53 +26,44 @@
         </record>
 
         <!-- mail.activity.children.rel  -->
-        <record id="mail_activity_validation_children_readonly" model="ir.model.access">
+        <record id="mail_activity_validation_children_readonly" model="ir.access">
             <field name="name">Mail activity validation readonly</field>
             <field name="model_id" ref="model_mail_activity_children_rel"/>
             <field name="group_id" ref="activity_validation.group_force_activity_validation_user_readonly"/>
-            <field name="perm_read" eval="1"/>
-            <field name="perm_write" eval="0"/>
-            <field name="perm_create" eval="0"/>
-            <field name="perm_unlink" eval="0"/>
+            <field name="operation">r</field>
         </record>
 
-        <record id="mail_activity_validation_children_validation" model="ir.model.access">
+        <record id="mail_activity_validation_children_validation" model="ir.access">
             <field name="name">Mail activity validation children</field>
             <field name="model_id" ref="model_mail_activity_children_rel"/>
             <field name="group_id" ref="activity_validation.group_force_activity_validation_user"/>
-            <field name="perm_read" eval="1"/>
-            <field name="perm_write" eval="1"/>
-            <field name="perm_create" eval="1"/>
-            <field name="perm_unlink" eval="1"/>
+            <field name="operation">crud</field>
         </record>
 
-        <record id="mail_activity_validation_children_admin" model="ir.model.access">
+        <record id="mail_activity_validation_children_admin" model="ir.access">
             <field name="name">Mail activity validation admin</field>
             <field name="model_id" ref="model_mail_activity_children_rel"/>
             <field name="group_id" ref="activity_validation.group_force_activity_validation_admin"/>
-            <field name="perm_read" eval="1"/>
-            <field name="perm_write" eval="1"/>
-            <field name="perm_create" eval="1"/>
-            <field name="perm_unlink" eval="1"/>
+            <field name="operation">crud</field>
         </record>
 
-        <record id="mail_activity_children_rel_shedule" model="ir.model.access">
-            <field name="name">Mail activity validation admin</field>
+        <!-- Two distinct rules were previously declared under the same XML id
+             (mail_activity_children_rel_shedule), so the second silently
+             overwrote the first on load instead of creating a separate row.
+             Split into their own ids so both actually apply: read-only for
+             everyone, full CRUD for the Activity User group. -->
+        <record id="mail_activity_children_rel_shedule_readonly" model="ir.access">
+            <field name="name">Mail activity validation schedule readonly</field>
             <field name="model_id" ref="model_mail_activity_children_rel_shedule"/>
-            <field name="perm_read" eval="1"/>
-            <field name="perm_create" eval="0"/>
-            <field name="perm_write" eval="0"/>
-            <field name="perm_unlink" eval="0"/>
+            <field name="group_id" ref="base.group_user"/>
+            <field name="operation">r</field>
         </record>
 
-        <record id="mail_activity_children_rel_shedule" model="ir.model.access">
-            <field name="name">Mail activity validation admin</field>
+        <record id="mail_activity_children_rel_shedule_validation" model="ir.access">
+            <field name="name">Mail activity validation schedule</field>
             <field name="model_id" ref="model_mail_activity_children_rel_shedule"/>
             <field name="group_id" ref="activity_validation.group_force_activity_validation_user"/>
-            <field name="perm_read" eval="1"/>
-            <field name="perm_create" eval="1"/>
-            <field name="perm_write" eval="1"/>
-            <field name="perm_unlink" eval="1"/>
+            <field name="operation">crud</field>
         </record>
     </data>
 </odoo>

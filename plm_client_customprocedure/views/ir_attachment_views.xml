@@ -6,9 +6,10 @@
         <field name="priority" eval="1"/>
         <field name="inherit_id" ref="plm.view_attachment_form_plm_hinerit"/>
         <field name="arch" type="xml">
-             <xpath expr="//sheet/div[@name='button_box']" position="inside">
+            <xpath expr="//sheet/div[@name='button_box']" position="inside">
 
-                    <button class="oe_stat_button" icon="fa-cog" type="object" name="action_open_cad_config" string="CAD Configurations"/>
+                <button class="oe_stat_button" icon="settings" type="object" name="action_open_cad_config"
+                        string="CAD Configurations"/>
 
             </xpath>
         </field>

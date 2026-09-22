@@ -51,10 +51,10 @@
 		                        	</td>
                                     <td class="text-center" style="color:red;">
 					                    <t t-if="record_browse.checkout_user">
-					                        <div class="fa fa-lock" t-out="record_browse.checkout_user"/>
+					                        <div class="oi" data-icon="lock" t-out="record_browse.checkout_user"/>
 					                    </t>
 					                    <t t-else="">
-					                       <div class="fa fa-unlock" style="color:green;"/>
+					                       <div class="oi" data-icon="lock_open" style="color:green;"/>
 					                    </t>
                                     </td>
 		                         	<td class="text-center" style="padding-top: 5px; padding-bottom: 5px;">
@@ -116,10 +116,10 @@
 				</td>
                 <td class="text-center" style="color:red;">
                     <t t-if="record_child.checkout_user">
-                        <div class="fa fa-lock" t-out="record_child.checkout_user"/>
+                        <div class="oi" data-icon="lock" t-out="record_child.checkout_user"/>
                     </t>
                     <t t-else="">
-                        <div class="fa fa-unlock" style="color:green;"/>
+                        <div class="oi" data-icon="lock_open" style="color:green;"/>
                     </t>
                 </td>
                	<td class="text-center" style="padding-top: 5px; padding-bottom: 5px;">
@@ -178,7 +178,6 @@
         <field name="paperformat_id" ref="plm.paperformat_doc_structure"/>
         <field name="report_type">qweb-html</field>
         <field name="report_name">plm.report_doc_structure</field>
-        <field name="report_file">plm.report_doc_structure</field>
         <field name="print_report_name">'Bom Doc Structure - %s' % object.display_name</field>
         <field name="binding_model_id" ref="model_ir_attachment"/>
         <field name="binding_type">report</field>

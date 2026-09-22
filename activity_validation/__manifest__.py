@@ -20,7 +20,7 @@
 ##############################################################################
 {
     "name": "Activity Validation",
-    "version": "19.0.1.0.3",
+    "version": "20.0.1.0.0",
     "images": ["static/description/cover.gif"],
     "author": "OmniaSolutions",
     "maintainer": "OmniaSolutions S.n.c di Boscolo Matteo & C",

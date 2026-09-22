@@ -114,7 +114,7 @@
                                 </div>
                                 <div class="o_kanban_manage_button_section">
                                     <a class="o_kanban_manage_toggle_button" href="#">More
-                                        <i class="fa fa-caret-down"/>
+                                        <i class="oi" data-icon="arrow_drop_down"/>
                                     </a>
                                 </div>
                             </div>

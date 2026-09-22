@@ -160,7 +160,6 @@
         <field name="paperformat_id" ref="plm.paperformat_doc_structure"/>
         <field name="report_type">qweb-html</field>
         <field name="report_name">plm.report_prod_structure</field>
-        <field name="report_file">plm.report_prod_structure</field>
         <field name="print_report_name">'Bom prod Structure - %s' % object.display_name</field>
         <field name="binding_model_id" ref="model_product_product"/>
         <field name="binding_type">report</field>

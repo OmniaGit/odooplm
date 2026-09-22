@@ -12,7 +12,7 @@
                     <a target="new"
                        href="https://www.omniasolutions.website/blog/developer-and-it-here-you-will-find-post-regarding-very-technical-aspect-of-programming-and-it-those-thinks-are-daily-used-by-omniasolutions-and-we-hope-you-that-will-help-you-3/post/cutted-parts-module-37"
                        title=" BOM line quantity will be computed with this formula&#10; {&#10;  [(X Raw Material length * X Percent Wastage) + X Material Wastage] * &#10;     [(Y Raw Material length * Y Percent Wastage) + Y Material Wastage]&#10; } * Raw Material Conversion Factor&#10; ">
-                        <i class="fa fa-info-circle"></i>
+                        <i class="oi" data-icon="info"></i>
                     </a>
                     <field name="is_row_material" colspan="4"/>
                     <field name="row_material"
@@ -44,7 +44,7 @@
                     <a target="new"
                        href="https://www.omniasolutions.website/blog/developer-and-it-here-you-will-find-post-regarding-very-technical-aspect-of-programming-and-it-those-thinks-are-daily-used-by-omniasolutions-and-we-hope-you-that-will-help-you-3/post/cutted-parts-module-37"
                        title=" BOM line quantity will be computed with this formula&#10; {&#10;  [(X Raw Material length * X Percent Wastage) + X Material Wastage] * &#10;     [(Y Raw Material length * Y Percent Wastage) + Y Material Wastage]&#10; } * Raw Material Conversion Factor&#10; ">
-                        <i class="fa fa-info-circle"></i>
+                        <i class="oi" data-icon="info"></i>
                     </a>
                     <group colspan="4">
                         <group colspan="4">

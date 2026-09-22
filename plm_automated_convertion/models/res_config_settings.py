@@ -14,15 +14,15 @@ class ResConfigSettings(models.TransientModel):
     def set_values(self):
         super().set_values()
         ICP = self.env['ir.config_parameter']
-        ICP.sudo().set_param(
+        ICP.sudo().set_str(
             'conversion_server_ip',
             self.conversion_server_ip
         )
-        ICP.sudo().set_param(
+        ICP.sudo().set_str(
             'conversion_server_protocol',
             self.conversion_server_protocol
         )
-        ICP.sudo().set_param(
+        ICP.sudo().set_str(
             'conversion_server_port',
             self.conversion_server_port
         )
@@ -32,13 +32,13 @@ class ResConfigSettings(models.TransientModel):
         res = super().get_values()
         ICP = self.env['ir.config_parameter']
         res.update({
-            'conversion_server_ip': ICP.sudo().get_param(
+            'conversion_server_ip': ICP.sudo().get_str(
                 'conversion_server_ip'
             ),
-            'conversion_server_protocol': ICP.sudo().get_param(
+            'conversion_server_protocol': ICP.sudo().get_str(
                 'conversion_server_protocol'
             ),
-            'conversion_server_port': ICP.sudo().get_param(
+            'conversion_server_port': ICP.sudo().get_str(
                 'conversion_server_port'
             ),
 

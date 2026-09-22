@@ -1,0 +1,2 @@
+id,name,model_id,group_id/id,operation,domain
+plm_auto_translator.access_auto_translator,access_auto_translator,auto.translator,base.group_user,crud,

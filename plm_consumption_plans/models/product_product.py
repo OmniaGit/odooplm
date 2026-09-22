@@ -18,7 +18,7 @@
 #    along with this prograIf not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-from odoo import models, fields, api
+from odoo import models, fields
 
 
 class ProductProduct(models.Model):

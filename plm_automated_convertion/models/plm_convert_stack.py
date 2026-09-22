@@ -18,7 +18,6 @@
 #    along with this prograIf not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-import base64
 import logging
 import os
 import shutil
@@ -203,9 +202,9 @@ class PlmConvertStack(models.Model):
             #     "plm_convetion_server"
             # )
             IrConfig = self.env['ir.config_parameter'].sudo()
-            conversion_server_ip = IrConfig.get_param('conversion_server_ip')
+            conversion_server_ip = IrConfig.get_str('conversion_server_ip')
 
-            conversion_server_port = IrConfig.get_param('conversion_server_port')
+            conversion_server_port = IrConfig.get_str('conversion_server_port')
 
             serverName = f"{conversion_server_ip}:{conversion_server_port}"
             if not serverName:
@@ -285,10 +284,10 @@ class PlmConvertStack(models.Model):
         def get_file_content(doc):
             file_path = os.path.join(fileStoreLocation, doc.store_fname)
             if not os.path.exists(file_path):
-                if doc.datas:
+                if doc.raw:
                     temp_path = os.path.join(tempfile.gettempdir(), doc.name)
                     with open(temp_path, "wb") as f:
-                        f.write(base64.b64decode(doc.datas))
+                        f.write(doc.raw)
                     return open(temp_path, "rb")
                 else:
                     raise UserError(_("Missing file in filestore and no in-database content for '%s'") % doc.name)
@@ -327,10 +326,9 @@ class PlmConvertStack(models.Model):
                 "File size %r, content len %r"
                 % (os.path.getsize(file_name), len(content))
             )
-            encoded_content = base64.b64encode(content)
             if attachment_ids:
                 attachment_ids.write(
-                    {"datas": encoded_content, "source_convert_document": self.start_document_id.id}
+                    {"raw": content, "source_convert_document": self.start_document_id.id}
                 )
                 target_attachment = attachment_ids[0]
             else:
@@ -340,7 +338,7 @@ class PlmConvertStack(models.Model):
                             (6, False, self.start_document_id.linkedcomponents.ids)
                         ],
                         "name": engineering_code,
-                        "datas": encoded_content,
+                        "raw": content,
                         "engineering_state": self.start_document_id.engineering_state,
                         "is_plm": True,
                         "engineering_code": engineering_code,

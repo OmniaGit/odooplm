@@ -21,7 +21,7 @@
 ##############################################################################
 {
     "name": "PLM Web Revision",
-    "version": "19.0.1.0.1",
+    "version": "20.0.1.0.0",
     "images": ["static/description/cover.gif"],
     "author": "OmniaSolutions",
     "maintainer": "OmniaSolutions S.n.c di Boscolo Matteo & C",
@@ -44,8 +44,8 @@
     "depends": ["plm"],
     "data": [
         "security/base_plm_web_rev_security.xml",
-        "wizards/product_rev_wizard.xml",
-        "wizards/document_rev_wizard.xml",
+        "wizard/product_rev_wizard.xml",
+        "wizard/document_rev_wizard.xml",
     ],
     "installable": True,
     "application": False,

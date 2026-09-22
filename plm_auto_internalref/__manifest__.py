@@ -21,7 +21,7 @@
 ##############################################################################
 {
     "name": "PLM Auto Internal Reference",
-    "version": "19.0.2.0.0",
+    "version": "20.0.1.0.0",
     "images": ["static/description/cover.gif"],
     "author": "OmniaSolutions",
     "maintainer": "OmniaSolutions S.n.c di Boscolo Matteo & C",

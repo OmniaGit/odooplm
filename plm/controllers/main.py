@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+
 import functools
 import base64
 import json
@@ -109,7 +110,7 @@ class UploadDocument(Controller):
             value1 = file_stream.stream.read()
             request.env["ir.attachment"].browse(doc_id).write(
                 {
-                    "printout": base64.b64encode(value1),
+                    "printout": base64.b64encode(value1).decode(),
                 }
             )
             logging.info("upload %r" % (doc_id))
@@ -132,10 +133,10 @@ class UploadDocument(Controller):
             doc_id = json.loads(doc_id)
             logging.info("start write %r" % (doc_id))
             value1 = mod_file.stream.read()
-            to_write = {"datas": base64.b64encode(value1), "name": filename}
+            to_write = {"raw": base64.b64encode(value1).decode(), "name": filename}
             preview = kw.get("preview", "")
             if preview:
-                to_write["preview"] = base64.b64encode(preview.stream.read())
+                to_write["preview"] = base64.b64encode(preview.stream.read()).decode()
             ir_attachment_id = request.env["ir.attachment"].browse(doc_id)
             ir_attachment_id.write(to_write)
             ir_attachment_id.sudo().update_component_preview()
@@ -221,7 +222,7 @@ class UploadDocument(Controller):
         for ir_attachment_id in request.env['ir.attachment'].sudo().search([('id','=', attachment_id),
                                                                             ('is_plm','=', True)]):
             return request.env['ir.binary'].sudo()._get_stream_from(ir_attachment_id,
-                                                                    field_name='datas').get_response()
+                                                                    field_name='raw').get_response()
         return Response(status=500,
                         qcontext=f"Attachment {attachment_id} not found")
 
@@ -265,7 +266,7 @@ class UploadDocument(Controller):
             value1 = mod_file.stream.read()
             request.env["ir.attachment"].browse(doc_id).write(
                 {
-                    "preview": base64.b64encode(value1),
+                    "preview": base64.b64encode(value1).decode(),
                 }
             )
             logging.info("upload %r" % (doc_id))
@@ -301,7 +302,7 @@ class UploadDocument(Controller):
                 ]
             )
             to_write = {
-                "datas": base64.b64encode(value1),
+                "raw": base64.b64encode(value1).decode(),
                 "name": filename,
                 "engineering_code": zip_name,
                 "engineering_revision": from_ir_attachment_id.engineering_revision,
@@ -358,7 +359,7 @@ class UploadDocument(Controller):
         pkg_ids = attachment.getRelatedPkgTree(ir_attachment_id)
         for pkg_id in pkg_ids:
             pkg_brws = attachment.browse(pkg_id)
-            return Response(pkg_brws.datas, headers={"file_name": pkg_brws.name})
+            return Response(base64.b64encode(bytes(pkg_brws.raw)), headers={"file_name": pkg_brws.name})
         return Response(status=200)
 
     @route(
@@ -426,7 +427,7 @@ class UploadDocument(Controller):
                 ]
             )
             to_write = {
-                "datas": base64.b64encode(value1),
+                "raw": base64.b64encode(value1).decode(),
                 "name": kw.get("filename") or doc_name,
                 "engineering_code": doc_name,
                 "engineering_revision": doc_rev,

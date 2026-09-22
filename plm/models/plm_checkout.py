@@ -82,18 +82,24 @@ class PlmCheckout(models.Model):
 
     @api.model_create_multi
     def create(self, vals):
+        docBrwsList = []
         for vals_dict in vals:
-            docBrws = self.env["ir.attachment"].browse(vals_dict["documentid"])
+            documentid = vals_dict.get("documentid")
+            if not documentid:
+                raise UserError(_("Related Document is required to check-out a document."))
+            docBrws = self.env["ir.attachment"].browse(documentid)
             values = {"engineering_writable": True}
             if not docBrws.sudo(True).write(values):
                 msg = f"create : Unable to check-out the required document {docBrws.engineering_code} - {docBrws.engineering_revision}"
                 logging.warning(msg)
                 raise UserError(msg)
             self._adjustRelations([docBrws.id])
-        newCheckoutBrws = super().create(vals)
-        newCheckoutBrws.documentid.assign_must_update_flag()
-        docBrws.message_post(body=_(f'Checked-Out ID {newCheckoutBrws.id}' ))
-        return newCheckoutBrws
+            docBrwsList.append(docBrws)
+        newCheckoutBrwsList = super().create(vals)
+        for docBrws, newCheckoutBrws in zip(docBrwsList, newCheckoutBrwsList):
+            newCheckoutBrws.documentid.assign_must_update_flag()
+            docBrws.message_post(body=_(f'Checked-Out ID {newCheckoutBrws.id}'))
+        return newCheckoutBrwsList
 
     def unlink(self):
         documentType = self.env["ir.attachment"]

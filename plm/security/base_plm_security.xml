@@ -59,667 +59,479 @@
     </record>
 
 <!-- model_plm_backupdoc_wizard -->
-    <record id="plm_plm_backupdoc_wizard_view" model="ir.model.access">
+    <!-- Originally granted zero operations (r=w=c=u=0) for group_plm_view_user, i.e.
+         already a no-op. ir.access requires a non-empty operation, so it's kept
+         inactive here instead: same zero-permission effect, xml id stays resolvable
+         for anything that might reference it. -->
+    <record id="plm_plm_backupdoc_wizard_view" model="ir.access">
         <field name="name">PLM Backupdoc Wizard</field>
         <field name="model_id" ref="model_plm_backupdoc_wizard"/>
         <field name="group_id" ref="group_plm_view_user"/>
-        <field name="perm_read" eval="0"/>
-        <field name="perm_write" eval="0"/>
-        <field name="perm_create" eval="0"/>
-        <field name="perm_unlink" eval="0"/>
+        <field name="operation">r</field>
+        <field name="active" eval="False"/>
     </record>
 
-    <record id="plm_plm_backupdoc_wizard_integration" model="ir.model.access">
+    <record id="plm_plm_backupdoc_wizard_integration" model="ir.access">
         <field name="name">PLM Backupdoc Wizard</field>
         <field name="model_id" ref="model_plm_backupdoc_wizard"/>
         <field name="group_id" ref="group_plm_integration_user"/>
-        <field name="perm_read" eval="1"/>
-        <field name="perm_write" eval="1"/>
-        <field name="perm_create" eval="1"/>
-        <field name="perm_unlink" eval="0"/>
+        <field name="operation">cru</field>
     </record>
 
-    <record id="model_plm_backupdoc_wizard_admin" model="ir.model.access">
+    <record id="model_plm_backupdoc_wizard_admin" model="ir.access">
         <field name="name">PLM Backupdoc Wizard</field>
         <field name="model_id" ref="model_plm_backupdoc_wizard"/>
         <field name="group_id" ref="group_plm_admin"/>
-        <field name="perm_read" eval="1"/>
-        <field name="perm_write" eval="1"/>
-        <field name="perm_create" eval="1"/>
-        <field name="perm_unlink" eval="1"/>
+        <field name="operation">crud</field>
     </record>
 
-    <record id="model_plm_bom_report_wizard_user" model="ir.model.access">
+    <record id="model_plm_bom_report_wizard_user" model="ir.access">
         <field name="name">PLM BoM Report Wizard</field>
         <field name="model_id" ref="model_plm_bom_report_wizard"/>
         <field name="group_id" ref="group_plm_view_user"/>
-        <field name="perm_read" eval="1"/>
-        <field name="perm_write" eval="1"/>
-        <field name="perm_create" eval="1"/>
-        <field name="perm_unlink" eval="1"/>
+        <field name="operation">crud</field>
     </record>
 
 <!-- model_plm_temporary -->
-    <record id="plm_temporary_message_view" model="ir.model.access">
+    <record id="plm_temporary_message_view" model="ir.access">
         <field name="name">PLM Temporary message</field>
         <field name="model_id" ref="model_plm_temporary"/>
         <field name="group_id" ref="group_plm_view_user"/>
-        <field name="perm_read" eval="1"/>
-        <field name="perm_write" eval="0"/>
-        <field name="perm_create" eval="0"/>
-        <field name="perm_unlink" eval="0"/>
+        <field name="operation">r</field>
     </record>
 
-    <record id="plm_temporary_temporary_integration" model="ir.model.access">
+    <record id="plm_temporary_temporary_integration" model="ir.access">
         <field name="name">PLM Temporary message</field>
         <field name="model_id" ref="model_plm_temporary"/>
         <field name="group_id" ref="group_plm_integration_user"/>
-        <field name="perm_read" eval="1"/>
-        <field name="perm_write" eval="1"/>
-        <field name="perm_create" eval="1"/>
-        <field name="perm_unlink" eval="1"/>
+        <field name="operation">crud</field>
     </record>
 <!-- plm_temporary_message -->
-    <record id="plm_plm_temporary_message_view" model="ir.model.access">
+    <record id="plm_plm_temporary_message_view" model="ir.access">
         <field name="name">PLM Temporary message</field>
         <field name="model_id" ref="model_plm_temporary_message"/>
         <field name="group_id" ref="group_plm_view_user"/>
-        <field name="perm_read" eval="1"/>
-        <field name="perm_write" eval="0"/>
-        <field name="perm_create" eval="0"/>
-        <field name="perm_unlink" eval="0"/>
+        <field name="operation">r</field>
     </record>
 
-    <record id="plm_plm_temporary_message_integration" model="ir.model.access">
+    <record id="plm_plm_temporary_message_integration" model="ir.access">
         <field name="name">PLM Temporary message</field>
         <field name="model_id" ref="model_plm_temporary_message"/>
         <field name="group_id" ref="group_plm_integration_user"/>
-        <field name="perm_read" eval="1"/>
-        <field name="perm_write" eval="1"/>
-        <field name="perm_create" eval="1"/>
-        <field name="perm_unlink" eval="1"/>
+        <field name="operation">crud</field>
     </record>
 <!-- product.product  -->
-    <record id="plm_product_product_view" model="ir.model.access">
+    <record id="plm_product_product_view" model="ir.access">
         <field name="name">PLM Product Product</field>
         <field name="model_id" ref="model_product_product"/>
         <field name="group_id" ref="group_plm_view_user"/>
-        <field name="perm_read" eval="1"/>
-        <field name="perm_write" eval="0"/>
-        <field name="perm_create" eval="0"/>
-        <field name="perm_unlink" eval="0"/>
+        <field name="operation">r</field>
     </record>
-    <record id="plm_product_product_integration" model="ir.model.access">
+    <record id="plm_product_product_integration" model="ir.access">
         <field name="name">Product Product</field>
         <field name="model_id" ref="model_product_product"/>
         <field name="group_id" ref="group_plm_integration_user"/>
-        <field name="perm_read" eval="1"/>
-        <field name="perm_write" eval="1"/>
-        <field name="perm_create" eval="1"/>
-        <field name="perm_unlink" eval="1"/>
+        <field name="operation">crud</field>
     </record>
 
-    <record id="group_plm_readonly_released_rule_component" model="ir.rule">
+    <record id="group_plm_readonly_released_rule_component" model="ir.access">
         <field name="name">NoWrite / NoDelete PLM Component Released</field>
         <field name="model_id" ref="model_product_product"/>
-        <field name="active" eval="1"/>
-        <field name="perm_unlink" eval="1"/>
-        <field name="perm_read" eval="0"/>
-        <field name="perm_write" eval="0"/>
-        <field name="perm_create" eval="0"/>
-        <field name="domain_force" eval="[('engineering_state','not in',['draft', False])]"/>
-        <field name="groups" eval="[(4, ref('group_plm_readonly_released'))]"/>
+        <field name="group_id" ref="group_plm_readonly_released"/>
+        <field name="operation">d</field>
+        <field name="domain">[('engineering_state','not in',['draft', False])]</field>
     </record>
 
 
 
 <!-- mrp.bom.line  -->
-    <record id="plm_mrp_bom_line_view" model="ir.model.access">
+    <record id="plm_mrp_bom_line_view" model="ir.access">
         <field name="name">PLM Mrp Bom Line</field>
         <field name="model_id" ref="model_mrp_bom_line"/>
         <field name="group_id" ref="group_plm_view_user"/>
-        <field name="perm_read" eval="1"/>
-        <field name="perm_write" eval="0"/>
-        <field name="perm_create" eval="0"/>
-        <field name="perm_unlink" eval="0"/>
+        <field name="operation">r</field>
     </record>
-    <record id="plm_mrp_bom_line_integration" model="ir.model.access">
+    <record id="plm_mrp_bom_line_integration" model="ir.access">
         <field name="name">MRP Bom Line</field>
         <field name="model_id" ref="model_mrp_bom_line"/>
         <field name="group_id" ref="group_plm_integration_user"/>
-        <field name="perm_read" eval="1"/>
-        <field name="perm_write" eval="1"/>
-        <field name="perm_create" eval="1"/>
-        <field name="perm_unlink" eval="1"/>
+        <field name="operation">crud</field>
     </record>
 
 
 
 <!-- mrp.bom  -->
-    <record id="plm_mrp_bom_view" model="ir.model.access">
+    <record id="plm_mrp_bom_view" model="ir.access">
         <field name="name">PLM Mrp Bom</field>
         <field name="model_id" ref="model_mrp_bom"/>
         <field name="group_id" ref="group_plm_view_user"/>
-        <field name="perm_read" eval="1"/>
-        <field name="perm_write" eval="0"/>
-        <field name="perm_create" eval="0"/>
-        <field name="perm_unlink" eval="0"/>
+        <field name="operation">r</field>
     </record>
-    <record id="plm_mrp_bom_integration" model="ir.model.access">
+    <record id="plm_mrp_bom_integration" model="ir.access">
         <field name="name">MRP Bom</field>
         <field name="model_id" ref="model_mrp_bom"/>
         <field name="group_id" ref="group_plm_integration_user"/>
-        <field name="perm_read" eval="1"/>
-        <field name="perm_write" eval="1"/>
-        <field name="perm_create" eval="1"/>
-        <field name="perm_unlink" eval="1"/>
+        <field name="operation">crud</field>
     </record>
 
-    <record id="group_plm_readonly_released_rule_bom" model="ir.rule">
+    <record id="group_plm_readonly_released_rule_bom" model="ir.access">
         <field name="name">NoWrite / NoDelete PLM BOM Released</field>
         <field name="model_id" ref="model_mrp_bom"/>
-        <field name="active" eval="1"/>
-        <field name="perm_unlink" eval="1"/>
-        <field name="perm_read" eval="0"/>
-        <field name="perm_write" eval="0"/>
-        <field name="perm_create" eval="0"/>
-        <field name="domain_force" eval="[('engineering_state','not in',['draft', False])]"/>
-        <field name="groups" eval="[(4, ref('group_plm_readonly_released'))]"/>
+        <field name="group_id" ref="group_plm_readonly_released"/>
+        <field name="operation">d</field>
+        <field name="domain">[('engineering_state','not in',['draft', False])]</field>
     </record>
 
 <!-- plm.client  -->
-    <record id="plm_client_integration" model="ir.model.access">
+    <record id="plm_client_integration" model="ir.access">
         <field name="name">PLM Client</field>
         <field name="model_id" ref="model_plm_client"/>
         <field name="group_id" ref="group_plm_integration_user"/>
-        <field name="perm_read" eval="1"/>
-        <field name="perm_write" eval="1"/>
-        <field name="perm_create" eval="1"/>
-        <field name="perm_unlink" eval="1"/>
+        <field name="operation">crud</field>
     </record>
 
 <!-- ir.attachment  -->
-    <record id="plm_ir_attachment_view" model="ir.model.access">
+    <record id="plm_ir_attachment_view" model="ir.access">
         <field name="name">PLM Document</field>
         <field name="model_id" ref="model_ir_attachment"/>
         <field name="group_id" ref="group_plm_view_user"/>
-        <field name="perm_read" eval="1"/>
-        <field name="perm_write" eval="0"/>
-        <field name="perm_create" eval="0"/>
-        <field name="perm_unlink" eval="0"/>
+        <field name="operation">r</field>
     </record>
-    <record id="plm_ir_attachment_integration" model="ir.model.access">
+    <record id="plm_ir_attachment_integration" model="ir.access">
         <field name="name">PLM Document</field>
         <field name="model_id" ref="model_ir_attachment"/>
         <field name="group_id" ref="group_plm_integration_user"/>
-        <field name="perm_read" eval="1"/>
-        <field name="perm_write" eval="1"/>
-        <field name="perm_create" eval="1"/>
-        <field name="perm_unlink" eval="0"/>
+        <field name="operation">cru</field>
     </record>
-    <record id="plm_ir_attachment_admin" model="ir.model.access">
+    <record id="plm_ir_attachment_admin" model="ir.access">
         <field name="name">PLM Document</field>
         <field name="model_id" ref="model_ir_attachment"/>
         <field name="group_id" ref="group_plm_admin"/>
-        <field name="perm_read" eval="1"/>
-        <field name="perm_write" eval="1"/>
-        <field name="perm_create" eval="1"/>
-        <field name="perm_unlink" eval="1"/>
+        <field name="operation">crud</field>
     </record>
 
-    <record id="group_plm_readonly_released_rule_document" model="ir.rule">
+    <record id="group_plm_readonly_released_rule_document" model="ir.access">
         <field name="name">NoWrite / NoDelete PLM Document Released</field>
         <field name="model_id" ref="model_ir_attachment"/>
-        <field name="active" eval="1"/>
-        <field name="perm_unlink" eval="1"/>
-        <field name="perm_read" eval="0"/>
-        <field name="perm_write" eval="0"/>
-        <field name="perm_create" eval="0"/>
-        <field name="domain_force" eval="[('engineering_state','not in',['draft', False]), ('is_plm','=', True)]"/>
-        <field name="groups" eval="[(4, ref('group_plm_readonly_released'))]"/>
+        <field name="group_id" ref="group_plm_readonly_released"/>
+        <field name="operation">d</field>
+        <field name="domain">[('engineering_state','not in',['draft', False]), ('is_plm','=', True)]</field>
     </record>
 
-    <record id="group_plm_view_plm_document" model="ir.rule">
+    <record id="group_plm_view_plm_document" model="ir.access">
         <field name="name">View only plm Documnet</field>
         <field name="model_id" ref="model_ir_attachment"/>
-        <field name="active" eval="1"/>
-        <field name="perm_read" eval="1"/>
-        <field name="perm_create" eval="1"/>
-        <field name="perm_write" eval="0"/>
-        <field name="perm_unlink" eval="0"/>
-        <field name="domain_force" eval="[('is_plm','=',True)]"/>
-        <field name="groups" eval="[(4, ref('group_plm_view_user'))]"/>
+        <field name="group_id" ref="group_plm_view_user"/>
+        <field name="operation">cr</field>
+        <field name="domain">[('is_plm','=',True)]</field>
     </record>
 
-    <record id="group_plm_admin_plm_document" model="ir.rule">
+    <record id="group_plm_admin_plm_document" model="ir.access">
         <field name="name">Admin rule PLM documnet</field>
         <field name="model_id" ref="model_ir_attachment"/>
-        <field name="active" eval="1"/>
-        <field name="perm_read" eval="1"/>
-        <field name="perm_create" eval="1"/>
-        <field name="perm_write" eval="1"/>
-        <field name="perm_unlink" eval="1"/>
-        <field name="domain_force" eval="[('is_plm','=',True)]"/>
-        <field name="groups" eval="[(4, ref('group_plm_integration_user'))]"/>
+        <field name="group_id" ref="group_plm_integration_user"/>
+        <field name="operation">crud</field>
+        <field name="domain">[('is_plm','=',True)]</field>
     </record>
 
-    <record id="group_non_plm_view_plm_document" model="ir.rule">
+    <record id="group_non_plm_view_plm_document" model="ir.access">
         <field name="name">Manage PLM Document</field>
         <field name="model_id" ref="model_ir_attachment"/>
-        <field name="active" eval="1"/>
-        <field name="perm_read" eval="0"/>
-        <field name="perm_create" eval="0"/>
-        <field name="perm_write" eval="1"/>
-        <field name="perm_unlink" eval="1"/>
-        <field name="domain_force" eval="[('is_plm','=',True)]"/>
-        <field name="groups" eval="[(4, ref('group_plm_view_user'))]"/>
+        <field name="group_id" ref="group_plm_view_user"/>
+        <field name="operation">ud</field>
+        <field name="domain">[('is_plm','=',True)]</field>
     </record>
 
-    <record id="group_plm_view_user_non_plm_document" model="ir.rule">
+    <record id="group_plm_view_user_non_plm_document" model="ir.access">
         <field name="name">View/Create Non-PLM Attachment</field>
         <field name="model_id" ref="model_ir_attachment"/>
-        <field name="active" eval="1"/>
-        <field name="perm_read" eval="1"/>
-        <field name="perm_create" eval="1"/>
-        <field name="perm_write" eval="1"/>
-        <field name="perm_unlink" eval="1"/>
-        <field name="domain_force" eval="[('is_plm','=',False)]"/>
-        <field name="groups" eval="[(4, ref('group_plm_view_user'))]"/>
+        <field name="group_id" ref="group_plm_view_user"/>
+        <field name="operation">crud</field>
+        <field name="domain">[('is_plm','=',False)]</field>
     </record>
 
-    <record id="group_plm_view_released_document" model="ir.rule">
+    <record id="group_plm_view_released_document" model="ir.access">
         <field name="name">View only released Documnet</field>
         <field name="model_id" ref="model_ir_attachment"/>
-        <field name="active" eval="1"/>
-        <field name="perm_unlink" eval="0"/>
-        <field name="perm_read" eval="1"/>
-        <field name="perm_write" eval="0"/>
-        <field name="perm_create" eval="0"/>
-        <field name="domain_force" eval="[('is_plm','=',True),('engineering_state','in',['released','obsoleted','undermodify'])]"/>
-        <field name="groups" eval="[(4, ref('group_plm_release_document'))]"/>
+        <field name="group_id" ref="group_plm_release_document"/>
+        <field name="operation">r</field>
+        <field name="domain">[('is_plm','=',True),('engineering_state','in',['released','obsoleted','undermodify'])]</field>
     </record>
 
 
 <!-- plm.backupdoc  -->
-    <record id="plm_backupdoc_view" model="ir.model.access">
+    <record id="plm_backupdoc_view" model="ir.access">
         <field name="name">PLM Back Up Document</field>
         <field name="model_id" ref="model_plm_backupdoc"/>
-        <field name="perm_read" eval="1"/>
-        <field name="perm_write" eval="0"/>
-        <field name="perm_create" eval="0"/>
-        <field name="perm_unlink" eval="0"/>
+        <field name="group_id" ref="base.group_user"/>
+        <field name="operation">r</field>
     </record>
-    <record id="plm_backupdoc_integration" model="ir.model.access">
+    <record id="plm_backupdoc_integration" model="ir.access">
         <field name="name">PLM Back Up Document</field>
         <field name="model_id" ref="model_plm_backupdoc"/>
         <field name="group_id" ref="group_plm_integration_user"/>
-        <field name="perm_read" eval="1"/>
-        <field name="perm_write" eval="1"/>
-        <field name="perm_create" eval="1"/>
-        <field name="perm_unlink" eval="0"/>
+        <field name="operation">cru</field>
     </record>
-    <record id="plm_backupdoc_admin" model="ir.model.access">
+    <record id="plm_backupdoc_admin" model="ir.access">
         <field name="name">PLM Back Up Document</field>
         <field name="model_id" ref="model_plm_backupdoc"/>
         <field name="group_id" ref="group_plm_admin"/>
-        <field name="perm_read" eval="1"/>
-        <field name="perm_write" eval="1"/>
-        <field name="perm_create" eval="1"/>
-        <field name="perm_unlink" eval="1"/>
+        <field name="operation">crud</field>
     </record>
 
 
 
 
 <!-- plm.checkout  -->
-    <record id="plm_checkout_view" model="ir.model.access">
+    <record id="plm_checkout_view" model="ir.access">
         <field name="name">PLM Check Out</field>
         <field name="model_id" ref="model_plm_checkout"/>
         <field name="group_id" ref="group_plm_view_user"/>
-        <field name="perm_read" eval="1"/>
-        <field name="perm_write" eval="0"/>
-        <field name="perm_create" eval="0"/>
-        <field name="perm_unlink" eval="0"/>
+        <field name="operation">r</field>
     </record>
-    <record id="plm_checkout_integration" model="ir.model.access">
+    <!-- plm_checkout_integration was previously declared twice under the same
+         xml id (perm_unlink 0, then 1); the second record silently overwrote
+         the first on load, so the live permission was already "crud". Kept as
+         a single record here with that same effective permission (no behavior
+         change per migration policy). -->
+    <record id="plm_checkout_integration" model="ir.access">
         <field name="name">PLM Check Out</field>
         <field name="model_id" ref="model_plm_checkout"/>
         <field name="group_id" ref="group_plm_integration_user"/>
-        <field name="perm_read" eval="1"/>
-        <field name="perm_write" eval="1"/>
-        <field name="perm_create" eval="1"/>
-        <field name="perm_unlink" eval="0"/>
-    </record>
-    <record id="plm_checkout_integration" model="ir.model.access">
-        <field name="name">PLM Check Out</field>
-        <field name="model_id" ref="model_plm_checkout"/>
-        <field name="group_id" ref="group_plm_integration_user"/>
-        <field name="perm_read" eval="1"/>
-        <field name="perm_write" eval="1"/>
-        <field name="perm_create" eval="1"/>
-        <field name="perm_unlink" eval="1"/>
+        <field name="operation">crud</field>
     </record>
 
 
 
 
 <!-- plm.description  -->
-    <record id="plm_description_view" model="ir.model.access">
+    <record id="plm_description_view" model="ir.access">
         <field name="name">PLM Description</field>
         <field name="model_id" ref="model_plm_description"/>
         <field name="group_id" ref="group_plm_view_user"/>
-        <field name="perm_read" eval="1"/>
-        <field name="perm_write" eval="0"/>
-        <field name="perm_create" eval="0"/>
-        <field name="perm_unlink" eval="0"/>
+        <field name="operation">r</field>
     </record>
-    <record id="plm_description_integration" model="ir.model.access">
+    <record id="plm_description_integration" model="ir.access">
         <field name="name">PLM Description</field>
         <field name="model_id" ref="model_plm_description"/>
         <field name="group_id" ref="group_plm_integration_user"/>
-        <field name="perm_read" eval="1"/>
-        <field name="perm_write" eval="1"/>
-        <field name="perm_create" eval="1"/>
-        <field name="perm_unlink" eval="0"/>
+        <field name="operation">cru</field>
     </record>
-    <record id="plm_description_admin" model="ir.model.access">
+    <record id="plm_description_admin" model="ir.access">
         <field name="name">PLM Description</field>
         <field name="model_id" ref="model_plm_description"/>
         <field name="group_id" ref="group_plm_admin"/>
-        <field name="perm_read" eval="1"/>
-        <field name="perm_write" eval="1"/>
-        <field name="perm_create" eval="1"/>
-        <field name="perm_unlink" eval="1"/>
+        <field name="operation">crud</field>
     </record>
 
 
 
 
 <!-- ir.attachment.relation  -->
-    <record id="plm_ir_attachment_relation_view" model="ir.model.access">
+    <record id="plm_ir_attachment_relation_view" model="ir.access">
         <field name="name">PLM Document relation</field>
         <field name="model_id" ref="model_ir_attachment_relation"/>
         <field name="group_id" ref="group_plm_view_user"/>
-        <field name="perm_read" eval="1"/>
-        <field name="perm_write" eval="0"/>
-        <field name="perm_create" eval="0"/>
-        <field name="perm_unlink" eval="0"/>
+        <field name="operation">r</field>
     </record>
-    <record id="plm_ir_attachment_relation_integration" model="ir.model.access">
+    <record id="plm_ir_attachment_relation_integration" model="ir.access">
         <field name="name">PLM Document relation</field>
         <field name="model_id" ref="model_ir_attachment_relation"/>
         <field name="group_id" ref="group_plm_integration_user"/>
-        <field name="perm_read" eval="1"/>
-        <field name="perm_write" eval="1"/>
-        <field name="perm_create" eval="1"/>
-        <field name="perm_unlink" eval="1"/>
+        <field name="operation">crud</field>
     </record>
 
 
 
 
 <!-- plm.finishing  -->
-    <record id="plm_finishing_view" model="ir.model.access">
+    <record id="plm_finishing_view" model="ir.access">
         <field name="name">PLM Finishing</field>
         <field name="model_id" ref="model_plm_finishing"/>
         <field name="group_id" ref="group_plm_view_user"/>
-        <field name="perm_read" eval="1"/>
-        <field name="perm_write" eval="0"/>
-        <field name="perm_create" eval="0"/>
-        <field name="perm_unlink" eval="0"/>
+        <field name="operation">r</field>
     </record>
-    <record id="plm_finishing_integration" model="ir.model.access">
+    <record id="plm_finishing_integration" model="ir.access">
         <field name="name">PLM Finishing</field>
         <field name="model_id" ref="model_plm_finishing"/>
         <field name="group_id" ref="group_plm_integration_user"/>
-        <field name="perm_read" eval="1"/>
-        <field name="perm_write" eval="1"/>
-        <field name="perm_create" eval="1"/>
-        <field name="perm_unlink" eval="0"/>
+        <field name="operation">cru</field>
     </record>
-    <record id="plm_finishing_admin" model="ir.model.access">
+    <record id="plm_finishing_admin" model="ir.access">
         <field name="name">PLM Finishing</field>
         <field name="model_id" ref="model_plm_finishing"/>
         <field name="group_id" ref="group_plm_admin"/>
-        <field name="perm_read" eval="1"/>
-        <field name="perm_write" eval="1"/>
-        <field name="perm_create" eval="1"/>
-        <field name="perm_unlink" eval="1"/>
+        <field name="operation">crud</field>
     </record>
 
 
 
 
 <!-- plm.treatment  -->
-   <record id="plm_treatment_view" model="ir.model.access">
+   <record id="plm_treatment_view" model="ir.access">
        <field name="name">PLM Treatment</field>
        <field name="model_id" ref="model_plm_treatment"/>
        <field name="group_id" ref="group_plm_view_user"/>
-       <field name="perm_read" eval="1"/>
-       <field name="perm_write" eval="0"/>
-       <field name="perm_create" eval="0"/>
-       <field name="perm_unlink" eval="0"/>
+       <field name="operation">r</field>
    </record>
-    <record id="plm_treatment_integration" model="ir.model.access">
+    <record id="plm_treatment_integration" model="ir.access">
         <field name="name">PLM Treatment</field>
         <field name="model_id" ref="model_plm_treatment"/>
         <field name="group_id" ref="group_plm_integration_user"/>
-        <field name="perm_read" eval="1"/>
-        <field name="perm_write" eval="1"/>
-        <field name="perm_create" eval="1"/>
-        <field name="perm_unlink" eval="0"/>
+        <field name="operation">cru</field>
     </record>
-   <record id="plm_treatment_admin" model="ir.model.access">
+   <record id="plm_treatment_admin" model="ir.access">
        <field name="name">PLM Treatment</field>
        <field name="model_id" ref="model_plm_treatment"/>
        <field name="group_id" ref="group_plm_admin"/>
-       <field name="perm_read" eval="1"/>
-       <field name="perm_write" eval="1"/>
-       <field name="perm_create" eval="1"/>
-       <field name="perm_unlink" eval="1"/>
+       <field name="operation">crud</field>
    </record>
 
 
 
 <!-- plm.material  -->
-    <record id="plm_material_view" model="ir.model.access">
+    <record id="plm_material_view" model="ir.access">
         <field name="name">PLM Material</field>
         <field name="model_id" ref="model_plm_material"/>
         <field name="group_id" ref="group_plm_view_user"/>
-        <field name="perm_read" eval="1"/>
-        <field name="perm_write" eval="0"/>
-        <field name="perm_create" eval="0"/>
-        <field name="perm_unlink" eval="0"/>
+        <field name="operation">r</field>
     </record>
-    <record id="plm_material_integration" model="ir.model.access">
+    <record id="plm_material_integration" model="ir.access">
         <field name="name">PLM Material</field>
         <field name="model_id" ref="model_plm_material"/>
         <field name="group_id" ref="group_plm_integration_user"/>
-        <field name="perm_read" eval="1"/>
-        <field name="perm_write" eval="1"/>
-        <field name="perm_create" eval="1"/>
-        <field name="perm_unlink" eval="0"/>
+        <field name="operation">cru</field>
     </record>
-    <record id="plm_material_admin" model="ir.model.access">
+    <record id="plm_material_admin" model="ir.access">
         <field name="name">PLM Material</field>
         <field name="model_id" ref="model_plm_material"/>
         <field name="group_id" ref="group_plm_admin"/>
-        <field name="perm_read" eval="1"/>
-        <field name="perm_write" eval="1"/>
-        <field name="perm_create" eval="1"/>
-        <field name="perm_unlink" eval="1"/>
+        <field name="operation">crud</field>
     </record>
 
 
 
 <!-- plm.component.document.rel  -->
-    <record id="plm_component_document_rel_view" model="ir.model.access">
+    <record id="plm_component_document_rel_view" model="ir.access">
         <field name="name">PLM Product Document Rel</field>
         <field name="model_id" ref="model_plm_component_document_rel"/>
         <field name="group_id" ref="group_plm_view_user"/>
-        <field name="perm_read" eval="1"/>
-        <field name="perm_write" eval="0"/>
-        <field name="perm_create" eval="0"/>
-        <field name="perm_unlink" eval="0"/>
+        <field name="operation">r</field>
     </record>
-    <record id="plm_component_document_rel_integration" model="ir.model.access">
+    <record id="plm_component_document_rel_integration" model="ir.access">
         <field name="name">PLM Product Document Rel</field>
         <field name="model_id" ref="model_plm_component_document_rel"/>
         <field name="group_id" ref="group_plm_integration_user"/>
-        <field name="perm_read" eval="1"/>
-        <field name="perm_write" eval="1"/>
-        <field name="perm_create" eval="1"/>
-        <field name="perm_unlink" eval="1"/>
+        <field name="operation">crud</field>
     </record>
 
 
 
 <!-- report.plmcomponent  -->
-    <record id="plm_report_plm_component_view" model="ir.model.access">
+    <record id="plm_report_plm_component_view" model="ir.access">
         <field name="name">PLM Report Component</field>
         <field name="model_id" ref="model_report_plmcomponent"/>
         <field name="group_id" ref="group_plm_view_user"/>
-        <field name="perm_read" eval="1"/>
-        <field name="perm_write" eval="1"/>
-        <field name="perm_create" eval="1"/>
-        <field name="perm_unlink" eval="1"/>
+        <field name="operation">crud</field>
     </record>
 
 
 
 <!-- product.template  -->
-    <record id="plm_product_template_view" model="ir.model.access">
+    <record id="plm_product_template_view" model="ir.access">
         <field name="name">Product Template</field>
         <field name="model_id" ref="model_product_template"/>
         <field name="group_id" ref="group_plm_view_user"/>
-        <field name="perm_read" eval="1"/>
-        <field name="perm_write" eval="0"/>
-        <field name="perm_create" eval="0"/>
-        <field name="perm_unlink" eval="0"/>
+        <field name="operation">r</field>
     </record>
-    <record id="plm_product_template_integration" model="ir.model.access">
+    <record id="plm_product_template_integration" model="ir.access">
         <field name="name">Product Template</field>
         <field name="model_id" ref="model_product_template"/>
         <field name="group_id" ref="group_plm_integration_user"/>
-        <field name="perm_read" eval="1"/>
-        <field name="perm_write" eval="1"/>
-        <field name="perm_create" eval="1"/>
-        <field name="perm_unlink" eval="1"/>
+        <field name="operation">crud</field>
     </record>
 
 
 
 <!-- ir.attachment.file  -->
-    <record id="plm_report_ir_attachment_view" model="ir.model.access">
+    <record id="plm_report_ir_attachment_view" model="ir.access">
         <field name="name">PLM Document report</field>
         <field name="model_id" ref="model_report_ir_attachment_file"/>
         <field name="group_id" ref="group_plm_view_user"/>
-        <field name="perm_read" eval="1"/>
-        <field name="perm_write" eval="0"/>
-        <field name="perm_create" eval="0"/>
-        <field name="perm_unlink" eval="0"/>
+        <field name="operation">r</field>
     </record>
-    <record id="plm_report_ir_attachment_integration" model="ir.model.access">
+    <record id="plm_report_ir_attachment_integration" model="ir.access">
         <field name="name">PLM Document report</field>
         <field name="model_id" ref="model_report_ir_attachment_file"/>
         <field name="group_id" ref="group_plm_integration_user"/>
-        <field name="perm_read" eval="1"/>
-        <field name="perm_write" eval="1"/>
-        <field name="perm_create" eval="1"/>
-        <field name="perm_unlink" eval="1"/>
+        <field name="operation">crud</field>
     </record>
 
 <!-- plm.dbthread  -->
 
-    <record id="plm.dbthread" model="ir.model.access">
+    <record id="plm.dbthread" model="ir.access">
         <field name="name">Product Price History</field>
         <field name="model_id" ref="model_plm_dbthread"/>
         <field name="group_id" ref="group_plm_integration_user"/>
-        <field name="perm_read" eval="1"/>
-        <field name="perm_write" eval="1"/>
-        <field name="perm_create" eval="1"/>
-        <field name="perm_unlink" eval="1"/>
+        <field name="operation">crud</field>
     </record>
 
 <!-- ir.module.module  -->
-    <record id="plm_module_module_read" model="ir.model.access">
+    <record id="plm_module_module_read" model="ir.access">
         <field name="name">Plm Module Module Read</field>
         <field name="model_id" ref="base.model_ir_module_module"/>
         <field name="group_id" ref="group_plm_integration_user"/>
-        <field name="perm_read" eval="1"/>
-        <field name="perm_write" eval="0"/>
-        <field name="perm_create" eval="0"/>
-        <field name="perm_unlink" eval="0"/>
+        <field name="operation">r</field>
     </record>
 
 <!-- ir.module.category  -->
-    <record id="plm_module_category_read" model="ir.model.access">
+    <record id="plm_module_category_read" model="ir.access">
         <field name="name">Plm Module category Read</field>
         <field name="model_id" ref="base.model_ir_module_category"/>
         <field name="group_id" ref="group_plm_integration_user"/>
-        <field name="perm_read" eval="1"/>
-        <field name="perm_write" eval="0"/>
-        <field name="perm_create" eval="0"/>
-        <field name="perm_unlink" eval="0"/>
+        <field name="operation">r</field>
     </record>
 
 
-    <record id="plm_cad_open_admin" model="ir.model.access">
+    <record id="plm_cad_open_admin" model="ir.access">
         <field name="name">PLM Cad Open Admin</field>
         <field name="model_id" ref="plm.model_plm_cad_open"/>
         <field name="group_id" ref="plm.group_plm_admin"/>
-        <field name="perm_read" eval="1"/>
-        <field name="perm_write" eval="1"/>
-        <field name="perm_create" eval="1"/>
-        <field name="perm_unlink" eval="0"/>
+        <field name="operation">cru</field>
     </record>
 
-    <record id="plm_cad_open_integration" model="ir.model.access">
+    <record id="plm_cad_open_integration" model="ir.access">
         <field name="name">Plm Cad Open Integration</field>
         <field name="model_id" ref="plm.model_plm_cad_open"/>
         <field name="group_id" ref="plm.group_plm_integration_user"/>
-        <field name="perm_read" eval="1"/>
-        <field name="perm_write" eval="1"/>
-        <field name="perm_create" eval="1"/>
-        <field name="perm_unlink" eval="0"/>
+        <field name="operation">cru</field>
     </record>
 
-    <record id="plm_cad_open_bck_admin" model="ir.model.access">
+    <record id="plm_cad_open_bck_admin" model="ir.access">
         <field name="name">PLM Cad Open Bck Admin</field>
         <field name="model_id" ref="plm.model_plm_cad_open_bck"/>
         <field name="group_id" ref="plm.group_plm_admin"/>
-        <field name="perm_read" eval="1"/>
-        <field name="perm_write" eval="1"/>
-        <field name="perm_create" eval="1"/>
-        <field name="perm_unlink" eval="0"/>
+        <field name="operation">cru</field>
     </record>
 
-    <record id="plm_act_window_view" model="ir.model.access">
+    <record id="plm_act_window_view" model="ir.access">
         <field name="name">PLM Act Window</field>
         <field name="model_id" ref="base.model_ir_actions_act_window"/>
         <field name="group_id" ref="plm.group_plm_view_user"/>
-        <field name="perm_read" eval="1"/>
-        <field name="perm_write" eval="0"/>
-        <field name="perm_create" eval="0"/>
-        <field name="perm_unlink" eval="0"/>
+        <field name="operation">r</field>
     </record>
 
-    <record id="plm_act_window_view_view" model="ir.model.access">
+    <record id="plm_act_window_view_view" model="ir.access">
         <field name="name">PLM Act Window View</field>
         <field name="model_id" ref="base.model_ir_actions_act_window_view"/>
         <field name="group_id" ref="plm.group_plm_view_user"/>
-        <field name="perm_read" eval="1"/>
-        <field name="perm_write" eval="0"/>
-        <field name="perm_create" eval="0"/>
-        <field name="perm_unlink" eval="0"/>
+        <field name="operation">r</field>
     </record>
 
-    <record id="plm_access_permission" model="ir.model.access">
+    <record id="plm_access_permission" model="ir.access">
         <field name="name">PLM Act Window View</field>
         <field name="model_id" ref="plm.model_plm_access"/>
-        <field name="perm_read" eval="1"/>
-        <field name="perm_write" eval="1"/>
-        <field name="perm_create" eval="1"/>
-        <field name="perm_unlink" eval="0"/>
+        <field name="group_id" ref="base.group_user"/>
+        <field name="operation">cru</field>
     </record>
 </odoo>

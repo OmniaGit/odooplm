@@ -11,7 +11,7 @@
                     <button name="open_breakages"
                             string="Open Breakages"
                             type="object"
-                            icon="fa-chain-broken" 
+                            icon="link_off"
                             style="font-size: 20px;"
                             class="btn oe_stat_button text-danger"
                             title="There are some brakages on your manufactory order click in order to see it"

@@ -33,7 +33,7 @@ class PlmBreakages(models.Model):
     partner_id = fields.Many2one("res.partner", "Customer")
     lot_number = fields.Char("Lot/Serial Number")
     date = fields.Date("Date", required=True, copy=False, default=fields.Date.today)
-    notes = fields.Text("Notes")
+    notes = fields.Html("Notes", sanitize=True)
     tracking = fields.Selection(related="product_id.tracking")
 
     @api.model_create_multi

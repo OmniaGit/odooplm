@@ -3,7 +3,7 @@
     "name": "PLM Auto Translator",
     "author": "OmniaSolutions",
     "maintainer": "OmniaSolutions S.n.c di Boscolo Matteo & C",
-    "version": "19.0.1.0.0",
+    "version": "20.0.1.0.0",
     "category": "Manufacturing/Product Lifecycle Management (PLM)",
     "images": ["static/description/cover.gif"],
     "summary": "PLM Auto Translator",
@@ -15,11 +15,8 @@
         "plm",
     ],
     "data": [
-        # security files
-        "security/ir.model.access.csv",
-        # data files
+        "security/ir.access.csv",
         "data/auto_translate_cron.xml",
-        # views files
         "views/auto_translator_views.xml",
     ],
     "external_dependencies": {

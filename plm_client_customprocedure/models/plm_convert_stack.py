@@ -22,14 +22,11 @@ import base64
 import logging
 import traceback
 import requests
-import json
 
-from odoo import _, api, fields, models
-from odoo.exceptions import UserError, ValidationError
 from odoo import release
 import re
 
-from odoo import models, fields
+from odoo import _, models, fields
 
 current_version = release.version
 match = re.match(r"(\d+)", current_version)
@@ -51,9 +48,9 @@ class PlmConvertStack(models.Model):
     def _auto_update_cad_file(self):
 
         IrConfig = self.env['ir.config_parameter'].sudo()
-        conversion_server_ip = IrConfig.get_param('conversion_server_ip')
-        conversion_server_port = IrConfig.get_param('conversion_server_port')
-        conversion_server_protocol = IrConfig.get_param('conversion_server_protocol', default='http')
+        conversion_server_ip = IrConfig.get_str('conversion_server_ip')
+        conversion_server_port = IrConfig.get_str('conversion_server_port')
+        conversion_server_protocol = IrConfig.get_str('conversion_server_protocol', default='http')
         conversion_server_ip = conversion_server_ip
         conversion_server_port = conversion_server_port
 
@@ -73,7 +70,7 @@ class PlmConvertStack(models.Model):
             data_to_update.append({cad_field: line.new_value or line.old_value})
 
         cad_update_data['data_to_update'] = data_to_update
-        cad_update_data['file_content'] = (self.start_document_id.datas).decode('utf-8')
+        cad_update_data['file_content'] = base64.b64encode(self.start_document_id.raw).decode('utf-8')
         cad_update_data['integration'] = 'solidworks'
         cad_update_data['file_name'] = self.start_document_id.name
         cad_update_data['current_version'] = major_version
@@ -89,9 +86,8 @@ class PlmConvertStack(models.Model):
 
         try:
             binary_data = response.content
-            encoded_data = base64.b64encode(binary_data).decode('utf-8')
             self.start_document_id.write({
-                'datas': encoded_data,
+                'raw': binary_data,
                 'mimetype': 'application/octet-stream'
             })
 

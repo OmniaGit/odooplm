@@ -17,6 +17,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
+import base64
 import copy
 import json
 #
@@ -52,7 +53,7 @@ def random_name():
 class IrAttachment(models.Model):
     _name = "ir.attachment"
     _description = "Ir Attachment"
-    _inherit = ["ir.attachment", "revision.plm.mixin"]
+    _inherit = ["revision.plm.mixin", "ir.attachment"]
 
     printout = fields.Binary(string="Printout Content", help="Print PDF content.")
     printout_name = fields.Char(string="Printout Name", compute="_getPrintoutName")
@@ -81,10 +82,10 @@ class IrAttachment(models.Model):
 
     document_rel_count = fields.Integer(compute="_get_n_rel_doc")
 
-    datas = fields.Binary(
+    raw = fields.Binary(
         string="File Content (base64))",
-        compute="_compute_datas",
-        inverse="_inverse_datas",
+        compute="_compute_raw",
+        inverse="_inverse_raw",
     )
 
     document_type = fields.Selection(
@@ -127,7 +128,7 @@ class IrAttachment(models.Model):
 
     def getPrintoutUrl(self):
         self.ensure_one()
-        base_url = self.env["ir.config_parameter"].sudo().get_param("web.base.url")
+        base_url = self.env["ir.config_parameter"].sudo().get_str("web.base.url")
         return f"{base_url}/plm/ir_attachment_printout/{self.id}"
 
     def download_printout(self):
@@ -283,7 +284,7 @@ class IrAttachment(models.Model):
                 if not (objDoc.name in listfiles):
                     datas = False
                     if local_server_name == "odoo":
-                        datas = objDoc.datas
+                        datas = base64.b64encode(bytes(objDoc.raw))
                     result.append(
                         (objDoc.id, objDoc.name, datas, isCheckedOutToMe, timeDoc)
                     )
@@ -301,7 +302,7 @@ class IrAttachment(models.Model):
                     if isNewer and not (isCheckedOutToMe):
                         datas = False
                         if local_server_name == "odoo":
-                            datas = objDoc.datas
+                            datas = base64.b64encode(bytes(objDoc.raw))
                         result.append(
                             (objDoc.id, objDoc.name, datas, isCheckedOutToMe, timeDoc)
                         )
@@ -326,8 +327,8 @@ class IrAttachment(models.Model):
                 return False, result
         return result
 
-    def _inverse_datas(self):
-        super(IrAttachment, self)._inverse_datas()
+    def _inverse_raw(self):
+        super(IrAttachment, self)._inverse_raw()
         for ir_attachment_id in self:
             try:
                 if ir_attachment_id.is_plm and self.env.context.get("backup", True):
@@ -725,14 +726,14 @@ class IrAttachment(models.Model):
                 collectable = True
             objDatas = False
             try:
-                objDatas = objDoc.datas
+                objDatas = objDoc.raw
             except Exception as ex:
                 logging.error(
                     'Document with "id": %s  and "engineering_code": %s may contains no data!!         Exception: %s'
                     % (outId, objDoc.engineering_code, ex)
                 )
             if (objDoc.file_size < 1) and (objDatas):
-                file_size = len(objDoc.datas)
+                file_size = objDoc.raw.size
             else:
                 file_size = objDoc.file_size
             if retDict:
@@ -1298,7 +1299,7 @@ class IrAttachment(models.Model):
         return True
 
     def writeCheckDatas(self, vals):
-        if "datas" in list(vals.keys()) or "engineering_code" in list(vals.keys()):
+        if "raw" in list(vals.keys()) or "engineering_code" in list(vals.keys()):
             for attachment_id in self:
                 if not (self.env.user._is_admin() or self.env.user._is_superuser()):
                     if (
@@ -1589,9 +1590,9 @@ class IrAttachment(models.Model):
     @api.depends("name")
     def _compute_document_type(self):
         configParamObj = self.env["ir.config_parameter"].sudo()
-        file_exte_2d_param = configParamObj._get_param("file_exte_type_rel_2D")
-        file_exte_3d_param = configParamObj._get_param("file_exte_type_rel_3D")
-        file_exte_pr_param = configParamObj._get_param("file_exte_type_rel_PR")
+        file_exte_2d_param = configParamObj.get_str("file_exte_type_rel_2D")
+        file_exte_3d_param = configParamObj.get_str("file_exte_type_rel_3D")
+        file_exte_pr_param = configParamObj.get_str("file_exte_type_rel_PR")
 
         extensions2D = []
         extensions3D = []
@@ -1675,7 +1676,7 @@ class IrAttachment(models.Model):
     #
     #
     #
-    @api.depends("datas")
+    @api.depends("raw")
     def _checkSavingError(self):
         for ir_attachment_id in self:
             ir_attachment_id.has_error = not ir_attachment_id.is_last_save_ok()
@@ -3271,7 +3272,7 @@ class IrAttachment(models.Model):
         """
         configParamObj = self.env["ir.config_parameter"].sudo()
         paramName = "LAST_DT_PREVIEW_UPDATE"
-        last_update = configParamObj._get_param(paramName) or False
+        last_update = configParamObj.get_str(paramName) or False
         condition = [("is_plm", "=", True)]
         if last_update and last_update != "False":
             last_update = datetime.strptime(last_update, DEFAULT_SERVER_DATETIME_FORMAT)
@@ -3281,7 +3282,7 @@ class IrAttachment(models.Model):
                 for product_id in document_id.linkedcomponents:
                     product_id.image_1920 = document_id.preview
                     product_id.product_tmpl_id.image_1920 = document_id.preview
-        configParamObj.set_param(
+        configParamObj.set_str(
             paramName, datetime.now().strftime(DEFAULT_SERVER_DATETIME_FORMAT)
         )
 
@@ -3310,7 +3311,7 @@ class IrAttachment(models.Model):
     @api.model
     def getPlmDTDelta(self):
         configParamObj = self.sudo().env["ir.config_parameter"]
-        PLM_DT_DELTA = configParamObj._get_param("PLM_DT_DELTA")
+        PLM_DT_DELTA = configParamObj.get_str("PLM_DT_DELTA")
         if not PLM_DT_DELTA:
             PLM_DT_DELTA = 10
         else:

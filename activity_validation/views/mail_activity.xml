@@ -19,7 +19,7 @@
         <field name="inherit_id" ref="mail.mail_activity_schedule_view_form"/>
             <field name="arch" type="xml">
 
-                <xpath expr="//sheet/group[1]" position="before">
+                <xpath expr="//sheet/field[@name='activity_type_id']" position="after">
                     <field name="change_activity_type" invisible="1"/>
 	                <field name="plm_state"
 	                        widget="statusbar"
@@ -33,27 +33,27 @@
                                 name="action_in_progress"
                                 type="object"
                                 class="btn-primary"
-                                icon="fa-gears"
+                                icon="settings"
                                 invisible="change_activity_type not in ['request', 'plm_activity'] or plm_state not in ['draft']"/>
                         <button string="Progress"
                                 name="action_in_progress"
                                 type="object"
                                 class="btn-primary"
-                                icon="fa-gears"
+                                icon="settings"
                                 invisible="change_activity_type not in ['request', 'plm_activity'] or plm_state not in ['exception'] or has_parent==False"/>
                         <button string="ECO"
                                 name="action_to_eco"
                                 type="object"
                                 class="btn-primary"
-                                icon="fa-list-alt"
+                                icon="list_alt"
                                 invisible="plm_state not in ['in_progress', 'exception'] or has_parent==True or has_parent_eco==True"/>
-                        <button string="Draft" name="action_to_draft" type="object" class="btn-primary" icon="fa-book"
+                        <button string="Draft" name="action_to_draft" type="object" class="btn-primary" icon="book"
                             invisible="plm_state not in ['in_progress']"/>
-                        <button string="Exception" name="action_to_exception" type="object" class="btn-primary" icon="fa-bullhorn"
+                        <button string="Exception" name="action_to_exception" type="object" class="btn-primary" icon="campaign"
                             invisible="change_activity_type not in ['request', 'plm_activity'] or plm_state not in ['eco', 'in_progress']"/>
-                        <button string="Cancel" name="action_to_cancel" type="object" class="btn-primary" icon="fa-times-circle"
+                        <button string="Cancel" name="action_to_cancel" type="object" class="btn-primary" icon="cancel"
                             invisible="change_activity_type not in ['request', 'plm_activity'] or  plm_state not in ['exception', 'draft', 'eco', 'in_progress']"/>
-                        <button string="Done" name="action_to_done" type="object" class="btn-primary" icon="fa-check-circle"
+                        <button string="Done" name="action_to_done" type="object" class="btn-primary" icon="check_circle"
                             invisible="change_activity_type not in ['request', 'plm_activity'] or plm_state not in ['exception', 'eco', 'in_progress']"/>
                     </div>
 
@@ -64,7 +64,7 @@
                                 name="action_open_releted_ent"
                                 type="object"
                                 class="btn-primary"
-                                icon="fa-chain"/>
+                                icon="link"/>
 
                         <field name="change_activity_type" invisible="True"/>
                         <field name="has_parent" invisible="True"/>
@@ -72,7 +72,7 @@
                     </div>
 
                 </xpath>
-                <xpath expr="//field[@name='note']" position="before">
+                <xpath expr="//div[@class='o_activity_details']" position="after">
                     <label for="children_ids"
                            invisible="change_activity_type != 'request'"
                            readonly="plm_state in ['eco', 'done']"/>
@@ -115,7 +115,7 @@
             <field name="inherit_id" ref="mail.mail_activity_view_form_popup" />
             <field name="arch" type="xml">
 
-                <xpath expr="//group[3]" position="before">
+                <xpath expr="//field[@name='activity_type_id']" position="after">
                     <field name="plm_state"
                         widget="statusbar"
                         statusbar_visible="draft,in_progress,eco,exception"
@@ -128,33 +128,33 @@
                                 name="action_in_progress"
                                 type="object"
                                 class="btn-primary"
-                                icon="fa-gears"
+                                icon="settings"
                                 invisible="change_activity_type not in ['request', 'plm_activity'] or plm_state not in ['draft']"/>
                         <button string="Progress"
                                 name="action_in_progress"
                                 type="object"
                                 class="btn-primary"
-                                icon="fa-gears"
+                                icon="settings"
                                 invisible="change_activity_type not in ['request', 'plm_activity'] or plm_state not in ['exception'] or has_parent==False"/>
                         <button string="ECO"
                                 name="action_to_eco"
                                 type="object"
                                 class="btn-primary"
-                                icon="fa-list-alt"
+                                icon="list_alt"
                                 invisible="plm_state not in ['in_progress', 'exception'] or has_parent==True or has_parent_eco==True"/>
-                        <button string="Draft" name="action_to_draft" type="object" class="btn-primary" icon="fa-book"
+                        <button string="Draft" name="action_to_draft" type="object" class="btn-primary" icon="book"
                             invisible="plm_state not in ['in_progress']"/>
-                        <button string="Exception" name="action_to_exception" type="object" class="btn-primary" icon="fa-bullhorn"
+                        <button string="Exception" name="action_to_exception" type="object" class="btn-primary" icon="campaign"
                             invisible="change_activity_type not in ['request', 'plm_activity'] or plm_state not in ['eco', 'in_progress']"/>
-                        <button string="Cancel" name="action_to_cancel" type="object" class="btn-primary" icon="fa-times-circle"
+                        <button string="Cancel" name="action_to_cancel" type="object" class="btn-primary" icon="cancel"
                             invisible="change_activity_type not in ['request', 'plm_activity'] or  plm_state not in ['exception', 'draft', 'eco', 'in_progress']"/>
-                        <button string="Done" name="action_to_done" type="object" class="btn-primary" icon="fa-check-circle"
+                        <button string="Done" name="action_to_done" type="object" class="btn-primary" icon="check_circle"
                             invisible="change_activity_type not in ['request', 'plm_activity'] or plm_state not in ['exception', 'eco', 'in_progress']"/>
                     </div>
                     <hr></hr>
                     <div class="o_row o_kanban_top_right" col="4">
                         <button string="Open Releted Ent" name="action_open_releted_ent" type="object"
-                                class="btn-primary" icon="fa-check-circle"/>
+                                class="btn-primary" icon="check_circle"/>
 
                         <field name="change_activity_type" invisible="True"/>
                         <field name="has_parent" invisible="True"/>
@@ -162,7 +162,7 @@
                     </div>
                     <hr></hr>
                 </xpath>
-                <xpath expr="//field[@name='note']" position="before">
+                <xpath expr="//div[@name='activity_details']" position="after">
                     <label for="children_ids"
                            invisible="change_activity_type != 'request'"
                            readonly="plm_state in ['eco', 'done']"/>

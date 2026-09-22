@@ -26,23 +26,23 @@
         <field name="priority" eval="3"/>
         <field name="arch" type="xml">
             <field name="engineering_code" position="before">
-                <button icon="fa-openid" string="Convert" name="show_convert_wizard" type="object"/>
+                <button icon="sync_alt" string="Convert" name="show_convert_wizard" type="object"/>
                 <button
-                    icon="fa-sitemap"
+                    icon="share"
                     string="Split Assembly"
                     name="split_step_assembly"
                     type="object"
                     invisible="not name or ('.step' not in name.lower() and '.stp' not in name.lower())"
                 />
                 <button
-                    icon="fa-tree"
+                    icon="account_tree"
                     string="STEP Structure"
                     name="action_view_step_tree"
                     type="object"
                     invisible="not name or ('.step' not in name.lower() and '.stp' not in name.lower())"
                 />
                 <button
-                    icon="fa-image"
+                    icon="image"
                     string="Update Preview"
                     name="action_update_preview"
                     type="object"
@@ -69,7 +69,7 @@
         <field name="arch" type="xml">
             <xpath expr="//td[@name='attachment_button_box']" position="inside">
                 <button name="show_convert_wizard" type="object" class="btn btn-primary btn-sm ms-1" context="{'attachment_id': id}">
-                    <i class="fa fa-openid"></i>
+                    <i class="oi me-1" data-icon="sync_alt"></i>
                     Convert
                 </button>
             </xpath>
@@ -84,7 +84,7 @@
         <field name="arch" type="xml">
             <xpath expr="//header" position="inside">
                 <button name="show_convert_wizard" type="object" class="btn btn-primary">
-                    <i class="fa fa-openid"></i>
+                    <i class="oi me-1" data-icon="sync_alt"></i>
                     Convert
                 </button>
                 <button
@@ -93,7 +93,7 @@
                     class="btn btn-secondary"
                     invisible="not name or ('.step' not in name.lower() and '.stp' not in name.lower())"
                 >
-                    <i class="fa fa-sitemap"></i>
+                    <i class="oi me-1" data-icon="share"></i>
                     Split Assembly
                 </button>
                 <button
@@ -102,7 +102,7 @@
                     class="btn btn-secondary"
                     invisible="not name or ('.step' not in name.lower() and '.stp' not in name.lower())"
                 >
-                    <i class="fa fa-tree"></i>
+                    <i class="oi me-1" data-icon="account_tree"></i>
                     STEP Structure
                 </button>
                 <button
@@ -120,7 +120,7 @@
                         '.glb' not in name.lower()
                     )"
                 >
-                    <i class="fa fa-image"></i>
+                    <i class="oi me-1" data-icon="image"></i>
                     Update Preview
                 </button>
             </xpath>

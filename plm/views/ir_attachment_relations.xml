@@ -58,12 +58,12 @@
 	                <group colspan="1" col="1">
                			<field name="parent_linked" invisible="True"/>
                 		<div
-                			class="fa fa-dropbox fa-2x"
+                			class="oi oi-2x" data-icon="inventory_2"
                 			aria-label="Missing Component"
                 			style="text-align: right; width: 150%; color:#ff8300;"
                 			invisible="parent_linked not in [False, []]"/>
                			<div
-                			class="fa fa-dropbox fa-2x"
+                			class="oi oi-2x" data-icon="inventory_2"
                 			aria-label="Founding Component"
                 			style="text-align: right; width: 150%; color: green;"
                 			invisible="parent_linked in [False, []]"/>
@@ -145,12 +145,12 @@
 	                <group colspan="1" col="1">
                			<field name="child_linked" invisible="True"/>
                 		<div
-                			class="fa fa-dropbox fa-2x"
+                			class="oi oi-2x" data-icon="inventory_2"
                 			aria-label="Missing Component"
                 			style="text-align: right; width: 150%; color:#ff8300;"
                 			invisible="child_linked not in [False, []]"/>
                			<div
-                			class="fa fa-dropbox fa-2x"
+                			class="oi oi-2x" data-icon="inventory_2"
                 			aria-label="Founding Component"
                 			style="text-align: right; width: 150%; color: green;"
                 			invisible="child_linked in [False, []]"/>
@@ -366,8 +366,8 @@
                         				<strong invisible="parent_type != '3d'">3D</strong>
                         			</td>
                         			<td>
-	                            		<div class="fa fa-dropbox fa-2x" aria-label="Missing Component" style="color:#ff8300;" invisible="parent_linked not in [False, []]"/>
-                            			<div class="fa fa-dropbox fa-2x" aria-label="Founding Component" style="color: green;" invisible="parent_linked in [False, []]"/>
+	                            		<div class="oi oi-2x" data-icon="inventory_2" aria-label="Missing Component" style="color:#ff8300;" invisible="parent_linked not in [False, []]"/>
+                            			<div class="oi oi-2x" data-icon="inventory_2" aria-label="Founding Component" style="color: green;" invisible="parent_linked in [False, []]"/>
                             		</td>
                         		</tr>
                             	<tr>
@@ -482,8 +482,8 @@
                         				<strong invisible="child_type !='3d'">3D</strong>
                         			</td>
                         			<td>
-	                            		<div class="fa fa-dropbox fa-2x" aria-label="Missing Component" style="color:#ff8300;" invisible="child_linked not in [False, []]"/>
-                            			<div class="fa fa-dropbox fa-2x" aria-label="Founding Component" style="color: green;" invisible="child_linked in [False, []]"/>
+	                            		<div class="oi oi-2x" data-icon="inventory_2" aria-label="Missing Component" style="color:#ff8300;" invisible="child_linked not in [False, []]"/>
+                            			<div class="oi oi-2x" data-icon="inventory_2" aria-label="Founding Component" style="color: green;" invisible="child_linked in [False, []]"/>
                             		</td>
                         		</tr>
                             	<tr>

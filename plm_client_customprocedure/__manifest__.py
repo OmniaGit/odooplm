@@ -21,7 +21,7 @@
 ##############################################################################
 {
     "name": "PLM Client Custom Procedure",
-    "version": "19.0.1.0.1",
+    "version": "20.0.1.0.0",
     "images": ["static/description/cover.gif"],
     "author": "OmniaSolutions",
     "maintainer": "OmniaSolutions S.n.c di Boscolo Matteo & C",
@@ -46,7 +46,7 @@
         "plm_automated_convertion"
     ],
     "data": [
-        "security/ir.model.access.csv",
+        "security/ir.access.csv",
         "data/ir_cron.xml",
         "views/res_users.xml",
         "views/res_groups.xml",

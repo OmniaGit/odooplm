@@ -71,6 +71,10 @@
                                     </div>
                                 </td>
                                 <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
                             </tr>
                             <t t-foreach="data.bom_line_ids" t-as="line">
                                 <tr style="border-top: 1px solid;">
@@ -91,6 +95,10 @@
                                         </div>
                                     </td>
                                     <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
                                 </tr>
                                 <t t-foreach="line.product_id.activity_ids" t-as="activity">
                                     <t t-set="change_request_id" t-value="activity.env.ref('activity_validation.mail_activity_change_request')"/>
@@ -109,7 +117,7 @@
                                             </td>
                                             <td >
                                                 <t t-if="activity.plm_state not in ['done','cancel'] and activity.date_deadline &lt; datetime.date.today()">
-                                                 <i class="fa fa-warning" style="font-size:24px;color:red"></i>
+                                                 <i class="oi" data-icon="warning" style="font-size:24px;color:red"></i>
                                                 </t>
                                                 <div t-att-class="'text-danger' if activity.plm_state not in ['done','cancel'] and activity.date_deadline &lt; datetime.date.today() else ''">
                                                     <t t-out="activity.date_deadline"></t>
@@ -149,7 +157,6 @@
         <field name="model">product.product</field>
         <field name="report_type">qweb-html</field>
         <field name="report_name">activity_validation.report_product_product_bom_activity</field>
-        <field name="report_file">activity_validation.report_product_product_bom_activity</field>
         <field name="print_report_name">'BOM_Activity_Hierarchy_' + object.name</field>
         <field name="paperformat_id" ref="paperformat_product_bom_report"/>
         <field name="binding_model_id" ref="product.model_product_product"/>

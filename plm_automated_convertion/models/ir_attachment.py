@@ -570,7 +570,7 @@ class ir_attachment(models.Model):
                 cq.exporters.export(result, stl_path, tolerance=1.0, angularTolerance=1.0)
                 _render_stl_to_png(stl_path, png_path)
                 with open(png_path, "rb") as f:
-                    return base64.b64encode(f.read())
+                    return base64.b64encode(f.read()).decode()
         except Exception as ex:
             _logger.warning("STEP preview generation failed for %r: %s", self.name, ex)
             plt.close("all")
@@ -619,7 +619,7 @@ class ir_attachment(models.Model):
             os.path.join(tmpdirname, "%s.png" % name)
             converted_file = self.convert_from_stl_to(".png")
             with open(converted_file, "rb") as pngStream:
-                self.preview = base64.b64encode(pngStream.read())
+                self.preview = base64.b64encode(pngStream.read()).decode()
 
     def _updatePreviewFromStp(self, fromFile):
         with tempfile.TemporaryDirectory() as tmpdirname:
@@ -627,7 +627,7 @@ class ir_attachment(models.Model):
             os.path.join(tmpdirname, "%s.png" % name)
             converted_file = self.convert_from_step_to(".png")
             with open(converted_file, "rb") as pngStream:
-                self.preview = base64.b64encode(pngStream.read())
+                self.preview = base64.b64encode(pngStream.read()).decode()
 
     def _updatePreviewFromObj(self, fromFile):
         with tempfile.TemporaryDirectory() as tmpdirname:
@@ -635,7 +635,7 @@ class ir_attachment(models.Model):
             os.path.join(tmpdirname, "%s.png" % name)
             converted_file = self.convert_from_obj_to(".png")
             with open(converted_file, "rb") as pngStream:
-                self.preview = base64.b64encode(pngStream.read())
+                self.preview = base64.b64encode(pngStream.read()).decode()
 
     def _updatePreviewFromDxf(self, fromFile):
         if not _MATPLOTLIB_AVAILABLE:
@@ -650,9 +650,9 @@ class ir_attachment(models.Model):
                 pdfName = os.path.join(tmpdirname, "%s.pdf" % name)
                 matplotlib.qsave(doc.modelspace(), pdfName)
                 with open(pngName, "rb") as pngStream:
-                    self.preview = base64.b64encode(pngStream.read())
+                    self.preview = base64.b64encode(pngStream.read()).decode()
                 with open(pdfName, "rb") as pdfStream:
-                    self.printout = base64.b64encode(pdfStream.read())
+                    self.printout = base64.b64encode(pdfStream.read()).decode()
 
     def createPreviewStack(self):
         obj_stack = self.env["plm.convert.stack"]
@@ -769,7 +769,7 @@ class ir_attachment(models.Model):
 
             # Export child geometry to a temporary STEP file
             tmp_path = None
-            step_b64 = None
+            step_bytes = None
             try:
                 fd, tmp_path = tempfile.mkstemp(suffix=".step")
                 os.close(fd)
@@ -788,7 +788,7 @@ class ir_attachment(models.Model):
                     child_node.save(tmp_path, exportType="STEP")
 
                 with open(tmp_path, "rb") as f:
-                    step_b64 = base64.b64encode(f.read())
+                    step_bytes = f.read()
             except Exception as ex:
                 _logger.warning("Skipping child %r — could not export STEP: %s", clean_name, ex)
                 continue
@@ -803,12 +803,12 @@ class ir_attachment(models.Model):
                 limit=1,
             )
             if child_attachment:
-                child_attachment.write({"datas": step_b64})
+                child_attachment.write({"raw": step_bytes})
             else:
                 child_attachment = self.create(
                     {
                         "name": f"{clean_name}.step",
-                        "datas": step_b64,
+                        "raw": step_bytes,
                         "engineering_code": clean_name,
                         "is_plm": True,
                         "is_converted_document": True,
@@ -1099,7 +1099,7 @@ class ir_attachment(models.Model):
                     if not child_docs:
                         continue
                     with open(tmp_path, "rb") as fh:
-                        child_docs.write({"datas": base64.b64encode(fh.read())})
+                        child_docs.write({"raw": fh.read()})
             # tmp_dir and all exported STEP files are deleted here
 
         if generate_preview:

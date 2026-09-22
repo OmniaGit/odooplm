@@ -21,7 +21,7 @@
 ##############################################################################
 {
     "name": "PLM Consumption Plans",
-    "version": "19.0.1.0.1",
+    "version": "20.0.1.0.0",
     "images": ["static/description/cover.gif"],
     "author": "OmniaSolutions",
     "maintainer": "OmniaSolutions S.n.c di Boscolo Matteo & C",
@@ -44,18 +44,14 @@
     ],
     "depends": ["plm"],
     "data": [
-        # security files
-        "security/ir.model.access.csv",
-        # data files
+        "security/ir.access.csv",
         "data/ir_cron_data.xml",
-        # views files
         "views/product_template_views.xml",
         "views/product_product_views.xml",
         "views/plm_template_consumption_plan_menu.xml",
         "views/plm_template_consumption_plan_view.xml",
         "views/mrp_bom_line_views.xml",
         "views/consumption_state_views.xml",
-        # report files
         "report/report_consumption_plan.xml",
     ],
     "installable": True,

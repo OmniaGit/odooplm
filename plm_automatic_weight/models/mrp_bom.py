@@ -39,5 +39,3 @@ class MrpBomExtension(models.Model):
             for bom_line_id in mrp_bom_id.bom_line_ids:
                 out+= bom_line_id.product_id.weight  * bom_line_id.product_qty
         return out
-
-

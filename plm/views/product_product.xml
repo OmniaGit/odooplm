@@ -300,7 +300,7 @@
             </xpath>
             <!--
             <xpath expr="//button[@name='action_view_bom']" position="after">
-            	<button	name="open_report_component" type="object" icon="fa-bars" string="Report" class="oe_stat_button"/>
+            	<button	name="open_report_component" type="object" icon="menu" string="Report" class="oe_stat_button"/>
             </xpath>
              -->
             <xpath expr="//button[@name='action_view_mos']" position="after">
@@ -308,7 +308,7 @@
                         type="object"
                         string="Rev.s."
                         class="oe_stat_button"
-                        icon="fa-tasks"
+                        icon="checklist"
                         invisible="engineering_revision_count &lt;=1">
                     <field name="engineering_revision_count"
                            string="Rev.s."
@@ -319,13 +319,13 @@
                         type="object"
                         string="Template"
                         class="oe_stat_button"
-                        icon="fa-tag">
+                        icon="tag">
                 </button>
                 <button name="action_print_bom_report"
                         type="object"
                         string="Print BoM"
                         class="oe_stat_button"
-                        icon="fa-print">
+                        icon="print">
                 </button>
             </xpath>
             <xpath expr="//div[@name='options']" position="attributes">
@@ -368,7 +368,7 @@
                                 <a target="new"
                                    href="https://www.omniasolutions.website/blog/developer-and-it-here-you-will-find-post-regarding-very-technical-aspect-of-programming-and-it-those-thinks-are-daily-used-by-omniasolutions-and-we-hope-you-that-will-help-you-3/post/standard-description-39"
                                    title="Standard description parameters info" colspan="4">
-                                    <i class="fa fa-info-circle"></i>
+                                    <i class="oi" data-icon="info"></i>
                                 </a>
                             </p>
 
@@ -467,7 +467,7 @@
                 </page>
                 <page string="Linked Documents" name="linkeddocuments">
                     <group colspan="4">
-                        <button class="oe_inline oe_stat_button" type="object" icon="fa-list-alt"
+                        <button class="oe_inline oe_stat_button" type="object" icon="list_alt"
                                 name="action_rev_docs" string="Revision Rel Docs"/>
                     </group>
 

@@ -35,10 +35,9 @@
     </record>
 
     <menuitem
-            name="PLM Auto Translator"
-            action="action_auto_translator"
-            id="menu_auto_translator_config"
-            sequence="7"
-            parent="plm.plm_menu_dictionaries"/>
+        name="PLM Auto Translator"
+        action="action_auto_translator"
+        id="menu_auto_translator_config"
+        sequence="7"
+        parent="plm.plm_menu_dictionaries"/>
 </odoo>
-

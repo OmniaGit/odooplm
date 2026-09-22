@@ -12,13 +12,13 @@
                         type="object"
                         string="Engineering Information"
                         invisible="type=='service'"
-                        icon="fa-gears">
+                        icon="settings">
                 </button>
                 <button name="open_related_revisions"
                         type="object"
                         string="Rev."
                         class="oe_stat_button"
-                        icon="fa-tasks"
+                        icon="checklist"
                         invisible="engineering_revision_count &lt;=1">
                         <field name="engineering_revision_count"
                                string=" "

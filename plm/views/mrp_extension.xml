@@ -16,7 +16,7 @@
                 <field name="engineering_revision"/>
                 <field name="engineering_state"/>
                 <field name="product_qty"/>
-                <field name="product_uom_id"/>
+                <field name="uom_id"/>
                 <field name="product_tag_ids" widget="many2many_tags" options="{'color_field': 'color'}" />
                 <field name="source_id" optional="hide"/>
             </list>
@@ -113,13 +113,13 @@
                         title="Related BOM Line"
                         string="Related BOM Line"
                         class="oe_stat_button"
-                        icon="fa-tasks"/>
+                        icon="checklist"/>
                 <button name="open_related_bom_revisions"
                         type="object"
                         title="Related BOM Revisions"
                         string="Related BOM Revisions"
                         class="oe_stat_button"
-                        icon="fa-tasks"
+                        icon="checklist"
                         invisible="bom_revision_count>=1">
                     <field name="bom_revision_count" string=" " widget="statinfo"/>
                 </button>
@@ -154,7 +154,7 @@
                 <field name="hasChildBoms" column_invisible="1" />
                 <button name="openRelatedBoms"
                         type="object"
-                        icon="fa-level-down"
+                        icon="subdirectory_arrow_right"
                         title="Open Related Boms"
                         class="btn btn-sm oe_stat_button"
                         invisible="hasChildBoms==False"/>
@@ -171,7 +171,7 @@
         						 'list_view_ref':'plm.ir_attachment_list',
 								 'form_view_ref':'plm.view_attachment_form_plm_hinerit'}"/>
             </xpath>
-            <xpath expr="//field[@name='bom_line_ids']/list/field[@name='product_uom_id']" position="after">
+            <xpath expr="//field[@name='bom_line_ids']/list/field[@name='uom_id']" position="after">
             	<field name="itemnum"/>
             	<field name="itemlbl" optional="hide"/>
             </xpath>
@@ -252,7 +252,7 @@
         						 'list_view_ref':'plm.ir_attachment_list',
 								 'form_view_ref':'plm.view_attachment_form_plm_hinerit'}"/>
                 <field name="product_qty"/>
-                <field name="product_uom_id"/>
+                <field name="uom_id"/>
                 <field name="weight_net"/>
                 <field name="create_date" select="True"/>
                 <field name="type"/>
@@ -276,7 +276,7 @@
         						 'list_view_ref':'plm.ir_attachment_list',
 								 'form_view_ref':'plm.view_attachment_form_plm_hinerit'}"/>
                 <field name="product_qty"/>
-                <field name="product_uom_id"/>
+                <field name="uom_id"/>
                 <field name="weight_net"/>
                 <field name="create_date" select="True"/>
             </list>

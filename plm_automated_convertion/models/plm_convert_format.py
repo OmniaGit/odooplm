@@ -49,7 +49,7 @@ class PlmConvertFormat(models.Model):
         self._update_cad_ex_availability()
 
     def _update_cad_ex_availability(self):
-        cad_ex_path = self.env['ir.config_parameter'].sudo().get_param('Cad Excange Cli')
+        cad_ex_path = self.env['ir.config_parameter'].sudo().get_str('Cad Excange Cli')
         is_cad_ex_available = bool(cad_ex_path and os.path.exists(cad_ex_path))
 
         self.sudo().search([('cad_name', '=', 'CadExcange')]).write({
