@@ -21,7 +21,7 @@
 ##############################################################################
 {
     "name": "PLM Report PDF Workorder",
-    "version": "19.0.1.0.0",
+    "version": "20.0.0.0.0",
     "images": ["static/description/cover.gif"],
     "author": "OmniaSolutions",
     "maintainer": "OmniaSolutions S.n.c di Boscolo Matteo & C",
@@ -49,7 +49,7 @@
         "views/mrp_routing_workcenter.xml",
         "views/mrp_workorder.xml",
     ],
-    "installable": True,
+    "installable": False,
     "application": False,
     "auto_install": False,
 }

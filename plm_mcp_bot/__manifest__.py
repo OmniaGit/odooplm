@@ -20,7 +20,7 @@
 ##############################################################################
 {
     "name": "PLM Commands for OdooBot",
-    "version": "19.0.1.0.0",
+    "version": "20.0.0.0.0",
     "author": "OmniaSolutions",
     "maintainer": "OmniaSolutions S.n.c di Boscolo Matteo & C",
     "website": "https://odooplm.omniasolutions.website",
@@ -59,6 +59,6 @@ in a chat with OdooBot or when it is mentioned, not in the chatter of a record.
         "mail_bot",
     ],
     "data": [],
-    "installable": True,
+    "installable": False,
     "application": False,
 }

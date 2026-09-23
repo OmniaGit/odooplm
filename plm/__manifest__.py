@@ -21,7 +21,7 @@
 ##############################################################################
 {
     "name": "Product Lifecycle Management",
-    "version": "19.0.1.0.34",
+    "version": "20.0.0.0.0",
     "author": "OmniaSolutions",
     "maintainer": "OmniaSolutions S.n.c di Boscolo Matteo & C",
     "website": "https://odooplm.omniasolutions.website",
@@ -107,7 +107,7 @@
             "plm/static/src/css/color_fields_tree.css",
         ],
     },
-    "installable": True,
+    "installable": False,
     "application": True,
     "auto_install": False,
 }

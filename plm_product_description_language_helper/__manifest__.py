@@ -21,7 +21,7 @@
 ##############################################################################
 {
     "name": "PLM Product Description Language Helper",
-    "version": "19.0.1.0.0",
+    "version": "20.0.0.0.0",
     "images": ["static/description/cover.gif"],
     "author": "OmniaSolutions",
     "maintainer": "OmniaSolutions S.n.c di Boscolo Matteo & C",
@@ -43,7 +43,7 @@
     ],
     "depends": ["plm"],
     "data": ["views/plm_description_extension.xml"],
-    "installable": True,
+    "installable": False,
     "application": False,
     "auto_install": False,
 }

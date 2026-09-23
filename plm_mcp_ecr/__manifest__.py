@@ -20,7 +20,7 @@
 ##############################################################################
 {
     "name": "PLM MCP Server — Change Requests",
-    "version": "19.0.1.0.0",
+    "version": "20.0.0.0.0",
     "author": "OmniaSolutions",
     "maintainer": "OmniaSolutions S.n.c di Boscolo Matteo & C",
     "website": "https://odooplm.omniasolutions.website",
@@ -57,7 +57,7 @@ data file to keep in step with the code.
         "plm_mcp",
         "activity_validation",
     ],
-    "installable": True,
+    "installable": False,
     "application": False,
     "auto_install": False,
 }

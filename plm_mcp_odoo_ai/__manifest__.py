@@ -20,7 +20,7 @@
 ##############################################################################
 {
     "name": "PLM Tools for the Odoo AI Agent",
-    "version": "19.0.1.0.0",
+    "version": "20.0.0.0.0",
     "author": "OmniaSolutions",
     "maintainer": "OmniaSolutions S.n.c di Boscolo Matteo & C",
     "website": "https://odooplm.omniasolutions.website",
@@ -61,7 +61,7 @@ does not install this.
     "data": [
         "data/ai_topic.xml",
     ],
-    "installable": True,
+    "installable": False,
     "application": False,
     "auto_install": False,
 }

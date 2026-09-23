@@ -20,7 +20,7 @@
 ##############################################################################
 {
     "name": "PLM MCP Server",
-    "version": "19.0.1.0.0",
+    "version": "20.0.0.0.0",
     "author": "OmniaSolutions",
     "maintainer": "OmniaSolutions S.n.c di Boscolo Matteo & C",
     "website": "https://odooplm.omniasolutions.website",
@@ -69,7 +69,7 @@ seconds, one that gets a state change wrong costs a lot more.
         "security/ir.model.access.csv",
         "views/plm_mcp_key_view.xml",
     ],
-    "installable": True,
+    "installable": False,
     "application": False,
     "auto_install": False,
 }

@@ -21,7 +21,7 @@
 ##############################################################################
 {
     "name": "PLM Automatic Weight",
-    "version": "19.0.1.0.0",
+    "version": "20.0.0.0.0",
     "images": ["static/description/cover.gif"],
     "author": "OmniaSolutions",
     "maintainer": "OmniaSolutions S.n.c di Boscolo Matteo & C",
@@ -48,7 +48,7 @@
         "data/action_compute_bom_weight.xml",
         "views/product_product.xml",
     ],
-    "installable": True,
+    "installable": False,
     "application": False,
     "auto_install": False,
 }

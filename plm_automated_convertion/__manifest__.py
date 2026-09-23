@@ -21,7 +21,7 @@
 ##############################################################################
 {
     "name": "Product Lifecycle Management Batch conversion",
-    "version": "19.0.1.0.7",
+    "version": "20.0.0.0.0",
     "images": ["static/description/cover.gif"],
     "author": "OmniaSolutions",
     "maintainer": "OmniaSolutions S.n.c di Boscolo Matteo & C",
@@ -64,7 +64,7 @@
                    "to-3mf"]
 
     },
-    "installable": True,
+    "installable": False,
     "application": False,
     "auto_install": False,
 }

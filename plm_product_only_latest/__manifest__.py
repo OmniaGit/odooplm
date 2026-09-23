@@ -21,7 +21,7 @@
 ##############################################################################
 {
     "name": "PLM Produce Only Latest",
-    "version": "19.0.1.0.0",
+    "version": "20.0.0.0.0",
     "images": ["static/description/cover.gif"],
     "author": "OmniaSolutions",
     "maintainer": "OmniaSolutions S.n.c di Boscolo Matteo & C",
@@ -45,7 +45,7 @@
         is in the latest revision for Manufacturing
         """,
     "data": ["data/product_only_parameter.xml", "views/mrp_production_views.xml"],
-    "installable": True,
+    "installable": False,
     "application": False,
     "auto_install": False,
 }

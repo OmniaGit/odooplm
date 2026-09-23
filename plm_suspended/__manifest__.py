@@ -21,7 +21,7 @@
 ##############################################################################
 {
     "name": "PLM Suspended State",
-    "version": "19.0.1.0.2",
+    "version": "20.0.0.0.0",
     "images": ["static/description/cover.gif"],
     "author": "OmniaSolutions",
     "maintainer": "OmniaSolutions S.n.c di Boscolo Matteo & C",
@@ -50,7 +50,7 @@
         "views/ir_attachment.xml",
         "views/product_product.xml",
     ],
-    "installable": True,
+    "installable": False,
     "application": False,
     "auto_install": False,
 }

@@ -21,7 +21,7 @@
 ##############################################################################
 {
     "name": "Workflow Custom Actions",
-    "version": "19.0.1.0.0",
+    "version": "20.0.0.0.0",
     "author": "OmniaSolutions",
     "maintainer": "OmniaSolutions S.n.c di Boscolo Matteo & C",
     "website": "https://odooplm.omniasolutions.website",
@@ -43,7 +43,7 @@
         "views/plm_automated_wf_action.xml",
     ],
     "images": ["static/img/plm_workflow_custom_action.gif"],
-    "installable": True,
+    "installable": False,
     "application": False,
     "auto_install": False,
 }

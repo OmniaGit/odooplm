@@ -21,7 +21,7 @@
 ##############################################################################
 {
     "name": "PLM Automatic Engineering Code",
-    "version": "19.0.1.0.2",
+    "version": "20.0.0.0.0",
     "images": ["static/description/cover.gif"],
     "author": "OmniaSolutions",
     "maintainer": "OmniaSolutions S.n.c di Boscolo Matteo & C",
@@ -52,7 +52,7 @@
         "views/product_product.xml",
         "views/product_category.xml",
     ],
-    "installable": True,
+    "installable": False,
     "application": False,
     "auto_install": False,
 }
