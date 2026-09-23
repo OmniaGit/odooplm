@@ -21,7 +21,7 @@
 ##############################################################################
 {
     "name": "Plm Pack and Go",
-    "version": "19.0.1.0.1",
+    "version": "19.0.1.0.2",
     "images": ["static/description/cover.gif"],
     "author": "OmniaSolutions",
     "maintainer": "OmniaSolutions S.n.c di Boscolo Matteo & C",
