@@ -112,8 +112,8 @@ msgstr "Conversion server available"
 
 #. module: plm_pack_and_go
 #: model_terms:ir.ui.view,arch_db:plm_pack_and_go.act_plm_pack_and_go
-msgid "Create zip archive"
-msgstr "Create zip archive"
+msgid "Download zip"
+msgstr "Download zip"
 
 #. module: plm_pack_and_go
 #: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go__create_uid

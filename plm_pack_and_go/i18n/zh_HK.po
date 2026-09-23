@@ -112,8 +112,8 @@ msgstr "可用的转换服务器"
 
 #. module: plm_pack_and_go
 #: model_terms:ir.ui.view,arch_db:plm_pack_and_go.act_plm_pack_and_go
-msgid "Create zip archive"
-msgstr "创建 zip 存档"
+msgid "Download zip"
+msgstr "下载 zip"
 
 #. module: plm_pack_and_go
 #: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go__create_uid
