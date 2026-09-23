@@ -682,15 +682,13 @@ class PackAndGo(models.TransientModel):
         fileName = os.path.basename(outZipFile2)
         self.datas_fname = fileName
         self.name = fileName
+        # A GET on the controller, not the binary field widget: the widget
+        # downloads with a POST, which needs a CSRF token the page may no
+        # longer have.
         return {
-            "name": _("Pack and Go"),
-            "view_type": "form",
-            "view_mode": "form",
-            "res_model": "pack.and_go",
-            "target": "new",
-            "res_id": self.ids[0],
-            "type": "ir.actions.act_window",
-            "domain": "[]",
+            "type": "ir.actions.act_url",
+            "url": "/plm_pack_and_go/download/%s" % self.id,
+            "target": "self",
         }
 
     def get_steram(self, file_name):
