@@ -54,7 +54,7 @@ def get_bom_report(
             "pcode": bomLineBrws.product_id.default_code,
             "previ": productTmplBrws.engineering_revision,
             "pqty": prodQty,
-            "uname": bomLineBrws.product_uom_id.name,
+            "uname": bomLineBrws.uom_id.name,
             "pweight": productTmplBrws.weight,
             "code": bomLineBrws.product_id.default_code,
             "level": level,
@@ -136,7 +136,7 @@ def get_bom_report(
                     (
                         bomObj.env["ir.config_parameter"]
                         .sudo()
-                        .get_param("REPORT_INDENTATION_KEY")
+                        .get_str("REPORT_INDENTATION_KEY")
                         or ""
                     )
                     * level

@@ -20,10 +20,7 @@
 #
 ##############################################################################
 from odoo.exceptions import UserError
-from odoo import models
-from odoo import fields
-from odoo import api
-from odoo import _
+from odoo import _, api, fields, models
 import logging
 
 

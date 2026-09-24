@@ -61,7 +61,7 @@ def _read(*path):
 
 
 def _b64(*path):
-    return base64.b64encode(_read(*path))
+    return base64.b64encode(_read(*path)).decode("ascii")
 
 
 class DemoLoader:
@@ -160,7 +160,7 @@ class DemoLoader:
                 continue
             values = {
                 "name": d["name"],
-                "datas": _b64("documents", d["file"]),
+                "raw": _read("documents", d["file"]),
                 "document_type": d["document_type"] or "other",
                 "engineering_code": d["engineering_code"] or d["name"],
                 "engineering_revision": d["engineering_revision"] or 0,

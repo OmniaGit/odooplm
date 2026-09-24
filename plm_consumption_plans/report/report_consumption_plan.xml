@@ -3,26 +3,21 @@
     <template id="report_consumption_plan">
         <h2 style="text-align: center; font-size: 18px; margin-top: 50px;">
             <strong>
-                Plan for assembly &lt;<t t-out="docs.display_name or docs.default_code or docs.id"/>&gt;
+                <t t-out="'Plan for assembly %s' % (docs.display_name or docs.default_code or docs.id)"/>
             </strong>
         </h2>
 
-        <table class="table table-sm table-borderless" style="font-size: 14px;">
-            <thead>
-                <tr style="font-weight: bold;">
-                    <th><strong>Plan</strong></th>
-                    <th><strong>State</strong></th>
-                    <th><strong>Product name</strong></th>
-                    <th><strong>Product description</strong></th>
+        <table class="table table-sm table-borderless" style="font-size: 14px; width: 100%; text-align: center !important;">
+            <thead style="text-align: center !important;">
+                <tr style="font-weight: bold; ">
+                    <th  class="text-center"><strong>Plan</strong></th>
+                    <th  class="text-center"><strong>State</strong></th>
+                    <th  class="text-center"><strong>Product name</strong></th>
+                    <th  class="text-center"><strong>Product description</strong></th>
                 </tr>
             </thead>
             <tbody>
                 <t t-foreach="docs.template_consumption_plan_ids" t-as="plan">
-                    <tr style="background-color: rgb(217,217,217); text-align: center;">
-                        <td colspan="4">
-                            <strong><t t-out="plan.name"/></strong>
-                        </td>
-                    </tr>
                     <t t-set="products"
                        t-value="plan.product_template_ids if docs._name == 'product.template' else plan.product_ids"/>
                     <t t-foreach="products" t-as="product">
@@ -54,7 +49,7 @@
         </t>
     </template>
 
-    <template id="report_consumption_plan_product_variant">
+        <template id="report_consumption_plan_product_variant">
         <t t-call="web.html_container">
             <div class="page">
                 <t t-call="plm_consumption_plans.report_consumption_plan"/>
@@ -68,7 +63,6 @@
         <field name="model">product.template</field>
         <field name="report_type">qweb-html</field>
         <field name="report_name">plm_consumption_plans.report_consumption_plan_product_template</field>
-        <field name="report_file">plm_consumption_plans.report_consumption_plan_product_template</field>
         <field name="binding_model_id" ref="model_product_template"/>
         <field name="binding_type">report</field>
     </record>
@@ -79,7 +73,6 @@
         <field name="model">product.product</field>
         <field name="report_type">qweb-html</field>
         <field name="report_name">plm_consumption_plans.report_consumption_plan_product_variant</field>
-        <field name="report_file">plm_consumption_plans.report_consumption_plan_product_variant</field>
         <field name="binding_model_id" ref="model_product_product"/>
         <field name="binding_type">report</field>
     </record>

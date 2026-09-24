@@ -13,33 +13,24 @@
     </record>
 
     <!-- model_plm_box -->
-    <record id="plm_plm_backupdoc_wizard_view" model="ir.model.access">
+    <record id="plm_plm_backupdoc_wizard_view" model="ir.access">
         <field name="name">PLM Box</field>
         <field name="model_id" ref="model_plm_box"/>
         <field name="group_id" ref="plm.group_plm_view_user"/>
-        <field name="perm_read" eval="1"/>
-        <field name="perm_write" eval="0"/>
-        <field name="perm_create" eval="0"/>
-        <field name="perm_unlink" eval="0"/>
+        <field name="operation">r</field>
     </record>
 
-    <record id="plm_plm_backupdoc_wizard_integration" model="ir.model.access">
+    <record id="plm_plm_backupdoc_wizard_integration" model="ir.access">
         <field name="name">PLM Box</field>
         <field name="model_id" ref="model_plm_box"/>
         <field name="group_id" ref="plm.group_plm_integration_user"/>
-        <field name="perm_read" eval="1"/>
-        <field name="perm_write" eval="1"/>
-        <field name="perm_create" eval="1"/>
-        <field name="perm_unlink" eval="0"/>
+        <field name="operation">cru</field>
     </record>
 
-    <record id="model_plm_backupdoc_wizard_admin" model="ir.model.access">
+    <record id="model_plm_backupdoc_wizard_admin" model="ir.access">
         <field name="name">PLM Box</field>
         <field name="model_id" ref="model_plm_box"/>
         <field name="group_id" ref="plm.group_plm_admin"/>
-        <field name="perm_read" eval="1"/>
-        <field name="perm_write" eval="1"/>
-        <field name="perm_create" eval="1"/>
-        <field name="perm_unlink" eval="1"/>
+        <field name="operation">crud</field>
     </record>
 </odoo>

@@ -19,13 +19,13 @@
         <field name="arch" type="xml">
             <list string="Attachments">
                  <button name="toggle_check_out"
-                         icon="fa-lock"
+                         icon="lock"
                          type="object"
                          invisible="is_checkout == True"
                          string="Check-Out">
                   </button>
                  <button name="toggle_check_out"
-                         icon="fa-unlock"
+                         icon="lock_open"
                          type="object"
                          invisible="is_checkout == False"
                          string="Check-In">

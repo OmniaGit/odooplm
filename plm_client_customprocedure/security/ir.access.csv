@@ -1,0 +1,5 @@
+id,name,model_id,group_id/id,operation,domain
+plm_client_customprocedure.access_cad_config,access_cad_config,cad.config,base.group_user,crud,
+plm_client_customprocedure.update_property,access_update_property,update.property,base.group_user,crud,
+plm_client_customprocedure.odoo_cad_mapping,access_odoo_cad_mapping,odoo.cad.mapping,base.group_user,crud,
+plm_client_customprocedure.plm_conversion_stack_line,access_plm_conversion_stack_line,plm.conversion.stack.line,base.group_user,crud,

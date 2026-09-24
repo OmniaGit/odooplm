@@ -45,8 +45,8 @@
                 <div style="text-align: left; font-size: 15px;background-color: lightgreen;"
                      invisible="bom_are_equal==False">
                     <span title="Attentio_bom_equal"
-                          class="fa fa-exclamation-triangle"
-                          style="color:blu;width:100%;text-align:left;font-size:30px">Attention: The two bom are
+                          style="color:blu;width:100%;text-align:left;font-size:30px">
+                        <i class="oi" data-icon="warning"/> Attention: The two bom are
                         equal !!
                         <br/>
                     </span>
@@ -57,12 +57,12 @@
                     <table>
                         <tr>
                             <td>
-                                <button type="object" name="update_bom" icon="fa-save" string="Save"/>
+                                <button type="object" name="update_bom" icon="save" string="Save"/>
                             </td>
                             <td>
                                 <span title="Attention_some_change"
-                                      class="fa fa-exclamation-triangle"
-                                      style="color:red;width:100%;text-align:left;font-size:30px">Attention: Press
+                                      style="color:red;width:100%;text-align:left;font-size:30px">
+                                    <i class="oi" data-icon="warning"/> Attention: Press
                                     this Button in order to save your change !!
                                     <br/>
                                 </span>
@@ -97,7 +97,7 @@
                                         type="object"
                                         string="Delete Left"
                                         class="oe_stat_button"
-                                        icon="fa-trash-o"/>
+                                        icon="delete"/>
                                 <field name="itemnum" select="True"/>
                                 <field name="bom_idrow" invisible="1"/>
                                 <field name="part_id" select="True" optional="hide"/>
@@ -109,12 +109,12 @@
                                         type="object"
                                         string="Copy Left"
                                         class="oe_stat_button"
-                                        icon="fa-angle-right"/>
+                                        icon="chevron_right"/>
                                 <button name="move_right_left"
                                         type="object"
                                         string="Move Left"
                                         class="oe_stat_button"
-                                        icon="fa-angle-double-right"/>
+                                        icon="keyboard_double_arrow_right"/>
                             </list>
                         </field>
                     </group>
@@ -128,12 +128,12 @@
                                         type="object"
                                         string="Copy Right"
                                         class="oe_stat_button"
-                                        icon="fa-angle-left"/>
+                                        icon="chevron_left"/>
                                 <button name="move_left_left"
                                         type="object"
                                         string="Move Left"
                                         class="oe_stat_button"
-                                        icon="fa-angle-double-left"/>
+                                        icon="keyboard_double_arrow_left"/>
                                 <field name="itemnum" select="True"/>
                                 <field name="bom_idrow" invisible="1"/>
                                 <field name="part_id" select="True" optional="hide"/>
@@ -145,7 +145,7 @@
                                         type="object"
                                         string="Delete Left"
                                         class="oe_stat_button"
-                                        icon="fa-trash-o"/>
+                                        icon="delete"/>
                             </list>
                         </field>
                     </group>

@@ -19,9 +19,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-from odoo import _
-from odoo import api
-from odoo import models
+from odoo import _, api, models
 
 
 class ReportDocumentPdf(models.AbstractModel):
@@ -46,7 +44,7 @@ class ReportDocumentPdf(models.AbstractModel):
                     res["p_code"] = line.product_id.default_code
                     res["p_rev"] = product.engineering_revision
                     res["p_qty"] = line_qty * 1 if parent_qty < 1 else parent_qty
-                    res["u_name"] = line.product_uom_id.name
+                    res["u_name"] = line.uom_id.name
                     res["p_weight"] = product.weight
                     res["code"] = eng_code
                     res["level"] = level

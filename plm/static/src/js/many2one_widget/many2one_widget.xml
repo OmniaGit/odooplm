@@ -2,21 +2,21 @@
 <templates xml:space="preserve">
     <t t-name="plm.CustomImageM2oField">
         <div class="d-flex align-items-center gap-1">
-            <span t-if="state.imageData" style="padding:0px 30px 0px 0px;">
+            <span t-if="this.state.imageData" style="padding:0px 30px 0px 0px;">
                 <img data-tooltip-template="web.ImageZoomTooltip"
-                     t-att-data-tooltip-info="imageToolTipData"
-                     style="width:30px;height:30px" t-att-src="state.imageData"
+                     t-att-data-tooltip-info="this.imageToolTipData"
+                     style="width:30px;height:30px" t-att-src="this.state.imageData"
                      t-on-click="onImageClicked"/>
             </span>
             <span t-else="" style="padding:0px 15px 0px 0px;" class="plm_m2o_avatar">
                 <div class="fa fa-folder-open" t-on-click="onImageClicked"
                      style="font-size: 20px; width:30px;height:30px"/>
             </span>
-            <t t-if="!props.canOpen">
-                <span t-if="state.imageData" style="padding:0px 20px 0px 0px;" class="plm_m2o_avatar">
+            <t t-if="!this.props.canOpen">
+                <span t-if="this.state.imageData" style="padding:0px 20px 0px 0px;" class="plm_m2o_avatar">
                       <img data-tooltip-template="web.ImageZoomTooltip"
-                           t-att-data-tooltip-info="imageToolTipData"
-                           style="width:30px;height:30px" t-att-src="state.imageData"
+                           t-att-data-tooltip-info="this.imageToolTipData"
+                           style="width:30px;height:30px" t-att-src="this.state.imageData"
                            t-on-click="onImageClicked"/>
                 </span>
                 <span t-else="" style="padding:0px 25px 0px 0px;" class="plm_m2o_avatar">

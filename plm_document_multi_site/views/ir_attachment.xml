@@ -1,30 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-<data>
-
     <record model="ir.ui.view" id="view_plm_document_multi_site_hinerit">
         <field name="name">view.plm.document.multi.site.hinerit</field>
         <field name="model">ir.attachment</field>
         <field name="priority" eval="1"/>
         <field name="inherit_id" ref="plm.view_attachment_form_plm_hinerit"/>
         <field name="arch" type="xml">
-            <xpath expr="//button[@name='check_out_user']" position="after">
-                    <button name="open_related_action_syncronize"
-                            type="object"
-                            string="Sync.Hist."
-                            class="oe_stat_button"
-                            icon="fa-tasks">
-                    </button>
-                    <button name="syncronize"
-                            type="object"
-                            string="DO Sync."
-                            class="oe_stat_button"
-                            icon="fa-exchange"
-                            invisible="count_plm_document_action_syncronize &lt;=0">
-                            <field name="count_plm_document_action_syncronize"
-                                   string=" "
-                                   widget="statinfo"/>
-                    </button>
+            <xpath expr="//button[@name='open_related_document_revisions']" position="after">
+                <button name="open_related_action_syncronize"
+                        type="object"
+                        string="Sync.Hist."
+                        class="oe_stat_button"
+                        icon="list_alt">
+                </button>
+                <button name="syncronize"
+                        type="object"
+                        string="DO Sync."
+                        class="oe_stat_button"
+                        icon="sync_alt"
+                        invisible="count_plm_document_action_syncronize &lt;=0">
+                    <field name="count_plm_document_action_syncronize"
+                           string="DO Sync."
+                           widget="statinfo"/>
+                </button>
             </xpath>
         </field>
     </record>
@@ -35,13 +33,10 @@
         <field name="priority" eval="1"/>
         <field name="inherit_id" ref="plm.ir_attachment_list"/>
         <field name="arch" type="xml">
-                <field name="name" position="before">
-                    <field string="N.S"
-                           name="count_plm_document_action_syncronize"/>
-                </field>
+            <field name="name" position="before">
+                <field string="N.S"
+                       name="count_plm_document_action_syncronize"/>
+            </field>
         </field>
     </record>
-
-</data>
 </odoo>
-

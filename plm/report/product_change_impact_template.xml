@@ -947,10 +947,10 @@
                                             </td>
                                             <td class="text-center">
                                                 <t t-if="attachment.checkout_user">
-                                                    <div class="fa fa-lock" t-out="attachment.checkout_user"/>
+                                                    <div class="oi" data-icon="lock" t-out="attachment.checkout_user"/>
                                                 </t>
                                                 <t t-else="">
-                                                    <div class="fa fa-unlock" style="color:green;"/>
+                                                    <div class="oi" data-icon="lock_open" style="color:green;"/>
                                                 </t>
                                             </td>
                                             <td class="text-center"

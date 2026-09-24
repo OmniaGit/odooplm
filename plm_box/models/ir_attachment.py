@@ -109,7 +109,8 @@ class Plm_box_document(models.Model):
         if docBrowseList and not force:
             clientBytesContent = docContent.encode(encoding="utf_8", errors="strict")
             if (
-                docBrowseList[0].datas + "\n".encode(encoding="utf_8", errors="strict")
+                base64.b64encode(bytes(docBrowseList[0].raw))
+                + "\n".encode(encoding="utf_8", errors="strict")
                 != clientBytesContent
             ):
                 return "File changed"
@@ -173,7 +174,7 @@ class Plm_box_document(models.Model):
         for docName, (docContent, _writeDateClient) in valuesDict.items():
             for ir_attachment_id in self.search([("name", "=", docName)]):
                 if (
-                    ir_attachment_id.datas != docContent
+                    base64.b64encode(bytes(ir_attachment_id.raw)) != docContent
                     and ir_attachment_id.getDocumentState() == "check-out-by-me"
                 ):
                     outDocs.append(docName)
@@ -265,7 +266,7 @@ class Plm_box_document(models.Model):
                 product_id = self.product_by_engcode(product_details.get("part_number"),
                                                      product_details.get("revision"))
                 csv_column_mapping = json.loads(box_id.csv_structure)
-                file_content = base64.b64decode(attachment_id.datas)
+                file_content = attachment_id.raw
                 csv_reader = csv.reader(file_content.decode("utf-8").splitlines())
                 headers = next(csv_reader)
                 child_data = []

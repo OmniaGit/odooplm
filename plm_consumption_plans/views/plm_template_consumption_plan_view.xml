@@ -1,39 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <data>
-        <!-- List View -->
-        <record id="view_tempalte_consumption_plan_list" model="ir.ui.view">
-            <field name="name">template.consumption.plan.list</field>
-            <field name="model">template.consumption.plan</field>
-            <field name="arch" type="xml">
-                <list>
-                    <field name="name"/>
-                    <field name="time_span" widget="float_time"/>
-                    <field name="consumption_state_id"/>
-                    <field name="product_template_ids"/>
-                    <field name="product_ids"/>
-                </list>
-            </field>
-        </record>
+    <!-- List View -->
+    <record id="view_tempalte_consumption_plan_list" model="ir.ui.view">
+        <field name="name">template.consumption.plan.list</field>
+        <field name="model">template.consumption.plan</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="time_span" widget="float_time"/>
+                <field name="consumption_state_id"/>
+                <field name="product_template_ids"/>
+                <field name="product_ids"/>
+            </list>
+        </field>
+    </record>
 
-        <!-- Form View -->
-        <record id="view_template_consumption_plan_form" model="ir.ui.view">
-            <field name="name">template.consumption.plan.form</field>
-            <field name="model">template.consumption.plan</field>
-            <field name="arch" type="xml">
-                <form>
-                    <sheet>
-                        <group>
-                            <field name="name" required="1"/>
-                            <field name="time_span" widget="float_time"/>
-                            <field name="consumption_state_id"/>
-                            <field name="product_template_ids" widget="many2many_tags"/>
-                            <field name="product_ids" widget="many2many_tags"/>
-                        </group>
-                    </sheet>
-                </form>
-            </field>
-        </record>
+    <!-- Form View -->
+    <record id="view_template_consumption_plan_form" model="ir.ui.view">
+        <field name="name">template.consumption.plan.form</field>
+        <field name="model">template.consumption.plan</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="name" required="1"/>
+                        <field name="time_span" widget="float_time"/>
+                        <field name="consumption_state_id"/>
+                        <field name="product_template_ids" widget="many2many_tags"/>
+                        <field name="product_ids" widget="many2many_tags"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
 
-    </data>
 </odoo>

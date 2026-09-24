@@ -102,4 +102,3 @@ class plm_temporary_batch_converter(models.TransientModel):
             "type": "ir.actions.act_window",
             "context": {},
         }
-

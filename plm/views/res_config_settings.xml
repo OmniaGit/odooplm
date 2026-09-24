@@ -178,6 +178,7 @@
 
         <record id="plm_action_settings_form" model="ir.actions.act_window">
             <field name="name">Settings</field>
+            <field name="path">plm-settings</field>
             <field name="res_model">res.config.settings</field>
             <field name="path">plm-settings</field>
             <field name="view_mode">form</field>

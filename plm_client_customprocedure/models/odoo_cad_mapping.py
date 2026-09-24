@@ -19,11 +19,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-import base64
-import os
-import requests
-from odoo import models, fields, api
-from odoo.exceptions import UserError
+from odoo import models, fields
 
 
 class OdooCadMapping(models.Model):

@@ -122,7 +122,7 @@
         <field name="model">res.company</field>
         <field name="inherit_id" ref="base.view_company_form"/>
         <field name="arch" type="xml">
-            <field name="company_registry" position="after">
+            <field name="currency_id" position="after">
                 <field name="plm_access_id" readonly="1" groups="plm.group_plm_admin"/>
             </field>
         </field>

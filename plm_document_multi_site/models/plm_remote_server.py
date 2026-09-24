@@ -18,21 +18,12 @@
 #    along with this prograIf not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-import os
 import requests
 import hashlib
 from requests.auth import HTTPBasicAuth
 import logging
-import datetime
-from odoo import models
-from odoo import fields
-from odoo import api
-from odoo import _
-from odoo.exceptions import UserError
-from datetime import timedelta
-from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
+from odoo import _, api, fields, models
 from io import BytesIO
-import base64
 
 
 def md5(fname):
@@ -46,15 +37,15 @@ def md5(fname):
 class PlmRemoteServer(models.Model):
     _name = "plm.remote.server"
     _description = "Plm Remote server"
-    name = fields.Char("Server Name")
-    login = fields.Char("Login")
-    password = fields.Char("Password")
-    address = fields.Char("Server Ip Address")
-
     _name_uniq = models.Constraint(
         'unique (name)',
         'Server name must be unique !!!',
     )
+
+    name = fields.Char("Server Name")
+    login = fields.Char("Login")
+    password = fields.Char("Password")
+    address = fields.Char("Server Ip Address")
 
     @api.model
     def document_is_there(self, ir_attachment_id):
@@ -99,7 +90,7 @@ class PlmRemoteServer(models.Model):
                 for chunk in r.iter_content(chunk_size=8192):
                     if chunk:  # filter out keep-alive new chunks
                         f.write(chunk)
-                ir_attachment_id.datas = base64.encodestring(f.getvalue())
+                ir_attachment_id.raw = f.getvalue()
             return ret
         except Exception as ex:
             logging.error(ex)

@@ -19,7 +19,6 @@
 #
 ##############################################################################
 from odoo import fields, models
-import base64
 import requests
 from odoo.exceptions import UserError, ValidationError
 from odoo import release
@@ -49,15 +48,15 @@ class UpdateProperty(models.Model):
         # conversion_wizard_id = False
         IrConfig = self.env['ir.config_parameter'].sudo()
 
-        conversion_server_ip = IrConfig.get_param('conversion_server_ip')
-        conversion_server_port = IrConfig.get_param('conversion_server_port')
-        conversion_server_protocol = IrConfig.get_param('conversion_server_protocol', default='http')
+        conversion_server_ip = IrConfig.get_str('conversion_server_ip')
+        conversion_server_port = IrConfig.get_str('conversion_server_port')
+        conversion_server_protocol = IrConfig.get_str('conversion_server_protocol', default='http')
 
         serverName = f"{conversion_server_protocol}://{conversion_server_ip}:{conversion_server_port}"
         url = f"{serverName}/odooplm/api/v1.0/get_properties"
 
         file_name = self.attachment_id.name
-        binary_data = base64.b64decode(self.attachment_id.datas)
+        binary_data = self.attachment_id.raw
         files = {
             'file': (file_name, binary_data, 'application/octet-stream')
         }
@@ -130,10 +129,10 @@ class UpdateProperty(models.Model):
 
     def update_cad_server_data(self):
         IrConfig = self.env['ir.config_parameter'].sudo()
-        conversion_server_ip = IrConfig.get_param('conversion_server_ip')
+        conversion_server_ip = IrConfig.get_str('conversion_server_ip')
 
-        conversion_server_port = IrConfig.get_param('conversion_server_port')
-        conversion_server_protocol = IrConfig.get_param('conversion_server_protocol', default='http')
+        conversion_server_port = IrConfig.get_str('conversion_server_port')
+        conversion_server_protocol = IrConfig.get_str('conversion_server_protocol', default='http')
 
         serverName = f"{conversion_server_protocol}://{conversion_server_ip}:{conversion_server_port}"
         url = f"{serverName}/odooplm/api/v1.0/update_properties"
@@ -164,9 +163,8 @@ class UpdateProperty(models.Model):
             updated_lines.write({'is_updated': False})
 
             try:
-                encoded_data = base64.b64encode(binary_data).decode('utf-8')
                 self.attachment_id.write({
-                    'datas': encoded_data,
+                    'raw': binary_data,
                     'mimetype': 'application/octet-stream'
                 })
                 self.attachment_id.message_post(

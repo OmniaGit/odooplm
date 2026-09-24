@@ -20,9 +20,8 @@
 #
 ##############################################################################
 
-import base64
 import requests
-from odoo import models, api, fields
+from odoo import models
 from odoo.exceptions import UserError, ValidationError
 
 
@@ -37,14 +36,14 @@ class ir_attachment(models.Model):
 
     def action_fetch_cad_data(self):
         IrConfig = self.env['ir.config_parameter'].sudo()
-        conversion_server_ip = IrConfig.get_param('conversion_server_ip',default='192.168.56.101')
-        conversion_server_port = IrConfig.get_param('conversion_server_port')
-        conversion_server_protocol = IrConfig.get_param('conversion_server_protocol', default='http')
+        conversion_server_ip = IrConfig.get_str('conversion_server_ip',default='192.168.56.101')
+        conversion_server_port = IrConfig.get_str('conversion_server_port')
+        conversion_server_protocol = IrConfig.get_str('conversion_server_protocol', default='http')
 
         serverName = f"{conversion_server_protocol}://{conversion_server_ip}:{conversion_server_port}"
         url = f"{serverName}/odooplm/api/v1.0/get_properties"
         file_name = self.name
-        binary_data = base64.b64decode(self.datas)
+        binary_data = self.raw
 
         files = {
             'file': (file_name, binary_data, 'application/octet-stream')
