@@ -19,7 +19,7 @@
 ##############################################################################
 {
     "name": "PLM Document Syncronization",
-    "version": "19.0.1.0.0",
+    "version": "20.0.1.0.0",
     "images": ["static/description/cover.gif"],
     "author": "OmniaSolutions",
     "maintainer": "OmniaSolutions S.n.c di Boscolo Matteo & C",
@@ -38,7 +38,8 @@
         "Maxime Chambreuil <mchambreuil@opensourceintegrators.com>",
         "Leonardo Cazziolati <leonardo.cazziolati@omniasolutions.eu>",
     ],
-    "summary": "Multi site document management: synchronise engineering documents between plants through a local document server",
+    "summary": "Multi site document management: synchronise engineering documents "
+               "between plants through a local document server",
     "depends": ["plm"],
     "data": [
         "views/ir_attachment.xml",

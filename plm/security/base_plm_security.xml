@@ -40,11 +40,16 @@
         <field name="implied_ids" eval="[(4, ref('group_plm_admin'))]"/>
     </record>
 
-    <!-- Readonly Released  -->
+    <!-- Readonly Released: the lowest of the four PLM levels (readonly state,
+         readonly, integration, admin). It implies the readonly group for its
+         access rights, and the global rules below cut what it sees down to the
+         released and under modification records. It used to imply the
+         integration group, which gave it the write and create it is named
+         after not having. -->
     <record id="group_plm_readonly_released" model="res.groups">
         <field name="name">OdooPLM - PLM Integration Readonly</field>
         <field name="privilege_id" ref="res_groups_privilege_odooplm"/>
-        <field name="implied_ids" eval="[(4, ref('group_plm_integration_user'))]"/>
+        <field name="implied_ids" eval="[(6, 0, [ref('group_plm_view_user')])]"/>
     </record>
 
     <record id="group_plm_release_users" model="res.groups">
@@ -53,9 +58,12 @@
         <field name="user_ids" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
     </record>
 
+    <!-- The same level as group_plm_readonly_released, kept for the databases
+         that already use it: it implies it and carries no rule of its own. -->
     <record id="group_plm_release_document" model="res.groups">
         <field name="name">OdooPLM - View only released document</field>
         <field name="privilege_id" ref="plm.res_groups_privilege_odooplm"/>
+        <field name="implied_ids" eval="[(6, 0, [ref('group_plm_readonly_released')])]"/>
     </record>
 
 <!-- model_plm_backupdoc_wizard -->
@@ -142,6 +150,35 @@
         <field name="domain">[('engineering_state','not in',['draft', False])]</field>
     </record>
 
+    <!-- Level 1, readonly state: the components it reads are the released and
+         under modification ones. A global rule, because a group rule can only
+         grant: it is written to leave every other PLM level untouched. -->
+    <record id="plm_readonly_state_product_product" model="ir.access">
+        <field name="name">PLM readonly state: component</field>
+        <field name="model_id" ref="model_product_product"/>
+        <field name="operation">r</field>
+        <field name="domain">['|', '&amp;', ('engineering_code', '=', False), ('engineering_code_archived', '=', False), ('engineering_state', 'in', ['released', 'undermodify'])] if user.has_group('plm.group_plm_readonly_released') and not user.has_group('plm.group_plm_integration_user') else []</field>
+    </record>
+
+    <!-- Level 3, integration: deletes only its own components, and only while
+         they are draft. -->
+    <record id="plm_integration_unlink_product_product" model="ir.access">
+        <field name="name">PLM integration deletes its own drafts: component</field>
+        <field name="model_id" ref="model_product_product"/>
+        <field name="group_id" ref="group_plm_integration_user"/>
+        <field name="operation">d</field>
+        <field name="domain">[('engineering_state', 'in', ['draft', False]), ('create_uid', '=', user.id)]</field>
+    </record>
+
+    <!-- Level 4, admin: every component, deleting included. -->
+    <record id="plm_admin_product_product" model="ir.access">
+        <field name="name">PLM admin: component</field>
+        <field name="model_id" ref="model_product_product"/>
+        <field name="group_id" ref="group_plm_admin"/>
+        <field name="operation">crud</field>
+        <field name="domain">[]</field>
+    </record>
+
 
 
 <!-- mrp.bom.line  -->
@@ -182,6 +219,35 @@
         <field name="domain">[('engineering_state','not in',['draft', False])]</field>
     </record>
 
+    <!-- Level 1, readonly state: the bill of materialss it reads are the released and
+         under modification ones. A global rule, because a group rule can only
+         grant: it is written to leave every other PLM level untouched. -->
+    <record id="plm_readonly_state_mrp_bom" model="ir.access">
+        <field name="name">PLM readonly state: bill of materials</field>
+        <field name="model_id" ref="model_mrp_bom"/>
+        <field name="operation">r</field>
+        <field name="domain">['|', '&amp;', ('product_tmpl_id.engineering_code', '=', False), ('product_tmpl_id.engineering_code_archived', '=', False), ('engineering_state', 'in', ['released', 'undermodify'])] if user.has_group('plm.group_plm_readonly_released') and not user.has_group('plm.group_plm_integration_user') else []</field>
+    </record>
+
+    <!-- Level 3, integration: deletes only its own bill of materialss, and only while
+         they are draft. -->
+    <record id="plm_integration_unlink_mrp_bom" model="ir.access">
+        <field name="name">PLM integration deletes its own drafts: bill of materials</field>
+        <field name="model_id" ref="model_mrp_bom"/>
+        <field name="group_id" ref="group_plm_integration_user"/>
+        <field name="operation">d</field>
+        <field name="domain">[('engineering_state', 'in', ['draft', False]), ('create_uid', '=', user.id)]</field>
+    </record>
+
+    <!-- Level 4, admin: every bill of materials, deleting included. -->
+    <record id="plm_admin_mrp_bom" model="ir.access">
+        <field name="name">PLM admin: bill of materials</field>
+        <field name="model_id" ref="model_mrp_bom"/>
+        <field name="group_id" ref="group_plm_admin"/>
+        <field name="operation">crud</field>
+        <field name="domain">[]</field>
+    </record>
+
 <!-- plm.client  -->
     <record id="plm_client_integration" model="ir.access">
         <field name="name">PLM Client</field>
@@ -218,20 +284,80 @@
         <field name="domain">[('engineering_state','not in',['draft', False]), ('is_plm','=', True)]</field>
     </record>
 
+    <!-- Level 2, readonly: PLM documents, read only. -->
     <record id="group_plm_view_plm_document" model="ir.access">
         <field name="name">View only plm Documnet</field>
         <field name="model_id" ref="model_ir_attachment"/>
         <field name="group_id" ref="group_plm_view_user"/>
-        <field name="operation">cr</field>
+        <field name="operation">r</field>
         <field name="domain">[('is_plm','=',True)]</field>
     </record>
 
+    <!-- Level 3, integration: reads, writes and creates every PLM document.
+         Deleting is the next rule: only its own drafts. -->
     <record id="group_plm_admin_plm_document" model="ir.access">
-        <field name="name">Admin rule PLM documnet</field>
+        <field name="name">Integration rule PLM documnet</field>
         <field name="model_id" ref="model_ir_attachment"/>
         <field name="group_id" ref="group_plm_integration_user"/>
-        <field name="operation">crud</field>
+        <field name="operation">cru</field>
         <field name="domain">[('is_plm','=',True)]</field>
+    </record>
+
+    <!-- Level 1, readonly state: the documents it reads are the released and
+         under modification ones. A global rule, because a group rule can only
+         grant: it is written to leave every other PLM level untouched. -->
+    <record id="plm_readonly_state_ir_attachment" model="ir.access">
+        <field name="name">PLM readonly state: document</field>
+        <field name="model_id" ref="model_ir_attachment"/>
+        <field name="operation">r</field>
+        <field name="domain">['|', ('is_plm', '=', False), ('engineering_state', 'in', ['released', 'undermodify'])] if user.has_group('plm.group_plm_readonly_released') and not user.has_group('plm.group_plm_integration_user') else []</field>
+    </record>
+
+    <!-- Level 3, integration: deletes only its own documents, and only while
+         they are draft. -->
+    <record id="plm_integration_unlink_ir_attachment" model="ir.access">
+        <field name="name">PLM integration deletes its own drafts: document</field>
+        <field name="model_id" ref="model_ir_attachment"/>
+        <field name="group_id" ref="group_plm_integration_user"/>
+        <field name="operation">d</field>
+        <field name="domain">[('is_plm', '=', True), ('engineering_state', 'in', ['draft', False]), ('create_uid', '=', user.id)]</field>
+    </record>
+
+    <!-- Level 4, admin: every document, deleting included. -->
+    <record id="plm_admin_ir_attachment" model="ir.access">
+        <field name="name">PLM admin: document</field>
+        <field name="model_id" ref="model_ir_attachment"/>
+        <field name="group_id" ref="group_plm_admin"/>
+        <field name="operation">crud</field>
+        <field name="domain">[('is_plm', '=', True)]</field>
+    </record>
+
+    <!-- An internal user outside the PLM groups keeps every attachment that is
+         not a PLM document, and none that is. Permissions are OR-ed, so a PLM
+         user adds the PLM accesses above to this one. -->
+    <record id="plm_base_user_non_plm_document" model="ir.access">
+        <field name="name">Non-PLM attachments only</field>
+        <field name="model_id" ref="model_ir_attachment"/>
+        <field name="group_id" ref="base.group_user"/>
+        <field name="operation">crud</field>
+        <field name="domain">[('is_plm', '=', False)]</field>
+    </record>
+
+    <!-- Create and unlink on a document are decided by the groups of its PLM
+         access node. Read and write are too, but Odoo checks those on the node
+         itself, the document's res record (see the plm.access rules). -->
+    <record id="plm_access_document_create" model="ir.access">
+        <field name="name">PLM access: create documents</field>
+        <field name="model_id" ref="model_ir_attachment"/>
+        <field name="operation">c</field>
+        <field name="domain">['|', ('plm_access_id', '=', False), '|', ('plm_access_id.effective_create_group_ids', '=', False), ('plm_access_id.effective_create_group_ids', 'in', user.all_group_ids.ids)]</field>
+    </record>
+
+    <record id="plm_access_document_unlink" model="ir.access">
+        <field name="name">PLM access: delete documents</field>
+        <field name="model_id" ref="model_ir_attachment"/>
+        <field name="operation">d</field>
+        <field name="domain">['|', ('plm_access_id', '=', False), '|', ('plm_access_id.effective_unlink_group_ids', '=', False), ('plm_access_id.effective_unlink_group_ids', 'in', user.all_group_ids.ids)]</field>
     </record>
 
     <record id="group_non_plm_view_plm_document" model="ir.access">
@@ -299,6 +425,33 @@
         <field name="model_id" ref="model_plm_checkout"/>
         <field name="group_id" ref="group_plm_integration_user"/>
         <field name="operation">crud</field>
+    </record>
+
+    <!--
+        A check-out is the lock one user put on a document, and deleting it is
+        what checks the document back in. The access right above says the
+        integration level may delete; these rules say whose. Without them every
+        integration user released the locks of every other, and the model's
+        unlink() does not look at the owner either.
+
+        The administrator needs its own rule because it belongs to the
+        integration group by implication: permissions are OR-ed, so this is what
+        keeps it able to release a lock somebody left behind.
+    -->
+    <record id="plm_checkout_own_unlink" model="ir.access">
+        <field name="name">PLM check-out: release your own</field>
+        <field name="model_id" ref="model_plm_checkout"/>
+        <field name="group_id" ref="group_plm_integration_user"/>
+        <field name="operation">d</field>
+        <field name="domain">[('userid', '=', user.id)]</field>
+    </record>
+
+    <record id="plm_checkout_admin_unlink" model="ir.access">
+        <field name="name">PLM check-out: the administrator releases any</field>
+        <field name="model_id" ref="model_plm_checkout"/>
+        <field name="group_id" ref="group_plm_admin"/>
+        <field name="operation">d</field>
+        <field name="domain">[(1, '=', 1)]</field>
     </record>
 
 
@@ -451,6 +604,35 @@
         <field name="operation">crud</field>
     </record>
 
+    <!-- Level 1, readonly state: the component templates it reads are the released and
+         under modification ones. A global rule, because a group rule can only
+         grant: it is written to leave every other PLM level untouched. -->
+    <record id="plm_readonly_state_product_template" model="ir.access">
+        <field name="name">PLM readonly state: component template</field>
+        <field name="model_id" ref="model_product_template"/>
+        <field name="operation">r</field>
+        <field name="domain">['|', '&amp;', ('engineering_code', '=', False), ('engineering_code_archived', '=', False), ('engineering_state', 'in', ['released', 'undermodify'])] if user.has_group('plm.group_plm_readonly_released') and not user.has_group('plm.group_plm_integration_user') else []</field>
+    </record>
+
+    <!-- Level 3, integration: deletes only its own component templates, and only while
+         they are draft. -->
+    <record id="plm_integration_unlink_product_template" model="ir.access">
+        <field name="name">PLM integration deletes its own drafts: component template</field>
+        <field name="model_id" ref="model_product_template"/>
+        <field name="group_id" ref="group_plm_integration_user"/>
+        <field name="operation">d</field>
+        <field name="domain">[('engineering_state', 'in', ['draft', False]), ('create_uid', '=', user.id)]</field>
+    </record>
+
+    <!-- Level 4, admin: every component template, deleting included. -->
+    <record id="plm_admin_product_template" model="ir.access">
+        <field name="name">PLM admin: component template</field>
+        <field name="model_id" ref="model_product_template"/>
+        <field name="group_id" ref="group_plm_admin"/>
+        <field name="operation">crud</field>
+        <field name="domain">[]</field>
+    </record>
+
 
 
 <!-- ir.attachment.file  -->
@@ -528,10 +710,42 @@
         <field name="operation">r</field>
     </record>
 
+    <!-- Odoo lets a user read a PLM document only if they can read its node,
+         and write, create or delete it only if they can write the node: every
+         internal user needs both rights, the rules below decide on which nodes.
+         plm.access.write itself refuses anyone but a PLM administrator. -->
     <record id="plm_access_permission" model="ir.access">
-        <field name="name">PLM Act Window View</field>
+        <field name="name">PLM Access</field>
         <field name="model_id" ref="plm.model_plm_access"/>
         <field name="group_id" ref="base.group_user"/>
-        <field name="operation">cru</field>
+        <field name="operation">ru</field>
+    </record>
+
+    <record id="plm_access_permission_admin" model="ir.access">
+        <field name="name">PLM Access admin</field>
+        <field name="model_id" ref="plm.model_plm_access"/>
+        <field name="group_id" ref="group_plm_admin"/>
+        <field name="operation">crud</field>
+    </record>
+
+    <record id="plm_access_company_rule" model="ir.access">
+        <field name="name">PLM access: company</field>
+        <field name="model_id" ref="plm.model_plm_access"/>
+        <field name="operation">crud</field>
+        <field name="domain">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="plm_access_read_rule" model="ir.access">
+        <field name="name">PLM access: read groups</field>
+        <field name="model_id" ref="plm.model_plm_access"/>
+        <field name="operation">r</field>
+        <field name="domain">['|', ('effective_read_group_ids', '=', False), ('effective_read_group_ids', 'in', user.all_group_ids.ids)]</field>
+    </record>
+
+    <record id="plm_access_write_rule" model="ir.access">
+        <field name="name">PLM access: write groups</field>
+        <field name="model_id" ref="plm.model_plm_access"/>
+        <field name="operation">u</field>
+        <field name="domain">['|', ('effective_write_group_ids', '=', False), ('effective_write_group_ids', 'in', user.all_group_ids.ids)]</field>
     </record>
 </odoo>

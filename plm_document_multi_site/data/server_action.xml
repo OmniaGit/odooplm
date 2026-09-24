@@ -1,16 +1,16 @@
 <?xml version="1.0"?>
 <odoo>
-    <data noupdate="1"> 
-        
-	   <record id="ir_cron_syncronize" model="ir.cron">
-		   <field name="name">Syncronize</field>
-		   <field name="active" eval="False"/>
-		   <field name="interval_number">5</field>
-		   <field name="interval_type">minutes</field>
-		   <field name="model_id" ref="model_plm_document_action_syncronize"/>
-		   <field name="state">code</field>
-		   <field name="code">model.syncronize()</field>
-	   </record>
+    <data noupdate="1">
+
+        <record id="ir_cron_syncronize" model="ir.cron">
+            <field name="name">Syncronize</field>
+            <field name="active" eval="False"/>
+            <field name="interval_number">5</field>
+            <field name="interval_type">minutes</field>
+            <field name="model_id" ref="model_plm_document_action_syncronize"/>
+            <field name="state">code</field>
+            <field name="code">model.syncronize()</field>
+        </record>
     </data>
 
     <data>
@@ -21,11 +21,11 @@
             <field name="state">code</field>
             <field name="type">ir.actions.server</field>
         </record>
-        
+
         <menuitem id="menu_syncronize_scheduler"
                   name="Run Document Syncronize "
                   action="action_syncronize"
                   groups="plm.group_plm_admin"
-                  parent="plm.plm_menu_dictionaries"/> 
+                  parent="plm.plm_menu_dictionaries"/>
     </data>
 </odoo>

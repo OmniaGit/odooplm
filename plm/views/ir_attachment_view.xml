@@ -17,7 +17,7 @@
                             class="oe_highlight"
                             type="object"
                             groups="plm.group_plm_release_users"
-                            invisible="is_checkout == True or engineering_state != engineering_state"/>
+                            invisible="is_checkout == True or engineering_state != 'confirmed'"/>
                     <button name="action_draft"
                             invisible="engineering_state!='confirmed'"
                             type="object"
@@ -153,6 +153,11 @@
                             <field string="Engineering revision" name="engineering_revision" readonly="True"/>
                             <field string="Is a Plm Document" name="is_plm" visible="0" widget="boolean_toggle"
                                    readonly="True"/>
+                            <field name="plm_access_id"
+                                   invisible="not is_plm"
+                                   readonly="engineering_state != 'draft'"
+                                   options="{'no_create': True}"/>
+                            <field name="company_id" groups="base.group_multi_company" readonly="True"/>
                         </group>
                         <group name="doc_preview">
                             <field name="preview"
@@ -169,8 +174,12 @@
                         <page string="Attachment">
                             <group string="File Data:" name="FileData">
                                 <group invisible="type=='url'" name="group_datas" colspan="4" col="2">
+                                    <!-- The file itself is for the PLM
+                                         administrator: everybody else works
+                                         from the preview and the printout. -->
                                     <field name="raw"
                                            filename="name"
+                                           groups="plm.group_plm_admin"
                                            readonly="engineering_state in ['released','obsoleted']"/>
                                     <field name="name"
                                            select="1"
@@ -400,7 +409,7 @@
                 <field name="engineering_code"/>
                 <field name="engineering_revision"/>
                 <field name="description"/>
-                <field name="raw"/>
+                <field name="raw" groups="plm.group_plm_admin"/>
                 <field name="name"/>
                 <field name="engineering_state"/>
                 <field name="document_type"/>
@@ -494,7 +503,7 @@
                                                 </tr>
                                                 <tr>
                                                     <td>
-                                                        <field name="raw" filename="name" widget="binary"/>
+                                                        <field name="raw" filename="name" widget="binary" groups="plm.group_plm_admin"/>
                                                     </td>
                                                 </tr>
                                                 <tr>

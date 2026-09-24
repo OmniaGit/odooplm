@@ -1,0 +1,2 @@
+id,name,model_id,group_id/id,operation,domain
+plm_mcp.access_plm_mcp_key_admin,plm.mcp.key admin,plm.mcp.key,plm.group_plm_admin,crud,

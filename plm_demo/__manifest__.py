@@ -20,7 +20,7 @@
 ##############################################################################
 {
     "name": "PLM Demo Data",
-    "version": "19.0.1.2.0",
+    "version": "20.0.1.2.0",
     "images": ["static/description/cover.gif"],
     "author": "OmniaSolutions",
     "maintainer": "OmniaSolutions S.n.c di Boscolo Matteo & C",

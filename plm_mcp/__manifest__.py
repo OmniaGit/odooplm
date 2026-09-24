@@ -20,7 +20,7 @@
 ##############################################################################
 {
     "name": "PLM MCP Server",
-    "version": "19.0.1.0.0",
+    "version": "20.0.1.0.0",
     "author": "OmniaSolutions",
     "maintainer": "OmniaSolutions S.n.c di Boscolo Matteo & C",
     "website": "https://odooplm.omniasolutions.website",
@@ -34,31 +34,31 @@
         "Matteo Boscolo <matteo.boscolo@omniasolutions.eu>",
     ],
     "summary": """
-    Answer questions about the engineering data over the Model Context Protocol.
+        Answer questions about the engineering data over the Model Context Protocol.
     """,
     "description": """
-PLM MCP Server
-==============
+        PLM MCP Server
+        ==============
 
-Exposes OdooPLM as an MCP server, so an AI assistant — any client that speaks
-the protocol — can be asked questions about the engineering data and answer them
-from the live database instead of guessing: where a part is used, what changed
-between two revisions, which parts are under modification, which documents are
-checked out.
+        Exposes OdooPLM as an MCP server, so an AI assistant — any client that speaks
+        the protocol — can be asked questions about the engineering data and answer them
+        from the live database instead of guessing: where a part is used, what changed
+        between two revisions, which parts are under modification, which documents are
+        checked out.
 
-The endpoint speaks the protocol over plain HTTP from an Odoo controller: there
-is no separate process to deploy and no asyncio in the stack. The wire types
-come from ``mcp-types``, the package published by the protocol's own authors, so
-the message shapes stay correct as the specification moves.
+        The endpoint speaks the protocol over plain HTTP from an Odoo controller: there
+        is no separate process to deploy and no asyncio in the stack. The wire types
+        come from ``mcp-types``, the package published by the protocol's own authors, so
+        the message shapes stay correct as the specification moves.
 
-Access is through API keys, and a key is not an identity of its own: it points
-at an Odoo user, and every call runs with that user's rights. Whatever the PLM
-record rules hide from the person stays hidden from the agent.
+        Access is through API keys, and a key is not an identity of its own: it points
+        at an Odoo user, and every call runs with that user's rights. Whatever the PLM
+        record rules hide from the person stays hidden from the agent.
 
-Every tool is read-only. Nothing here releases a part, creates a revision or
-checks out a document — an agent that gets a question wrong costs thirty
-seconds, one that gets a state change wrong costs a lot more.
-""",
+        Every tool is read-only. Nothing here releases a part, creates a revision or
+        checks out a document — an agent that gets a question wrong costs thirty
+        seconds, one that gets a state change wrong costs a lot more.
+    """,
     "depends": [
         "plm",
     ],
@@ -66,7 +66,7 @@ seconds, one that gets a state change wrong costs a lot more.
         "python": ["mcp-types"],
     },
     "data": [
-        "security/ir.model.access.csv",
+        "security/ir.access.csv",
         "views/plm_mcp_key_view.xml",
     ],
     "installable": True,

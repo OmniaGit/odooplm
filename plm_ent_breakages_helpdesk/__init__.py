@@ -19,8 +19,4 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-# Leonardo Cazziolati
-# leonardo.cazziolati@omniasolutions.eu
-# 23-06-2020
-
 from . import models
