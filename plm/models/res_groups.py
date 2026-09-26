@@ -34,7 +34,11 @@ class ResGroups(models.Model):
     @api.model
     @api.returns("self")
     def search(self, args, offset=0, limit=None, order=None):
-        if self.env.context.get("odooPLM"):
+        # Only what a person is shown: Odoo's own permission checks search the
+        # groups as superuser (res.users._get_group_definitions) and must see
+        # all of them, or has_group fails with a KeyError on the first check
+        # made with odooPLM in the context -- the CAD client's every call.
+        if self.env.context.get("odooPLM") and not self.env.su:
             available_types = [
                 self.env.ref("plm.group_plm_view_user").id,
                 self.env.ref("plm.group_plm_integration_user").id,
