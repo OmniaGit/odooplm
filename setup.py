@@ -133,7 +133,7 @@ packages, package_dir, package_data = build_package_info(addons)
 setup(
     name="odooplm",
     version=get_version(),
-    description="OdooPLM — Product Lifecycle Management suite for Odoo 19",
+    description="OdooPLM — Product Lifecycle Management suite for Odoo 20",
     long_description=open(os.path.join(HERE, "README.md")).read(),
     long_description_content_type="text/markdown",
     author="OmniaSolutions",
@@ -145,7 +145,7 @@ setup(
         "Bug Tracker": "https://github.com/OmniaGit/odooplm/issues",
         "Docker images": "https://github.com/OmniaGit/DockerOdooPLM",
     },
-    # The distribution bundles every module of the suite: plm is LGPL-3, the 35
+    # The distribution bundles every module of the suite: plm is LGPL-3, the 39
     # add-ons shipped alongside it are AGPL-3. The SPDX `AND` says exactly that
     # — both licences apply, to different parts — instead of flattening the
     # aggregate to the stricter one and hiding the LGPL core from the metadata.
@@ -159,13 +159,15 @@ setup(
     license_files=["LICENSE", "LICENSES/*.txt"],
     classifiers=[
         "Programming Language :: Python :: 3",
-        "Framework :: Odoo :: 19.0",
+        # no "Framework :: Odoo :: 20.0" classifier exists yet, and PyPI refuses
+        # an upload that declares an unknown one: switch when it is published
+        "Framework :: Odoo",
         "Topic :: Office/Business",
         "Intended Audience :: Manufacturing",
     ],
     python_requires=">=3.11",
     install_requires=[
-        "odoo>=19.0,<20.0",
+        "odoo>=20.0,<21.0",
     ],
     extras_require=compute_extras(HERE),
     packages=packages,

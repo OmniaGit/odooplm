@@ -5,13 +5,15 @@ developed and maintained by [OmniaSolutions](https://www.omniasolutions.website)
 It integrates Odoo with the most popular CAD editors and provides document
 management, BOM versioning, revision workflows, and a browser-based 3D/2D viewer.
 
-This branch targets **Odoo 19.0** and contains **36 modules**, all built on the
-core `plm` module.
+This branch targets **Odoo 20.0** and contains **40 modules**, all built on the
+core `plm` module. The migration from 19.0 is in progress: the modules not yet
+ported are declared `installable: False` in their manifest, and are ported one by
+one. Until then, the 19.0 branch is the one to run in production.
 
 > 📖 Wiki (install, CAD client, user guide, FAQ): **https://github.com/OmniaGit/odooplm/wiki**
 > 🌐 Full documentation: **https://odooplm.omniasolutions.website**
 > 🐛 Issues and support: **https://github.com/OmniaGit/odooplm/issues**
-> 🚀 Live demo: **https://v19.odooplm.cloud** — `admin` / `admin`, database `odooplm`
+> 🚀 Live demo: **https://v20.odooplm.cloud** — `admin` / `admin`, database `odooplm`
 
 ---
 
@@ -21,6 +23,11 @@ OdooPLM is published as a ready-to-run Docker image, on GitHub Container Registr
 and on Docker Hub. A single command gives you Odoo with the whole community PLM
 suite in the addons path, a PostgreSQL database and a working PLM server on the
 first boot — no database wizard, no dependency installation.
+
+> **Odoo 20.0 images are not published yet.** They are built on top of the
+> official `odoo` image, which has no 20.0 tag so far: the 20.0 images follow as
+> soon as it does. Until then the images below are the **19.0** ones, built from
+> the 19.0 branch of this repository.
 
 ```bash
 git clone --branch 19.0 https://github.com/OmniaGit/DockerOdooPLM.git odooplm-19
@@ -78,7 +85,7 @@ XML-RPC. Connection parameters:
 | | Live demo | Docker (local) |
 |---|---|---|
 | Protocol | `https` | `http` |
-| Host | `v19.odooplm.cloud` | `localhost` |
+| Host | `v20.odooplm.cloud` | `localhost` |
 | Port | `443` | `8069` |
 | Database | `odooplm` | `odooplm` |
 | User / password | `admin` / `admin` | `admin` / `admin` |
@@ -218,7 +225,7 @@ server. To add OdooPLM to an Odoo instance you already run, follow this section.
 ### Requirements
 
 The core `plm` module declares **no external Python dependency** — it installs on
-a stock Odoo 19.0, and pulls in `base`, `board`, `product`, `mrp` and
+a stock Odoo 20.0, and pulls in `base`, `board`, `product`, `mrp` and
 `stock_account`. The extra packages belong to specific optional modules:
 
 | Module | Python packages |
@@ -266,7 +273,7 @@ further configuration.
 The 3D and DXF viewer libraries are git submodules, so clone recursively:
 
 ```bash
-git clone --recurse-submodules -b 19.0 https://github.com/OmniaGit/odooplm.git
+git clone --recurse-submodules -b 20.0 https://github.com/OmniaGit/odooplm.git
 ```
 
 Add the directory to `addons_path` in `odoo.conf`, restart Odoo and install from
@@ -332,11 +339,12 @@ and the wheel cannot disagree.
 
 ### Releasing
 
-Tag the commit `v19.0.<something>` and `.github/workflows/publish.yml` builds
+Tag the commit `v20.0.<something>` and `.github/workflows/publish.yml` builds
 the sdist and wheel, verifies the requirements file matches the manifests, runs
 `twine check` and publishes to PyPI through an OIDC trusted publisher. The
-package version is the `plm` module's version, which a pre-commit hook bumps on
-every commit so a tag is always publishable.
+package version is the `plm` module's version, and the tag must match it.
+`scripts/push.py` raises that version on every push, so any pushed commit can
+be tagged and published.
 
 ---
 
