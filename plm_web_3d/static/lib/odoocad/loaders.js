@@ -2,6 +2,8 @@
 import * as THREE from '../three.js/build/three.module.js';
 // loaders
 import { GLTFLoader } from '../three.js/examples/jsm/loaders/GLTFLoader.js';
+import { DRACOLoader } from '../three.js/examples/jsm/loaders/DRACOLoader.js';
+import { MeshoptDecoder } from '../three.js/examples/jsm/libs/meshopt_decoder.module.js';
 import { FBXLoader } from '../three.js/examples/jsm/loaders/FBXLoader.js';
 import { OBJLoader } from '../three.js/examples/jsm/loaders/OBJLoader.js';
 import { VRMLLoader } from '../three.js/examples/jsm/loaders/VRMLLoader.js';
@@ -11,7 +13,12 @@ import { ThreeMFLoader } from '../three.js/examples/jsm/loaders/3MFLoader.js';
 import { DXFLoader } from "./DXFLoader.js"
 
 
+// decoders for compressed glTF (KHR_draco_mesh_compression, EXT_meshopt_compression)
+const dracoLoader = new DRACOLoader();
+dracoLoader.setDecoderPath(new URL('../three.js/examples/jsm/libs/draco/gltf/', import.meta.url).href);
 const gLTFLoader = new GLTFLoader();
+gLTFLoader.setDRACOLoader(dracoLoader);
+gLTFLoader.setMeshoptDecoder(MeshoptDecoder);
 const fBXLoader = new FBXLoader();
 const oBJLoader = new OBJLoader();
 const vRMLLoader = new VRMLLoader();
@@ -139,9 +146,14 @@ class Loader {
 		var self = this;
 		gLTFLoader.load(url,
 			function (gltf) {
-				var children = gltf.scene.children;
-				var out_html_structure;
+				// scene.add() takes each object out of gltf.scene.children, so walk a copy;
+				// cameras and lights exported by the CAD are not parts of the model
+				const children = [...gltf.scene.children];
+				var out_html_structure = "";
 				for (var i = 0; i < children.length; i++) {
+					if (children[i].isCamera || children[i].isLight) {
+						continue;
+					}
 					out_html_structure += self.odooCad.addItemToScene(children[i]);
 				}
 				self.odooCad.create_tree_structure(out_html_structure);
@@ -177,7 +189,8 @@ class Loader {
 		fBXLoader.load(url,
 			function (gltf) {
 				var out_html_structure = "";
-				var children = gltf.children;
+				// scene.add() takes each object out of its parent, so walk a copy
+				const children = [...gltf.children];
 				for (var i = 0; i < children.length; i++) {
 					out_html_structure += self.odooCad.addItemToScene(children[i]);
 				}
@@ -197,7 +210,8 @@ class Loader {
 		oBJLoader.load(file_path,
 			function (objArgs) {
 				var out_html_structure = "";
-				var children = objArgs.children;
+				// scene.add() takes each object out of its parent, so walk a copy
+				const children = [...objArgs.children];
 				for (var i = 0; i < children.length; i++) {
 					out_html_structure += self.odooCad.addItemToScene(children[i]);
 				}
@@ -233,7 +247,8 @@ class Loader {
 		vRMLLoader.load(url,
 			function (gltf) {
 				var out_html_structure = "";
-				var children = gltf.children;
+				// scene.add() takes each object out of its parent, so walk a copy
+				const children = [...gltf.children];
 				for (var i = 0; i < children.length; i++) {
 					out_html_structure += self.odooCad.addItemToScene(children[i]);
 				}
