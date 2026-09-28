@@ -24,8 +24,8 @@ from odoo import fields, models
 class IrAttachment(models.Model):
     _inherit = "ir.attachment"
 
-    is_production_doc = fields.Boolean("Production Document")
-    doc_seq = fields.Char("Doc Sequence", readonly=True, compute="_compute_doc_seq")
+    is_production_doc = fields.Boolean(string="Production Document")
+    doc_seq = fields.Char(string="Doc Sequence", readonly=True, compute="_compute_doc_seq")
 
     def _compute_doc_seq(self):
         for attachment in self:

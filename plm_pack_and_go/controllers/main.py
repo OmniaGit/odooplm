@@ -57,6 +57,3 @@ class PackAndGoDownload(http.Controller):
             )
             .get_response(as_attachment=True)
         )
-
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

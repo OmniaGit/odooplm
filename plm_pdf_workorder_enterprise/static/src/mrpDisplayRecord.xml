@@ -2,10 +2,10 @@
 <templates xml:space="preserve">
     <t t-inherit="mrp_workorder.MrpDisplayMenuDialog" t-inherit-mode="extension">
         <xpath expr="//div[@name='block']" position="before">
-            <div class="col-6 p-1" t-if="props.record.resModel === 'mrp.workorder'">
+            <div class="col-6 p-1" t-if="this.props.record.resModel === 'mrp.workorder'">
                 <button class="d-flex flex-column gap-1 btn btn-secondary fs-3 w-100 h-100 py-3"
                         t-on-click="() => this.callAction('action_open_workorder_kanban')">
-                    <i class="fa fa-sticky-note-o"/>Plm WorkSheets
+                    <i class="oi" data-icon="sticky_note_2"/>Plm WorkSheets
                 </button>
             </div>
         </xpath>

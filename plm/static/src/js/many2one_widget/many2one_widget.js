@@ -7,9 +7,6 @@ import { useService } from "@web/core/utils/hooks";
 import { onWillStart, onWillUpdateProps, proxy } from "@odoo/owl";
 
 export class CustomImageM2oField extends Many2One {
-    static props = {
-        ...Many2One.props,
-    };
     static components = {
         ...Many2One.components,
     };

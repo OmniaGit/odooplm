@@ -72,7 +72,7 @@
                     </div>
 
                 </xpath>
-                <xpath expr="//div[@class='o_activity_details']" position="after">
+                <xpath expr="//div[hasclass('o_activity_details')]" position="after">
                     <label for="children_ids"
                            invisible="change_activity_type != 'request'"
                            readonly="plm_state in ['eco', 'done']"/>
