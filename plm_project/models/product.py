@@ -52,7 +52,6 @@ class ProductExtension(models.Model):
                         .search([("model", "=", self._name)])
                         .id,
                         "res_id": comp_obj.id,
-                        "recommended_activity_type_id": False,
                         "activity_type_id": self.env.ref(
                             "plm_project.mail_activity_product_confirmed"
                         ).id,

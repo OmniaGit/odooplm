@@ -36,7 +36,7 @@ class MailActivity(models.Model):
                             " if is not assigned to you."
                         )
                     )
-        messages, activities = super()._action_done(
+        messages = super()._action_done(
             feedback=feedback, attachment_ids=attachment_ids
         )
         for message in messages:
@@ -44,7 +44,7 @@ class MailActivity(models.Model):
                 product = self.env[message.model].browse(message.res_id)
                 if product.engineering_state == "confirmed":
                     product.action_release()
-        return messages, activities
+        return messages
 
     def checkProdConfirmedType(self, activity):
         if activity.activity_type_id == self.env.ref(
