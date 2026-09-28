@@ -21,7 +21,7 @@
 ##############################################################################
 {
     "name": "Plm Pack and Go",
-    "version": "20.0.0.0.0",
+    "version": "20.0.1.0.0",
     "images": ["static/description/cover.gif"],
     "author": "OmniaSolutions",
     "maintainer": "OmniaSolutions S.n.c di Boscolo Matteo & C",
@@ -50,7 +50,7 @@
         "wizard/pack_and_go.xml",
         "wizard/pack_and_go_view.xml",
     ],
-    "installable": False,
+    "installable": True,
     "application": False,
     "auto_install": False,
 }

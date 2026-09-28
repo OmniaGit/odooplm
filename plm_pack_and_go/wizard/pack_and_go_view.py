@@ -19,11 +19,6 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-"""
-Created on Mar 30, 2016
-
-@author: Daniel Smerghetto
-"""
 import logging
 from odoo import _, api, fields, models
 
@@ -34,14 +29,14 @@ class AdvancedPackView(models.TransientModel):
     _name = "pack_and_go_view"
     _description = "Manage pack view for exporting"
 
-    component_id = fields.Many2one("product.template", "Component")
-    document_id = fields.Many2one("ir.attachment", "Document")
-    comp_rev = fields.Integer("Component Revision")
+    component_id = fields.Many2one("product.template", string="Component")
+    document_id = fields.Many2one("ir.attachment", string="Document")
+    comp_rev = fields.Integer(string="Component Revision")
     comp_description = fields.Char(compute="_getComponentDescription")
-    doc_rev = fields.Integer("Document Revision")
+    doc_rev = fields.Integer(string="Document Revision")
     document_description = fields.Char(compute="_getDocumentDescription")
     doc_file_name = fields.Char(compute="_getDocumentFileName")
-    preview = fields.Binary("Preview Content")
+    preview = fields.Binary(string="Preview Content")
     # Don't change keys because are used in a lower check in this file
     doc_type = fields.Selection(
         [
@@ -50,10 +45,10 @@ class AdvancedPackView(models.TransientModel):
             ("other", "Other"),
             ("pdf", "PDF"),
         ],
-        "Document Type",
+        string="Document Type",
     )
-    available_types = fields.Many2one("pack_and_go_types", "Types")
-    pack_and_go_id = fields.Many2one("pack.and_go", "Pack and go id")
+    available_types = fields.Many2one("pack_and_go_types", string="Types")
+    pack_and_go_id = fields.Many2one("pack.and_go", string="Pack and go id")
 
 
     @api.model
@@ -70,4 +65,3 @@ class AdvancedPackView(models.TransientModel):
     def _getDocumentFileName(self):
         for row in self:
             row.doc_file_name = row.document_id.name
-

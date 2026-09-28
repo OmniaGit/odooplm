@@ -19,10 +19,4 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-
-"""
-Created on Nov 21, 2017
-
-@author: dsmerghetto
-"""
 from . import product_product

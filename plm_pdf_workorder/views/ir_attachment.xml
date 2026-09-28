@@ -28,7 +28,7 @@
                         class="btn btn-primary btn-sm ms-1"
                         type="object"
                         invisible="printout == False">
-                    <i class="fa fa-file-pdf-o"></i>
+                    <i class="oi" data-icon="picture_as_pdf"></i>
                     PDF
                 </button>
             </xpath>
@@ -44,5 +44,4 @@
             </form>
         </field>
     </record>
-
 </odoo>

@@ -19,11 +19,6 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-"""
-Created on Mar 30, 2016
-
-@author: Daniel Smerghetto
-"""
 import json
 import logging
 import os
@@ -59,14 +54,14 @@ class PackAndGo(models.TransientModel):
 
     component_id = fields.Many2one(
         "product.template",
-        "Component",
+        string="Component",
         default=setComponentFromContext,
         required=True,
     )
-    name = fields.Char("Attachment Name", required=True, default=" ")
+    name = fields.Char(string="Attachment Name", required=True, default=" ")
     type = fields.Selection(
         [("url", "URL"), ("binary", "File")],
-        "Type",
+        string="Type",
         help="You can either upload a file from your computer or"
                " copy/paste an internet link to your file",
         required=True,
@@ -83,48 +78,48 @@ class PackAndGo(models.TransientModel):
             ("3d2d", "3D + 2D"),
             ("all", "2D + 3D + PDF"),
         ],
-        "Export Type",
+        string="Export Type",
         default="all",
     )
     export_3d = fields.Many2many(
         "pack_and_go_view",
-        "export3d_pack",
-        "pack_view_id",
-        "pack_and_go_id",
-        "Select 3D Rows to export",
+        relation="export3d_pack",
+        column1="pack_view_id",
+        column2="pack_and_go_id",
+        string="Select 3D Rows to export",
     )
     export_2d = fields.Many2many(
         "pack_and_go_view",
-        "export2d_pack",
-        "pack_view_id",
-        "pack_and_go_id",
-        "Select 2D Rows to export",
+        relation="export2d_pack",
+        column1="pack_view_id",
+        column2="pack_and_go_id",
+        string="Select 2D Rows to export",
     )
     export_pdf = fields.Many2many(
         "pack_and_go_view",
-        "exportpdf_pack",
-        "pack_view_id",
-        "pack_and_go_id",
-        "Select PDF Rows to export",
+        relation="exportpdf_pack",
+        column1="pack_view_id",
+        column2="pack_and_go_id",
+        string="Select PDF Rows to export",
     )
     export_other = fields.Many2many(
         "pack_and_go_view",
-        "exportother_pack",
-        "pack_view_id",
-        "pack_and_go_id",
-        "Select Rows to export",
+        relation="exportother_pack",
+        column1="pack_view_id",
+        column2="pack_and_go_id",
+        string="Select Rows to export",
     )
 
-    force_types_3d = fields.Many2one("pack_and_go_types", "Force 3D Types")
-    force_types_2d = fields.Many2one("pack_and_go_types", "Force 2D Types")
+    force_types_3d = fields.Many2one("pack_and_go_types", string="Force 3D Types")
+    force_types_2d = fields.Many2one("pack_and_go_types", string="Force 2D Types")
 
     convertion_server_available = fields.Boolean(
-        "Conversion server available", default=False
+        string="Conversion server available", default=False
     )
     datas = fields.Binary(string="Download")
     datas_fname = fields.Char(string="File Name")
     create_subfolder_by_category = fields.Boolean(
-        "Create subfolder by category",
+        string="Create subfolder by category",
         help="""
         Create inside the zip a folder structure that is equal
         to the product category assing to each product
@@ -137,7 +132,7 @@ class PackAndGo(models.TransientModel):
             ("ALL_LEVEL", "All Level"),
             ("LEAF", "Leaf"),
         ],
-        "Bom computation mode",
+        string="Bom computation mode",
         default="ALL_LEVEL",
     )
 
@@ -195,7 +190,7 @@ class PackAndGo(models.TransientModel):
     )
 
     show_create_zip = fields.Boolean(
-        "Service field to show crete zip button", compute="compute_show_create_zip"
+        string="Service field to show crete zip button", compute="compute_show_create_zip"
     )
 
     def compute_show_create_zip(self):
@@ -663,7 +658,7 @@ class PackAndGo(models.TransientModel):
             return False
         with open(file_name, "rb") as file_obj:
             file_content = file_obj.read()
-        return base64.b64encode(file_content)
+        return base64.b64encode(file_content).decode()
 
     def getFileExtension(self, docBrws):
         fileExtension = ""
@@ -798,11 +793,11 @@ class PackAndGo(models.TransientModel):
                 })
 
                 for attach in product.linkeddocuments:
-                    content = attach.preview or attach.datas  # fallback to datas if preview is empty
+                    content = attach.preview or attach.raw  # fallback to raw if preview is empty
 
-                    if content and isinstance(content, (str, bytes)):
+                    if content:
                         try:
-                            zip_file.writestr(attach.name or f"file_{attach.id}", base64.b64decode(content))
+                            zip_file.writestr(attach.name or f"file_{attach.id}", bytes(content))
                         except Exception as e:
                             _logger.warning(f"Could not write file {attach.name}: {e}")
                     else:
@@ -851,12 +846,12 @@ class PackAndGo(models.TransientModel):
 
         # Save ZIP to temporary attachment
         zip_buffer.seek(0)
-        zip_data = base64.b64encode(zip_buffer.read())
+        zip_data = base64.b64encode(zip_buffer.read()).decode()
 
         attachment = self.env['ir.attachment'].create({
             'name': '%s_Export.zip' % products.default_code,
             'type': 'binary',
-            'datas': zip_data,
+            'raw': zip_data,
             'mimetype': 'application/zip',
         })
 

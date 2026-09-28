@@ -21,7 +21,7 @@
 ##############################################################################
 {
     "name": "PLM Report PDF Workorder Enterprise",
-    "version": "20.0.0.0.0",
+    "version": "20.0.1.0.0",
     "author": "OmniaSolutions",
     "maintainer": "OmniaSolutions S.n.c di Boscolo Matteo & C",
     "website": "https://odooplm.omniasolutions.website",
@@ -40,15 +40,18 @@
         "Jayraj Thakkar <jayraj.thakkar@omniasolutions.eu>",
         "Kuldip Trapasiya <kuldip.trapasiya@aktivsoftware.com>",
     ],
-    "depends": ["plm_pdf_workorder", 
+    "depends": ["plm_pdf_workorder",
                 "mrp_workorder"],
+    "data": [
+        "views/mrp_routing_workcenter.xml",
+    ],
     "assets": {
         "web.assets_backend": [
             "plm_pdf_workorder_enterprise/static/src/mrpDisplayRecord.xml",
         ]
     },
     "images": ["static/description/cover.gif"],
-    "installable": False,
+    "installable": True,
     "application": False,
     "auto_install": True,
 }

@@ -29,7 +29,7 @@
                     <group name="project_infos">
                         <field name="activity_task_id" colspan="4"/>
                         <separator string="Projects" colspan="4"/>
-                        <field name="project_ids" nolabel="1" colspan="4" context="{'default_plm_use_plm': True}" />
+                        <field name="project_ids" nolabel="1" colspan="4" context="{'default_plm_use_plm': True}"/>
                     </group>
                 </page>
             </page>
@@ -40,8 +40,12 @@
         <field name="name">product.product.list.plm.colored</field>
         <field name="model">product.product</field>
         <field name="arch" type="xml">
-            <list string="PLM Products" decoration-danger="engineering_state in ('draft','obsolated')" decoration-success="engineering_state == 'released'" decoration-warning="engineering_state == 'confirmed'" decoration-info="engineering_state == 'undermodify'">
-                <field name="image_1920" widget="image" class="oe_avatar" options="{'zoom': true, 'preview_image':'image_128'}"/>
+            <list string="PLM Products" decoration-danger="engineering_state in ('draft','obsolated')"
+                  decoration-success="engineering_state == 'released'"
+                  decoration-warning="engineering_state == 'confirmed'"
+                  decoration-info="engineering_state == 'undermodify'">
+                <field name="image_1920" widget="image" class="oe_avatar"
+                       options="{'zoom': true, 'preview_image':'image_128'}"/>
                 <field name="name"/>
                 <field name="engineering_code"/>
                 <field name="default_code"/>

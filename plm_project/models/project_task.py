@@ -18,12 +18,12 @@
 #    along with this prograIf not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-from odoo import _, fields, models
+from odoo import fields, models
 
 
 class ProjectTask(models.Model):
     _inherit = "project.task"
 
     activity_product_ids = fields.One2many(
-        "product.product", "activity_task_id", string="Product Ids"
+        comodel_name="product.product", inverse_name="activity_task_id", string="Product Ids"
     )

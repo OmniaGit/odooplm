@@ -19,13 +19,8 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-"""
-Created on Mar 30, 2016
-
-@author: Daniel Smerghetto
-"""
 import logging
-from odoo import _, fields, models
+from odoo import fields, models
 
 _logger = logging.getLogger(__name__)
 
@@ -34,5 +29,5 @@ class AvailableTypes(models.TransientModel):
     _name = "pack_and_go_types"
     _description = "Description of pack and go"
 
-    name = fields.Char("Name")
-    pack_and_go_view_id = fields.Many2one("pack_and_go_view")
+    name = fields.Char(string="Name")
+    pack_and_go_view_id = fields.Many2one(comodel_name="pack_and_go_view")

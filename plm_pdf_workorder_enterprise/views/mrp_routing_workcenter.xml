@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="plm_pdf_workorder_enterprise_merge_production_doc_tab" model="ir.ui.view">
+        <field name="name">plm.pdf.workorder.enterprise.merge.production.doc.tab</field>
+        <field name="model">mrp.routing.workcenter</field>
+        <field name="inherit_id" ref="plm_pdf_workorder.plm_mrp_routing_workcenter_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook[page[@name='checks']]" position="inside">
+                <xpath expr="//page[@name='plm_production_doc']" position="move"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

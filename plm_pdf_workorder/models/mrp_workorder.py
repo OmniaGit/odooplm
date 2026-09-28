@@ -19,8 +19,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-import base64
-from odoo import _, api, fields, models
+from odoo import api, fields, models
 
 
 class MrpWorkorder(models.Model):

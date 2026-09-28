@@ -13,7 +13,7 @@
             </field>
             <xpath expr="//notebook" position="inside">
                 <page string="PLM" invisible="plm_use_plm==False">
-                      <field name="plm_product_ids" nolabel="1"/>
+                    <field name="plm_product_ids" nolabel="1"/>
                 </page>
             </xpath>
         </field>
@@ -22,7 +22,7 @@
     <record id="plm_project_kanban_view_inherit" model="ir.ui.view">
         <field name="name">plm.project.kanban.view.inherit</field>
         <field name="model">project.project</field>
-        <field name="inherit_id" ref="project.view_project_kanban"/>
+        <field name="inherit_id" ref="project.view_project_card"/>
         <field name="priority">24</field>
         <field name="arch" type="xml">
             <xpath expr="//templates" position="before">
@@ -35,7 +35,7 @@
                     <a class="d-inline-block btn-link text-dark small me-1" role="button"
                        name="action_get_product_variant_list_view" type="object"
                        t-attf-title="#{record.released_components.value} out of #{record.total_components.value} components released">
-                        <i class="fa fa-tags fa-fw"></i>
+                        <i class="oi oi-fw" data-icon="tag"></i>
                     </a>
                 </t>
             </xpath>

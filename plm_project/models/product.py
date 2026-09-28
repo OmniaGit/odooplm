@@ -33,7 +33,7 @@ class ProductExtension(models.Model):
         "project_id",
         string="Projects",
     )
-    activity_task_id = fields.Many2one("project.task", "Activity Task")
+    activity_task_id = fields.Many2one("project.task", string="Activity Task")
 
     def createConfirmActivity(self):
         for comp_obj in self:

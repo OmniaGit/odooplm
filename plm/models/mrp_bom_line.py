@@ -231,7 +231,7 @@ class MrpBomLineExtension(models.Model):
         help="This is the document object that declares this BoM.",
     )
 
-    type = fields.Selection(related="bom_id.type")
+    type = fields.Selection(related="bom_id.type", string="Line BoM Type")
     itemnum = fields.Integer(
         "CAD Item Position",
         help="This is the item reference position into the CAD document that declares this BoM.",
