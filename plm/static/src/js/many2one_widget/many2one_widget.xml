@@ -6,10 +6,10 @@
                 <img data-tooltip-template="web.ImageZoomTooltip"
                      t-att-data-tooltip-info="this.imageToolTipData"
                      style="width:30px;height:30px" t-att-src="this.state.imageData"
-                     t-on-click="onImageClicked"/>
+                     t-on-click="this.onImageClicked"/>
             </span>
             <span t-else="" style="padding:0px 15px 0px 0px;" class="plm_m2o_avatar">
-                <div class="fa fa-folder-open" t-on-click="onImageClicked"
+                <div class="oi" data-icon="folder" t-on-click="this.onImageClicked"
                      style="font-size: 20px; width:30px;height:30px"/>
             </span>
             <t t-if="!this.props.canOpen">
@@ -17,10 +17,10 @@
                       <img data-tooltip-template="web.ImageZoomTooltip"
                            t-att-data-tooltip-info="this.imageToolTipData"
                            style="width:30px;height:30px" t-att-src="this.state.imageData"
-                           t-on-click="onImageClicked"/>
+                           t-on-click="this.onImageClicked"/>
                 </span>
                 <span t-else="" style="padding:0px 25px 0px 0px;" class="plm_m2o_avatar">
-                    <div class="fa fa-folder-open" t-on-click="onImageClicked"
+                    <div class="oi" data-icon="folder" t-on-click="this.onImageClicked"
                          style="font-size: 20px; width:30px;height:30px"/>
                 </span>
             </t>

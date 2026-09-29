@@ -66,7 +66,7 @@ export class Many2OnePlmField extends Many2OneField {
                         }
                     );
                     if (imageData?.length && imageData[0][imageField]) {
-                        this.state.imageData = "data:image/png;base64," + imageData[0][imageField];
+                        this.state.imageData = "data:image/png;base64," + imageData[0][imageField].content;
                         this.imageToolTipData = JSON.stringify({ url: this.state.imageData });
                     }
                 }
@@ -118,7 +118,7 @@ export class Many2OnePlmField extends Many2OneField {
                 );
 
                 if (imageData?.length && imageData[0][imageField]) {
-                    this.state.imageData = "data:image/png;base64," + imageData[0][imageField];
+                    this.state.imageData = "data:image/png;base64," + imageData[0][imageField].content;
                     this.imageToolTipData = JSON.stringify({ url: this.state.imageData });
                 }
             }
