@@ -8,6 +8,7 @@ import os
 import copy
 from odoo import _
 from odoo.http import Controller, route, request, Response
+from odoo.http.session import authenticate, save_session
 from odoo.tools.misc import DEFAULT_SERVER_DATETIME_FORMAT
 from werkzeug.exceptions import HTTPException
 
@@ -115,9 +116,12 @@ class UploadDocument(Controller):
         if db and db != request.db:
             raise Exception(_("Could not select database '%s'") % db)
         credential = {"type": "password", "login": login, "password": password}
-        uid = request.session.authenticate(request.env, credential)
+        # Odoo 20 moved authenticate from the session to odoo.http.session,
+        # and the session is saved explicitly, as /web/session/authenticate does
+        uid = authenticate(request.session, request.env, credential).get("uid")
         if not uid:
             return Response(response="Wrong login/password", status=401)
+        save_session(request, request.env)
         return Response(
             headers={
                 "X-CSRF-TOKEN": request.csrf_token(),
