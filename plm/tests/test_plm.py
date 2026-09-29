@@ -194,7 +194,7 @@ class PlmDateBom(TransactionCase, PlmEntityCreator):
     def test_3_product_attachment_wk(self):
         product = self.create_product_product("test_product_attachment_product")
         document = self.create_document("test_product_attachment_docuemnt")
-        document.linkedcomponents = [(4, product.product_tmpl_id.id)]
+        document.linkedcomponents = [(4, product.id)]
         #
         # test confirm
         #

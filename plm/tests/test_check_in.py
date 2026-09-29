@@ -152,9 +152,10 @@ class PlmDateBom(TransactionCase, PlmEntityCreator):
         assert len(res["to_check_3d"]) == 5
         assert len(res["info"]) == 1
 
-        level_3_2d.checkout(
-            "web", "-", True, user_id=self.env.ref("base.default_user").id
+        other_user = self.env["res.users"].create(
+            {"name": "PLM check-in other user", "login": "plm_check_in_other"}
         )
+        level_3_2d.checkout("web", "-", True, user_id=other_user.id)
         res = level_0_3d._preCheckInRecursive_all(level_0_3d)
         assert len(res["to_check_2d"]) == 4
         assert len(res["to_check_3d"]) == 5
