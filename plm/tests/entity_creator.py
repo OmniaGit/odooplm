@@ -24,6 +24,7 @@ Created on 4 Nov 2022
 @author: mboscolo
 """
 
+import base64
 import logging
 
 DUMMY_CONTENT = b"R0lGODdhAQABAIAAAP///////ywAAAAAAQABAAACAkQBADs="
@@ -80,7 +81,7 @@ class PlmEntityCreator(object):
             eng_code = "eng_code_" + name
         ir_attachment = self.env["ir.attachment"].create(
             {
-                "datas": DUMMY_CONTENT,
+                "raw": base64.b64decode(DUMMY_CONTENT),
                 "name": name,
                 "engineering_code": eng_code,
                 "res_model": "ir.attachment",

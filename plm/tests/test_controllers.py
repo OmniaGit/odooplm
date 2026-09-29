@@ -56,9 +56,9 @@ class PlmPreviewRoutes(HttpCase):
             {
                 "name": "ROUTE-1",
                 "engineering_code": "ROUTE-1",
-                "datas": PIXEL,
+                "raw": base64.b64decode(PIXEL),
                 "is_plm": True,
-                "preview": PIXEL,
+                "preview": PIXEL.decode(),
                 "plm_access_id": cls.node.id,
             }
         )
@@ -99,7 +99,7 @@ class PlmPreviewRoutes(HttpCase):
 
     def test_the_product_image_follows_the_access_rights(self):
         product = self.env["product.product"].create(
-            {"name": "ROUTE-PROD", "image_1920": PIXEL}
+            {"name": "ROUTE-PROD", "image_1920": PIXEL.decode()}
         )
         for url in (
             "/plm/product_product_image_1920/%s" % product.id,
@@ -134,7 +134,7 @@ class PlmPreviewRoutes(HttpCase):
     def test_the_upload_routes_take_plm_documents_only(self):
         """They write the file, the preview and the printout by id: an ordinary
         attachment the user may write is not theirs to overwrite."""
-        plain = self.env["ir.attachment"].create({"name": "invoice.pdf", "datas": PIXEL})
+        plain = self.env["ir.attachment"].create({"name": "invoice.pdf", "raw": base64.b64decode(PIXEL)})
         self.authenticate("plm_route_insider", "plm_route_insider")
         for route, field in (
             ("/plm_document_upload/upload", "mod_file"),
@@ -147,7 +147,7 @@ class PlmPreviewRoutes(HttpCase):
                     files={field: ("x.sldprt", b"x")},
                 )
                 self.assertEqual(response.status_code, expected, "%s %s" % (route, expected))
-        self.assertEqual(plain.datas, PIXEL)
+        self.assertEqual(bytes(plain.raw), base64.b64decode(PIXEL))
 
     def test_an_unknown_id_is_not_found(self):
         self.assertEqual(

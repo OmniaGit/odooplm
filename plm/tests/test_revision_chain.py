@@ -41,7 +41,7 @@ class PlmRevisionChain(TransactionCase, PlmEntityCreator):
     def _revision(self, revision, state):
         document = self.env["ir.attachment"].create(
             {
-                "datas": "",
+                "raw": b"",
                 "name": "%s_%s" % (self.CODE, revision),
                 "engineering_code": self.CODE,
                 "engineering_revision": revision,

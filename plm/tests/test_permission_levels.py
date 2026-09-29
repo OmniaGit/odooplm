@@ -18,6 +18,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
+import base64
 from odoo import Command
 from odoo.exceptions import AccessError
 from odoo.tests import tagged
@@ -69,7 +70,7 @@ class PlmPermissionLevels(TransactionCase):
             {
                 "name": code,
                 "engineering_code": code,
-                "datas": DUMMY_CONTENT,
+                "raw": base64.b64decode(DUMMY_CONTENT),
                 "is_plm": True,
             }
         )
@@ -176,7 +177,7 @@ class PlmPermissionLevels(TransactionCase):
         """Reading used to run as the superuser when the call carried the
         odooPLM context, which the CAD client puts on every call."""
         private = self.env["ir.attachment"].with_user(self.other_integration).create(
-            {"name": "payslip.pdf", "datas": DUMMY_CONTENT}
+            {"name": "payslip.pdf", "raw": base64.b64decode(DUMMY_CONTENT)}
         )
         released = self._document("LVL-CAD1", user=self.integration, state="released")
         self.env.flush_all()
@@ -192,7 +193,7 @@ class PlmPermissionLevels(TransactionCase):
                 with mute_logger("odoo.addons.base.models.ir_rule"), self.assertRaises(
                     AccessError
                 ):
-                    record.read(["datas"])
+                    record.read(["raw"])
         self.env.invalidate_all()
         readable = (
             self.env["ir.attachment"]
@@ -222,7 +223,7 @@ class PlmPermissionLevels(TransactionCase):
             .browse(document.id)
         )
         with mute_logger("odoo.addons.base.models.ir_rule"), self.assertRaises(AccessError):
-            record.read(["datas"])
+            record.read(["raw"])
 
     # level 4: admin
 

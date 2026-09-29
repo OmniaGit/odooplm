@@ -18,6 +18,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
+import base64
 from odoo import Command
 from odoo.tests import tagged
 from odoo.tests.common import TransactionCase
@@ -74,9 +75,9 @@ class PlmPortalScope(TransactionCase):
             {
                 "name": name,
                 "engineering_code": name,
-                "datas": DUMMY_CONTENT,
+                "raw": base64.b64decode(DUMMY_CONTENT),
                 "is_plm": True,
-                "printout": DUMMY_CONTENT if printout else False,
+                "printout": DUMMY_CONTENT.decode() if printout else False,
             }
         )
         document.linkedcomponents = product

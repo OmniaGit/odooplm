@@ -18,6 +18,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
+import base64
 import importlib.util
 
 from odoo import Command
@@ -95,7 +96,7 @@ class PlmMultiCompanyAccess(TransactionCase):
             {
                 "name": code,
                 "engineering_code": code,
-                "datas": DUMMY_CONTENT,
+                "raw": base64.b64decode(DUMMY_CONTENT),
                 "is_plm": True,
                 "plm_access_id": node.id,
                 **values,
@@ -174,7 +175,7 @@ class PlmMultiCompanyAccess(TransactionCase):
         document = self._document("ACC-NOPLM", self.root_a)
         self.assertFalse(self._can_read(self.user_not_plm, document))
         attachment = self.env["ir.attachment"].with_user(self.user_not_plm).create(
-            {"name": "not a plm document", "datas": DUMMY_CONTENT}
+            {"name": "not a plm document", "raw": base64.b64decode(DUMMY_CONTENT)}
         )
         self.assertTrue(self._can_read(self.user_not_plm, attachment))
         attachment.with_user(self.user_not_plm).unlink()
@@ -238,7 +239,7 @@ class PlmMultiCompanyAccess(TransactionCase):
                 {
                     "name": "ACC-CAD",
                     "engineering_code": "ACC-CAD",
-                    "datas": DUMMY_CONTENT,
+                    "raw": base64.b64decode(DUMMY_CONTENT),
                     "document_type": "other",
                 }
             )
@@ -255,7 +256,7 @@ class PlmMultiCompanyAccess(TransactionCase):
             {
                 "name": "ACC-CONV",
                 "engineering_code": "ACC-CONV",
-                "datas": DUMMY_CONTENT,
+                "raw": base64.b64decode(DUMMY_CONTENT),
                 "is_plm": True,
             }
         )

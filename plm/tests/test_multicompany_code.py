@@ -18,6 +18,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
+import base64
 import psycopg2
 
 from odoo import Command
@@ -95,7 +96,7 @@ class PlmMultiCompanyCode(TransactionCase):
 
     def test_document_code_reused_gives_a_message(self):
         values = {
-            "datas": DUMMY_CONTENT,
+            "raw": base64.b64decode(DUMMY_CONTENT),
             "name": "MC-D100",
             "engineering_code": "MC-D100",
             "res_model": "ir.attachment",
@@ -254,7 +255,7 @@ class PlmMultiCompanyCode(TransactionCase):
         template = self._template("MC-P115")
         document = self.env["ir.attachment"].create(
             {
-                "datas": DUMMY_CONTENT,
+                "raw": base64.b64decode(DUMMY_CONTENT),
                 "name": "MC-D115",
                 "engineering_code": "MC-D115",
                 "res_model": "ir.attachment",
