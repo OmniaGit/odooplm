@@ -1,5 +1,4 @@
 import os
-import base64
 from io import BytesIO
 import logging
 from reportlab.pdfgen import canvas
@@ -34,7 +33,7 @@ def getDocumentStream(docRepository, objDoc):
     content = False
     try:
         if (not objDoc.store_fname) and (objDoc.db_datas):
-            content = base64.b64decode(objDoc.db_datas)
+            content = bytes(objDoc.db_datas)
         else:
             content = open(os.path.join(docRepository, objDoc.store_fname), "rb").read()
     except Exception as ex:
@@ -179,7 +178,7 @@ def packDocuments(docRepository, documents, bookCollector):
         if document.id not in packed:
             appendPage = False
             if document.printout and document.printout != "None":
-                byteIoStream = BytesIO(base64.b64decode(document.printout))
+                byteIoStream = BytesIO(bytes(document.printout))
                 appendPage = True
             elif isPdf(document.name):
                 value = getDocumentStream(docRepository, document)
