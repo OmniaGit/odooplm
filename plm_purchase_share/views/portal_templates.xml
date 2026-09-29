@@ -11,10 +11,10 @@
             <td id="single_product_download">
                 <t t-if="doc and request.env.user.has_group('plm_purchase_share.group_plm_purchase_portal_user')">
                     <a t-att-href="'/report/html/plm.product_production_pdf_latest/%s' % line.product_id.id"
-                       class="btn btn-primary"
+                       class="btn btn-primary d-flex align-items-center justify-content-center"
                        style="width:50px; height:40px;"
                        target="_blank">
-                        <i class="fa fa-download"></i>
+                        <i class="oi" data-icon="download"/>
                     </a>
                 </t>
             </td>
@@ -29,7 +29,7 @@
                     class="btn btn-primary"
                     t-att-href="'/my/purchase/%s/download_docs' % order.id"
                     target="_blank">
-                    <i class="fa fa-download"></i>
+                    <i class="oi me-1" data-icon="download"/>
                     Download Documents
                 </a>
             </t>

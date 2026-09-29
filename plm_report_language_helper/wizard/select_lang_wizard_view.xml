@@ -6,7 +6,7 @@
             <field name="model">plm.sparechoselanguage</field>
             <field name="arch" type="xml">
                 <form string="Creation of Spare Bom">
-                    <group col="4" colspan="4">
+                    <group>
                         <field string="Language" name="lang"/>
                         <field string="First Level" name="onelevel"/>
                     </group>
@@ -34,7 +34,7 @@
             <field name="model">plm.bomchoselanguage</field>
             <field name="arch" type="xml">
                 <form string="Creation of Spare Bom">
-                    <group col="4" colspan="4">
+                    <group>
                         <field string="Language" name="lang"/>
                         <field string="Print Bom Type" name="bom_type"/>
                     </group>

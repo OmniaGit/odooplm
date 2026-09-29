@@ -31,8 +31,8 @@
                                     <b>Spare Parts Report</b>
                                 </h1>
                                 <span
-                                    t-esc="compBrws.product_tmpl_id.engineering_code or compBrws.product_tmpl_id.default_code"/>
-                                <span t-esc="compBrws.product_tmpl_id.name"/>
+                                    t-out="compBrws.product_tmpl_id.engineering_code or compBrws.product_tmpl_id.default_code"/>
+                                <span t-out="compBrws.product_tmpl_id.name"/>
                             </div>
                             <div id="spare_header_image" style="position: relative;top: 80px;">
                                 <!-- The picture of the product comes first: it is
@@ -64,5 +64,4 @@
             </t>
         </t>
     </template>
-
 </odoo>

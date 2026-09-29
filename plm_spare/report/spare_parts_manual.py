@@ -42,7 +42,7 @@ def get_document_stream(doc_repository, obj_doc):
     content = False
     try:
         if (not obj_doc.store_fname) and (obj_doc.db_datas):
-            content = base64.b64decode(obj_doc.db_datas)
+            content = bytes(obj_doc.db_datas)
         else:
             with open(os.path.join(doc_repository, obj_doc.store_fname), "rb") as f:
                 content = f.read()
@@ -246,7 +246,7 @@ class ReportSpareDocumentOne(models.AbstractModel):
         for document in component.linkeddocuments:
             if document.used_for_spare:
                 if document.printout and str(document.printout) != "None":
-                    ret.append(BytesIO(base64.b64decode(document.printout)))
+                    ret.append(BytesIO(bytes(document.printout)))
                 elif is_pdf(document.name):
                     value = get_document_stream(doc_repository, document)
                     if value:

@@ -21,7 +21,7 @@
 ##############################################################################
 {
     "name": "PLM Spare",
-    "version": "20.0.0.0.0",
+    "version": "20.0.1.0.0",
     "images": ["static/description/cover.gif"],
     "author": "OmniaSolutions",
     "maintainer": "OmniaSolutions S.n.c di Boscolo Matteo & C",
@@ -46,18 +46,15 @@
     "summary": "Add spare BOM and Spare Parts Manual",
     "depends": ["plm"],
     "data": [
-        # reporting
         "report/bom_structure.xml",
         "report/product_product.xml",
-        # wizards
         "wizards/plm_temporary.xml",
-        # views
         "views/plm_description.xml",
         "views/ir_attachment.xml",
         "views/product_product_view.xml",
         "views/mrp_bom_view.xml",
     ],
-    "installable": False,
+    "installable": True,
     "application": False,
     "auto_install": False,
 }

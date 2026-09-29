@@ -21,11 +21,8 @@
 ##############################################################################
 import base64
 import logging
-from email.policy import default
 
-from odoo import (_,
-                  fields,
-                  models)
+from odoo import _, fields, models
 from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
@@ -48,7 +45,7 @@ class plm_spareChoseLanguage(models.TransientModel):
             out.append((objBrowse.code, objBrowse.name))
         return out
 
-    lang = fields.Selection(getInstalledLanguage, "Language", required=True)
+    lang = fields.Selection(selection=getInstalledLanguage, string="Language", required=True)
     onelevel = fields.Boolean(
         string="One Level",
         default=False,
@@ -78,13 +75,12 @@ class plm_spareChoseLanguage(models.TransientModel):
             tProductProduct = self.env["product.product"]
             brwProduct = tProductProduct.browse(productProductId)
             report_context = self.env[reportName].sudo().with_context(newContext)
-            stream = report_context._create_spare_pdf(brwProduct)
-            self.datas = base64.encodebytes(stream)
+            stream = report_context._create_spare_pdf([brwProduct])
+            self.datas = base64.b64encode(stream).decode()
             fileName = brwProduct.name + "_" + lang + "_manual.pdf"
             self.datas_name = fileName
             return {
                 "context": self.env.context,
-                "view_type": "form",
                 "view_mode": "form",
                 "res_model": plm_spareChoseLanguage._name,
                 "res_id": self.id,
@@ -92,7 +88,7 @@ class plm_spareChoseLanguage(models.TransientModel):
                 "type": "ir.actions.act_window",
                 "target": "new",
             }
-        UserError(_("Select a language"))
+        raise UserError(_("Select a language"))
 
 
 #  ************************** BOM REPORTS *****************
@@ -139,9 +135,9 @@ class plm_bomChoseLanguage(models.TransientModel):
                 self.env.ref(reportName)
                 .sudo()
                 .with_context(newContext)
-                ._render_qweb_pdf(reportName, bomId)
+                ._render_qweb_pdf(reportName, res_ids=[bomId])
             )
-            self.datas = base64.b64encode(stream)
+            self.datas = base64.b64encode(stream).decode()
             tMrpBom = self.env["mrp.bom"]
             brwProduct = tMrpBom.browse(bomId)
             fileName = (
@@ -150,7 +146,6 @@ class plm_bomChoseLanguage(models.TransientModel):
             self.datas_name = fileName
             return {
                 "context": self.env.context,
-                "view_type": "form",
                 "view_mode": "form",
                 "res_model": plm_bomChoseLanguage._name,
                 "res_id": self.id,
@@ -160,12 +155,13 @@ class plm_bomChoseLanguage(models.TransientModel):
             }
         raise UserError(_("Select a language"))
 
-    lang = fields.Selection(getInstalledLanguage, "Language", required=True)
+    lang = fields.Selection(selection=getInstalledLanguage, string="Language", required=True)
 
     bom_type = fields.Selection(
         AVAILABLE_REPORT,
         "Bom Report Type",
         required=True,
+        default=False,
         help="Chose the Bom report you would like to print",
     )
 
@@ -174,4 +170,3 @@ class plm_bomChoseLanguage(models.TransientModel):
     datas_name = fields.Char("Download file name ",
                              size=255,
                              readonly=True)
-    _defaults = {"bom_type": False}

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+
 from odoo import http
 from odoo.addons.portal.controllers.portal import CustomerPortal
 from odoo.exceptions import AccessError, MissingError
@@ -24,32 +25,16 @@ class PortalPurchaseDownload(CustomerPortal):
         zip_buffer = io.BytesIO()
         zip_file = zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED)
 
-        report_action = request.env.ref(
-            'plm.report_product_product_pdf_latest'
-        ).sudo()
-
-        Report = request.env['ir.actions.report'].sudo()
+        report_model = request.env[
+            'report.plm.product_production_pdf_latest'
+        ].sudo()
 
         for line in order.order_line:
-
             product = line.product_id
             if not product:
                 continue
 
-            html_content, _ = report_action._render_qweb_html("plm.report_product_product_pdf_latest", product.id)
-
-
-            wrapped_html = f"""
-                            <html>
-                                <main>
-                                    {html_content}
-                                </main>
-                            </html>
-                        """
-
-            bodies = Report._prepare_html(wrapped_html)[0]
-
-            pdf_content = Report._run_wkhtmltopdf(bodies)
+            pdf_content = report_model._render_qweb_pdf(product, level=-1, checkState=True)
 
             filename = f"{product.display_name.replace('/', '_')}.pdf"
             zip_file.writestr(filename, pdf_content)

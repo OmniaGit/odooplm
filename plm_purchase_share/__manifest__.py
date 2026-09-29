@@ -21,7 +21,7 @@
 ##############################################################################
 {
     "name": "PLM Purchase Share",
-    "version": "20.0.0.0.0",
+    "version": "20.0.1.0.0",
     "category": "Manufacturing/Product Lifecycle Management (PLM)",
     "author": "OmniaSolutions",
     "maintainer": "OmniaSolutions S.n.c di Boscolo Matteo & C",
@@ -45,7 +45,7 @@
         "views/portal_templates.xml",
     ],
     "images": ["static/description/cover.gif"],
-    "installable": False,
+    "installable": True,
     "application": False,
     "auto_install": False,
 }

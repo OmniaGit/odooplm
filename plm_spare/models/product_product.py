@@ -21,6 +21,7 @@
 #############################################################################
 from odoo import _, models, fields
 
+
 class ProdTemplate(models.Model):
     _inherit = 'product.template'
 

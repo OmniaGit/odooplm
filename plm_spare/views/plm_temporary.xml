@@ -19,13 +19,13 @@
     </record>
 
     <record id="act_manage_spare_bom" model="ir.actions.act_window">
-       <field name="name">Create Spare Bom</field>
-       <field name="res_model">plm.temporary</field>
-       <field name="view_mode">form</field>
-       <field name="binding_model_id" ref="product.model_product_product"/>
-       <field name="view_id" ref="plm_component_manage_spare_bom"/>
-       <field name="target">new</field>
-   </record>
+        <field name="name">Create Spare Bom</field>
+        <field name="res_model">plm.temporary</field>
+        <field name="view_mode">form</field>
+        <field name="binding_model_id" ref="product.model_product_product"/>
+        <field name="view_id" ref="plm_component_manage_spare_bom"/>
+        <field name="target">new</field>
+    </record>
 
 
     <record model="ir.actions.act_window" id="plm_action_spare_form">
@@ -38,8 +38,8 @@
     </record>
 
     <menuitem
-            name="Search on Spare Bill of Materials"
-            action="plm_action_spare_form"
-            id="menu_relation_spare"
-            parent="plm.plm_menu_relation"/>
+        name="Search on Spare Bill of Materials"
+        action="plm_action_spare_form"
+        id="menu_relation_spare"
+        parent="plm.plm_menu_relation"/>
 </odoo>
