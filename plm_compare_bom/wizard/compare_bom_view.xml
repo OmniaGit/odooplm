@@ -27,7 +27,7 @@
     </record>
 
     <record id="act_plm_compare_bom" model="ir.actions.act_window">
-        <field name="name">Compare BoMs</field>
+        <field name="name">PLM Compare BoMs</field>
         <field name="res_model">plm.compare.bom</field>
         <field name="view_mode">form</field>
         <field name="target">new</field>
