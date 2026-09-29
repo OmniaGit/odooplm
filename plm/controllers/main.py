@@ -9,6 +9,7 @@ import copy
 from odoo import _
 from odoo.http import Controller, route, request, Response
 from odoo.tools.misc import DEFAULT_SERVER_DATETIME_FORMAT
+from werkzeug.exceptions import HTTPException
 
 
 def _plm_document(doc_id):
@@ -44,6 +45,8 @@ def webservice(f):
     def wrap(*args, **kw):
         try:
             return f(*args, **kw)
+        except HTTPException:
+            raise
         except Exception as e:
             logging.error(e)
             return Response(response=f"{e}", status=500)
@@ -61,7 +64,7 @@ IMAGE_SIGNATURES = (
 )
 
 
-def image_response(b64_data):
+def image_response(image):
     """Serve a stored image with its real content type.
 
     Returning the bytes alone leaves Odoo's default text/html on the response,
@@ -70,9 +73,9 @@ def image_response(b64_data):
     blank. Up to 15.0 the same code worked only because that release did not
     send nosniff.
     """
-    if not b64_data:
-        return request.not_found()
-    payload = base64.b64decode(b64_data)
+    if not image:
+        raise request.not_found()
+    payload = bytes(image)
     mimetype = "application/octet-stream"
     for signature, candidate in IMAGE_SIGNATURES:
         if payload.startswith(signature):
@@ -169,7 +172,10 @@ class UploadDocument(Controller):
             preview = kw.get("preview", "")
             if preview:
                 to_write["preview"] = base64.b64encode(preview.stream.read()).decode()
-            ir_attachment_id = request.env["ir.attachment"].browse(doc_id)
+            ir_attachment_id = _plm_document(doc_id)
+            if not ir_attachment_id:
+                logging.info("no plm document %r" % (doc_id))
+                return Response("Failed upload", status=400)
             ir_attachment_id.write(to_write)
             ir_attachment_id.sudo().update_component_preview()
             ir_attachment_id.setupCadOpen(hostname=kw.get('hostname', ''),
@@ -255,10 +261,11 @@ class UploadDocument(Controller):
         if not request.env.user.has_group("plm.group_plm_view_user"):
             return Response(status=403,
                             response=f"No permissions to download {attachment_id}")
-        for ir_attachment_id in request.env['ir.attachment'].sudo().search([('id','=', attachment_id),
-                                                                            ('is_plm','=', True)]):
-            return request.env['ir.binary'].sudo()._get_stream_from(ir_attachment_id,
-                                                                    field_name='raw').get_response()
+        # As the user: see plm_download_structure above.
+        for ir_attachment_id in request.env['ir.attachment'].search([('id','=', attachment_id),
+                                                                     ('is_plm','=', True)]):
+            return request.env['ir.binary']._get_stream_from(ir_attachment_id,
+                                                             field_name='raw').get_response()
         return Response(status=500,
                         qcontext=f"Attachment {attachment_id} not found")
 
@@ -533,7 +540,7 @@ class UploadDocument(Controller):
     def get_preview(self, id):
         attachment = _readable(request.env["ir.attachment"].browse(id))
         if not attachment:
-            return request.not_found()
+            raise request.not_found()
         return image_response(attachment.preview)
 
     @route(
@@ -547,7 +554,7 @@ class UploadDocument(Controller):
     def get_product_preview(self, id):
         product = _readable(request.env["product.product"].browse(id))
         if not product:
-            return request.not_found()
+            raise request.not_found()
         return image_response(product.image_1920)
 
     @route(
@@ -561,7 +568,7 @@ class UploadDocument(Controller):
     def get_pp_preview(self, product_id):
         product = _readable(request.env["product.product"].browse(product_id))
         if not product:
-            return request.not_found()
+            raise request.not_found()
         return image_response(product.image_1920)
 
     @route(
@@ -591,15 +598,17 @@ class UploadDocument(Controller):
                         ]
                         return request.make_response(print_out_data, headers)
                     else:
-                        return request.not_found(
+                        raise request.not_found(
                             f"Pdf document {ir_attachement_id.engineering_code} not Available"
                         )
                 else:
-                    return request.not_found(
+                    raise request.not_found(
                         f"Pdf document {ir_attachement_id.engineering_code} not Available"
                     )
             # The document does not exist, or the user may not read it: the two
             # answer the same, so the route cannot be walked by id.
-            return request.not_found()
+            raise request.not_found()
+        except HTTPException:
+            raise
         except Exception as ex:
             return Response(f"{ex}", status=500)
