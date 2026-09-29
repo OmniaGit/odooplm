@@ -19,11 +19,14 @@
 #
 ##############################################################################
 import base64
+import io
 import os
 import logging
 import urllib.parse
+import zipfile
 
-from odoo import api, fields, models
+from odoo import _, api, fields, models
+from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
 SUPPORTED_WEBGL_EXTENTION = [
@@ -96,26 +99,50 @@ class IrAttachment(models.Model):
                     })
             if url_params:
                 return f"{base_url}/plm/show_treejs_model?{url_params}"
+
+    @staticmethod
+    def _3mf_has_objects(raw):
+        """Return True when the 3MF content holds at least one mesh object."""
+        try:
+            with zipfile.ZipFile(io.BytesIO(raw or b"")) as zf:
+                return b"<object" in zf.read("3D/3dmodel.model")
+        except (zipfile.BadZipFile, KeyError):
+            return False
+
     def _get_or_create_3mf_from_step(self):
-        """Return existing 3MF conversion of this STEP file, creating it if needed."""
+        """Return existing 3MF conversion of this STEP file, creating it if needed.
+
+        An existing conversion holding no object (written by an older
+        version of the STEP import) is converted again in place.
+        """
         self.ensure_one()
+        existing = self.env['ir.attachment']
         # Look for an already-converted 3MF linked to this STEP
         if 'source_convert_document' in self._fields:
             existing = self.env['ir.attachment'].search([
                 ('source_convert_document', '=', self.id),
                 ('name', 'ilike', '.3mf'),
             ], limit=1)
-            if existing:
+            if existing and self._3mf_has_objects(existing.raw):
                 return existing
-        # Perform conversion
+        if not hasattr(self, 'convert_from_step_to'):
+            raise UserError(_(
+                "STEP to 3MF conversion requires the 'plm_automated_convertion' "
+                "module to be installed."
+            ))
         try:
             new_file_path = self.convert_from_step_to('.3mf')
         except Exception as e:
             _logger.error("STEP→3MF conversion failed for %s: %s", self.name, e)
-            return self.env['ir.attachment']
-        name_base, _ = os.path.splitext(self.name)
+            raise UserError(_("STEP to 3MF conversion failed: %s", e)) from e
         with open(new_file_path, 'rb') as fh:
             data = base64.b64encode(fh.read())
+        if existing:
+            _logger.info("Replacing the empty 3MF conversion %s of %s",
+                         existing.name, self.name)
+            existing.datas = data
+            return existing
+        name_base, _ext = os.path.splitext(self.name)
         vals = {
             'name': name_base + '.3mf',
             'datas': data,

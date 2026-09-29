@@ -18,5 +18,4 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-from . import test_viewer_routes
-from . import test_step_to_3mf
+from . import test_step_import
