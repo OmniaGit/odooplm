@@ -32,7 +32,7 @@ class ProductProduct(models.Model):
         conditional_status = RELEASED_STATUSES.copy()
         config_param = self.env["ir.config_parameter"].sudo()
         conditional_status.extend(
-            config_param.get_param("sales_only_latest_params", "").split(",")
+            config_param.get_str("sales_only_latest_params", "").split(",")
         )
         if self.env.context.get("sale_latest"):
             domain += [
