@@ -849,13 +849,13 @@ class ProductProduct(models.Model):
                 and x.engineering_state in include_statuses
             ):
                 if childProdBrws.id not in tobeReleasedIDs:
-                    out_product += childProdBrws
+                    out_product |= childProdBrws
         msg = ""
         if errors:
             msg = _("Unable to perform workFlow action due")
             for subMsg in errors:
                 msg = msg + "\n" + subMsg
-        return (msg, out_product.union())
+        return (msg, out_product)
 
     def action_create_normalBom_WF(self):
         """

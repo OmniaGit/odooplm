@@ -42,8 +42,7 @@ class ProductExtension(models.Model):
                 ref_user = comp_obj.activity_task_id.project_id.user_id
             if not ref_user and comp_obj.project_ids:
                 for project in comp_obj.project_ids:
-                    ref_user += project.user_id
-            ref_user.union()
+                    ref_user |= project.user_id
             if ref_user:
                 mail_activity = self.env["mail.activity"]
                 mail_activity.create(
