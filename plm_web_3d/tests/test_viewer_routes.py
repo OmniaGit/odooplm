@@ -29,7 +29,8 @@ from odoo.tools import mute_logger
 # --test-tags=odoo_plm_web_3d_routes
 #
 
-CONTENT = base64.b64encode(b"solid")
+RAW = b"solid"
+CONTENT = base64.b64encode(RAW)
 
 
 @tagged("-standard", "odoo_plm_web_3d_routes", "post_install", "-at_install")
@@ -52,7 +53,7 @@ class PlmWeb3dRoutes(HttpCase):
             {
                 "name": "WEB3D-1.stl",
                 "engineering_code": "WEB3D-1",
-                "datas": CONTENT,
+                "raw": RAW,
                 "is_plm": True,
                 "document_type": "3d",
                 "plm_access_id": cls.node.id,
@@ -274,6 +275,9 @@ class PlmWeb3dRoutes(HttpCase):
     # the portal
 
     def _portal_customer(self, level, login="web3d_portal"):
+        # the scope of a customer is made of their sale order lines
+        if "sale.order" not in self.env:
+            self.skipTest("sale is not installed")
         partner = self.env["res.partner"].create({"name": "3d portal customer"})
         partner.plm_portal_access = level
         user = self.env["res.users"].create(
@@ -299,7 +303,7 @@ class PlmWeb3dRoutes(HttpCase):
             {
                 "name": "WEB3D-1.3mf",
                 "engineering_code": "WEB3D-1-3MF",
-                "datas": CONTENT,
+                "raw": RAW,
                 "is_plm": True,
                 "plm_access_id": self.node.id,
             }
@@ -328,7 +332,7 @@ class PlmWeb3dRoutes(HttpCase):
             {
                 "name": "WEB3D-2.3mf",
                 "engineering_code": "WEB3D-2-3MF",
-                "datas": CONTENT,
+                "raw": RAW,
                 "is_plm": True,
                 "plm_access_id": self.node.id,
             }

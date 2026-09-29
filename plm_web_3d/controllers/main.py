@@ -5,7 +5,9 @@ import json
 import logging
 from odoo import fields, http
 from odoo.http import Controller, route, request, Response
+from odoo.tools import BinaryBytes
 from markupsafe import Markup
+from werkzeug.exceptions import HTTPException
 
 _logger = logging.getLogger(__name__)
 
@@ -42,6 +44,8 @@ def webservice(f):
     def wrap(*args, **kw):
         try:
             return f(*args, **kw)
+        except HTTPException:
+            raise
         except Exception as e:
             return Response(response=str(e), status=500)
 
@@ -194,7 +198,7 @@ class Web3DView(Controller):
         # routes, but the page itself said what the document was called.
         document = _plm_document(document_id, "show_treejs_model")
         if not document:
-            return request.not_found()
+            raise request.not_found()
         return request.render(
             "plm_web_3d.main_treejs_view",
             {
@@ -215,10 +219,10 @@ class Web3DView(Controller):
         ):
             if ir_attachment.has_web3d:
                 headers = []
-                content_base64 = base64.b64decode(ir_attachment.datas)
-                headers.append(("Content-Length", len(content_base64)))
+                content = bytes(ir_attachment.raw)
+                headers.append(("Content-Length", len(content)))
                 headers.append(("file_name", ir_attachment.name))
-                response = request.make_response(content_base64, headers)
+                response = request.make_response(content, headers)
                 return response
         return Response(response="Document Not Found %r " % document_id, status=500)
 
@@ -338,9 +342,8 @@ class Web3DView(Controller):
         if not doc.exists():
             return {'success': False}
         try:
-            image_bytes = base64.b64decode(image_data)
-            image_b64 = base64.b64encode(image_bytes)
-            doc.sudo().write({'preview': image_b64})
+            image = BinaryBytes(base64.b64decode(image_data))
+            doc.sudo().write({'preview': image})
             components = _resolve_components(doc)
             updated = 0
             seen_tmpl = set()
@@ -348,7 +351,7 @@ class Web3DView(Controller):
                 tmpl = comp.product_tmpl_id
                 if tmpl and tmpl.id not in seen_tmpl:
                     seen_tmpl.add(tmpl.id)
-                    tmpl.sudo().write({'image_1920': image_b64})
+                    tmpl.sudo().write({'image_1920': image})
                     updated += 1
             return {'success': True, 'products_updated': updated}
         except Exception as e:
@@ -424,8 +427,8 @@ class Web3DView(Controller):
 
         markup_log = request.env['plm.markup.log'].sudo().create({
             'comment': comment,
-            'snapshot': base64.b64encode(image_binary),
-            'base_image': base64.b64encode(base_binary),
+            'snapshot': BinaryBytes(image_binary),
+            'base_image': BinaryBytes(base_binary),
             'filename': filename,
             'canvas_data': canvas_json,
             'res_id': int(res_id) if res_id else 0,
@@ -455,7 +458,7 @@ class Web3DView(Controller):
                     attachment = request.env['ir.attachment'].sudo().create({
                         'name': filename,
                         'type': 'binary',
-                        'datas': base64.b64encode(image_binary).decode(),
+                        'raw': image_binary,
                         'res_model': res_model,
                         'res_id': int(res_id),
                         'mimetype': 'image/jpeg',
@@ -464,7 +467,7 @@ class Web3DView(Controller):
                     note_html = f'<p>{comment if comment else default_note}</p>'
                     note_html += hyperlink
                     note_html += (
-                        f'<p><img src="/web/image/ir.attachment/{attachment.id}/datas" '
+                        f'<p><img src="/web/image/ir.attachment/{attachment.id}/raw" '
                         f'style="max-width:500px; border-radius:4px; margin-top:6px;" '
                         f'alt="Markup"/></p>'
                     )
@@ -533,8 +536,8 @@ class Web3DView(Controller):
                 'id': l.id,
                 'comment': l.comment,
                 'filename': l.filename or 'markup.jpg',
-                'snapshot': l.snapshot.decode() if l.snapshot else False,
-                'base_image': l.base_image.decode() if l.base_image else False,
+                'snapshot': l.snapshot.to_base64() if l.snapshot else False,
+                'base_image': l.base_image.to_base64() if l.base_image else False,
                 'canvas_data': l.canvas_data,
                 'create_date': str(l.create_date),
             } for l in logs]
@@ -575,8 +578,8 @@ class Web3DView(Controller):
             'markup': {
                 'id': log.id,
                 'comment': log.comment,
-                'snapshot': log.snapshot.decode() if log.snapshot else False,
-                'base_image': log.base_image.decode() if log.base_image else False,
+                'snapshot': log.snapshot.to_base64() if log.snapshot else False,
+                'base_image': log.base_image.to_base64() if log.base_image else False,
                 'canvas_data': log.canvas_data,
             }
         }
@@ -601,8 +604,8 @@ class Web3DView(Controller):
         base_binary = base64.b64decode(base_image.split(',')[1] if base_image and ',' in base_image else base_image)
 
         log.sudo().write({
-            'snapshot': base64.b64encode(image_binary),
-            'base_image': base64.b64encode(base_binary),
+            'snapshot': BinaryBytes(image_binary),
+            'base_image': BinaryBytes(base_binary),
             'canvas_data': canvas_json,
         })
 

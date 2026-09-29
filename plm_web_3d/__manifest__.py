@@ -54,12 +54,12 @@
     "images": ["static/src/img/web_3d.gif"],
     "depends": ["plm"],
     "data": [
-        'security/ir.model.access.csv',
+        'security/ir.access.csv',
         'security/plm_web_3d_security.xml',
         "views/ir_attachment.xml",
         "views/web_template.xml",
     ],
-    "installable": False,
+    "installable": True,
     "application": False,
     "auto_install": False,
 }

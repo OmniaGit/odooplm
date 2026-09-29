@@ -18,7 +18,6 @@
 #    along with this prograIf not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-import base64
 import os
 import logging
 import urllib.parse
@@ -115,10 +114,10 @@ class IrAttachment(models.Model):
             return self.env['ir.attachment']
         name_base, _ = os.path.splitext(self.name)
         with open(new_file_path, 'rb') as fh:
-            data = base64.b64encode(fh.read())
+            data = fh.read()
         vals = {
             'name': name_base + '.3mf',
-            'datas': data,
+            'raw': data,
             'res_model': self.res_model,
             'res_id': self.res_id,
         }
