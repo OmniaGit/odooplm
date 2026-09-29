@@ -77,7 +77,7 @@ class IrAttachment(models.Model):
     def get_url_for_3dWebModel(self):
         attach_relations = self.env["ir.attachment.relation"]
         for ir_attachment in self:
-            base_url = self.env["ir.config_parameter"].sudo().get_param("web.base.url")
+            base_url = self.env["ir.config_parameter"].sudo().get_str("web.base.url")
             url_params = None
             if ir_attachment.isWebGl():
                 url_params = urllib.parse.urlencode({
