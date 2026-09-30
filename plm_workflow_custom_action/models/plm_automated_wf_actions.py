@@ -20,7 +20,7 @@
 ##############################################################################
 import json
 
-from odoo import fields, models
+from odoo import api, fields, models
 from odoo.addons.plm.models.plm_mixin import USED_STATES
 
 
@@ -29,7 +29,7 @@ class PlmAutomatedWFAction(models.Model):
     _description = "Plm Automated Work Flow Actions"
 
     name = fields.Char("Action Name")
-    from_state = fields.Selection(USED_STATES, string="From Stare")
+    from_state = fields.Selection(USED_STATES, string="From State")
     to_state = fields.Selection(USED_STATES, string="To State")
     before_after = fields.Selection([
         ("before", "Before"),
@@ -56,13 +56,17 @@ class PlmAutomatedWFAction(models.Model):
              " will be used as global return value.",
     )
 
-    def name_get(self):
-        out = []
+    @api.depends("name", "to_state", "before_after")
+    def _compute_display_name(self):
         for o in self:
-            out.append(
-                (o.id, "[%s | %s] %s" % (o.to_state, o.before_after, o.name or ""))
-            )
-        return out
+            if o.to_state and o.before_after:
+                o.display_name = "[%s | %s] %s" % (
+                    o.to_state,
+                    o.before_after,
+                    o.name or "",
+                )
+            else:
+                o.display_name = o.name or ""
 
     def _run(self):
         res = False

@@ -8,16 +8,22 @@
             <form string="Plm Workflow Actions">
                 <sheet>
                     <group>
-                        <field name="name"/>
-                        <field name="from_state"/>
-                        <field name="to_state"/>
-                        <field name="apply_to"/>
-                        <field name="before_after"/>
-                        <field name="domain"/>
+                        <group>
+                            <field name="name"/>
+                            <field name="from_state"/>
+                            <field name="to_state"/>
+                        </group>
+                        <group>
+                            <field name="apply_to"/>
+                            <field name="before_after"/>
+                            <field name="domain"/>
+                        </group>
                     </group>
-                    <group>
-                        <field name="child_ids"/>
-                    </group>
+                    <notebook>
+                        <page string="Child Actions" name="child_actions">
+                            <field name="child_ids"/>
+                        </page>
+                    </notebook>
                 </sheet>
             </form>
         </field>

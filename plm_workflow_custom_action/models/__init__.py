@@ -19,10 +19,6 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-"""
-Created on 13/11/2020
-@author: Matteo Boscolo
-"""
 from . import ir_attachment
 from . import product_template
 from . import plm_automated_wf_actions
