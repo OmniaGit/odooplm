@@ -1116,6 +1116,7 @@ class ProductProduct(models.Model):
         """
         reactivate the object
         """
+        self.product_tmpl_id._refuse_reactivate_unless_obsoleted()
         for product_product_id in self:
             product_product_id.commonWFAction(RELEASED_STATUS, [OBSOLATED_STATUS])
         return True

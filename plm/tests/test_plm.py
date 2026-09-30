@@ -173,7 +173,7 @@ class PlmDateBom(TransactionCase, PlmEntityCreator):
         #
         attachment.action_confirm()
         attachment.engineering_state == CONFIRMED_STATUS
-        attachment.action_reactivate()
+        attachment.action_draft()
         attachment.engineering_state == START_STATUS
         attachment.action_confirm()
         attachment.action_release()
