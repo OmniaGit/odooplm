@@ -15,7 +15,7 @@
                         class="oe_highlight"
                     />
                     <button
-                        name="action_reactivate"
+                        name="action_draft"
                         string="Correct Box"
                         type="object"
                         invisible="engineering_state!='confirmed'"

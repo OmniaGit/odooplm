@@ -558,7 +558,8 @@ class Plm_box(models.Model):
         """
         reactivate the object
         """
-        self.move_to_state(START_STATUS)
+        self._refuse_reactivate_unless_obsoleted()
+        self.move_to_state(RELEASED_STATUS)
         return False
 
     def move_children_object_to_state(self, state, call_name):

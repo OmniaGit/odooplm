@@ -321,6 +321,62 @@ class RevisionBaseMixin(models.AbstractModel):
             obj._mark_worklow_user_date()
             obj._mark_obsolete_previous()
 
+    def action_from_released_to_obsoleted(self):
+        self._mark_obsolare()
+
+    def action_from_undermodify_to_obsoleted(self):
+        self._mark_obsolare()
+
+    def _refuse_reactivate_unless_obsoleted(self):
+        """Reactivate brings an obsoleted revision back into use, nothing else:
+        on any other state it would release the record skipping the release."""
+        not_obsoleted = self.filtered(
+            lambda r: r.engineering_state != OBSOLATED_STATUS
+        )
+        if not_obsoleted:
+            raise UserError(
+                _(
+                    "Only an obsoleted record can be reactivated: %s",
+                    ", ".join(
+                        "%s revision %s" % (r.engineering_code, r.engineering_revision)
+                        for r in not_obsoleted
+                    ),
+                )
+            )
+
+    def action_from_obsoleted_to_released(self):
+        """Reactivate: the record is back in use, released as it was.
+
+        Only while no newer revision of its code is in use: an obsoleted
+        revision was replaced, and bringing it back would leave the code with
+        two valid revisions. The release date and user are those of the first
+        release, so they are not marked again.
+        """
+        for obj in self:
+            newer = (
+                obj.sudo()
+                .search(
+                    [
+                        ("engineering_code", "=", obj.engineering_code),
+                        ("engineering_revision", ">", obj.engineering_revision),
+                        ("engineering_state", "in", RELEASED_STATUSES),
+                    ]
+                )
+                .filtered(lambda r: not r.engineering_branch_parent_id)
+            )
+            if newer:
+                raise UserError(
+                    _(
+                        "%(code)s revision %(rev)s cannot be reactivated: a newer "
+                        "revision of the same code is released.",
+                        code=obj.engineering_code,
+                        rev=obj.engineering_revision,
+                    )
+                )
+            obj.engineering_state = RELEASED_STATUS
+            obj.engineering_workflow_date = datetime.now()
+            obj.engineering_workflow_user = self.env.uid
+
     def action_un_release(self):
         if not self.env.user.has_group("plm.group_plm_admin_unrelease"):
             raise UserError(
