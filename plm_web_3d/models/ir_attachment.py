@@ -47,7 +47,7 @@ class IrAttachment(models.Model):
     has_web3d = fields.Boolean(
         string="Has 3d Web link",
         compute="_compute_web_3d_link",
-        # store=True,
+        store=True,
         help="Check if this document has related 3d web document",
     )
     web3d_part_colors = fields.Text(

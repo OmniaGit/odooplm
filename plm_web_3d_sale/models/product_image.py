@@ -18,42 +18,37 @@
 #    along with this prograIf not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-import os
 import base64
-import logging
-import datetime
-from odoo import models
-from odoo import fields
-from odoo import api
-from odoo import _
-from odoo.exceptions import UserError
-from datetime import timedelta
-from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
-# from odoo.modules.module import get_module_resource
+
+from odoo import api, fields, models
 from odoo.tools.misc import file_path as fp
-import urllib.parse
+
 SUPPORTED_WEBGL_EXTENTION = ['.gltf','.glb','.fbx']
 
 def getWebGlBase64():
     file_path = fp('plm_web_3d_sale/static/src/img/webgl3d.png')
-    return base64.b64encode(open(file_path, 'rb').read())
-
+    with open(file_path, 'rb') as f:
+        return base64.b64encode(f.read()).decode()
 
 
 class ProductImage(models.Model):
-    _inherit = ['product.image']
+    _inherit = 'product.image'
 
     ir_attachment_webgl_id = fields.Many2one('ir.attachment',
                                              string='Documenti Collegati',
                                              domain=[('has_web3d', '=', True),
                                                      ('public', '=', True)])
 
-    def _compute_embed_code(self):
-        super(ProductImage, self)._compute_embed_code()
-        for image in self:
-            url = image.ir_attachment_webgl_id.get_url_for_3dWebModel()
-            if url:
-                image.embed_code = '<iframe id="embedded_odoo_plm_webgl" src="%s"></iframe>' % url #.replace("http:","").replace("https:","")
+    def _get_webgl_url(self):
+        """URL of the 3D viewer of the linked document, or False.
+
+        v20 core dropped `embed_code`: the shop page only embeds a `video_url`, so
+        the 3D iframe is rendered by our own branch of `shop_product_image`. The
+        document is read with sudo: the website visitor has no right on it, and
+        the page must not fail because of it.
+        """
+        self.ensure_one()
+        return self.sudo().ir_attachment_webgl_id.get_url_for_3dWebModel() or False
 
     @api.onchange('ir_attachment_webgl_id')
     def attach_preview(self):
@@ -63,10 +58,3 @@ class ProductImage(models.Model):
                 if not stream:
                     stream = getWebGlBase64()
                 product_image.image_1920 = stream
-
-#    def get3dWebGl(self):
-#        for image in self:
-#            url = image.ir_attachment_webgl_id.get_url_for_3dWebModel()
-#            if url:
-#                return '<iframe class="embed-responsive-item" allowFullScreen="true" frameborder="0" src="%s"></iframe>' % url
-#        return '<p></p>'

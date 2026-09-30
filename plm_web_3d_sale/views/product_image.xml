@@ -15,4 +15,25 @@
             </xpath>
         </field>
     </record>
+
+    <template id="plm_web_3d_sale_shop_product_image" inherit_id="website_sale.shop_product_image">
+        <xpath expr="//div[@t-if]" position="attributes">
+            <attribute name="t-if"/>
+            <attribute name="t-elif">product_image._name == 'product.image' and product_image.video_url</attribute>
+        </xpath>
+        <xpath expr="//div[@t-elif][1]" position="before">
+            <div
+                t-if="product_image._name == 'product.image' and product_image._get_webgl_url()"
+                t-att-class="image_classes + ' ratio ratio-16x9'"
+            >
+                <iframe id="embedded_odoo_plm_webgl" t-att-src="product_image._get_webgl_url()" allowfullscreen="true"/>
+            </div>
+        </xpath>
+    </template>
+
+    <template id="plm_web_3d_sale_carousel_product_indicators" inherit_id="website_sale.carousel_product_indicators">
+        <xpath expr="//i[@t-if]" position="attributes">
+            <attribute name="t-if">product_image._name == 'product.image' and (product_image.video_url or product_image._get_webgl_url())</attribute>
+        </xpath>
+    </template>
 </odoo>
