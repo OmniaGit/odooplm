@@ -19,12 +19,6 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-
-"""
-Created on 30 Aug 2016
-
-@author: Daniel Smerghetto
-"""
 from odoo import fields, models
 
 
@@ -34,4 +28,4 @@ class ProductTemplate(models.Model):
     engineering_state = fields.Selection(
         selection_add=[("suspended", "Suspended")]
     )
-    old_state = fields.Char(size=128, name="Old Status")
+    old_state = fields.Char(size=128, string="Old Status")

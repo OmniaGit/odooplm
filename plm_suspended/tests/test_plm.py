@@ -50,12 +50,12 @@ DUMMY_CONTENT = b"R0lGODdhAQABAIAAAP///////ywAAAAAAQABAAACAkQBADs="
 class PlmDateBom(TransactionCase, PlmEntityCreator):
     def perform_check_suspend(self, obj):
         obj.action_suspend()
-        assert obj.engineering_state == suspended, (
-            "wrong state %s" % product.engineering_state
+        assert obj.engineering_state == "suspended", (
+            "wrong state %s" % obj.engineering_state
         )
         obj.action_unsuspend()
         assert obj.engineering_state == START_STATUS, (
-            "wrong state %s" % product.engineering_state
+            "wrong state %s" % obj.engineering_state
         )
 
     def test_product_attachment_wk(self):

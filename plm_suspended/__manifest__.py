@@ -21,7 +21,7 @@
 ##############################################################################
 {
     "name": "PLM Suspended State",
-    "version": "20.0.0.0.0",
+    "version": "20.0.1.0.0",
     "images": ["static/description/cover.gif"],
     "author": "OmniaSolutions",
     "maintainer": "OmniaSolutions S.n.c di Boscolo Matteo & C",
@@ -46,11 +46,10 @@
     "summary": "Add a suspended state to the engineering workflow, for products and documents",
     "depends": ["mrp", "plm"],
     "data": [
-        # views
         "views/ir_attachment.xml",
         "views/product_product.xml",
     ],
-    "installable": False,
+    "installable": True,
     "application": False,
     "auto_install": False,
 }
