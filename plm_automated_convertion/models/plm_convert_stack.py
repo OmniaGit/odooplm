@@ -32,7 +32,7 @@ import traceback
 import requests
 
 from odoo import _, api, fields, models
-from odoo.exceptions import UserError
+from odoo.exceptions import AccessError, UserError
 from odoo.tools.safe_eval import safe_eval
 
 
@@ -97,9 +97,25 @@ class PlmConvertStack(models.Model):
             ):
                 del val["output_name_rule"]
         ret = super().create(vals)
-        for r in ret:
+        # The sequence is bookkeeping of the queue: a view user may create a
+        # stack but not write it.
+        for r in ret.sudo():
             r.sequence = r.id
         return ret
+
+    def write(self, vals):
+        # Same guard as create: output_name_rule is evaluated at conversion
+        # time, so only a convert admin may author it.
+        if "output_name_rule" in vals and not (
+            self.env.is_superuser()
+            or self.env.user.has_group(
+                "plm_automated_convertion.group_plm_convert_admin"
+            )
+        ):
+            raise AccessError(
+                _("Only a Plm Convert Admin may set the output name rule.")
+            )
+        return super().write(vals)
 
     def convert(self):
         for stack_id in self:
