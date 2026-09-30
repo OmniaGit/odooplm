@@ -655,7 +655,11 @@ class ir_attachment(models.Model):
                     self.printout = base64.b64encode(pdfStream.read()).decode()
 
     def createPreviewStack(self):
-        obj_stack = self.env["plm.convert.stack"]
+        # Queueing the preview is a consequence of saving the document, not an
+        # action of the user: whoever may write the document queues it, with or
+        # without rights on the stack. The values are built here, never taken
+        # from the user.
+        obj_stack = self.env["plm.convert.stack"].sudo()
         for ir_attachment in self:
             for extention in ALLOW_CONVERSION_FORMAT:
                 if extention in ir_attachment.name.lower():
