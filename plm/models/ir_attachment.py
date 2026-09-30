@@ -1121,9 +1121,10 @@ class IrAttachment(models.Model):
         """
         reactivate the object
         """
+        self._refuse_reactivate_unless_obsoleted()
         for attachment_id in self:
             if attachment_id.ischecked_in():
-                attachment_id.with_context(check=False).move_to_state(START_STATUS)
+                attachment_id.with_context(check=False).move_to_state(RELEASED_STATUS)
         return False
 
     def blindwrite(self, vals):
