@@ -1,0 +1,71 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* plm_purchase_share
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-01 12:49+0000\n"
+"PO-Revision-Date: 2026-10-01 12:49+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: it\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: plm_purchase_share
+#: model_terms:ir.ui.view,arch_db:plm_purchase_share.portal_product_printouts
+msgid "<i class=\"fa fa-arrow-left me-1\"/>Back"
+msgstr "<i class=\"fa fa-arrow-left me-1\"/>Indietro"
+
+#. module: plm_purchase_share
+#: model_terms:ir.ui.view,arch_db:plm_purchase_share.portal_product_printouts
+msgid "<i class=\"fa fa-download me-1\"/>Download"
+msgstr "<i class=\"fa fa-download me-1\"/>Scarica"
+
+#. module: plm_purchase_share
+#: model_terms:ir.ui.view,arch_db:plm_purchase_share.plm_portal_my_purchase_order
+msgid ""
+"<i class=\"fa fa-download\"/>\n"
+"                    Download Documents"
+msgstr ""
+"<i class=\"fa fa-download\"/>\n"
+"                    Scarica i documenti"
+
+#. module: plm_purchase_share
+#: model:ir.model.fields,field_description:plm_purchase_share.field_res_users__display_name
+msgid "Display Name"
+msgstr "Nome visualizzato"
+
+#. module: plm_purchase_share
+#: model_terms:ir.ui.view,arch_db:plm_purchase_share.plm_purchase_order_portal_content
+msgid "Download the drawings"
+msgstr "Scarica i disegni"
+
+#. module: plm_purchase_share
+#: model:ir.model.fields,field_description:plm_purchase_share.field_res_users__id
+msgid "ID"
+msgstr "ID"
+
+#. module: plm_purchase_share
+#: model:res.groups,name:plm_purchase_share.group_plm_purchase_portal_user
+msgid "OdooPLM - Purchase Portal user"
+msgstr "OdooPLM - Utente portale acquisti"
+
+#. module: plm_purchase_share
+#: model_terms:ir.ui.view,arch_db:plm_purchase_share.plm_purchase_order_portal_content
+msgid "Open in 3D"
+msgstr "Apri in 3D"
+
+#. module: plm_purchase_share
+#: model:ir.model,name:plm_purchase_share.model_res_users
+msgid "User"
+msgstr "Utente"
+
+#. module: plm_purchase_share
+#: model_terms:ir.ui.view,arch_db:plm_purchase_share.plm_purchase_order_portal_content
+msgid "View the drawings"
+msgstr "Visualizza i disegni"
