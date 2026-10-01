@@ -1,5 +1,8 @@
 <odoo>
     <template id="plm_purchase_order_portal_content" inherit_id="purchase.purchase_order_portal_content" active="True">
+        <xpath expr="//table[@id='purchase_order_table']" position="before">
+            <t t-set="plm_portal_scope" t-value="request.env.user._plm_portal_products()"/>
+        </xpath>
         <xpath expr="//section[@id='details']//table[@id='purchase_order_table']//thead//tr//th[hasclass('text-start')]"
                position="after">
             <th>
@@ -7,10 +10,9 @@
         </xpath>
         <xpath expr="//section[@id='details']//table[@id='purchase_order_table']//tbody//td[@id='product_name']"
                position="after">
-            <t t-set="doc" t-value="line.product_id.linkeddocuments.filtered(lambda a: a.document_type == '2d')[:1]"/>
             <td id="single_product_download">
-                <t t-if="doc and request.env.user.has_group('plm_purchase_share.group_plm_purchase_portal_user')">
-                    <a t-att-href="'/report/html/plm.product_production_pdf_latest/%s' % line.product_id.id"
+                <t t-if="request.env.user._plm_portal_printouts(line.product_id, plm_portal_scope)">
+                    <a t-att-href="'/my/plm/product/%s/pdf' % line.product_id.id"
                        class="btn btn-primary"
                        style="width:50px; height:40px;"
                        target="_blank">
@@ -23,7 +25,8 @@
 
     <template id="plm_portal_my_purchase_order" inherit_id="purchase.portal_my_purchase_order" active="True">
         <xpath expr="//a[@id='print_invoice_report']" position="after">
-            <t t-if="request.env.user.has_group('plm_purchase_share.group_plm_purchase_portal_user')">
+            <t t-set="plm_portal_scope" t-value="request.env.user._plm_portal_products()"/>
+            <t t-if="any(request.env.user._plm_portal_printouts(product, plm_portal_scope) for product in order.order_line.product_id)">
                 <a
                     id="all_product_download"
                     class="btn btn-primary"
