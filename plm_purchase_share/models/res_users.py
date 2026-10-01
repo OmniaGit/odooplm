@@ -19,6 +19,8 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
+import urllib.parse
+
 from odoo import models
 
 from odoo.addons.plm.models.plm_mixin import (
@@ -26,19 +28,19 @@ from odoo.addons.plm.models.plm_mixin import (
     RELEASED_STATUSES,
 )
 
-# A drawing reaches a vendor once it has been released; it stays theirs when a
+# A document reaches a vendor once it has been released; it stays theirs when a
 # later revision obsoletes it, since the line pins the revision they bought.
-PORTAL_PRINTOUT_STATES = RELEASED_STATUSES + [OBSOLATED_STATUS]
+PORTAL_DOCUMENT_STATES = RELEASED_STATUSES + [OBSOLATED_STATUS]
 
 
 class ResUsers(models.Model):
     _inherit = "res.users"
 
-    def _plm_portal_printouts(self, product, scope=None):
-        """The drawings of *product* this user may download as PDF from the
-        portal: the product has to be in their scope (res.users.
-        _plm_portal_products) and the format policy has to allow the PDF of the
-        document (_plm_portal_document_policy). The result is a sudo
+    def _plm_portal_order_documents(self, product, purpose, scope=None):
+        """The documents of *product* this user may get from the portal for
+        *purpose* ('pdf' or 'view3d'): the product has to be in their scope
+        (res.users._plm_portal_products) and the format policy has to allow
+        the purpose (_plm_portal_document_policy). The result is a sudo
         recordset, since the portal cannot read attachments.
 
         *scope* is the user's _plm_portal_products(), when the caller already
@@ -54,6 +56,26 @@ class ResUsers(models.Model):
         if product not in scope:
             return documents
         return product.linkeddocuments.filtered(
-            lambda document: document.engineering_state in PORTAL_PRINTOUT_STATES
-            and "pdf" in self._plm_portal_document_policy(document)
+            lambda document: document.engineering_state in PORTAL_DOCUMENT_STATES
+            and purpose in self._plm_portal_document_policy(document)
         )
+
+    def _plm_portal_printouts(self, product, scope=None):
+        """The drawings of *product* this user may download as PDF."""
+        return self._plm_portal_order_documents(product, "pdf", scope)
+
+    def _plm_portal_viewer_url(self, product, scope=None):
+        """Where this user opens *product* in the 3D viewer, or False.
+
+        The viewer is plm_web_3d, which this module does not depend on: it is
+        looked for on its field, as plm does for mrp_subcontracting. With the
+        markup level the viewer also lets the user annotate the model.
+        """
+        if "has_web3d" not in self.env["ir.attachment"]._fields:
+            return False
+        for document in self._plm_portal_order_documents(product, "view3d", scope):
+            if document.has_web3d:
+                return "/plm/show_treejs_model?%s" % urllib.parse.urlencode(
+                    {"document_id": document.id, "document_name": document.name}
+                )
+        return False

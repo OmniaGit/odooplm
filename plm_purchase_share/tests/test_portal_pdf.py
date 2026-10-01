@@ -134,6 +134,27 @@ class PlmPurchasePortalPdf(HttpCase):
         self.assertEqual(response.headers["Content-Type"], "application/pdf")
         self.assertTrue(response.content.startswith(b"%PDF"))
 
+    def test_the_download_button_saves_the_pdf(self):
+        self.authenticate("portal_vendor", "portal_vendor")
+        shown = self.url_open(self._pdf_url(self.part))
+        self.assertTrue(shown.headers["Content-Disposition"].startswith("inline"))
+        saved = self.url_open(self._pdf_url(self.part) + "?download=1")
+        self.assertTrue(saved.headers["Content-Disposition"].startswith("attachment"))
+
+    def test_the_vendor_views_the_pdf_in_a_page(self):
+        self.authenticate("portal_vendor", "portal_vendor")
+        response = self.url_open(
+            "/my/plm/product/%s/view?order_id=%s" % (self.part.id, self.order.id)
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('src="%s"' % self._pdf_url(self.part), response.text)
+        self.assertIn('href="/my/purchase/%s"' % self.order.id, response.text)
+
+    def test_a_stranger_views_nothing(self):
+        self.authenticate("portal_stranger", "portal_stranger")
+        response = self.url_open("/my/plm/product/%s/view" % self.part.id)
+        self.assertEqual(response.status_code, 404)
+
     def test_a_stranger_gets_not_found(self):
         self.authenticate("portal_stranger", "portal_stranger")
         response = self.url_open(self._pdf_url(self.part))
@@ -149,4 +170,39 @@ class PlmPurchasePortalPdf(HttpCase):
         self.authenticate("portal_vendor", "portal_vendor")
         response = self.url_open("/my/purchase/%s" % self.order.id)
         self.assertEqual(response.status_code, 200)
-        self.assertIn(self._pdf_url(self.part), response.text)
+        self.assertIn(self._pdf_url(self.part) + "?download=1", response.text)
+        self.assertIn(
+            "/my/plm/product/%s/view?order_id=%s" % (self.part.id, self.order.id),
+            response.text,
+        )
+
+    # the 3D viewer
+
+    def _viewer_document(self):
+        if "has_web3d" not in self.env["ir.attachment"]._fields:
+            self.skipTest("plm_web_3d is not installed")
+        return self._document("PORTAL-PDF-PART.3mf", self.part)
+
+    def test_the_vendor_opens_the_model_in_3d(self):
+        viewer = self._viewer_document()
+        url = self.vendor_user._plm_portal_viewer_url(self.part)
+        self.assertIn("/plm/show_treejs_model?document_id=%s&" % viewer.id, url)
+
+    def test_a_stranger_gets_no_viewer(self):
+        self._viewer_document()
+        self.assertFalse(self.stranger_user._plm_portal_viewer_url(self.part))
+
+    def test_a_product_without_a_model_gets_no_viewer(self):
+        if "has_web3d" not in self.env["ir.attachment"]._fields:
+            self.skipTest("plm_web_3d is not installed")
+        self.assertFalse(self.vendor_user._plm_portal_viewer_url(self.part))
+
+    def test_the_order_page_shows_the_viewer(self):
+        viewer = self._viewer_document()
+        self.authenticate("portal_vendor", "portal_vendor")
+        response = self.url_open("/my/purchase/%s" % self.order.id)
+        self.assertIn(
+            "/plm/show_treejs_model?document_id=%s&amp;" % viewer.id, response.text
+        )
+        page = self.url_open(self.vendor_user._plm_portal_viewer_url(self.part))
+        self.assertEqual(page.status_code, 200)

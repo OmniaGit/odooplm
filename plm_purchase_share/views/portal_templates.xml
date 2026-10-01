@@ -10,13 +10,29 @@
         </xpath>
         <xpath expr="//section[@id='details']//table[@id='purchase_order_table']//tbody//td[@id='product_name']"
                position="after">
-            <td id="single_product_download">
+            <td id="single_product_download" class="text-nowrap">
                 <t t-if="request.env.user._plm_portal_printouts(line.product_id, plm_portal_scope)">
-                    <a t-att-href="'/my/plm/product/%s/pdf' % line.product_id.id"
+                    <a t-att-href="'/my/plm/product/%s/view?order_id=%s' % (line.product_id.id, order.id)"
+                       class="btn btn-secondary"
+                       style="width:50px; height:40px;"
+                       title="View the drawings">
+                        <i class="fa fa-eye"></i>
+                    </a>
+                    <a t-att-href="'/my/plm/product/%s/pdf?download=1' % line.product_id.id"
                        class="btn btn-primary"
                        style="width:50px; height:40px;"
-                       target="_blank">
+                       title="Download the drawings">
                         <i class="fa fa-download"></i>
+                    </a>
+                </t>
+                <t t-set="plm_viewer_url" t-value="request.env.user._plm_portal_viewer_url(line.product_id, plm_portal_scope)"/>
+                <t t-if="plm_viewer_url">
+                    <a t-att-href="plm_viewer_url"
+                       class="btn btn-secondary"
+                       style="width:50px; height:40px;"
+                       title="Open in 3D"
+                       target="_blank">
+                        <i class="fa fa-cube"></i>
                     </a>
                 </t>
             </td>
@@ -37,5 +53,26 @@
                 </a>
             </t>
         </xpath>
+    </template>
+
+    <template id="portal_product_printouts" name="PLM drawings of a product">
+        <t t-call="portal.portal_layout">
+            <t t-set="no_breadcrumbs" t-value="True"/>
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+                <h3 class="mb-0" t-out="product_name"/>
+                <div class="d-flex gap-2">
+                    <a t-att-href="back_url" class="btn btn-secondary">
+                        <i class="fa fa-arrow-left me-1"></i>Back
+                    </a>
+                    <a t-att-href="pdf_url + '?download=1'" class="btn btn-primary">
+                        <i class="fa fa-download me-1"></i>Download
+                    </a>
+                </div>
+            </div>
+            <iframe t-att-src="pdf_url"
+                    t-att-title="product_name"
+                    class="w-100 border rounded"
+                    style="height: 80vh;"/>
+        </t>
     </template>
 </odoo>
