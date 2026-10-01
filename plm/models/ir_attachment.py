@@ -1144,7 +1144,7 @@ class IrAttachment(models.Model):
         if document_path:
             filestore = os.path.join(document_path, self.env.cr.dbname)
         else:
-            filestore = tools.config.filestore(self._cr.dbname)
+            filestore = tools.config.filestore(self.env.cr.dbname)
         try:
             os.makedirs(filestore)
         except OSError as ex:

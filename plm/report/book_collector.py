@@ -61,21 +61,22 @@ class BookCollector(object):
         self.poolObj = poolObj
 
     def evalDictVals(self, dict_vals, doc_obj, page_count, user_id):
+        """The values of the stamp: a value naming doc_obj, page_count or
+        user_id ('user_id.name', 'doc_obj.engineering_state') is evaluated
+        against them, any other is printed as it is."""
         from odoo.tools.safe_eval import safe_eval
 
+        names = {"doc_obj": doc_obj, "page_count": page_count, "user_id": user_id}
         out = {}
         for key, val in dict_vals.items():
-            try:
-                if "doc_obj" in val:
-                    val = safe_eval(val, locals_dict={"doc_obj": doc_obj})
-                elif "page_count" in val:
-                    val = int(val)
-                elif "user_id" in val:
-                    val = int(val)
-            except Exception as ex:
-                logging.error(
-                    "Cannot eval attribute %r for report due to error %r" % (val, ex)
-                )
+            if isinstance(val, str) and val.split(".")[0] in names:
+                try:
+                    val = safe_eval(val, names)
+                except Exception as ex:
+                    logging.error(
+                        "Cannot eval attribute %r for report due to error %r"
+                        % (val, ex)
+                    )
             out[key] = val or ""
         return out
 
