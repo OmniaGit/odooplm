@@ -35,7 +35,6 @@ different name.
 import logging
 
 from odoo import api, fields, models
-
 from odoo.addons.plm_mcp.models.plm_mcp_tool import mcp_tool
 
 _logger = logging.getLogger(__name__)

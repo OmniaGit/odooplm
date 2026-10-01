@@ -20,7 +20,7 @@
 ##############################################################################
 {
     "name": "PLM MCP Server — Change Requests",
-    "version": "20.0.0.0.0",
+    "version": "20.0.1.0.0",
     "author": "OmniaSolutions",
     "maintainer": "OmniaSolutions S.n.c di Boscolo Matteo & C",
     "website": "https://odooplm.omniasolutions.website",
@@ -33,31 +33,31 @@
         "Matteo Boscolo <matteo.boscolo@omniasolutions.eu>",
     ],
     "summary": """
-    Ask the MCP server about engineering change requests and change orders.
+        Ask the MCP server about engineering change requests and change orders.
     """,
     "description": """
-PLM MCP Server — Change Requests
-================================
+        PLM MCP Server — Change Requests
+        ================================
 
-Adds the change request and change order questions to the MCP server: what is
-open, what is waiting for whom, and what the person asking has to validate.
+        Adds the change request and change order questions to the MCP server: what is
+        open, what is waiting for whom, and what the person asking has to validate.
 
-It is a module of its own rather than part of ``plm_mcp`` because change
-requests come from ``activity_validation``, and a PLM server should answer
-questions about parts and drawings whether or not that module is installed.
-Installing this one adds the tools; removing it takes them away, and nothing
-else changes.
+        It is a module of its own rather than part of ``plm_mcp`` because change
+        requests come from ``activity_validation``, and a PLM server should answer
+        questions about parts and drawings whether or not that module is installed.
+        Installing this one adds the tools; removing it takes them away, and nothing
+        else changes.
 
-That it can be done this way is the point of how the tools are declared: a tool
-is a method on the ``plm.mcp.tool`` abstract model, so any module that inherits
-it and decorates a method has a working tool, with no registration step and no
-data file to keep in step with the code.
-""",
+        That it can be done this way is the point of how the tools are declared: a tool
+        is a method on the ``plm.mcp.tool`` abstract model, so any module that inherits
+        it and decorates a method has a working tool, with no registration step and no
+        data file to keep in step with the code.
+    """,
     "depends": [
         "plm_mcp",
         "activity_validation",
     ],
-    "installable": False,
+    "installable": True,
     "application": False,
     "auto_install": False,
 }
