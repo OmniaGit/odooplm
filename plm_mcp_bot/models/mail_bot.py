@@ -39,10 +39,10 @@ _logger = logging.getLogger(__name__)
 class MailBot(models.AbstractModel):
     _inherit = "mail.bot"
 
-    def _get_answer(self, channel, body, values, command=False):
+    def _get_answer(self, channel, body, message, command=False):
         text = self.env["plm.mcp.bot"]._command_text(body)
         if text:
             _logger.info("plm_mcp_bot: %s asked %r",
                          self.env.user.login, text)
             return self.env["plm.mcp.bot"]._answer(text)
-        return super()._get_answer(channel, body, values, command)
+        return super()._get_answer(channel, body, message, command)
