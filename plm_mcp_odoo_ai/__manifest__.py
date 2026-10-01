@@ -20,7 +20,7 @@
 ##############################################################################
 {
     "name": "PLM Tools for the Odoo AI Agent",
-    "version": "20.0.0.0.0",
+    "version": "20.0.1.0.0",
     "author": "OmniaSolutions",
     "maintainer": "OmniaSolutions S.n.c di Boscolo Matteo & C",
     "website": "https://odooplm.omniasolutions.website",
@@ -33,27 +33,27 @@
         "Matteo Boscolo <matteo.boscolo@omniasolutions.eu>",
     ],
     "summary": """
-    Answer PLM questions inside Odoo's own chat, with the tools of the MCP server.
+        Answer PLM questions inside Odoo's own chat, with the tools of the MCP server.
     """,
     "description": """
-PLM Tools for the Odoo AI Agent
-===============================
+        PLM Tools for the Odoo AI Agent
+        ===============================
 
-The MCP server answers PLM questions asked from outside Odoo — an assistant, an
-editor, an agent of your own. Odoo Enterprise has an assistant of its own in the
-chat, which does not speak MCP: its tools are server actions.
+        The MCP server answers PLM questions asked from outside Odoo — an assistant, an
+        editor, an agent of your own. Odoo Enterprise has an assistant of its own in the
+        chat, which does not speak MCP: its tools are server actions.
 
-This module gives that assistant the same tools, generated from the same
-registry. Nothing is written twice: the names, the descriptions and the
-parameter schemas are the ones already declared for MCP, turned into server
-actions and gathered in a topic the agent can be given. A tool added tomorrow
-appears in both worlds without touching this module.
+        This module gives that assistant the same tools, generated from the same
+        registry. Nothing is written twice: the names, the descriptions and the
+        parameter schemas are the ones already declared for MCP, turned into server
+        actions and gathered in a topic the agent can be given. A tool added tomorrow
+        appears in both worlds without touching this module.
 
-Requires Odoo Enterprise (the ``ai`` module, which is proprietary) and the
-PostgreSQL ``vector`` extension it depends on. Everything else in the suite
-works without it: an installation on Community keeps the MCP server and simply
-does not install this.
-""",
+        Requires Odoo Enterprise (the ``ai`` module, which is proprietary) and the
+        PostgreSQL ``vector`` extension it depends on. Everything else in the suite
+        works without it: an installation on Community keeps the MCP server and simply
+        does not install this.
+    """,
     "depends": [
         "plm_mcp",
         "ai",
@@ -61,7 +61,7 @@ does not install this.
     "data": [
         "data/ai_topic.xml",
     ],
-    "installable": False,
+    "installable": True,
     "application": False,
     "auto_install": False,
 }

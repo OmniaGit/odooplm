@@ -81,6 +81,7 @@ class PlmMcpTool(models.AbstractModel):
         for tool_name, (_method_name, spec) in specs.items():
             values = {
                 "name": tool_name,
+                "ai_tool_name": tool_name,
                 "model_id": model.id,
                 "state": "code",
                 "code": self._odoo_ai_code(tool_name, spec),

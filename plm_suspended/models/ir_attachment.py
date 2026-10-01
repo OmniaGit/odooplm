@@ -29,7 +29,7 @@ class PlmDocumentExtension(models.Model):
     _inherit = "ir.attachment"
 
     engineering_state = fields.Selection(
-        USED_STATES,
+        selection_add=[("suspended", "Suspended")],
         string="Status",
         readonly=True,
         default="draft",
