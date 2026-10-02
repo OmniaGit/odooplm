@@ -206,7 +206,7 @@ class Plm_box(models.Model):
             "res_model": "ir.attachment",
             "view_mode": "list,form",
             "target": "current",
-            "domain": [("id", "in", self.document_rel.ids)],
+            "domain": [("plm_box_id", "in", self.ids)],
             "context": {
                 "default_plm_box_id": self.id,
                 "default_is_plm_box": True

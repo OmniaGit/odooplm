@@ -16,11 +16,11 @@
         <field name="model">ir.attachment</field>
         <field name="inherit_id" ref="plm.document_kanban_view"/>
         <field name="arch" type="xml">
-            <xpath expr="//table/tr" position="inside">
-                <td>
+            <xpath expr="//div[@name='attachment_flags_box']" position="inside">
+                <span class="d-inline-flex align-items-center gap-1">
                     <span style="font-size: 13px;">Prod Doc:</span>
                     <field name="is_production_doc" widget="boolean_toggle" readonly="context.get('readonly', False)"/>
-                </td>
+                </span>
                 <field name="doc_seq" invisible="1"/>
             </xpath>
             <xpath expr="//td[@name='attachment_button_box']" position="inside">

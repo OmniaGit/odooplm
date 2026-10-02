@@ -848,8 +848,11 @@ class PackAndGo(models.TransientModel):
         zip_buffer.seek(0)
         zip_data = base64.b64encode(zip_buffer.read()).decode()
 
+        # More than one product can be selected: default_code is a singleton read
+        zip_name = '%s_Export.zip' % (products.default_code if len(products) == 1 else 'PackAndGo')
+
         attachment = self.env['ir.attachment'].create({
-            'name': '%s_Export.zip' % products.default_code,
+            'name': zip_name,
             'type': 'binary',
             'raw': zip_data,
             'mimetype': 'application/zip',
@@ -858,6 +861,6 @@ class PackAndGo(models.TransientModel):
         # Trigger file download with static name
         return {
             'type': 'ir.actions.act_url',
-            'url': f'/web/content/{attachment.id}?download=true&filename={products.default_code}_Export.zip',
+            'url': f'/web/content/{attachment.id}?download=true&filename={zip_name}',
             'target': 'self',
         }

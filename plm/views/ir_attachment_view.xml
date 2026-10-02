@@ -476,6 +476,12 @@
                                                  invisible="is_linkedcomponents in [False, []]"/>
                                         </td>
                                     </tr>
+                                    <tr name="attachment_flags">
+                                        <!-- Optional toggles of other modules (spare part, production doc, ...) go here, not in the header row above -->
+                                        <td colspan="3">
+                                            <div name="attachment_flags_box" class="d-flex flex-wrap align-items-center gap-3"/>
+                                        </td>
+                                    </tr>
                                     <tr>
                                         <td style="padding-left:10px; vertical-align: middle;" colspan="2">
                                             <table style="width:100%">
