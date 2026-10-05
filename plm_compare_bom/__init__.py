@@ -19,11 +19,21 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-
-"""
-Created on 24 Aug 2016
-
-@author: Daniel Smerghetto
-"""
-
 from . import wizard
+
+
+ORIGINAL_OPEN_BOM_LINES_CODE = """
+                action = {
+                    'type': 'ir.actions.act_window',
+                    'name': 'BoM Lines',
+                    'res_model': 'mrp.bom.line',
+                    'views': [(env.ref('mrp.mrp_bom_line_view_pivot').id, 'pivot'), (env.ref('mrp.mrp_bom_line_view_list').id, 'list')],
+                    'domain': [('bom_id', 'in', env.context.get('active_ids'))],
+                }
+            """
+
+def uninstall_hook(env):
+    """when module install then restore back the odoo core Compare BoMs"""
+    action = env.ref("mrp.action_open_bom_lines", raise_if_not_found=False)
+    if action and "plm.compare.bom" in (action.code or ""):
+        action.code = ORIGINAL_OPEN_BOM_LINES_CODE

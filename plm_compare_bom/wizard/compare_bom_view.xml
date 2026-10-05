@@ -31,7 +31,19 @@
         <field name="res_model">plm.compare.bom</field>
         <field name="view_mode">form</field>
         <field name="target">new</field>
-        <field name="binding_model_id" ref="mrp.model_mrp_bom"/>
+    </record>
+
+    <record id="mrp.action_open_bom_lines" model="ir.actions.server">
+        <field name="code">
+            action = {
+                "type": "ir.actions.act_window",
+                "name": "Compare BoMs",
+                "res_model": "plm.compare.bom",
+                "view_mode": "form",
+                "target": "new",
+                "context": dict(env.context, active_ids=env.context.get("active_ids", [])),
+            }
+        </field>
     </record>
 
     <!--    Visualization BoM Views-->

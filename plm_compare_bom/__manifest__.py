@@ -21,7 +21,7 @@
 ##############################################################################
 {
     "name": "PLM Compare Bom",
-    "version": "20.0.1.0.1",
+    "version": "20.0.1.0.2",
     "images": ["static/description/cover.gif"],
     "author": "OmniaSolutions",
     "maintainer": "OmniaSolutions S.n.c di Boscolo Matteo & C",
@@ -46,6 +46,7 @@
         "security/plm_security.xml",
         "wizard/compare_bom_view.xml",
     ],
+    "uninstall_hook": "uninstall_hook",
     "installable": True,
     "application": False,
     "auto_install": False,
