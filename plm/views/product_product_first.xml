@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-<!-- This View is the one used in the advanced bom for the list -->
+    <!-- This View is the one used in the advanced bom for the list -->
     <record model="ir.ui.view" id="plm_component_base_tree">
         <field name="name">plm.base.component.tree</field>
         <field name="model">product.product</field>
@@ -13,11 +13,9 @@
                   decoration-success="engineering_state == 'released'"
                   decoration-warning="engineering_state == 'undermodify'"
                   decoration-muted="engineering_state == 'obsoleted'">
-                <!--  Koo dose not render properly the image so i comment it -->
-                <field name="image_1920" widget="image" options="{ 'size': [60, 60]}"/> 
+                <field name="image_1920" widget="image" options="{ 'size': [60, 60]}"/>
                 <field name="name" select="1"/>
-                <!-- Koo search for "select" attribute to use it as filter, so do not remove it-->
-                <field name="configuration_name" select="1"  optional="hide"/>
+                <field name="configuration_name" select="1" optional="hide"/>
                 <field name="engineering_code" select="1"/>
                 <field name="default_code"/>
                 <field name="engineering_revision" select="1"/>

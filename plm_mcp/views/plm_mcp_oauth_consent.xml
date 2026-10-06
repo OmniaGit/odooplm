@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="oauth_layout" name="PLM MCP OAuth layout">
+        <t t-set="head">
+            <meta name="viewport" content="width=device-width, initial-scale=1"/>
+            <t t-call-assets="web.assets_frontend" t-js="false"/>
+        </t>
+        <t t-call="web.layout" head="head" title="'Connect an application'" body_classname.f="bg-100">
+            <div class="container py-5">
+                <div class="card mx-auto shadow-sm" style="max-width: 28rem;">
+                    <div class="card-body p-4">
+                        <t t-out="0"/>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="oauth_consent" name="PLM MCP OAuth consent">
+        <t t-call="plm_mcp.oauth_layout">
+            <form method="post" action="/plm/oauth/authorize/submit" role="form">
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                <t t-foreach="params.items()" t-as="item">
+                    <input type="hidden" t-att-name="item[0]" t-att-value="item[1]"/>
+                </t>
+
+                <h4 class="text-center mb-3">
+                    <strong t-out="client_name"/> wants to connect
+                </h4>
+                <p class="text-center">
+                    It will be able to ask the PLM tools questions about
+                    engineering data as <strong t-out="user.name"/>, with the same
+                    access rights, and nothing more. You can switch it off at any
+                    time by deleting its key under Configuration → MCP → API Keys.
+                </p>
+
+                <div class="mb-3">
+                    <label for="duration" class="form-label">Access lasts</label>
+                    <select id="duration" name="duration" class="form-select">
+                        <t t-foreach="durations" t-as="duration">
+                            <option t-att-value="duration[0]"
+                                    t-att-selected="duration[0] == default_duration"
+                                    t-out="duration[1]"/>
+                        </t>
+                    </select>
+                </div>
+
+                <div class="d-grid gap-2">
+                    <button type="submit" name="allow" value="true" class="btn btn-primary">Allow</button>
+                    <button type="submit" name="allow" value="false" class="btn btn-secondary">Deny</button>
+                </div>
+            </form>
+        </t>
+    </template>
+
+    <!-- What a person sees when the request cannot be served. The detail comes
+         from outside (the address an application asked for) and is escaped. -->
+    <template id="oauth_error" name="PLM MCP OAuth error">
+        <t t-call="plm_mcp.oauth_layout">
+            <h4 class="text-center mb-3" t-out="title"/>
+            <p class="text-center" t-out="message"/>
+            <p t-if="detail" class="text-center small text-break font-monospace bg-light rounded p-2"
+               t-out="detail"/>
+            <p t-if="hint" class="text-center small text-muted mb-3" t-out="hint"/>
+            <p class="text-center small text-muted mb-0">You can close this page.</p>
+        </t>
+    </template>
+
+</odoo>

@@ -18,10 +18,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-from odoo import models
-from odoo import fields
-from odoo import api
-from odoo import _
+from odoo import _, api, fields, models
 
 
 class PlmConfigSettings(models.TransientModel):

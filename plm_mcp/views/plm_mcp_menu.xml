@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- One entry in Configuration for everything of the MCP server, as PLM
+         Conversion does for its own. No groups of its own: a menu with no
+         action is shown only when one of its entries is, so each entry keeps
+         deciding who sees it. -->
+    <menuitem id="plm_mcp_menu" name="MCP"
+              parent="plm.plm_menu_dictionaries" sequence="60"/>
+
+</odoo>

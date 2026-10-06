@@ -33,7 +33,10 @@
                         </div>
                         <div class="o_hierarchy_node_body d-flex flex-column text-center">
                             <field name="company_id" groups="base.group_multi_company"/>
-                            <span><t t-out="record.document_count.raw_value"/> documents</span>
+                            <span>
+                                <t t-out="record.document_count.raw_value"/>
+                                documents
+                            </span>
                         </div>
                     </t>
                 </templates>
@@ -55,7 +58,9 @@
                     </div>
                     <div class="oe_title">
                         <label for="name"/>
-                        <h1><field name="name"/></h1>
+                        <h1>
+                            <field name="name"/>
+                        </h1>
                     </div>
                     <group>
                         <group>
@@ -79,9 +84,12 @@
                         </group>
                         <group string="Effective">
                             <field name="effective_read_group_ids" widget="many2many_tags" string="Read" readonly="1"/>
-                            <field name="effective_write_group_ids" widget="many2many_tags" string="Write" readonly="1"/>
-                            <field name="effective_create_group_ids" widget="many2many_tags" string="Create" readonly="1"/>
-                            <field name="effective_unlink_group_ids" widget="many2many_tags" string="Delete" readonly="1"/>
+                            <field name="effective_write_group_ids" widget="many2many_tags" string="Write"
+                                   readonly="1"/>
+                            <field name="effective_create_group_ids" widget="many2many_tags" string="Create"
+                                   readonly="1"/>
+                            <field name="effective_unlink_group_ids" widget="many2many_tags" string="Delete"
+                                   readonly="1"/>
                         </group>
                     </group>
                 </sheet>

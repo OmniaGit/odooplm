@@ -18,19 +18,11 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-
-"""
-Created on 25 Aug 2016
-
-@author: Daniel Smerghetto
-"""
 import copy
 import logging
 import sys
 
 from odoo import models, fields, api, _
-from odoo.fields import Domain
-
 from odoo.addons.plm.models.plm_mixin import (
     PLM_NO_WRITE_STATE,
     RELEASED_STATUS,

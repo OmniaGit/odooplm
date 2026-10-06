@@ -52,7 +52,7 @@
         </record>
     </data>
 
-	<data noupdate="1">
+    <data noupdate="1">
         <record id="sequence_document" model="ir.sequence">
             <field name="name">Document Sequence</field>
             <field eval="6" name="padding"/>

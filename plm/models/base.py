@@ -18,11 +18,6 @@
 #    along with this prograIf not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-"""
-Created on 17 Nov 2020
-
-@author: mboscolo
-"""
 import json
 from lxml import etree
 
@@ -73,12 +68,10 @@ class Base(models.AbstractModel):
             result["name"] = view.name
             result["type"] = view.type
             result["view_id"] = view.id
-            # result['field_parent'] = view.field_parent
             result["base_model"] = view.model
         else:
             result["type"] = view_type
             result["name"] = "default"
-            # result['field_parent'] = False
 
         for key in ["arch", "id", "model", "models", "fields"]:
             if key in result:

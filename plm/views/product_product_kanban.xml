@@ -38,7 +38,8 @@
                     <t t-name="component-top">
                         <div class="o_kanban_card_header">
                             <div class="o_kanban_image">
-                                <img alt="No Image" t-att-src="kanban_image('product.product', 'image_small', record.id.raw_value)"/>
+                                <img alt="No Image"
+                                     t-att-src="kanban_image('product.product', 'image_small', record.id.raw_value)"/>
                             </div>
                             <div class="oe_kanban_details">
                                 <div class="o_kanban_card_header_title">
@@ -191,10 +192,10 @@
                                        t-att-context="{'xml_id':'plm_action_document_form', 'id': documentId}"
                                        class="a_preview"
                                        href="#"
-                                       > 
-                                       <img class="image_component_kanban"
-                                                alt="No Image"
-                                                t-att-src="kanban_image('ir.attachment', 'preview', documentId)"/>
+                                    >
+                                        <img class="image_component_kanban"
+                                             alt="No Image"
+                                             t-att-src="kanban_image('ir.attachment', 'preview', documentId)"/>
 
                                     </a>
                                 </div>

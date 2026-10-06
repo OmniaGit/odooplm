@@ -19,12 +19,6 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-
-"""
-Created on 28 March 2022
-
-@author: Daniel Smerghetto
-"""
 from odoo import models, api
 
 
@@ -81,6 +75,3 @@ class ResGroups(models.Model):
             if additional_obj:
                 available_types.append(additional_obj.id)
         return available_types
-
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

@@ -31,8 +31,9 @@ letting the package own them means a protocol update is a dependency bump
 instead of a reading exercise.
 
 The route is ``auth="none"`` because the caller is an MCP client holding a
-bearer token, not a session; the token is resolved to a plm.mcp.key, and every
-tool then runs in that key's user environment.
+bearer token, not a session; the token is resolved to a plm.mcp.key (or, where
+Odoo's ai_mcp is installed, an Odoo API key of scope ``mcp``), and every tool
+then runs in that user's environment.
 """
 import json
 import logging
@@ -46,7 +47,12 @@ from mcp_types import (
 )
 from odoo.http import Controller, Response, request, route
 
-from ..models.plm_mcp_tool import McpInvalidArguments, McpToolNotFound
+from ..models.plm_mcp_tool import (
+    McpBadArgument,
+    McpInvalidArguments,
+    McpToolNotFound,
+)
+from .oauth import protected_resource_metadata_url
 
 _logger = logging.getLogger(__name__)
 
@@ -68,6 +74,26 @@ INVALID_REQUEST = -32600
 METHOD_NOT_FOUND = -32601
 INVALID_PARAMS = -32602
 INTERNAL_ERROR = -32603
+
+
+class Caller:
+    """Who is behind a request: the user the tools run as, and how it was proved.
+
+    ``key`` is the plm.mcp.key when that is what the client presented, and empty
+    when it presented an Odoo API key of scope ``mcp`` — which has no key
+    record here to stamp with a usage trail.
+    """
+
+    def __init__(self, user, label, key=None):
+        self.user = user
+        self.label = label
+        self.key = key
+
+    def env(self):
+        """An environment scoped to the user — how every tool must run."""
+        if self.key:
+            return self.key.user_env()
+        return request.env(user=self.user.id)
 
 
 def _json(payload, status=200):
@@ -100,11 +126,11 @@ class PlmMcpController(Controller):
     @route(ENDPOINT, type="http", auth="none", methods=["POST"], csrf=False,
            save_session=False, readonly=False)
     def mcp(self, **kwargs):
-        key = self._authenticate()
-        if not key:
+        caller = self._authenticate()
+        if not caller:
             # 401 rather than a JSON-RPC error: the request never reached the
             # protocol, and an MCP client is expected to read the HTTP status.
-            return _json({"error": "unauthorized"}, status=401)
+            return self._unauthorized()
 
         try:
             body = json.loads(request.httprequest.get_data() or b"{}")
@@ -129,17 +155,18 @@ class PlmMcpController(Controller):
         if method.startswith("notifications/"):
             return Response(status=202)
 
-        key._register_call()
+        if caller.key:
+            caller.key._register_call()
         try:
-            return self._dispatch(key, method, params, request_id)
+            return self._dispatch(caller, method, params, request_id)
         except Exception:
             # The traceback belongs in the log, not in a payload an agent will
             # read back to a user.
-            _logger.exception("plm_mcp: %s failed for key %s", method, key.name)
+            _logger.exception("plm_mcp: %s failed for key %s", method, caller.label)
             return _error(request_id, INTERNAL_ERROR, "Internal error.")
 
     # ------------------------------------------------------------- dispatch
-    def _dispatch(self, key, method, params, request_id):
+    def _dispatch(self, caller, method, params, request_id):
         if method == "initialize":
             return _result(request_id, self._initialize(params))
         if method == "ping":
@@ -147,14 +174,14 @@ class PlmMcpController(Controller):
         if method == "tools/list":
             # Listed through the key's user: a tool the user cannot reach is a
             # tool the agent should not be told about in the first place.
-            tools = key.user_env()["plm.mcp.tool"]._list_tools()
+            tools = caller.env()["plm.mcp.tool"]._list_tools()
             return _result(request_id, tools)
         if method == "tools/call":
-            return self._call(key, params, request_id)
+            return self._call(caller, params, request_id)
         return _error(request_id, METHOD_NOT_FOUND, "Unknown method %r." % method)
 
-    def _call(self, key, params, request_id):
-        """Run one tool as the key's user.
+    def _call(self, caller, params, request_id):
+        """Run one tool as the caller's user.
 
         Only a malformed call answers with a JSON-RPC error. A tool that ran and
         could not answer comes back as a normal result carrying isError, because
@@ -166,11 +193,13 @@ class PlmMcpController(Controller):
         if not name:
             return _error(request_id, INVALID_PARAMS, "No tool name given.")
 
-        tools = key.user_env()["plm.mcp.tool"]
+        tools = caller.env()["plm.mcp.tool"]
         try:
             result = tools._call_tool(name, arguments)
         except McpToolNotFound:
             return _error(request_id, INVALID_PARAMS, "Unknown tool %r." % name)
+        except McpBadArgument as problem:
+            return _error(request_id, INVALID_PARAMS, str(problem))
         except McpInvalidArguments as missing:
             return _error(request_id, INVALID_PARAMS,
                           "Missing required argument(s): %s." % missing)
@@ -202,11 +231,38 @@ class PlmMcpController(Controller):
         return result.model_dump(by_alias=True, exclude_none=True)
 
     # ---------------------------------------------------------------- helpers
+    def _unauthorized(self):
+        """The 401, with the address a client follows to find the login flow.
+
+        A client that was not given a token has nothing to go on but this
+        response: the header names the document (RFC 9728) that says where the
+        person is sent to log in and allow the application. With a token that
+        was refused, the error says so, so the client knows to start over
+        rather than to retry.
+        """
+        challenge = 'Bearer resource_metadata="%s"' % protected_resource_metadata_url()
+        if request.httprequest.headers.get("Authorization"):
+            challenge += ', error="invalid_token"'
+        response = _json({"error": "unauthorized"}, status=401)
+        response.headers["WWW-Authenticate"] = challenge
+        return response
+
     def _authenticate(self):
-        """The key behind the bearer token, or an empty recordset."""
+        """Who the bearer token belongs to, or None.
+
+        A plm.mcp.key first; failing that, an Odoo API key of scope ``mcp``
+        (issued by Odoo's ai_mcp where it is installed).
+        """
         header = request.httprequest.headers.get("Authorization") or ""
         token = header[7:].strip() if header[:7].lower() == "bearer " else ""
-        return request.env["plm.mcp.key"].sudo()._authenticate(token)
+        keys = request.env["plm.mcp.key"].sudo()
+        key = keys._authenticate(token)
+        if key:
+            return Caller(key.user_id, key.name, key)
+        user = keys._authenticate_odoo_key(token)
+        if user:
+            return Caller(user, "Odoo API key of %s" % user.login)
+        return None
 
     def _version(self):
         """The installed version of this module, for serverInfo."""

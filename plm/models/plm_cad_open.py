@@ -18,14 +18,10 @@
 #    along with this prograIf not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-"""
-Created on Sep 7, 2019
-
-@author: dsmerghetto
-"""
 import logging
 from odoo import models, fields, api
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
+
 
 class PlmCadOpen(models.Model):
     _name = "plm.cad.open"

@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
 from . import plm_mcp_key
+from . import plm_mcp_oauth_client
+from . import plm_mcp_oauth_code
+from . import res_config_settings
 from . import plm_mcp_tool
+from . import ir_actions_server
 from . import plm_mcp_tools_part
 from . import plm_mcp_tools_vocabulary
 from . import plm_mcp_tools_overview

@@ -32,7 +32,6 @@
         </field>
     </record>
 
-
     <record model="ir.ui.view" id="view_attachment_form_plm_hinerit">
         <field name="name">plm.ir.attachment.form</field>
         <field name="model">ir.attachment</field>
@@ -118,12 +117,6 @@
                                 invisible="engineering_revision_count &lt;=1">
                             <field name="engineering_revision_count" string=" " widget="statinfo"/>
                         </button>
-
-                        <!--                        <button name="check_out_user"-->
-                        <!--                                icon="fa-user"-->
-                        <!--                                invisible="checkout_user == False">-->
-                        <!--                            <field name="checkout_user"/>-->
-                        <!--                        </button>-->
 
                         <field name="must_update_from_cad" invisible="1"></field>
                         <button name="related_not_update"
@@ -405,7 +398,7 @@
         <field name="priority" eval="20"/>
         <field name="arch" type="xml">
             <kanban>
-                <field name="id"/>                                                <!-- Necessary to render previews -->
+                <field name="id"/>
                 <field name="engineering_code"/>
                 <field name="engineering_revision"/>
                 <field name="description"/>
@@ -479,7 +472,8 @@
                                     <tr name="attachment_flags">
                                         <!-- Optional toggles of other modules (spare part, production doc, ...) go here, not in the header row above -->
                                         <td colspan="3">
-                                            <div name="attachment_flags_box" class="d-flex flex-wrap align-items-center gap-3"/>
+                                            <div name="attachment_flags_box"
+                                                 class="d-flex flex-wrap align-items-center gap-3"/>
                                         </td>
                                     </tr>
                                     <tr>
@@ -509,7 +503,8 @@
                                                 </tr>
                                                 <tr>
                                                     <td>
-                                                        <field name="raw" filename="name" widget="binary" groups="plm.group_plm_admin"/>
+                                                        <field name="raw" filename="name" widget="binary"
+                                                               groups="plm.group_plm_admin"/>
                                                     </td>
                                                 </tr>
                                                 <tr>

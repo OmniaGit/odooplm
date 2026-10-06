@@ -17,8 +17,6 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-
-
 import odoo.tools as tools
 import logging
 from odoo import models, fields, api
@@ -54,6 +52,3 @@ class report_ir_attachment_file(models.Model):
              )
         """
         )
-
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

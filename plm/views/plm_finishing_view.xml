@@ -1,31 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-<data>
     <record model="ir.ui.view" id="view_plm_finishing">
         <field name="name">plm.finishing.view</field>
         <field name="model">plm.finishing</field>
         <field name="arch" type="xml">
             <form string="Finishing">
-            	<sheet>
-                <group colspan="4" col="6">
-                    <field name="name" select="1" colspan="4"/>
-                    <field name="description" select="1" />
-                    <field name="sequence"/>
-                </group>
-               </sheet>	 
+                <sheet>
+                    <group colspan="4" col="6">
+                        <field name="name" select="1" colspan="4"/>
+                        <field name="description" select="1"/>
+                        <field name="sequence"/>
+                    </group>
+                </sheet>
             </form>
         </field>
     </record>
-    
+
     <record model="ir.ui.view" id="plm_view_finishing_list">
         <field name="name">plm.view.finishing.list</field>
         <field name="model">plm.finishing</field>
         <field name="priority" eval="1"/>
         <field name="arch" type="xml">
             <list string="Finishings" editable="bottom">
-                   <field name="name"/>
-                   <field name="description"/>
-                   <field name="sequence"/>
+                <field name="name"/>
+                <field name="description"/>
+                <field name="sequence"/>
             </list>
         </field>
     </record>
@@ -37,8 +36,5 @@
         <field name="view_mode">list,form</field>
         <field name="view_id" ref="plm_view_finishing_list"/>
     </record>
-    
-    
-</data>
-</odoo>
 
+</odoo>

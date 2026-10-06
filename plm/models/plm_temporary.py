@@ -18,12 +18,6 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-
-"""
-Created on 12 Dec 2016
-
-@author: Daniel Smerghetto
-"""
 import json
 
 from odoo import fields, models, api

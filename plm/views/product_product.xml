@@ -226,9 +226,7 @@
                                     </div>
                                     <field name="uom_id"
                                            readonly="engineering_state in ['released','obsoleted']"/>
-                                    <!-- <field name="uom_po_id"
-                                           readonly="engineering_state in ['released','obsoleted']"
-                                           groups="base.group_no_one"/> -->
+
                                 </group>
                                 <group colspan="4" col="4" name="technical_infos_group"
                                        string="Material / Surface / Treatment">
@@ -268,7 +266,6 @@
         </field>
     </record>
 
-
     <record id="plm_product_product_normal_form_view_inherit" model="ir.ui.view">
         <field name="name">plm.product.product.normal.form.view.inherit</field>
         <field name="model">product.product</field>
@@ -298,11 +295,7 @@
                            readonly="1"/>
                 </header>
             </xpath>
-            <!--
-            <xpath expr="//button[@name='action_view_bom']" position="after">
-            	<button	name="open_report_component" type="object" icon="menu" string="Report" class="oe_stat_button"/>
-            </xpath>
-             -->
+
             <xpath expr="//button[@name='action_view_mos']" position="after">
                 <button name="open_related_revisions"
                         type="object"
@@ -335,11 +328,12 @@
             <xpath expr="//notebook[last()]" position="before">
                 <field name="is_engcode_editable" invisible="1"/>
                 <group>
-                    <group  colspan="4" string="OdooPLM Information">
+                    <group colspan="4" string="OdooPLM Information">
                         <label for="engineering_code"/>
                         <div>
                             <field name="engineering_code" class="oe_inline"
-                                   readonly="is_engcode_editable==False"/> - Rev_
+                                   readonly="is_engcode_editable==False"/>
+                            - Rev_
                             <field name="engineering_revision"
                                    nolabel="1" class="oe_inline"
                                    readonly="is_engcode_editable==False"/>
@@ -415,7 +409,6 @@
             </xpath>
             <xpath expr="//notebook[last()]" position="inside">
                 <page name="technical_infos" string="Technical Information">
-                    <!--group name="uom_weight" is included in the previews version, however I've added here-->
                     <group name='uom_weight'>
                         <group>
                             <label for="weight"/>
@@ -493,52 +486,6 @@
                 <field name="engineering_state"/>
             </xpath>
 
-            <!--            <xpath expr="//div/div[hasclass('o_kanban_image')]" position="replace">-->
-            <!--                <t t-value="record.engineering_state.raw_value" t-set="stateToUse"/>-->
-            <!--                <field name="engineering_code"/>-->
-            <!--                <field name="engineering_revision"/>-->
-            <!--                <t t-if="stateToUse == 'draft'">-->
-            <!--				    <span style="color: rgb(110, 51, 197);padding-left: 5px;">-->
-            <!--				        <b>-->
-            <!--				            <field name="engineering_state"/>-->
-            <!--				        </b>-->
-            <!--				    </span>-->
-            <!--				</t>-->
-            <!--				<t t-if="stateToUse == 'confirmed'">-->
-            <!--				    <span style="color: blue;padding-left: 5px;">-->
-            <!--				        <b>-->
-            <!--				            <field name="engineering_state"/>-->
-            <!--				        </b>-->
-            <!--				    </span>-->
-            <!--				</t>-->
-            <!--				<t t-if="stateToUse == 'released'">-->
-            <!--				    <span style="color: rgba(0, 170, 34, 0.66);padding-left: 5px;">-->
-            <!--				        <b>-->
-            <!--				            <field name="engineering_state"/>-->
-            <!--				        </b>-->
-            <!--				    </span>-->
-            <!--				</t>-->
-            <!--				<t t-if="stateToUse == 'undermodify'">-->
-            <!--				    <span style="color: rgb(218, 159, 34);padding-left: 5px;">-->
-            <!--				        <b>-->
-            <!--				            <field name="engineering_state"/>-->
-            <!--				        </b>-->
-            <!--				    </span>-->
-            <!--				</t>-->
-            <!--				<t t-if="stateToUse == 'obsoleted'">-->
-            <!--				    <span style="color: rgb(231, 43, 26);padding-left: 5px;">-->
-            <!--				        <b>-->
-            <!--				            <field name="engineering_state"/>-->
-            <!--				        </b>-->
-            <!--				    </span>-->
-            <!--				</t>-->
-            <!--                <t t-if="image_small" >  -->
-            <!--                    <div class="o_kanban_image">-->
-            <!--                        <img t-att-src="kanban_image('product.product', 'image_small', record.id.raw_value)" -->
-            <!--                             alt="Product"/>-->
-            <!--                    </div>-->
-            <!--                </t>-->
-            <!--            </xpath>-->
             <xpath expr="//templates/t[1]" position="after">
                 <t t-name="previews">
                     <div style="display: -webkit-inline-box;  padding-left: 10px;">
@@ -559,14 +506,8 @@
                     </div>
                 </t>
             </xpath>
-            <!--             <xpath expr="//div[@name='tags']" position="after"> -->
-            <!--                 <div class="preview_container"> -->
-            <!--                     <t t-call="previews"/> -->
-            <!--                </div> -->
-            <!--             </xpath> -->
         </field>
     </record>
-
 
     <record model="ir.actions.act_window" id="action_plm_component_base_cad_form">
         <field name="name">Engineering Parts</field>
@@ -586,4 +527,3 @@
         <field name="domain">[('engineering_code','not in', ('', False))]</field>
     </record>
 </odoo>
-

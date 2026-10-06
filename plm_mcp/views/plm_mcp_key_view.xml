@@ -57,8 +57,8 @@
 
     <!-- Under Configuration rather than at the top level: issuing a key is a
          setup step done once per client, not something anyone opens daily. -->
-    <menuitem id="plm_mcp_key_menu" name="MCP API Keys"
-              parent="plm.plm_menu_dictionaries" sequence="60"
+    <menuitem id="plm_mcp_key_menu" name="API Keys"
+              parent="plm_mcp_menu" sequence="1"
               action="plm_mcp_key_action"
               groups="plm.group_plm_admin"/>
 

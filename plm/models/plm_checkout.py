@@ -18,12 +18,6 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-
-"""
-Created on 25 Aug 2016
-
-@author: Daniel Smerghetto
-"""
 import logging
 
 from odoo import _, models, fields, api

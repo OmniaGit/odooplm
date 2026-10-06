@@ -18,11 +18,6 @@
 #    along with this prograIf not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-"""
-Created on 30 Mar 2023
-
-@author: mboscolo
-"""
 import base64
 
 CHARS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"

@@ -526,7 +526,8 @@
                                                                             style="margin: auto; border: none;"/>
                                                                     </td>
                                                                 </tr>
-                                                                <t t-foreach="parent_lvl_7['children']" t-as="parent_lvl_8">
+                                                                <t t-foreach="parent_lvl_7['children']"
+                                                                   t-as="parent_lvl_8">
                                                                     <tr>
                                                                         <td class="text-center">
                                                                             <t t-out="parent_lvl_8.get('level')"/>
@@ -595,7 +596,8 @@
                                                                                 style="margin: auto; border: none;"/>
                                                                         </td>
                                                                     </tr>
-                                                                    <t t-foreach="parent_lvl_8['children']" t-as="parent_lvl_9">
+                                                                    <t t-foreach="parent_lvl_8['children']"
+                                                                       t-as="parent_lvl_9">
                                                                         <tr>
                                                                             <td class="text-center">
                                                                                 <t t-out="parent_lvl_9.get('level')"/>
@@ -664,7 +666,8 @@
                                                                                     style="margin: auto; border: none;"/>
                                                                             </td>
                                                                         </tr>
-                                                                        <t t-foreach="parent_lvl_9['children']" t-as="parent_lvl_10">
+                                                                        <t t-foreach="parent_lvl_9['children']"
+                                                                           t-as="parent_lvl_10">
                                                                             <tr>
                                                                                 <td class="text-center">
                                                                                     <t t-out="parent_lvl_10.get('level')"/>
@@ -733,7 +736,8 @@
                                                                                         style="margin: auto; border: none;"/>
                                                                                 </td>
                                                                             </tr>
-                                                                            <t t-foreach="parent_lvl_10['children']" t-as="parent_lvl_11">
+                                                                            <t t-foreach="parent_lvl_10['children']"
+                                                                               t-as="parent_lvl_11">
                                                                                 <tr>
                                                                                     <td class="text-center">
                                                                                         <t t-out="parent_lvl_11.get('level')"/>
@@ -802,7 +806,8 @@
                                                                                             style="margin: auto; border: none;"/>
                                                                                     </td>
                                                                                 </tr>
-                                                                                <t t-foreach="parent_lvl_11['children']" t-as="parent_lvl_12">
+                                                                                <t t-foreach="parent_lvl_11['children']"
+                                                                                   t-as="parent_lvl_12">
                                                                                     <tr>
                                                                                         <td class="text-center">
                                                                                             <t t-out="parent_lvl_12.get('level')"/>
@@ -978,7 +983,6 @@
                                  t-if="hierarchy_parent['children'] and not affect_attachment_ids">
                                 <span>No affected attachments found at the moment.</span>
                             </div>
-
 
                         </div>
                     </div>

@@ -43,6 +43,10 @@ _logger = logging.getLogger(__name__)
 
 TOKEN_BYTES = 32
 
+# The scope of the API keys Odoo's own ai_mcp module issues (Enterprise). This
+# module never creates such a key; it only accepts one when it is presented.
+ODOO_MCP_SCOPE = "mcp"
+
 
 def _digest(token):
     return hashlib.sha256((token or "").encode("utf-8")).hexdigest()
@@ -143,6 +147,26 @@ class PlmMcpKey(models.Model):
                          key.name, key.user_id.login)
             return self.browse()
         return key
+
+    @api.model
+    def _authenticate_odoo_key(self, token):
+        """The user behind an Odoo API key of scope ``mcp``, or no user.
+
+        For a database that also has Odoo's ai_mcp installed: a person there
+        already holds such a key, and it is accepted here too. Core does the
+        checking — hash, expiry, archived user — so nothing is re-implemented.
+        Where ai_mcp is absent no key of that scope exists and this finds
+        nothing, which is why it needs no check that the module is installed.
+
+        There is no plm.mcp.key behind it, so such a call leaves no usage trail
+        on the key list; Odoo's own key list is where it is managed.
+        """
+        users = self.env["res.users"]
+        if not token:
+            return users
+        uid = self.env["res.users.apikeys"]._check_credentials(
+            scope=ODOO_MCP_SCOPE, key=token)
+        return users.browse(uid) if uid else users
 
     def _register_call(self):
         """Record that the key was used. Cheap, and the only usage trail there is."""

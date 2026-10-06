@@ -25,82 +25,82 @@
                             <field name="description_en" select="1"/>
                         </group>
 
-                            <field name="show_help" invisible="True"></field>
-                            <div style="display: inline-flex;
+                        <field name="show_help" invisible="True"></field>
+                        <div style="display: inline-flex;
 		                    				width: 100%;
 		                    				text-align=right;" invisible="show_help==False">
-                                <div colspan="4" class="o_group_col_12" style="background-color: aliceblue;
+                            <div colspan="4" class="o_group_col_12" style="background-color: aliceblue;
 		                    													   border-left: 5px solid #35979c;
 		                    													   padding: 10px;
 		                    													   width: 50%;">
-                                    Example Values:
-                                    <br></br>
-                                    <ul>
-                                        <li>UM/Feature1 = A and Format_Feature1 = %s</li>
-                                        <li>UM/Feature2 = B and Format_Feature2 = %s</li>
-                                        <li>UM/Feature3 = C and Format Feature3 = %s</li>
-                                        <li>Standard Description = STD</li>
-                                        <li>Normative Rule = UNI</li>
-                                        <li>Format Feature Composed = %s Title n°%s-%s</li>
-                                    </ul>
-                                    Example Result:
-                                    <br></br>
-                                    <ul>
-                                        <li>Feature.Value1 (in component form) = 1</li>
-                                        <li>Feature.Value2 (in component form) = 2</li>
-                                        <li>Feature.Value3 (in component form) = 3</li>
-                                        <li>Final Description: Standard Description + Format Feature Composed +
-                                            Normative Rule
-                                            <br></br>
-                                            <b>STD 1 Title n°2-3 UNI</b>
-                                        </li>
-                                    </ul>
-                                </div>
-                                <div style="background-color: aliceblue;
+                                Example Values:
+                                <br></br>
+                                <ul>
+                                    <li>UM/Feature1 = A and Format_Feature1 = %s</li>
+                                    <li>UM/Feature2 = B and Format_Feature2 = %s</li>
+                                    <li>UM/Feature3 = C and Format Feature3 = %s</li>
+                                    <li>Standard Description = STD</li>
+                                    <li>Normative Rule = UNI</li>
+                                    <li>Format Feature Composed = %s Title n°%s-%s</li>
+                                </ul>
+                                Example Result:
+                                <br></br>
+                                <ul>
+                                    <li>Feature.Value1 (in component form) = 1</li>
+                                    <li>Feature.Value2 (in component form) = 2</li>
+                                    <li>Feature.Value3 (in component form) = 3</li>
+                                    <li>Final Description: Standard Description + Format Feature Composed +
+                                        Normative Rule
+                                        <br></br>
+                                        <b>STD 1 Title n°2-3 UNI</b>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div style="background-color: aliceblue;
 		                    					border-left: 5px solid #35979c;
 		                    					padding: 10px;
 		                    					width: 50%">
-                                    Example Values:
-                                    <br></br>
-                                    <ul>
-                                        <li>UM/Feature1 = A and Format_Feature1 = %s %s</li>
-                                        <li>UM/Feature2 = B and Format_Feature2 = %s-%s</li>
-                                        <li>UM/Feature3 = C and Format Feature3 = %s/%s</li>
-                                        <li>Standard Description = STD</li>
-                                        <li>Normative Rule = UNI</li>
-                                        <li>Format Feature Composed = %s Title n°%s-%s</li>
-                                    </ul>
-                                    Example Result:
-                                    <br></br>
-                                    <ul>
-                                        <li>Feature.Value1 (in component form) = 1</li>
-                                        <li>Feature.Value2 (in component form) = 2</li>
-                                        <li>Feature.Value3 (in component form) = 3</li>
-                                        <li>Final Description: Standard Description + Format Feature Composed +
-                                            Normative Rule
-                                            <br></br>
-                                            <b>STD A 1 Title n°B-2-C/3 UNI</b>
-                                        </li>
-                                    </ul>
-                                </div>
+                                Example Values:
+                                <br></br>
+                                <ul>
+                                    <li>UM/Feature1 = A and Format_Feature1 = %s %s</li>
+                                    <li>UM/Feature2 = B and Format_Feature2 = %s-%s</li>
+                                    <li>UM/Feature3 = C and Format Feature3 = %s/%s</li>
+                                    <li>Standard Description = STD</li>
+                                    <li>Normative Rule = UNI</li>
+                                    <li>Format Feature Composed = %s Title n°%s-%s</li>
+                                </ul>
+                                Example Result:
+                                <br></br>
+                                <ul>
+                                    <li>Feature.Value1 (in component form) = 1</li>
+                                    <li>Feature.Value2 (in component form) = 2</li>
+                                    <li>Feature.Value3 (in component form) = 3</li>
+                                    <li>Final Description: Standard Description + Format Feature Composed +
+                                        Normative Rule
+                                        <br></br>
+                                        <b>STD A 1 Title n°B-2-C/3 UNI</b>
+                                    </li>
+                                </ul>
                             </div>
+                        </div>
 
-                            <group colspan="4" col="4">
-                                <separator colspan="4" string="Technical feature label and formatting"/>
-                                <field name="umc1" placeholder="Feature Example: A"/>
-                                <field name="fmt1" placeholder="Example: %s"/>
-                                <newline/>
+                        <group colspan="4" col="4">
+                            <separator colspan="4" string="Technical feature label and formatting"/>
+                            <field name="umc1" placeholder="Feature Example: A"/>
+                            <field name="fmt1" placeholder="Example: %s"/>
+                            <newline/>
 
-                                <field name="umc2" placeholder="Feature Example: B"/>
-                                <field name="fmt2" placeholder="Example: %s"/>
-                                <newline/>
-                                <field name="umc3" placeholder="Feature Example: C"/>
-                                <field name="fmt3" placeholder="Example: %s"/>
-                                <newline/>
-                                <separator colspan="2" string=""/>
-                                <separator colspan="2"
-                                           string="Types of Feature Format: %s for Only Value / %s %s for Label Value / %s_%s for Label_Value / %s/%s for Label/Value"/>
-                            </group>
+                            <field name="umc2" placeholder="Feature Example: B"/>
+                            <field name="fmt2" placeholder="Example: %s"/>
+                            <newline/>
+                            <field name="umc3" placeholder="Feature Example: C"/>
+                            <field name="fmt3" placeholder="Example: %s"/>
+                            <newline/>
+                            <separator colspan="2" string=""/>
+                            <separator colspan="2"
+                                       string="Types of Feature Format: %s for Only Value / %s %s for Label Value / %s_%s for Label_Value / %s/%s for Label/Value"/>
+                        </group>
 
 
                         <group colspan="4" col="4" name="Normalized features formatting">
@@ -180,4 +180,3 @@
         <field name="view_id" ref="plm_view_description_list"/>
     </record>
 </odoo>
-

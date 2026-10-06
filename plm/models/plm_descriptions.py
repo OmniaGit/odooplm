@@ -20,9 +20,7 @@
 ##############################################################################
 
 import logging
-from odoo import models
-from odoo import fields
-from odoo import _
+from odoo import _, fields, models
 
 _logger = logging.getLogger(__name__)
 # Customized Automation to standardize and normalize descriptions and characteristics.

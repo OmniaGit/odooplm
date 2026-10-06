@@ -22,3 +22,6 @@ from . import test_registry
 from . import test_key
 from . import test_tools
 from . import test_endpoint
+from . import test_oauth
+from . import test_oauth_registration
+from . import test_ui_tools

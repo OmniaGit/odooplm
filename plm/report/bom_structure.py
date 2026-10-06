@@ -17,13 +17,6 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-
-"""
-Created on Apr 14, 2016
-
-@author: Daniel Smerghetto
-"""
-
 import logging
 from odoo import api, models, _
 from operator import itemgetter
@@ -32,10 +25,9 @@ from operator import itemgetter
 def _translate(value):
     return _(value)
 
-
 def get_bom_report(
-    myObject, recursion=False, flat=False, leaf=False, level=1, summarize=False
-):
+        myObject, recursion=False, flat=False, leaf=False, level=1, summarize=False
+    ):
     def getBom(bomLineObj):
         newBom = None
         for bomBws in bomLineObj.related_bom_ids:

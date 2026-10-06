@@ -21,7 +21,7 @@
 ##############################################################################
 {
     "name": "Product Lifecycle Management",
-    "version": "20.0.1.0.6",
+    "version": "20.0.1.0.7",
     "author": "OmniaSolutions",
     "maintainer": "OmniaSolutions S.n.c di Boscolo Matteo & C",
     "website": "https://odooplm.omniasolutions.website",
@@ -88,7 +88,6 @@
         "views/plm_temporaty.xml",
         "views/mrp_production.xml",
         "wizard/plm_bom_report_wizard_view.xml",
-        # QwebTemplates
         "views/templates.xml",
     ],
     "assets": {
@@ -97,7 +96,6 @@
             "plm/static/src/css/color_fields_tree.css",
             "plm/static/src/js/mrp_bom_overview_line.js",
             "plm/static/src/xml/mrp_bom_overview_table_inherit.xml",
-            # many2one Widget
             "plm/static/src/js/many2one_widget/many2one_widget.js",
             "plm/static/src/js/many2one_widget/many2one_widget.xml",
         ],

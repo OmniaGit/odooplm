@@ -18,17 +18,8 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-
-"""
-Created on 25 Aug 2016
-
-@author: Daniel Smerghetto
-"""
 import logging
-from odoo import models
-from odoo import fields
-from odoo import api
-from odoo import _
+from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 from odoo.addons.plm.models.plm_mixin import START_STATUS
 

@@ -18,19 +18,10 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-
-"""
-Created on 11 Aug 2016
-
-@author: Daniel Smerghetto
-"""
 from odoo.tools.safe_eval import safe_eval
 from odoo.fields import Domain
 from odoo.exceptions import UserError, ValidationError
-from odoo import models
-from odoo import fields
-from odoo import api
-from odoo import _
+from odoo import _, api, fields, models
 import logging
 import os
 import stat

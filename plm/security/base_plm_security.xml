@@ -5,10 +5,10 @@
         <field name="name">OdooPLM</field>
     </record>
 
-   <record model="res.groups.privilege" id="res_groups_privilege_odooplm">
-       <field name="name">OdooPLM</field>
-       <field name="category_id" ref="plm.odooplm_module_category"/>
-   </record>
+    <record model="res.groups.privilege" id="res_groups_privilege_odooplm">
+        <field name="name">OdooPLM</field>
+        <field name="category_id" ref="plm.odooplm_module_category"/>
+    </record>
 
     <!-- View User  -->
     <record id="group_plm_view_user" model="res.groups">
@@ -66,7 +66,7 @@
         <field name="implied_ids" eval="[(6, 0, [ref('group_plm_readonly_released')])]"/>
     </record>
 
-<!-- model_plm_backupdoc_wizard -->
+    <!-- model_plm_backupdoc_wizard -->
     <!-- Originally granted zero operations (r=w=c=u=0) for group_plm_view_user, i.e.
          already a no-op. ir.access requires a non-empty operation, so it's kept
          inactive here instead: same zero-permission effect, xml id stays resolvable
@@ -100,7 +100,7 @@
         <field name="operation">crud</field>
     </record>
 
-<!-- model_plm_temporary -->
+    <!-- model_plm_temporary -->
     <record id="plm_temporary_message_view" model="ir.access">
         <field name="name">PLM Temporary message</field>
         <field name="model_id" ref="model_plm_temporary"/>
@@ -114,7 +114,7 @@
         <field name="group_id" ref="group_plm_integration_user"/>
         <field name="operation">crud</field>
     </record>
-<!-- plm_temporary_message -->
+    <!-- plm_temporary_message -->
     <record id="plm_plm_temporary_message_view" model="ir.access">
         <field name="name">PLM Temporary message</field>
         <field name="model_id" ref="model_plm_temporary_message"/>
@@ -128,7 +128,7 @@
         <field name="group_id" ref="group_plm_integration_user"/>
         <field name="operation">crud</field>
     </record>
-<!-- product.product  -->
+    <!-- product.product  -->
     <record id="plm_product_product_view" model="ir.access">
         <field name="name">PLM Product Product</field>
         <field name="model_id" ref="model_product_product"/>
@@ -173,7 +173,7 @@
     </record>
 
 
-<!-- mrp.bom.line  -->
+    <!-- mrp.bom.line  -->
     <record id="plm_mrp_bom_line_view" model="ir.access">
         <field name="name">PLM Mrp Bom Line</field>
         <field name="model_id" ref="model_mrp_bom_line"/>
@@ -188,7 +188,7 @@
     </record>
 
 
-<!-- mrp.bom  -->
+    <!-- mrp.bom  -->
     <record id="plm_mrp_bom_view" model="ir.access">
         <field name="name">PLM Mrp Bom</field>
         <field name="model_id" ref="model_mrp_bom"/>
@@ -232,7 +232,7 @@
         <field name="domain">[]</field>
     </record>
 
-<!-- plm.client  -->
+    <!-- plm.client  -->
     <record id="plm_client_integration" model="ir.access">
         <field name="name">PLM Client</field>
         <field name="model_id" ref="model_plm_client"/>
@@ -240,7 +240,7 @@
         <field name="operation">crud</field>
     </record>
 
-<!-- ir.attachment  -->
+    <!-- ir.attachment  -->
 
 
     <!-- Level 2, readonly: PLM documents, read only. -->
@@ -359,7 +359,7 @@
     </record>
 
 
-<!-- plm.backupdoc  -->
+    <!-- plm.backupdoc  -->
     <record id="plm_backupdoc_view" model="ir.access">
         <field name="name">PLM Back Up Document</field>
         <field name="model_id" ref="model_plm_backupdoc"/>
@@ -380,7 +380,7 @@
     </record>
 
 
-<!-- plm.checkout  -->
+    <!-- plm.checkout  -->
     <record id="plm_checkout_view" model="ir.access">
         <field name="name">PLM Check Out</field>
         <field name="model_id" ref="model_plm_checkout"/>
@@ -422,7 +422,7 @@
     </record>
 
 
-<!-- plm.description  -->
+    <!-- plm.description  -->
     <record id="plm_description_view" model="ir.access">
         <field name="name">PLM Description</field>
         <field name="model_id" ref="model_plm_description"/>
@@ -443,7 +443,7 @@
     </record>
 
 
-<!-- ir.attachment.relation  -->
+    <!-- ir.attachment.relation  -->
     <record id="plm_ir_attachment_relation_view" model="ir.access">
         <field name="name">PLM Document relation</field>
         <field name="model_id" ref="model_ir_attachment_relation"/>
@@ -458,7 +458,7 @@
     </record>
 
 
-<!-- plm.finishing  -->
+    <!-- plm.finishing  -->
     <record id="plm_finishing_view" model="ir.access">
         <field name="name">PLM Finishing</field>
         <field name="model_id" ref="model_plm_finishing"/>
@@ -479,28 +479,28 @@
     </record>
 
 
-<!-- plm.treatment  -->
-   <record id="plm_treatment_view" model="ir.access">
-       <field name="name">PLM Treatment</field>
-       <field name="model_id" ref="model_plm_treatment"/>
-       <field name="group_id" ref="group_plm_view_user"/>
-       <field name="operation">r</field>
-   </record>
+    <!-- plm.treatment  -->
+    <record id="plm_treatment_view" model="ir.access">
+        <field name="name">PLM Treatment</field>
+        <field name="model_id" ref="model_plm_treatment"/>
+        <field name="group_id" ref="group_plm_view_user"/>
+        <field name="operation">r</field>
+    </record>
     <record id="plm_treatment_integration" model="ir.access">
         <field name="name">PLM Treatment</field>
         <field name="model_id" ref="model_plm_treatment"/>
         <field name="group_id" ref="group_plm_integration_user"/>
         <field name="operation">cru</field>
     </record>
-   <record id="plm_treatment_admin" model="ir.access">
-       <field name="name">PLM Treatment</field>
-       <field name="model_id" ref="model_plm_treatment"/>
-       <field name="group_id" ref="group_plm_admin"/>
-       <field name="operation">crud</field>
-   </record>
+    <record id="plm_treatment_admin" model="ir.access">
+        <field name="name">PLM Treatment</field>
+        <field name="model_id" ref="model_plm_treatment"/>
+        <field name="group_id" ref="group_plm_admin"/>
+        <field name="operation">crud</field>
+    </record>
 
 
-<!-- plm.material  -->
+    <!-- plm.material  -->
     <record id="plm_material_view" model="ir.access">
         <field name="name">PLM Material</field>
         <field name="model_id" ref="model_plm_material"/>
@@ -521,7 +521,7 @@
     </record>
 
 
-<!-- plm.component.document.rel  -->
+    <!-- plm.component.document.rel  -->
     <record id="plm_component_document_rel_view" model="ir.access">
         <field name="name">PLM Product Document Rel</field>
         <field name="model_id" ref="model_plm_component_document_rel"/>
@@ -536,7 +536,7 @@
     </record>
 
 
-<!-- report.plmcomponent  -->
+    <!-- report.plmcomponent  -->
     <record id="plm_report_plm_component_view" model="ir.access">
         <field name="name">PLM Report Component</field>
         <field name="model_id" ref="model_report_plmcomponent"/>
@@ -545,7 +545,7 @@
     </record>
 
 
-<!-- product.template  -->
+    <!-- product.template  -->
     <record id="plm_product_template_view" model="ir.access">
         <field name="name">Product Template</field>
         <field name="model_id" ref="model_product_template"/>
@@ -589,7 +589,7 @@
     </record>
 
 
-<!-- ir.attachment.file  -->
+    <!-- ir.attachment.file  -->
     <record id="plm_report_ir_attachment_view" model="ir.access">
         <field name="name">PLM Document report</field>
         <field name="model_id" ref="model_report_ir_attachment_file"/>
@@ -603,7 +603,7 @@
         <field name="operation">crud</field>
     </record>
 
-<!-- plm.dbthread  -->
+    <!-- plm.dbthread  -->
 
     <record id="plm.dbthread" model="ir.access">
         <field name="name">Product Price History</field>
@@ -612,7 +612,7 @@
         <field name="operation">crud</field>
     </record>
 
-<!-- ir.module.module  -->
+    <!-- ir.module.module  -->
     <record id="plm_module_module_read" model="ir.access">
         <field name="name">Plm Module Module Read</field>
         <field name="model_id" ref="base.model_ir_module_module"/>
@@ -620,7 +620,7 @@
         <field name="operation">r</field>
     </record>
 
-<!-- ir.module.category  -->
+    <!-- ir.module.category  -->
     <record id="plm_module_category_read" model="ir.access">
         <field name="name">Plm Module category Read</field>
         <field name="model_id" ref="base.model_ir_module_category"/>

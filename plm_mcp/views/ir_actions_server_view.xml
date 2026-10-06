@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="ir_actions_server_view_form_plm_mcp" model="ir.ui.view">
+        <field name="name">ir.actions.server.form.plm.mcp</field>
+        <field name="model">ir.actions.server</field>
+        <field name="inherit_id" ref="base.view_server_action_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='ir_actions_server_code_help']" position="after">
+                <page string="MCP Tool" name="plm_mcp" invisible="state != 'code'">
+                    <group>
+                        <field name="plm_mcp_enabled"/>
+                        <field name="plm_mcp_readonly" invisible="not plm_mcp_enabled"/>
+                        <field name="plm_mcp_tool_name" invisible="not plm_mcp_enabled"
+                               required="plm_mcp_enabled" placeholder="plm_my_tool"/>
+                        <field name="plm_mcp_description" invisible="not plm_mcp_enabled"
+                               required="plm_mcp_enabled"/>
+                        <field name="plm_mcp_schema" invisible="not plm_mcp_enabled"
+                               widget="code" options="{'mode': 'javascript'}"
+                               placeholder='{"type": "object", "properties": {"code": {"type": "string", "description": "Engineering code"}}, "required": ["code"]}'/>
+                    </group>
+                    <div class="text-muted" invisible="not plm_mcp_enabled">
+                        <p>In the code of the action:</p>
+                        <ul>
+                            <li><code>arguments</code>: the arguments the AI sent, as a dict, already checked against
+                                the schema above.
+                            </li>
+                            <li><code>env</code>: the environment of the <b>person asking</b>, so their access rights
+                                apply.
+                            </li>
+                            <li>To return something, assign it: <code>action = {...}</code>.
+                            </li>
+                        </ul>
+                        <p>Who may run the tool: the Allowed Groups of the action if there are any (Visibility tab);
+                            otherwise anyone who can read the model (read-only tool) or write to it.
+                        </p>
+                    </div>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="ir_actions_server_view_list_plm_mcp" model="ir.ui.view">
+        <field name="name">ir.actions.server.list.plm.mcp</field>
+        <field name="model">ir.actions.server</field>
+        <field name="inherit_id" ref="base.view_server_action_tree"/>
+        <field name="arch" type="xml">
+            <field name="usage" position="after">
+                <field name="plm_mcp_tool_name" optional="show"/>
+            </field>
+        </field>
+    </record>
+
+    <!-- The server actions that are MCP tools, with a new one starting as an
+         Execute Code action on a model every PLM user can read. -->
+    <record id="ir_actions_server_plm_mcp_action" model="ir.actions.act_window">
+        <field name="name">MCP Tools</field>
+        <field name="res_model">ir.actions.server</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('plm_mcp_enabled', '=', True)]</field>
+        <field name="context" eval="{
+            'default_state': 'code',
+            'default_plm_mcp_enabled': True,
+            'default_model_id': ref('product.model_product_product'),
+        }"/>
+    </record>
+
+    <menuitem id="plm_mcp_tools_menu" name="Tools"
+              parent="plm_mcp_menu" sequence="3"
+              action="ir_actions_server_plm_mcp_action"
+              groups="base.group_system"/>
+
+</odoo>

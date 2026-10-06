@@ -20,7 +20,6 @@
 import base64
 import copy
 import json
-#
 import os
 import time
 import random
@@ -28,6 +27,7 @@ import shutil
 import string
 import logging
 from datetime import datetime
+
 import odoo.tools as tools
 from odoo import _, api, fields, models, SUPERUSER_ID
 from odoo.addons.plm.models.plm_mixin import (PLM_NO_WRITE_STATE,
@@ -4571,7 +4571,7 @@ class IrAttachment(models.Model):
         #
         if 'created' not in out_attachment_value:
             out_attachment_value['created'] = datetime.now().strftime(DEFAULT_SERVER_DATETIME_FORMAT)
-        
+
         if 'creator' not in out_attachment_value:
             out_attachment_value['creator'] = self.env.user.display_name
         #
@@ -4924,7 +4924,7 @@ class IrAttachment(models.Model):
                 link_kind
             FROM
                 ir_attachment_relation
-            WHERE        
+            WHERE
                 parent_id = %s or child_id = %s and link_kind=%s
             UNION
                 SELECT
@@ -4986,5 +4986,3 @@ class IrAttachment(models.Model):
                 out.append(document_id.get_download_dict(hostname,
                                                          hostpws))
         return out
-#
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

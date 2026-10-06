@@ -24,8 +24,7 @@ from .book_collector import packDocuments
 from datetime import datetime
 from dateutil import tz
 import base64
-from odoo import api
-from odoo import models
+from odoo import api, models
 
 
 class ReportDocumentPdf(models.AbstractModel):

@@ -42,7 +42,7 @@ odoo -d <database> -i plm_mcp
 
 ## Issuing a key
 
-*PLM → Configuration → MCP Keys → New*. Give it a name and the user its calls
+*PLM → Configuration → MCP → API Keys → New*. Give it a name and the user its calls
 should run as, then save.
 
 **The token is shown once.** It is not stored — only its SHA-256 is — so if it
@@ -70,8 +70,45 @@ curl -s https://odoo.example.com/plm/mcp \
   -d '{"jsonrpc":"2.0","id":1,"method":"tools/list"}'
 ```
 
-> Clients that require OAuth 2.0 for remote servers cannot connect directly.
-> A bridge that presents the bearer token on their behalf works.
+An Odoo API key of scope `mcp` (issued by Odoo's own `ai_mcp`, Enterprise) is
+accepted as well, where that module is installed. It is not needed for anything
+else: a plain Community database uses the keys above.
+
+### Connecting with OAuth
+
+Hosted assistants usually have no field to paste a key into: they send the
+person to a login page and receive a token afterwards. That works here, on
+Community and Enterprise alike.
+
+1. Make the application known — one of three ways:
+   - **By its metadata address** (claude.ai, ChatGPT, Grok and Claude Code are
+     listed by default). Nothing to do: choose *Use Claude's published identity*
+     (or the equivalent) in the client. The list is in the PLM settings, *MCP →
+     Applications allowed to connect*; only listed addresses are ever fetched.
+   - **By registering itself**, for clients that cannot use a metadata address:
+     switch on *Let applications register themselves* in the same place. Off by
+     default, because anyone could then ask; a person still has to log in and
+     allow each one, and applications that never got a token are removed after
+     30 days.
+   - **By hand**: *PLM → Configuration → MCP → OAuth Clients → New* with the
+     application's name and its redirect address(es) — https, or http on
+     localhost.
+2. In the client, add the server `https://<your-odoo>/plm/mcp`, leaving the
+   client ID empty (or giving the one shown on the form for a client created by
+   hand).
+3. The client finds the login flow by itself, opens an Odoo login, and shows a
+   page asking the person to *Allow* and choose how long access lasts.
+4. On Allow, the client receives a token. It is an ordinary **MCP API Key**
+   (named "<application> (OAuth)"), listed under *MCP → API Keys*: delete or
+   archive it to disconnect the application.
+
+Only internal users can allow an application. Every call still runs with that
+user's access rights, exactly like a key created by hand.
+
+The OAuth addresses live under `/plm/oauth/…` and `/.well-known/…/plm/…`, so
+they never clash with the OAuth server of Odoo's `ai_mcp` when a database has
+both. `web.base.url` must be the public address of the server: it is what the
+discovery documents advertise.
 
 ## The tools
 
@@ -141,6 +178,34 @@ class MyTools(models.AbstractModel):
 The description is the part worth the effort. What reaches the model at
 `tools/list` is the name, the description and the schema — that is all it has to
 decide whether this tool answers the question in front of it.
+
+### Defining a tool from the screen
+
+No module is needed for a tool of your own. An administrator opens
+*PLM → Configuration → MCP → Tools → New* (a server action of type *Execute
+Code*, with the *MCP Tool* tab filled in):
+
+- **Tool name** — letters, digits and underscores, up to 64; it must not be the
+  name of a built-in tool.
+- **Description** — written for the AI: what comes back, and when this is the
+  right tool.
+- **Arguments schema** — a JSON Schema object, e.g.
+  `{"type": "object", "properties": {"code": {"type": "string"}}, "required": ["code"]}`.
+  Required arguments and their basic types are checked before the code runs.
+- **Read-only** — tick it when the tool only reads.
+
+In the code, `arguments` is a dict of what the AI sent and `env` is the
+environment of **the person asking**, so their access rights apply. To return
+something, assign it: `action = {...}`.
+
+Who may run a tool: the *Allowed Groups* of the action (Visibility tab) when
+there are any; otherwise anyone who can read the model (read-only tool) or write
+to it. A person who may not run a tool does not see it in the tool list.
+
+Only system administrators can create or edit server actions, so only they can
+write tools. An error raised with `UserError` comes back to the AI as the
+answer; any other failure only says that the tool failed, and the details stay
+in the server log.
 
 ## Design notes
 

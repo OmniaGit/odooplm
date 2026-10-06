@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Noupdate: an administrator edits this list in the settings, and an
+         upgrade must not put back what was taken out. -->
+    <data noupdate="1">
+        <record id="config_parameter_oauth_cimd_urls" model="ir.config_parameter">
+            <field name="key">plm_mcp.oauth_cimd_urls</field>
+            <field name="value">https://claude.ai/oauth/mcp-oauth-client-metadata
+https://claude.ai/oauth/claude-code-client-metadata
+https://chatgpt.com/oauth/client.json
+https://grok.com/oauth/mcp-client.json</field>
+        </record>
+    </data>
+</odoo>

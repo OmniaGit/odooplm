@@ -67,7 +67,13 @@
     },
     "data": [
         "security/ir.access.csv",
+        "data/plm_mcp_oauth_data.xml",
+        "views/plm_mcp_menu.xml",
         "views/plm_mcp_key_view.xml",
+        "views/plm_mcp_oauth_client_view.xml",
+        "views/ir_actions_server_view.xml",
+        "views/plm_mcp_oauth_consent.xml",
+        "views/res_config_settings_view.xml",
     ],
     "installable": True,
     "application": False,

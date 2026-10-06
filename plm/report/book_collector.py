@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import os
 from io import BytesIO
 import logging

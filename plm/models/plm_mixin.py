@@ -18,11 +18,6 @@
 #    along with this prograIf not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-"""
-Created on 28 Sep 2022
-
-@author: mboscolo
-"""
 import logging
 
 import psycopg2
@@ -30,10 +25,8 @@ import psycopg2
 from odoo import models, fields, api, _
 from datetime import datetime
 
-#
 from odoo.exceptions import UserError, ValidationError
 
-#
 _logger = logging.getLogger(__name__)
 #
 START_STATUS = "draft"
@@ -64,7 +57,6 @@ LOWERCASE_LETTERS = [chr(i) for i in range(ord("a"), ord("z") + 1)]
 UPPERCASE_LETTERS = [chr(i) for i in range(ord("A"), ord("Z") + 1)]
 
 
-#
 def convert_to_letter(l, n):
     n_o_w = len(l)
     if n > n_o_w - 1:
@@ -75,7 +67,6 @@ def convert_to_letter(l, n):
     return out
 
 
-#
 class RevisionBaseMixin(models.AbstractModel):
     _name = "revision.plm.mixin"
     _inherit = ["mail.thread", "mail.activity.mixin"]

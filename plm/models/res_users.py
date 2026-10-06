@@ -19,12 +19,6 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-
-"""
-Created on 25 Aug 2016
-
-@author: Daniel Smerghetto
-"""
 from odoo import api, fields, models
 
 from odoo.addons.plm.models.res_partner import PORTAL_ACCESS_LEVELS
@@ -202,6 +196,3 @@ class ResUsers(models.Model):
     @api.model
     def koo_context_get(self):
         return dict(self.context_get())
-
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

@@ -81,6 +81,35 @@ class TestEndpoint(HttpCase):
                              token="not-a-real-token")
         self.assertEqual(response.status_code, 401)
 
+    # --------------------------------------------- Odoo API keys (from ai_mcp)
+    def odoo_key(self, scope):
+        """An Odoo API key of the given scope, for the test user."""
+        return self.env["res.users.apikeys"].with_user(self.user)._generate(
+            scope, "Endpoint test", None)
+
+    def test_an_odoo_api_key_of_scope_mcp_is_accepted(self):
+        """What a database with Odoo's ai_mcp installed already has."""
+        token = self.odoo_key("mcp")
+        response = self.post(
+            {"jsonrpc": "2.0", "id": 1, "method": "tools/list"}, token=token)
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.json()["result"]["tools"])
+
+    @mute_logger("odoo.http")
+    def test_an_odoo_api_key_of_another_scope_is_refused(self):
+        """A key made for RPC is not a key for this endpoint."""
+        token = self.odoo_key("rpc")
+        response = self.post(
+            {"jsonrpc": "2.0", "id": 1, "method": "ping"}, token=token)
+        self.assertEqual(response.status_code, 401)
+
+    def test_an_odoo_api_key_does_not_touch_the_plm_keys(self):
+        before = self.key.call_count
+        token = self.odoo_key("mcp")
+        self.post({"jsonrpc": "2.0", "id": 1, "method": "ping"}, token=token)
+        self.key.invalidate_recordset()
+        self.assertEqual(self.key.call_count, before)
+
     # -------------------------------------------------------------- protocol
     def test_ping(self):
         response = self.post({"jsonrpc": "2.0", "id": 1, "method": "ping"})

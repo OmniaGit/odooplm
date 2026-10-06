@@ -399,7 +399,8 @@
                                                                         style="margin: auto; border: none;"/>
                                                                 </td>
                                                             </tr>
-                                                            <t t-foreach="product_lvl_5['children']" t-as="product_lvl_6">
+                                                            <t t-foreach="product_lvl_5['children']"
+                                                               t-as="product_lvl_6">
                                                                 <tr>
                                                                     <td class="text-center">
                                                                         <t t-out="product_lvl_6.get('level')"/>
@@ -468,7 +469,8 @@
                                                                             style="margin: auto; border: none;"/>
                                                                     </td>
                                                                 </tr>
-                                                                <t t-foreach="product_lvl_6['children']" t-as="product_lvl_7">
+                                                                <t t-foreach="product_lvl_6['children']"
+                                                                   t-as="product_lvl_7">
                                                                     <tr>
                                                                         <td class="text-center">
                                                                             <t t-out="product_lvl_7.get('level')"/>

@@ -19,10 +19,7 @@
 #
 ##############################################################################
 import logging
-from odoo import _
-from odoo import api
-from odoo import models
-from odoo import fields
+from odoo import _, api, fields, models
 
 
 class PlmDocumentRelations(models.Model):
@@ -309,6 +306,3 @@ class PlmDocumentRelations(models.Model):
                 if relation_id.child_id.write_date < relation_id.parent_id.write_date:
                     return False
         return True
-
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

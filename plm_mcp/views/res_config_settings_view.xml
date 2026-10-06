@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_plm_mcp_settings" model="ir.ui.view">
+        <field name="name">plm mcp settings</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="plm.view_plm_settings"/>
+        <field name="arch" type="xml">
+            <xpath expr="//block[@name='plm_other']" position="after">
+                <block title="MCP" name="plm_mcp" groups="plm.group_plm_admin">
+                    <setting string="Applications allowed to connect"
+                             help="Only AI applications whose metadata address is listed here can connect by themselves (one address per line). Keys created by hand are not affected.">
+                        <field name="plm_mcp_oauth_cimd_urls" widget="text"
+                               placeholder="https://claude.ai/oauth/mcp-oauth-client-metadata"/>
+                    </setting>
+                    <setting string="Let applications register themselves"
+                             help="Any application can then ask to be known; a person still has to log in and allow it. Leave off unless a client cannot use a metadata address.">
+                        <field name="plm_mcp_oauth_enable_dcr"/>
+                    </setting>
+                </block>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

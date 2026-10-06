@@ -18,11 +18,6 @@
 #    along with this prograIf not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-"""
-Created on 1 Dec 2021
-
-@author: mboscolo
-"""
 import hashlib
 import json
 

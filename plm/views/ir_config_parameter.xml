@@ -1,44 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo noupdate="1">
 
-        <record id="parameter_last_dt_preview_update" model="ir.config_parameter">
-            <field name="key">LAST_DT_PREVIEW_UPDATE</field>
-            <field name="value">False</field>
-        </record>
+    <record id="parameter_last_dt_preview_update" model="ir.config_parameter">
+        <field name="key">LAST_DT_PREVIEW_UPDATE</field>
+        <field name="value">False</field>
+    </record>
 
-        <record id="file_extention_type_rel_2D" model="ir.config_parameter">
-            <field name="key">file_exte_type_rel_2D</field>
-            <field name="value">[
+    <record id="file_extention_type_rel_2D" model="ir.config_parameter">
+        <field name="key">file_exte_type_rel_2D</field>
+        <field name="value">[
             '.dwg',
-            '.idw', 
+            '.idw',
             '.dxf',
             '.iges',
-            '.e2', 
+            '.e2',
             '.slddrw',
-            '.dft']</field>
-        </record>
+            '.dft']
+        </field>
+    </record>
 
-        <record id="file_extention_type_rel_3D" model="ir.config_parameter">
-            <field name="key">file_exte_type_rel_3D</field>
-            <field name="value">[
-            '.e3', 
+    <record id="file_extention_type_rel_3D" model="ir.config_parameter">
+        <field name="key">file_exte_type_rel_3D</field>
+        <field name="value">[
+            '.e3',
             '.iam',
-            '.ipt', 
+            '.ipt',
             '.sldasm',
             '.sldprt',
             '.par',
             '.asm',
-            '.psm']</field>
-        </record>
+            '.psm']
+        </field>
+    </record>
 
-        <record id="file_exte_type_rel_PR" model="ir.config_parameter">
-            <field name="key">file_exte_type_rel_PR</field>
-            <field name="value">['.ipn']</field>
-        </record>
-        
-        <record id="report_indentation_key" model="ir.config_parameter">
-            <field name="key">REPORT_INDENTATION_KEY</field>
-            <field name="value">- </field>
-        </record>
+    <record id="file_exte_type_rel_PR" model="ir.config_parameter">
+        <field name="key">file_exte_type_rel_PR</field>
+        <field name="value">['.ipn']</field>
+    </record>
+
+    <record id="report_indentation_key" model="ir.config_parameter">
+        <field name="key">REPORT_INDENTATION_KEY</field>
+        <field name="value">-</field>
+    </record>
 
 </odoo>
