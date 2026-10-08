@@ -1531,6 +1531,12 @@ msgstr "Documento"
 
 #. module: plm
 #. odoo-python
+#: code:addons/plm/controllers/main.py:0
+msgid "Document %(id)s not found, or you are not allowed to read it."
+msgstr "Documento %(id)s non trovato, o non hai i permessi per leggerlo."
+
+#. module: plm
+#. odoo-python
 #: code:addons/plm/models/ir_attachment.py:0
 msgid "Document Already in the system"
 msgstr "Documento già a sistema"
@@ -4333,6 +4339,12 @@ msgstr "Utente modifica"
 #: model_terms:ir.ui.view,arch_db:plm.plm_checkout_search
 msgid "Yesterday"
 msgstr "Ieri"
+
+#. module: plm
+#. odoo-python
+#: code:addons/plm/controllers/main.py:0
+msgid "You are not allowed to read a document in the structure of %(name)s."
+msgstr "Non hai i permessi per leggere un documento della struttura di %(name)s."
 
 #. module: plm
 #. odoo-python
