@@ -1598,7 +1598,9 @@ class IrAttachment(models.Model):
 
     def _get_checkout_state(self):
         for ir_attachment_id in self:
-            chechRes = self.getCheckedOut(ir_attachment_id.id, None)
+            chechRes = ir_attachment_id._origin.id and self.getCheckedOut(
+                ir_attachment_id._origin.id, None
+            )
             if chechRes:
                 ir_attachment_id.checkout_user = str(chechRes[2])
             else:
@@ -1773,8 +1775,8 @@ class IrAttachment(models.Model):
     def _get_n_rel_doc(self):
         ir_attachment_relation = self.env["ir.attachment.relation"]
         for ir_attachment_id in self:
-            ir_a_id = ir_attachment_id.id
-            ir_attachment_id.document_rel_count = ir_attachment_relation.search_count(
+            ir_a_id = ir_attachment_id._origin.id
+            ir_attachment_id.document_rel_count = ir_a_id and ir_attachment_relation.search_count(
                 ["|", ("parent_id", "=", ir_a_id), ("child_id", "=", ir_a_id)]
             )
 
@@ -2284,8 +2286,10 @@ class IrAttachment(models.Model):
     def _getCheckOutUser(self):
         for ir_attachment_id in self:
             checkoutType = self.env["plm.checkout"]
+            if not ir_attachment_id._origin.id:
+                continue
             checkoutBrwsList = checkoutType.search(
-                [("documentid", "=", ir_attachment_id.id)]
+                [("documentid", "=", ir_attachment_id._origin.id)]
             )
             for checkOutBrws in checkoutBrwsList:
                 return checkOutBrws.userid
