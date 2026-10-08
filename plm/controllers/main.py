@@ -7,6 +7,7 @@ import logging
 import os
 import copy
 from odoo import _
+from odoo.exceptions import AccessError
 from odoo.http import Controller, route, request, Response
 from odoo.http.session import authenticate, save_session
 from odoo.tools.misc import DEFAULT_SERVER_DATETIME_FORMAT
@@ -233,7 +234,8 @@ class UploadDocument(Controller):
         if mode=='latest':
             latest=True
         if not request.env.user.has_group("plm.group_plm_view_user"):
-            return Response(status=403,
+            return Response(mimetype="text/plain",
+                            status=403,
                             response=f"No permissions to download {attachment_id}")
         # As the user, not sudo: the access rights, the PLM levels and the
         # plm.access node decide. A document the user may not read is not found,
@@ -245,10 +247,20 @@ class UploadDocument(Controller):
                 return Response(json.dumps(ir_attachment_id.download_structure(hostname,
                                                                                hostpws,
                                                                                latest)))
+            except AccessError as ex:
+                # A child of the structure the user may not read.
+                logging.warning(ex)
+                return Response(mimetype="text/plain",
+                                status=403,
+                                response=_("You are not allowed to read a document in the structure of %(name)s.",
+                                           name=ir_attachment_id.name))
             except Exception as ex:
                 logging.error(ex)
                 raise ex
-        raise Exception(f"Attachment with id {attachment_id} not found")
+        return Response(mimetype="text/plain",
+                        status=404,
+                        response=_("Document %(id)s not found, or you are not allowed to read it.",
+                                   id=attachment_id))
 
     @route('/plm/download',
            type='http',
@@ -263,15 +275,18 @@ class UploadDocument(Controller):
         :return: file request
         """
         if not request.env.user.has_group("plm.group_plm_view_user"):
-            return Response(status=403,
+            return Response(mimetype="text/plain",
+                            status=403,
                             response=f"No permissions to download {attachment_id}")
         # As the user: see plm_download_structure above.
         for ir_attachment_id in request.env['ir.attachment'].search([('id','=', attachment_id),
                                                                      ('is_plm','=', True)]):
             return request.env['ir.binary']._get_stream_from(ir_attachment_id,
                                                              field_name='raw').get_response()
-        return Response(status=500,
-                        qcontext=f"Attachment {attachment_id} not found")
+        return Response(mimetype="text/plain",
+                        status=404,
+                        response=_("Document %(id)s not found, or you are not allowed to read it.",
+                                   id=attachment_id))
 
     @route("/plm_document_upload/download", type="http", auth="user", methods=["GET"])
     @webservice
