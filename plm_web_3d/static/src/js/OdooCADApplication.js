@@ -4,6 +4,7 @@
 
 import * as THREE from '../../lib/three.js/build/three.module.js';
 import * as ODOOCAD from '../../lib/odoocad/odoocad.js';
+import * as CAD3D from './cad3d_features.js';
 // controls
 import { OrbitControls } from '../../lib/three.js/examples/jsm/controls/OrbitControls.js';
 import { TransformControls } from '../../lib/three.js/examples/jsm/controls/TransformControls.js';
@@ -1507,6 +1508,9 @@ var onClick = function (e) {
 			lineId++;
 		}
 	} else {
+		if (e.target === renderer.domElement) {
+			showCad3dInfo(e);
+		}
 		// 3D part color Feature
 		if (window.last_highlighted_li) {
 			const guid = window.last_highlighted_li;
@@ -1532,6 +1536,18 @@ var onClick = function (e) {
 		}
 	}
 
+}
+
+// A click on a face of a cad3d export shows its hole, fillet or chamfer;
+// anywhere else it closes that popup.
+function showCad3dInfo(e) {
+	const rect = canvas.getBoundingClientRect();
+	pointer.x = ((e.clientX - rect.left) / canvas.clientWidth) * 2 - 1;
+	pointer.y = -((e.clientY - rect.top) / canvas.clientHeight) * 2 + 1;
+	raycaster.setFromCamera(pointer, camera);
+	const hit = raycaster.intersectObjects(OdooCad.items, true)
+		.find((h) => h.object.isMesh && h.object.visible);
+	CAD3D.showFeatureInfo(hit, e.clientX, e.clientY);
 }
 
 /**
