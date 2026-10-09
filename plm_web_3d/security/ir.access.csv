@@ -2,3 +2,5 @@ id,name,model_id,group_id/id,operation,domain
 access_plm_markup_log,access_plm_markup_log,plm.markup.log,plm.group_plm_view_user,r,
 access_plm_markup_log_integration,access_plm_markup_log_integration,plm.markup.log,plm.group_plm_integration_user,cru,
 access_plm_markup_log_admin,access_plm_markup_log_admin,plm.markup.log,plm.group_plm_admin,crud,
+access_plm_web3d_background_view,access_plm_web3d_background_view,plm.web3d.background,plm.group_plm_view_user,r,
+access_plm_web3d_background_admin,access_plm_web3d_background_admin,plm.web3d.background,plm.group_plm_admin,crud,

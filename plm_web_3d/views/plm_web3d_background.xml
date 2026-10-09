@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record model="ir.ui.view" id="view_plm_web3d_background_list">
+        <field name="name">plm.web3d.background.list</field>
+        <field name="model">plm.web3d.background</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="file_type"/>
+                <field name="file_name"/>
+            </list>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="view_plm_web3d_background_form">
+        <field name="name">plm.web3d.background.form</field>
+        <field name="model">plm.web3d.background</field>
+        <field name="arch" type="xml">
+            <form string="3D Background">
+                <sheet>
+                    <widget name="web_ribbon" title="Archived" bg_color="text-bg-danger" invisible="active"/>
+                    <group>
+                        <field name="name"/>
+                        <field name="file" filename="file_name"/>
+                        <field name="file_name" invisible="1"/>
+                        <field name="file_type"/>
+                        <field name="backdrop" filename="backdrop_name"/>
+                        <field name="backdrop_name" invisible="1"/>
+                        <field name="sequence"/>
+                        <field name="active" invisible="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="view_plm_web3d_background_search">
+        <field name="name">plm.web3d.background.search</field>
+        <field name="model">plm.web3d.background</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <filter name="archived" string="Archived" domain="[('active', '=', False)]"/>
+            </search>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="plm_action_web3d_background">
+        <field name="name">3D Backgrounds</field>
+        <field name="res_model">plm.web3d.background</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <menuitem
+        name="3D Backgrounds"
+        action="plm_action_web3d_background"
+        id="menu_plm_web3d_background"
+        sequence="5"
+        groups="plm.group_plm_admin"
+        parent="plm.plm_menu_dictionaries"/>
+</odoo>

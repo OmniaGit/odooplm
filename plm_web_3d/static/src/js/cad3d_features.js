@@ -589,6 +589,7 @@ export function applyAppearance(root) {
 	if (!meshes.length) return appearanceReady;
 	const appearance = plmData(meshes[0]).appearance || {};
 	for (const mesh of meshes) {
+		mesh.userData.cad3dCadColor = appearance.color || DEFAULT_PART_COLOR;
 		mesh.material = new THREE.MeshStandardMaterial({
 			color: appearance.color || DEFAULT_PART_COLOR,
 			metalness: 0.3,
@@ -605,4 +606,77 @@ export function applyAppearance(root) {
 		})
 		.catch((error) => console.warn('material appearance failed', error));
 	return appearanceReady;
+}
+
+
+// Display modes: the CAD's colour, the material's look, or wireframe. The
+// material look includes whatever was laid on it after (colours saved or
+// picked by hand): it is kept when leaving the mode and given back on return.
+// Meshes that are no cad3d export only follow the wireframe switch.
+
+export const DISPLAY_MODES = ['color', 'material', 'wireframe'];
+let displayMode = 'material';
+
+export function getDisplayMode() {
+	return displayMode;
+}
+
+function eachMaterial(mesh, apply) {
+	for (const material of Array.isArray(mesh.material) ? mesh.material : [mesh.material]) {
+		if (material) apply(material);
+	}
+}
+
+export function setDisplayMode(roots, mode) {
+	if (!DISPLAY_MODES.includes(mode)) return;
+	const leavingMaterial = displayMode === 'material' && mode !== 'material';
+	for (const root of roots) {
+		root.traverse((child) => {
+			if (!child.isMesh) return;
+			if (child.name === OVERLAY_NAME) {
+				child.visible = mode !== 'wireframe';
+				return;
+			}
+			const cad3d = child.userData.cad3dCadColor !== undefined;
+			eachMaterial(child, (material) => {
+				if (cad3d && leavingMaterial) {
+					child.userData.cad3dMaterialLook = {
+						color: material.color.clone(),
+						metalness: material.metalness,
+						roughness: material.roughness,
+						opacity: material.opacity,
+						map: material.map,
+					};
+				}
+				material.wireframe = mode === 'wireframe';
+				if (cad3d && mode === 'color') {
+					material.color.set(child.userData.cad3dCadColor);
+					material.metalness = 0.3;
+					material.roughness = 0.5;
+					material.opacity = 1;
+					material.transparent = false;
+					material.map = null;
+					keepAsOriginal(material);
+				} else if (cad3d && mode === 'material' && child.userData.cad3dMaterialLook) {
+					const look = child.userData.cad3dMaterialLook;
+					material.color.copy(look.color);
+					material.metalness = look.metalness;
+					material.roughness = look.roughness;
+					material.opacity = look.opacity;
+					material.transparent = look.opacity < 1;
+					material.map = look.map;
+					keepAsOriginal(material);
+				}
+				material.needsUpdate = true;
+			});
+		});
+	}
+	displayMode = mode;
+	requestRender();
+}
+
+export function nextDisplayMode(roots) {
+	const next = DISPLAY_MODES[(DISPLAY_MODES.indexOf(displayMode) + 1) % DISPLAY_MODES.length];
+	setDisplayMode(roots, next);
+	return next;
 }

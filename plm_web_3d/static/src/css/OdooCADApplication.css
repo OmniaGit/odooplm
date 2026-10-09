@@ -1628,3 +1628,85 @@ canvas#odoo_canvas {
     cursor: pointer;
     user-select: none;
 }
+
+/* Unfolding toolbar menus (display mode, settings): a strip of icons that
+   unfolds to the right of its toolbar button. */
+.unfold_menu {
+    position: fixed;
+    z-index: 1001;
+    display: flex;
+    gap: 2px;
+    padding: 3px;
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+    transform: translateY(-50%) scaleX(0);
+    transform-origin: left center;
+    opacity: 0;
+    pointer-events: none;
+    transition: transform 0.22s ease-out, opacity 0.18s ease-out;
+}
+.unfold_menu.open {
+    transform: translateY(-50%) scaleX(1);
+    opacity: 1;
+    pointer-events: auto;
+}
+.unfold_item {
+    width: 26px;
+    height: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    cursor: pointer;
+    color: #333;
+    opacity: 0;
+    transform: translateX(-8px);
+    transition: opacity 0.18s ease-out, transform 0.18s ease-out, background-color 0.15s ease;
+}
+.unfold_menu.open .unfold_item {
+    opacity: 1;
+    transform: translateX(0);
+}
+/* One after the other, as the strip unfolds. */
+.unfold_menu.open .unfold_item:nth-child(2) { transition-delay: 0.05s; }
+.unfold_menu.open .unfold_item:nth-child(3) { transition-delay: 0.1s; }
+.unfold_menu.open .unfold_item:nth-child(4) { transition-delay: 0.15s; }
+.unfold_item:hover {
+    background-color: rgba(113, 75, 103, 0.15);
+}
+.unfold_item.active {
+    background-color: #714B67;
+    color: white;
+}
+
+/* The panel an icon of the settings strip opens, beside the strip. */
+.settings_panel {
+    position: fixed;
+    z-index: 1001;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 180px;
+    padding: 8px 10px;
+    background-color: rgba(255, 255, 255, 0.95);
+    border: 1px solid #714B67;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+    font-family: sans-serif;
+    font-size: 12px;
+    color: #333;
+    opacity: 0;
+    transform: translateX(-6px);
+    pointer-events: none;
+    transition: opacity 0.18s ease-out, transform 0.18s ease-out;
+}
+.settings_panel.open {
+    opacity: 1;
+    transform: translateX(0);
+    pointer-events: auto;
+}
+.settings_panel label {
+    margin-top: 4px;
+    color: #714B67;
+}

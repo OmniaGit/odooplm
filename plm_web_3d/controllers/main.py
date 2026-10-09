@@ -208,6 +208,9 @@ class Web3DView(Controller):
                 # Odoo's debug mode (?debug=1, kept in the session): the
                 # viewer shows the CAD dimensions of a feature only then.
                 "debug": bool(request.session.debug),
+                # Read in sudo: a background is no secret, and the portal
+                # cannot read the table.
+                "backgrounds": request.env["plm.web3d.background"].sudo().search([]),
             },
         )
 
@@ -387,6 +390,20 @@ class Web3DView(Controller):
             ),
             "texture_size": material.web3d_texture_size,
         })
+
+    @route("/plm/web3d_background", type="http", auth="user")
+    def web3d_background(self, background_id=None, part="file"):
+        """The file (or with part=backdrop, the backdrop) of an active
+        background of the viewer, in sudo like the list the page offers."""
+        background = request.env["plm.web3d.background"]
+        if background_id and str(background_id).isdigit():
+            background = background.sudo().browse(int(background_id)).exists()
+        field, name = ("backdrop", "backdrop_name") if part == "backdrop" else ("file", "file_name")
+        if not background or not background.active or not background[field]:
+            raise request.not_found()
+        return request.env["ir.binary"]._get_stream_from(
+            background, field, filename=background[name]
+        ).get_response()
 
     @route("/plm/material_texture", type="http", auth="user")
     def material_texture(self, material_id=None):

@@ -50,6 +50,12 @@
     Made using:
     * webgl
     * treejs
+
+    Credits:
+    * the 3D viewer backgrounds Studio, Studio Loft, Warm Studio, Machine Shop
+      and Warehouse are HDRIs by Poly Haven (https://polyhaven.com), released
+      under CC0 1.0: studio_small_09, photo_studio_loft_hall,
+      brown_photostudio_02, machine_shop_02, empty_warehouse_01
     """,
     "images": ["static/src/img/web_3d.gif"],
     "depends": ["plm"],
@@ -59,6 +65,8 @@
         "views/ir_attachment.xml",
         "views/web_template.xml",
         "views/plm_material.xml",
+        "views/plm_web3d_background.xml",
+        "data/plm_web3d_background.xml",
     ],
     "installable": True,
     "application": False,

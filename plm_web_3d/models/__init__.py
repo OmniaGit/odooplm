@@ -27,3 +27,4 @@ from . import ir_attachment
 from . import product_product_document_rel
 from . import plm_markup_log
 from . import plm_material
+from . import plm_web3d_background

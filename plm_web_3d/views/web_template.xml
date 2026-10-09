@@ -93,6 +93,14 @@
                         <div class="plm_button_per" id="transparency_btn_perm" title="Part Transparency (T)">
                             <i class="fa fa-adjust"></i>
                         </div>
+                        <div class="plm_button_per" id="display_mode_btn" title="Display: Material (M)">
+                            <i class="fa fa-cube"></i>
+                        </div>
+                        <div id="display_mode_menu" class="unfold_menu">
+                            <div class="unfold_item" data-mode="color" title="Color"><i class="fa fa-tint"></i></div>
+                            <div class="unfold_item" data-mode="material" title="Material"><i class="fa fa-diamond"></i></div>
+                            <div class="unfold_item" data-mode="wireframe" title="Wireframe"><i class="fa fa-th"></i></div>
+                        </div>
                         <div class="plm_button_per" id="section_plane_btn" title="Section Plane">
                             <i class="fa fa-scissors"></i>
                         </div>
@@ -104,66 +112,49 @@
                         </div>
                     </div>
 
-                    <div class="activatorDiv d-none" id="activatorDiv">
-                            <div id="dropdown_menu_left">
-                                <div class="plm_button">
-                                    <label for="webgl_background">BackGround:</label>
-                                    <select name="webgl_background" id="webgl_background">
-                                        <option value="tecnical">Tecnical</option>
-                                        <option value="clean">Clean</option>
-                                        <option value="room1">Room 1</option>
-                                        <option value="room2">Room 2</option>
-                                        <option value="outdoor">Outdoor 1</option>
-                                        <option value="workshop1">WorkShop 1</option>
-                                        <option value="workshop2">WorkShop 2</option>
-                                        <option value="workshop3">WorkShop 3</option>
-                                    </select>
-                                </div>
-                                <div class="plm_button" id="toggle_light_settings" style="cursor:pointer;">
-                                    <b>▶ Light Settings</b>
-                                </div>
-                                <div class="plm_button" id="light_settings_group"
-                                     style="display:none; padding-left:10px;">
-                                    <div>
-                                        <label>Light Distance:</label>
-                                        <input id="object_distance" type="range" min="1" max="1000" value="15"/>
-                                    </div>
-                                    <div>
-                                        <label>Light1:</label>
-                                        <input id="object_light1" type="range" min="1" max="100" value="50"/>
-                                    </div>
-                                    <div>
-                                        <label>Light2:</label>
-                                        <input id="object_light2" type="range" min="1" max="100" value="50"/>
-                                    </div>
-                                    <div>
-                                        <label>Light3:</label>
-                                        <input id="object_light3" type="range" min="1" max="100" value="50"/>
-                                    </div>
-                                    <div>
-                                        <label>Camera Light:</label>
-                                        <input id="object_light_camera" type="range" min="1" max="100" value="50"/>
-                                    </div>
-                                    <div>
-                                        <label>Ambient Light:</label>
-                                        <input id="object_light_ambient" type="range" min="1" max="100" value="50"/>
-                                    </div>
-                                </div>
-                                <div class="plm_button">
-                                    <label for="transparency_slider">Transparency:</label>
-                                    <input name="transparency_slider" id="object_transparency" type="range" min="0"
-                                           max="100" value="90"/>
-                                </div>
-
-
-                                <div id="plm_button1">
-                                    <label for="explosion_slider">Explosion:</label>
-                                    <input name="explosion_slider" id="object_explosion" type="range" min="0" max="100"
-                                           value="0"/>
-                                </div>
-
-                            </div>
-                        </div>
+                    <!-- Settings: icons unfolding from the gear, each opening its own panel. -->
+                    <div id="settings_menu" class="unfold_menu">
+                        <div class="unfold_item" data-panel="settings_background" title="Background"><i class="fa fa-picture-o"></i></div>
+                        <div class="unfold_item" data-panel="settings_lights" title="Lights"><i class="fa fa-sun-o"></i></div>
+                        <div class="unfold_item" data-panel="settings_transparency" title="Transparency"><i class="fa fa-eye-slash"></i></div>
+                        <div class="unfold_item" data-panel="settings_explosion" title="Explosion"><i class="fa fa-expand"></i></div>
+                    </div>
+                    <div id="settings_background" class="settings_panel">
+                        <label for="webgl_background">Background</label>
+                        <select name="webgl_background" id="webgl_background">
+                            <option value="tecnical">Tecnical</option>
+                            <option value="clean">Clean</option>
+                            <t t-foreach="backgrounds" t-as="background">
+                                <option t-att-value="'bg_%s' % background.id"
+                                        t-att-data-url="'/plm/web3d_background?background_id=%s' % background.id"
+                                        t-att-data-type="background.file_type"
+                                        t-att-data-backdrop="background.backdrop and '/plm/web3d_background?background_id=%s&amp;part=backdrop' % background.id or None"
+                                        t-out="background.name"/>
+                            </t>
+                        </select>
+                    </div>
+                    <div id="settings_lights" class="settings_panel">
+                        <label>Light Distance</label>
+                        <input id="object_distance" type="range" min="1" max="1000" value="15"/>
+                        <label>Light 1</label>
+                        <input id="object_light1" type="range" min="1" max="100" value="50"/>
+                        <label>Light 2</label>
+                        <input id="object_light2" type="range" min="1" max="100" value="50"/>
+                        <label>Light 3</label>
+                        <input id="object_light3" type="range" min="1" max="100" value="50"/>
+                        <label>Camera Light</label>
+                        <input id="object_light_camera" type="range" min="1" max="100" value="50"/>
+                        <label>Ambient Light</label>
+                        <input id="object_light_ambient" type="range" min="1" max="100" value="50"/>
+                    </div>
+                    <div id="settings_transparency" class="settings_panel">
+                        <label for="object_transparency">Transparency</label>
+                        <input name="transparency_slider" id="object_transparency" type="range" min="0" max="100" value="90"/>
+                    </div>
+                    <div id="settings_explosion" class="settings_panel">
+                        <label for="object_explosion">Explosion</label>
+                        <input name="explosion_slider" id="object_explosion" type="range" min="0" max="100" value="0"/>
+                    </div>
                         <div class="activatorDiv d-none" id="markup_logs_panel">
                             <div id="dropdown_menu_left">
                                 <div class="info_header">
@@ -317,6 +308,10 @@
                                     <tr>
                                         <td><kbd>T</kbd></td>
                                         <td>Pick transparency for hovered part</td>
+                                    </tr>
+                                    <tr>
+                                        <td><kbd>M</kbd></td>
+                                        <td>Next display mode: color, material, wireframe</td>
                                     </tr>
                                     <tr>
                                         <td><kbd>Ctrl</kbd></td>
