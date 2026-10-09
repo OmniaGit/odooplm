@@ -110,6 +110,107 @@ function popupElement() {
 export function hideFeatureInfo() {
 	const popup = document.getElementById(POPUP_ID);
 	if (popup) popup.style.display = 'none';
+	leader = null;
+	hideLeader();
+}
+
+// Leader line: from the clicked point of the model to the popup. The point
+// is kept in the clicked object's own coordinates, so it follows the part
+// when the camera moves; the popup stays where it opened.
+
+const LEADER_ID = 'cad3d_info_leader';
+const SVG_NS = 'http://www.w3.org/2000/svg';
+let leader = null;      // { object, local }
+let lastView = null;    // { camera, canvas } of the last render
+
+/** The popup follows its header while dragged, inside the window. */
+function makeDraggable(popup, handle, exclude) {
+	handle.classList.add('cad3d_info_handle');
+	handle.addEventListener('pointerdown', (e) => {
+		if (e.button !== 0 || exclude.contains(e.target)) return;
+		e.preventDefault();
+		const startX = e.clientX - popup.offsetLeft;
+		const startY = e.clientY - popup.offsetTop;
+		handle.setPointerCapture(e.pointerId);
+		const move = (ev) => {
+			const left = Math.min(Math.max(0, ev.clientX - startX), window.innerWidth - popup.offsetWidth);
+			const top = Math.min(Math.max(0, ev.clientY - startY), window.innerHeight - popup.offsetHeight);
+			popup.style.left = `${left}px`;
+			popup.style.top = `${top}px`;
+			if (lastView) updateFeatureLeader(lastView.camera, lastView.canvas);
+		};
+		const stop = (ev) => {
+			handle.releasePointerCapture(ev.pointerId);
+			handle.removeEventListener('pointermove', move);
+			handle.removeEventListener('pointerup', stop);
+			handle.removeEventListener('pointercancel', stop);
+		};
+		handle.addEventListener('pointermove', move);
+		handle.addEventListener('pointerup', stop);
+		handle.addEventListener('pointercancel', stop);
+	});
+}
+
+function leaderElement() {
+	let svg = document.getElementById(LEADER_ID);
+	if (svg) return svg;
+	svg = document.createElementNS(SVG_NS, 'svg');
+	svg.id = LEADER_ID;
+	svg.setAttribute('class', 'cad3d_info_leader');
+	const line = document.createElementNS(SVG_NS, 'line');
+	const dot = document.createElementNS(SVG_NS, 'circle');
+	dot.setAttribute('r', '4');
+	svg.append(line, dot);
+	document.body.appendChild(svg);
+	return svg;
+}
+
+function hideLeader() {
+	const svg = document.getElementById(LEADER_ID);
+	if (svg) svg.style.display = 'none';
+}
+
+function isShown(object) {
+	for (let node = object; node; node = node.parent) {
+		if (!node.visible) return false;
+	}
+	return true;
+}
+
+/**
+ * Redraw the leader for the camera as it is now: call it on every render.
+ * Hidden when the point is behind the camera, outside the canvas, under the
+ * popup, or its part is hidden.
+ */
+export function updateFeatureLeader(camera, canvas) {
+	lastView = { camera, canvas };
+	const popup = document.getElementById(POPUP_ID);
+	if (!leader || !popup || popup.style.display === 'none' || !isShown(leader.object)) {
+		hideLeader();
+		return;
+	}
+	const ndc = leader.object.localToWorld(leader.local.clone()).project(camera);
+	const area = canvas.getBoundingClientRect();
+	const x = area.left + (ndc.x + 1) / 2 * area.width;
+	const y = area.top + (1 - ndc.y) / 2 * area.height;
+	const box = popup.getBoundingClientRect();
+	const inside = (px, py, r) => px >= r.left && px <= r.right && py >= r.top && py <= r.bottom;
+	if (ndc.z < -1 || ndc.z > 1 || !inside(x, y, area) || inside(x, y, box)) {
+		hideLeader();
+		return;
+	}
+	// To the nearest point of the popup's border.
+	const tx = Math.min(Math.max(x, box.left), box.right);
+	const ty = Math.min(Math.max(y, box.top), box.bottom);
+	const svg = leaderElement();
+	const [line, dot] = svg.childNodes;
+	line.setAttribute('x1', x);
+	line.setAttribute('y1', y);
+	line.setAttribute('x2', tx);
+	line.setAttribute('y2', ty);
+	dot.setAttribute('cx', x);
+	dot.setAttribute('cy', y);
+	svg.style.display = 'block';
 }
 
 /**
@@ -138,6 +239,7 @@ export function showFeatureInfo(hit, x, y) {
 	close.textContent = '✖';
 	close.addEventListener('click', hideFeatureInfo);
 	header.append(title, close);
+	makeDraggable(popup, header, close);
 	popup.appendChild(header);
 
 	const table = document.createElement('table');
@@ -186,13 +288,19 @@ export function showFeatureInfo(hit, x, y) {
 		popup.appendChild(foot);
 	}
 
+	leader = { object: hit.object, local: hit.object.worldToLocal(hit.point.clone()) };
 	popup.style.display = 'block';
-	// Keep it inside the window.
+	// Away from the click, so the leader line shows; to the left when the
+	// right has no room, and always inside the window.
 	const margin = 12;
+	const gap = 80;
 	const width = popup.offsetWidth;
 	const height = popup.offsetHeight;
-	popup.style.left = `${Math.max(margin, Math.min(x + margin, window.innerWidth - width - margin))}px`;
-	popup.style.top = `${Math.max(margin, Math.min(y + margin, window.innerHeight - height - margin))}px`;
+	let left = x + gap;
+	if (left + width > window.innerWidth - margin) left = x - gap - width;
+	const top = y - gap / 2 - height / 2;
+	popup.style.left = `${Math.max(margin, Math.min(left, window.innerWidth - width - margin))}px`;
+	popup.style.top = `${Math.max(margin, Math.min(top, window.innerHeight - height - margin))}px`;
 	return true;
 }
 

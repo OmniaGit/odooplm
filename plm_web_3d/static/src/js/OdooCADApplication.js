@@ -1548,6 +1548,7 @@ function showCad3dInfo(e) {
 	const hit = raycaster.intersectObjects(OdooCad.items, true)
 		.find((h) => h.object.isMesh && h.object.visible);
 	CAD3D.showFeatureInfo(hit, e.clientX, e.clientY);
+	CAD3D.updateFeatureLeader(camera, renderer.domElement);
 }
 
 /**
@@ -2080,6 +2081,7 @@ function render() {
 	});
 	updateOrientationCube(camera);
 	labelRenderer.render(scene, camera);
+	CAD3D.updateFeatureLeader(camera, renderer.domElement);
 	renderer.render(scene, camera);
 	Object.values(measurementLabels).forEach(label => {
 		if (label) {

@@ -1599,3 +1599,28 @@ canvas#odoo_canvas {
     margin-top: 6px;
     font-size: 11px;
 }
+
+/* Leader line from the clicked point to its popup (cad3d_features.js) */
+.cad3d_info_leader {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 999;
+    pointer-events: none;
+    overflow: visible;
+}
+.cad3d_info_leader line {
+    stroke: #714B67;
+    stroke-width: 1.5;
+}
+.cad3d_info_leader circle {
+    fill: #714B67;
+    stroke: #ffffff;
+    stroke-width: 1.5;
+}
+.cad3d_info_handle {
+    cursor: move;
+    user-select: none;
+}
