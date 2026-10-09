@@ -1159,7 +1159,12 @@ function initcommand() {
 	html_canvas.addEventListener("OdooCAD_fit_items", function _loadSavedColors() {
 		html_canvas.removeEventListener("OdooCAD_fit_items", _loadSavedColors);
 		if (!_partColorsDocId) return;
-		fetch(`/plm/part_colors/load?document_id=${_partColorsDocId}`)
+		// The colours saved by hand win: laid on after the material's. This
+		// event fires inside addItemToScene, before the loader asks for the
+		// material: wait for the loader's turn to end, then for the material.
+		Promise.resolve()
+			.then(() => CAD3D.appearanceReady)
+			.then(() => fetch(`/plm/part_colors/load?document_id=${_partColorsDocId}`))
 			.then(r => r.json())
 			.then(stored => {
 				if (stored && Object.keys(stored).length > 0) {

@@ -26,3 +26,4 @@ Created on 13/11/2020
 from . import ir_attachment
 from . import product_product_document_rel
 from . import plm_markup_log
+from . import plm_material

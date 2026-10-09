@@ -58,6 +58,7 @@
         'security/plm_web_3d_security.xml',
         "views/ir_attachment.xml",
         "views/web_template.xml",
+        "views/plm_material.xml",
     ],
     "installable": True,
     "application": False,

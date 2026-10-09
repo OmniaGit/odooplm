@@ -500,3 +500,109 @@ export function addHoleTextures(root) {
 		}
 	}
 }
+
+
+// Appearance: the part is drawn as the CAD showed it (plm.appearance.color),
+// then as its material looks in Odoo's plm.material, when one has its name.
+// The colours a user saved for the document come after both: wait for
+// appearanceReady before laying them on.
+
+const DEFAULT_PART_COLOR = 0xb0b4ba;
+export let appearanceReady = Promise.resolve();
+
+function partMeshes(root) {
+	const meshes = [];
+	root.traverse((child) => {
+		if (child.isMesh && child.name !== OVERLAY_NAME && plmData(child)) meshes.push(child);
+	});
+	return meshes;
+}
+
+function keepAsOriginal(material) {
+	// What the viewer's highlight and colour tools restore.
+	material.userData.originalColor = material.color.clone();
+	material.userData.oldColor = material.color.clone();
+}
+
+/** UVs projected on the plane the normal faces most, one texture every size mm. */
+function boxUVs(geometry, size) {
+	const position = geometry.attributes.position;
+	const normal = geometry.attributes.normal;
+	const uv = new Float32Array(position.count * 2);
+	for (let i = 0; i < position.count; i++) {
+		const nx = Math.abs(normal.getX(i));
+		const ny = Math.abs(normal.getY(i));
+		const nz = Math.abs(normal.getZ(i));
+		let u, v;
+		if (nx >= ny && nx >= nz) {
+			u = position.getY(i); v = position.getZ(i);
+		} else if (ny >= nz) {
+			u = position.getX(i); v = position.getZ(i);
+		} else {
+			u = position.getX(i); v = position.getY(i);
+		}
+		uv[2 * i] = u / size;
+		uv[2 * i + 1] = v / size;
+	}
+	geometry.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
+}
+
+function requestRender() {
+	const canvas = document.getElementById('odoo_canvas');
+	if (canvas) canvas.dispatchEvent(new CustomEvent('OdooCAD_render'));
+}
+
+function applyMaterialLook(meshes, look) {
+	for (const mesh of meshes) {
+		const material = mesh.material;
+		if (look.color) material.color.set(look.color);
+		material.metalness = look.metalness;
+		material.roughness = look.roughness;
+		material.opacity = look.opacity;
+		material.transparent = look.opacity < 1;
+		keepAsOriginal(material);
+		mesh.userData.cad3dMaterial = look.name;
+	}
+	if (look.texture) {
+		new THREE.TextureLoader().load(look.texture, (texture) => {
+			texture.wrapS = THREE.RepeatWrapping;
+			texture.wrapT = THREE.RepeatWrapping;
+			for (const mesh of meshes) {
+				if (!mesh.geometry.attributes.uv) boxUVs(mesh.geometry, look.texture_size || 100);
+				mesh.material.map = texture;
+				mesh.material.needsUpdate = true;
+			}
+			requestRender();
+		});
+	}
+	requestRender();
+}
+
+/**
+ * Colour the cad3d meshes under root as the CAD showed them, then as their
+ * plm.material looks. Call it after the viewer has set its materials; the
+ * returned promise, also in appearanceReady, settles once the material
+ * answered.
+ */
+export function applyAppearance(root) {
+	const meshes = partMeshes(root);
+	if (!meshes.length) return appearanceReady;
+	const appearance = plmData(meshes[0]).appearance || {};
+	for (const mesh of meshes) {
+		mesh.material = new THREE.MeshStandardMaterial({
+			color: appearance.color || DEFAULT_PART_COLOR,
+			metalness: 0.3,
+			roughness: 0.5,
+			side: THREE.DoubleSide,
+		});
+		keepAsOriginal(mesh.material);
+	}
+	if (!appearance.material) return appearanceReady;
+	appearanceReady = fetch(`/plm/material_appearance?name=${encodeURIComponent(appearance.material)}`)
+		.then((response) => response.json())
+		.then((look) => {
+			if (look && look.name) applyMaterialLook(meshes, look);
+		})
+		.catch((error) => console.warn('material appearance failed', error));
+	return appearanceReady;
+}

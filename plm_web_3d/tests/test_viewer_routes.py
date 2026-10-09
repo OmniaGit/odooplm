@@ -100,6 +100,24 @@ class PlmWeb3dRoutes(HttpCase):
         page = self.url_open(url + "&debug=1")
         self.assertIn('data-debug="1"', page.text)
 
+    def test_the_material_look_is_found_by_its_designation(self):
+        """A cad3d export names its material: the viewer gets its look,
+        whatever the case of the name, and nothing for an unknown one."""
+        self.env["plm.material"].create({
+            "name": "AISI 304",
+            "web3d_color": "#b4b8bd",
+            "web3d_metalness": 0.9,
+            "web3d_roughness": 0.2,
+        })
+        self.authenticate("web3d_outsider", "web3d_outsider")
+        look = self.url_open("/plm/material_appearance?name=aisi 304").json()
+        self.assertEqual("AISI 304", look["name"])
+        self.assertEqual("#b4b8bd", look["color"])
+        self.assertEqual((0.9, 0.2, 1.0), (look["metalness"], look["roughness"], look["opacity"]))
+        self.assertIsNone(look["texture"])
+        self.assertEqual({}, self.url_open("/plm/material_appearance?name=AISI%").json())
+        self.assertEqual({}, self.url_open("/plm/material_appearance?name=Unobtainium").json())
+
     def test_product_info_follows_the_node(self):
         self.assertIn("document", self._product_info("web3d_insider"))
         with mute_logger("odoo.addons.plm_web_3d.controllers.main"):
