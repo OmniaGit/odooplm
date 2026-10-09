@@ -205,6 +205,9 @@ class Web3DView(Controller):
                 "document_id": document_id,
                 "document_name": document_name,
                 "can_markup": _can_markup(document),
+                # Odoo's debug mode (?debug=1, kept in the session): the
+                # viewer shows the CAD dimensions of a feature only then.
+                "debug": bool(request.session.debug),
             },
         )
 

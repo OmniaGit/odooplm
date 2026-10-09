@@ -88,6 +88,18 @@ class PlmWeb3dRoutes(HttpCase):
         self.assertEqual(response.status_code, 200)
         return json.loads(response.content)
 
+    def test_the_page_says_when_odoo_is_in_debug(self):
+        """The CAD dimensions of a feature show in debug mode only."""
+        self.authenticate("web3d_insider", "web3d_insider")
+        url = "/plm/show_treejs_model?document_id=%s&document_name=WEB3D-1.stl" % (
+            self.document.id
+        )
+        page = self.url_open(url)
+        self.assertEqual(page.status_code, 200)
+        self.assertNotIn('data-debug="1"', page.text)
+        page = self.url_open(url + "&debug=1")
+        self.assertIn('data-debug="1"', page.text)
+
     def test_product_info_follows_the_node(self):
         self.assertIn("document", self._product_info("web3d_insider"))
         with mute_logger("odoo.addons.plm_web_3d.controllers.main"):

@@ -32,7 +32,8 @@
                      class="viewer_container"
                      t-att-data-res-id="document_id"
                      data-res-model="ir.attachment"
-                     t-att-data-file-name="document_name">
+                     t-att-data-file-name="document_name"
+                     t-att-data-debug="'1' if debug else ''">
 
                     <span id="active_model" t-att-active_model="document_id" t-att-document_name="document_name"></span>
                     <div id="odoo_plm_title">

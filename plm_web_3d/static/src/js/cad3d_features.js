@@ -50,6 +50,11 @@ const PARAMS = [
 	['angle', 'Angle', deg],
 ];
 
+function isDebug() {
+	const page = document.getElementById('main_3d_web');
+	return Boolean(page && page.dataset.debug);
+}
+
 function plmData(object) {
 	for (let node = object; node; node = node.parent) {
 		const plm = node.userData && node.userData.plm;
@@ -268,13 +273,22 @@ export function showFeatureInfo(hit, x, y) {
 	const dimensions = feature
 		? (plm.dimensions || []).filter((d) => d.feature_id === feature.id)
 		: [];
-	if (dimensions.length) {
+	// The CAD dimensions say little to most users: only in Odoo's debug
+	// mode, folded under a caption that opens them.
+	if (dimensions.length && isDebug()) {
 		const caption = document.createElement('div');
-		caption.className = 'cad3d_info_caption';
-		caption.textContent = 'Dimensions';
-		popup.appendChild(caption);
+		caption.className = 'cad3d_info_caption cad3d_info_toggle';
+		const label = () => `${dimTable.hidden ? '▸' : '▾'} Dimensions (${dimensions.length})`;
 		const dimTable = document.createElement('table');
 		dimTable.className = 'cad3d_info_table';
+		dimTable.hidden = true;
+		caption.textContent = label();
+		caption.addEventListener('click', () => {
+			dimTable.hidden = !dimTable.hidden;
+			caption.textContent = label();
+			if (lastView) updateFeatureLeader(lastView.camera, lastView.canvas);
+		});
+		popup.appendChild(caption);
 		for (const d of dimensions) {
 			const value = d.unit === 'mm' ? mm(d.value) : d.unit === 'deg' ? deg(d.value) : String(d.value);
 			row(dimTable, d.name, d.expression ? `${value} (${d.expression})` : value);

@@ -1624,3 +1624,7 @@ canvas#odoo_canvas {
     cursor: move;
     user-select: none;
 }
+.cad3d_info_toggle {
+    cursor: pointer;
+    user-select: none;
+}
