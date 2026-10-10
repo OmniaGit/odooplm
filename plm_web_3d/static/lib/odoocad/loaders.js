@@ -1,6 +1,6 @@
 // treejs main import
 import * as THREE from '../three.js/build/three.module.js';
-import { addHoleTextures, applyAppearance } from '../../src/js/cad3d_features.js';
+import { addHoleTextures, applyAppearance, assemblyNodes, isAssembly, loadAssemblyComponents } from '../../src/js/cad3d_features.js';
 // loaders
 import { GLTFLoader } from '../three.js/examples/jsm/loaders/GLTFLoader.js';
 import { DRACOLoader } from '../three.js/examples/jsm/loaders/DRACOLoader.js';
@@ -234,8 +234,26 @@ class Loader {
 			function (obj) {
 				const out_html_structure = self.odooCad.addItemToScene(obj);
 				// After addItemToScene: it replaces every mesh material.
-				applyAppearance(obj);
-				addHoleTextures(obj);
+				if (isAssembly(obj)) {
+					// Each component its own look: the changed ones now, the
+					// others as their parts arrive.
+					for (const node of assemblyNodes(obj)) {
+						applyAppearance(node);
+						addHoleTextures(node);
+					}
+					loadAssemblyComponents(obj, document_name, (part) => {
+						applyAppearance(part);
+						addHoleTextures(part);
+					}).then(() => {
+						self.odooCad.create_tree_structure(self.odooCad.create_relation_structure(obj));
+						const canvas = document.getElementById('odoo_canvas');
+						canvas.dispatchEvent(new CustomEvent("OdooCAD_fit_items"));
+						canvas.dispatchEvent(new CustomEvent("OdooCAD_render"));
+					});
+				} else {
+					applyAppearance(obj);
+					addHoleTextures(obj);
+				}
 				self.odooCad.create_tree_structure(out_html_structure);
 				self._hideProgress();
 			},

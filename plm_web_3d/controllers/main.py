@@ -391,6 +391,43 @@ class Web3DView(Controller):
             "texture_size": material.web3d_texture_size,
         })
 
+    @route("/plm/web3d_component", type="http", auth="user")
+    @webservice
+    def web3d_component(self, engineering_code=None, engineering_revision=None, suffix=None):
+        """The web export of a component, for a viewer building an assembly: the
+        document with that code and revision (the native CAD file), then its
+        Web3DTree child whose name ends with suffix, the format of the assembly
+        (a customer may export other formats too); {} when there is none.
+
+        Read as the user: what they may not read is not found."""
+        if not engineering_code or engineering_revision in (None, "") or not suffix:
+            return request.make_json_response({})
+        try:
+            revision = int(engineering_revision)
+        except ValueError:
+            return request.make_json_response({})
+        attachments = request.env["ir.attachment"]
+        native = attachments.search([
+            ("engineering_code", "=", engineering_code),
+            ("engineering_revision", "=", revision),
+            ("is_plm", "=", True),
+        ], limit=1)
+        if not native:
+            return request.make_json_response({})
+        relations = request.env["ir.attachment.relation"].search([
+            ("parent_id", "=", native.id),
+            ("link_kind", "=", "Web3DTree"),
+        ])
+        suffix = suffix.lower()
+        for child in relations.mapped("child_id"):
+            if (child.name or "").lower().endswith(suffix) and child.has_access("read"):
+                return request.make_json_response({
+                    "document_id": child.id,
+                    "name": child.name,
+                    "url": "/plm/download_treejs_model?document_id=%s" % child.id,
+                })
+        return request.make_json_response({})
+
     @route("/plm/web3d_background", type="http", auth="user")
     def web3d_background(self, background_id=None, part="file"):
         """The file (or with part=backdrop, the backdrop) of an active

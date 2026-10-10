@@ -10,7 +10,7 @@ import * as THREE from '../../lib/three.js/build/three.module.js';
 const SCHEMA = 'odooplm.cad3d';
 const POPUP_ID = 'cad3d_info_popup';
 
-const FEATURE_TYPES = { hole: 'Hole', fillet: 'Fillet', chamfer: 'Chamfer' };
+const FEATURE_TYPES = { hole: 'Hole', fillet: 'Fillet', chamfer: 'Chamfer', assembly: 'Assembly feature' };
 const HOLE_TYPES = {
 	simple: 'Simple', counterbore: 'Counterbore', countersink: 'Countersink',
 	spotface: 'Spotface', tapped: 'Tapped', counterdrill: 'Counterdrill', tapered: 'Tapered',
@@ -260,7 +260,10 @@ export function showFeatureInfo(hit, x, y) {
 			anyEstimated = anyEstimated || Boolean(note);
 			row(table, label, format(value), note);
 		}
-	} else {
+	}
+	// The face itself: what a face without a feature shows, and what an
+	// assembly feature (which has no parameters of its own) shows of the cut.
+	if (!feature || feature.type === 'assembly') {
 		const params = face.params || {};
 		if (params.radius !== undefined) {
 			row(table, face.surface === 'cylinder' ? 'Diameter' : 'Radius',
@@ -776,4 +779,84 @@ export function nearestHoleCenter(roots, camera, canvas, pointer, maxPixels) {
 		}
 	}
 	return best;
+}
+
+
+// Assemblies (plm.kind "assembly"): a group per component, placed by its
+// matrix. A component the assembly changed holds its own mesh; any other is
+// the export of its part, loaded once: the viewer asks for the document with
+// the component's code and revision, then its Web3DTree export in the
+// assembly's own format.
+
+const assemblyLoader = new THREE.ObjectLoader();
+
+/** The format of an export, from its name: ".cad3d.json", ".3mf", ... */
+export function exportSuffix(name) {
+	const match = (name || '').toLowerCase().match(/(\.cad3d)?\.[a-z0-9]+$/);
+	return match ? match[0] : '';
+}
+
+export function isAssembly(root) {
+	const plm = root && root.userData && root.userData.plm;
+	return Boolean(plm && plm.schema === SCHEMA && plm.kind === 'assembly');
+}
+
+/** The component groups of an assembly, the changed ones first or not. */
+export function assemblyNodes(root) {
+	return root.children.filter((node) => node.userData && node.userData.plm_component);
+}
+
+/**
+ * Load the parts of the assembly root, each once, into every group of it;
+ * onComponent(part) runs on each copy placed. Resolves with what was not
+ * found, by name.
+ */
+export function loadAssemblyComponents(root, documentName, onComponent) {
+	if (!isAssembly(root)) return Promise.resolve([]);
+	const suffix = exportSuffix(documentName);
+	const byPart = new Map();
+	for (const node of assemblyNodes(root)) {
+		const info = node.userData.plm_component;
+		if (info.modified) continue;
+		const key = `${info.engineering_code}|${info.engineering_revision}`;
+		if (!byPart.has(key)) byPart.set(key, { info, nodes: [] });
+		byPart.get(key).nodes.push(node);
+	}
+	const missing = [];
+	const jobs = [...byPart.values()].map(({ info, nodes }) => {
+		if (!info.engineering_code || info.engineering_revision === null || info.engineering_revision === undefined) {
+			missing.push(info.name);
+			return Promise.resolve();
+		}
+		const query = new URLSearchParams({
+			engineering_code: info.engineering_code,
+			engineering_revision: info.engineering_revision,
+			suffix,
+		});
+		return fetch(`/plm/web3d_component?${query}`)
+			.then((response) => response.json())
+			.then((found) => new Promise((resolve) => {
+				if (!found || !found.url) {
+					missing.push(`${info.engineering_code} rev ${info.engineering_revision}`);
+					resolve();
+					return;
+				}
+				assemblyLoader.load(found.url, (part) => {
+					for (const node of nodes) {
+						const copy = part.clone();
+						node.add(copy);
+						if (onComponent) onComponent(copy);
+					}
+					resolve();
+				}, undefined, () => {
+					missing.push(found.name);
+					resolve();
+				});
+			}))
+			.catch(() => missing.push(info.name));
+	});
+	return Promise.all(jobs).then(() => {
+		if (missing.length) console.warn('assembly components not found:', missing);
+		return missing;
+	});
 }
