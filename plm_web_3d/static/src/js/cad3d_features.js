@@ -680,3 +680,100 @@ export function nextDisplayMode(roots) {
 	setDisplayMode(roots, next);
 	return next;
 }
+
+
+// Hole centres (plm.hole_axes: the two ends of every round hole's axis), for
+// measuring centre to centre: shown as dots while the measure is on, and the
+// first thing the measure snaps to.
+
+const CENTER_MARKER_NAME = '__cad3d_hole_centers__';
+let centerDot = null;
+
+/** A round dot with a white ring: points are drawn square otherwise. */
+function centerDotTexture() {
+	if (centerDot) return centerDot;
+	const canvas = document.createElement('canvas');
+	canvas.width = canvas.height = 32;
+	const ctx = canvas.getContext('2d');
+	ctx.beginPath();
+	ctx.arc(16, 16, 13, 0, 2 * Math.PI);
+	ctx.fillStyle = '#ffffff';
+	ctx.fill();
+	ctx.beginPath();
+	ctx.arc(16, 16, 10, 0, 2 * Math.PI);
+	ctx.fillStyle = '#ff7a00';
+	ctx.fill();
+	centerDot = new THREE.CanvasTexture(canvas);
+	return centerDot;
+}
+
+function plmRoots(roots) {
+	const out = [];
+	for (const root of roots) {
+		root.traverse((child) => {
+			const plm = child.userData && child.userData.plm;
+			if (plm && plm.schema === SCHEMA && (plm.hole_axes || []).length) out.push(child);
+		});
+	}
+	return out;
+}
+
+/** Show or hide the dots of the hole centres under roots. */
+export function showHoleCenters(roots, visible) {
+	for (const root of plmRoots(roots)) {
+		let dots = root.getObjectByName(CENTER_MARKER_NAME);
+		if (!dots && visible) {
+			const points = [];
+			for (const hole of root.userData.plm.hole_axes) points.push(...hole.start, ...hole.end);
+			const geometry = new THREE.BufferGeometry();
+			geometry.setAttribute('position', new THREE.Float32BufferAttribute(points, 3));
+			dots = new THREE.Points(geometry, new THREE.PointsMaterial({
+				map: centerDotTexture(),
+				size: 12,
+				sizeAttenuation: false,     // the same size on screen at any zoom
+				transparent: true,
+				alphaTest: 0.5,
+				depthTest: false,
+			}));
+			dots.name = CENTER_MARKER_NAME;
+			dots.renderOrder = 999;
+			dots.raycast = () => { };
+			root.add(dots);
+		}
+		if (dots) dots.visible = visible;
+	}
+	requestRender();
+}
+
+/**
+ * The hole centre nearest the pointer on screen, within maxPixels, as a world
+ * Vector3; null when there is none. pointer is in normalized device
+ * coordinates, like the raycaster's.
+ */
+export function nearestHoleCenter(roots, camera, canvas, pointer, maxPixels) {
+	const width = canvas.clientWidth;
+	const height = canvas.clientHeight;
+	let best = null;
+	let bestDistance = maxPixels;
+	const world = new THREE.Vector3();
+	const screen = new THREE.Vector3();
+	for (const root of plmRoots(roots)) {
+		if (!isShown(root)) continue;
+		for (const hole of root.userData.plm.hole_axes) {
+			for (const end of [hole.start, hole.end]) {
+				world.set(end[0], end[1], end[2]);
+				root.localToWorld(world);
+				screen.copy(world).project(camera);
+				if (screen.z < -1 || screen.z > 1) continue;
+				const dx = (screen.x - pointer.x) * width / 2;
+				const dy = (screen.y - pointer.y) * height / 2;
+				const distance = Math.hypot(dx, dy);
+				if (distance < bestDistance) {
+					bestDistance = distance;
+					best = world.clone();
+				}
+			}
+		}
+	}
+	return best;
+}

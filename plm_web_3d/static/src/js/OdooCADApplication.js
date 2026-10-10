@@ -87,7 +87,10 @@ function createSpriteTexture(hexColor) {
 	return new THREE.CanvasTexture(canvas);
 }
 
-const SNAP_ARROW_COLOR = { vertex: '#ffff88', face: '#88eeff' };
+const SNAP_ARROW_COLOR = { vertex: '#ffff88', face: '#88eeff', center: '#ffb366' };
+// The snap kinds, as the measure labels name them: P(oint), F(ace), C(entre of a hole).
+const SNAP_COLOR = { vertex: '#ffff00', face: '#00ccff', center: '#ff7a00' };
+const SNAP_LETTER = { vertex: 'P', face: 'F', center: 'C' };
 
 function createArrowSpriteTexture(hexColor) {
 	const size = 64;
@@ -348,6 +351,7 @@ function _activateMeasure() {
 	drawingLine = true;
 	renderer.domElement.style.cursor = "crosshair";
 	document.getElementById("measure_btn_perm")?.classList.add("active");
+	CAD3D.showHoleCenters(OdooCad.items, true);
 }
 
 function _removeArrow(sprite) {
@@ -362,6 +366,7 @@ function _deactivateMeasure() {
 	drawingLine = false;
 	renderer.domElement.style.cursor = "pointer";
 	document.getElementById("measure_btn_perm")?.classList.remove("active");
+	CAD3D.showHoleCenters(OdooCad.items, false);
 	scene.remove(measurementLabels[lineId]);
 	scene.remove(startPoint[lineId]);
 	scene.remove(endPoint[lineId]);
@@ -779,7 +784,7 @@ function mesuraments() {
 
 function createMarker() {
 	const snapType = (sphereHelper.userData && sphereHelper.userData.snapType) || 'vertex';
-	const color = snapType === 'vertex' ? '#ffff00' : '#00ccff';
+	const color = SNAP_COLOR[snapType] || SNAP_COLOR.face;
 	const material = new THREE.SpriteMaterial({
 		map: createSpriteTexture(color),
 		depthTest: false,
@@ -1483,8 +1488,8 @@ var onClick = function (e) {
 				measurementLabels[lineId].position.copy(mid);
 				const lbl = measurementLabels[lineId].element.querySelector('.measurementLabel');
 				if (lbl) {
-					const sType = startSnapTypes[lineId] === 'vertex' ? 'P' : 'F';
-					const eType = endSnapTypes[lineId] === 'vertex' ? 'P' : 'F';
+					const sType = SNAP_LETTER[startSnapTypes[lineId]] || 'F';
+					const eType = SNAP_LETTER[endSnapTypes[lineId]] || 'F';
 					lbl.innerText = `${sType}→${eType}: ${dist.toFixed(2)} mm`;
 				}
 			}
@@ -2059,11 +2064,19 @@ function addLight() {
 
 function showSnapPoint() {
 	if (!sphereHelper) return;
+	// A hole centre first: it is in the air, where the ray may hit nothing.
+	const centre = ctrlDown
+		? CAD3D.nearestHoleCenter(OdooCad.items, camera, renderer.domElement, pointer, 14)
+		: null;
 	raycaster.setFromCamera(pointer, camera);
-	const intersections = raycaster.intersectObjects(OdooCad.items, true);
+	const intersections = centre ? [] : raycaster.intersectObjects(OdooCad.items, true);
 	const intersection = intersections.length > 0 ? intersections[0] : null;
-	if (!intersection) {
+	if (!intersection && !centre) {
 		sphereHelper.visible = false;
+		return;
+	}
+	if (centre) {
+		_placeSnap(centre, 'center');
 		return;
 	}
 
@@ -2086,14 +2099,14 @@ function showSnapPoint() {
 	const snapThreshold = 20 * worldPerPx;
 
 	const isVertex = nearestVertex !== null && minDist < snapThreshold;
-	const snapPoint = isVertex ? nearestVertex : intersection.point.clone();
-	const snapType = isVertex ? 'vertex' : 'face';
-	const snapColor = isVertex ? '#ffff00' : '#00ccff';
+	_placeSnap(isVertex ? nearestVertex : intersection.point.clone(), isVertex ? 'vertex' : 'face');
+}
 
+function _placeSnap(snapPoint, snapType) {
 	// Update sphere texture only when snap type changes (avoid per-frame alloc)
 	if (sphereHelper.userData.snapType !== snapType) {
 		sphereHelper.userData.snapType = snapType;
-		sphereHelper.material.map = createSpriteTexture(snapColor);
+		sphereHelper.material.map = createSpriteTexture(SNAP_COLOR[snapType]);
 		sphereHelper.material.needsUpdate = true;
 	}
 	sphereHelper.position.copy(snapPoint);
@@ -2113,8 +2126,8 @@ function showSnapPoint() {
 			measurementLabels[lineId].position.copy(liveMid);
 			const lbl = measurementLabels[lineId].element.querySelector('.measurementLabel');
 			if (lbl) {
-				const sType = startSnapTypes[lineId] === 'vertex' ? 'P' : 'F';
-				lbl.innerText = `${sType}→${snapType === 'vertex' ? 'P' : 'F'}: ${liveDist.toFixed(2)} mm`;
+				const sType = SNAP_LETTER[startSnapTypes[lineId]] || 'F';
+				lbl.innerText = `${sType}→${SNAP_LETTER[snapType] || 'F'}: ${liveDist.toFixed(2)} mm`;
 			}
 		}
 	}
