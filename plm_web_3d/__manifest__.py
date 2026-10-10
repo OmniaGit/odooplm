@@ -21,7 +21,7 @@
 ##############################################################################
 {
     "name": "PLM Web 3d Support",
-    "version": "20.0.1.0.0",
+    "version": "20.0.1.0.1",
     "author": "OmniaSolutions",
     "maintainer": "OmniaSolutions S.n.c di Boscolo Matteo & C",
     "website": "https://odooplm.omniasolutions.website",
@@ -50,6 +50,12 @@
     Made using:
     * webgl
     * treejs
+
+    Credits:
+    * the 3D viewer backgrounds Studio, Studio Loft, Warm Studio, Machine Shop
+      and Warehouse are HDRIs by Poly Haven (https://polyhaven.com), released
+      under CC0 1.0: studio_small_09, photo_studio_loft_hall,
+      brown_photostudio_02, machine_shop_02, empty_warehouse_01
     """,
     "images": ["static/src/img/web_3d.gif"],
     "depends": ["plm"],
@@ -58,6 +64,9 @@
         'security/plm_web_3d_security.xml',
         "views/ir_attachment.xml",
         "views/web_template.xml",
+        "views/plm_material.xml",
+        "views/plm_web3d_background.xml",
+        "data/plm_web3d_background.xml",
     ],
     "installable": True,
     "application": False,

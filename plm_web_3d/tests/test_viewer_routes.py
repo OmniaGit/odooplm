@@ -22,6 +22,7 @@ import base64
 import json
 
 from odoo import Command
+from odoo.exceptions import ValidationError
 from odoo.tests import HttpCase, tagged
 from odoo.tools import mute_logger
 
@@ -87,6 +88,67 @@ class PlmWeb3dRoutes(HttpCase):
         )
         self.assertEqual(response.status_code, 200)
         return json.loads(response.content)
+
+    def test_the_page_says_when_odoo_is_in_debug(self):
+        """The CAD dimensions of a feature show in debug mode only."""
+        self.authenticate("web3d_insider", "web3d_insider")
+        url = "/plm/show_treejs_model?document_id=%s&document_name=WEB3D-1.stl" % (
+            self.document.id
+        )
+        page = self.url_open(url)
+        self.assertEqual(page.status_code, 200)
+        self.assertNotIn('data-debug="1"', page.text)
+        page = self.url_open(url + "&debug=1")
+        self.assertIn('data-debug="1"', page.text)
+
+    def test_the_material_look_is_found_by_its_designation(self):
+        """A cad3d export names its material: the viewer gets its look,
+        whatever the case of the name, and nothing for an unknown one."""
+        self.env["plm.material"].create({
+            "name": "AISI 304",
+            "web3d_color": "#b4b8bd",
+            "web3d_metalness": 0.9,
+            "web3d_roughness": 0.2,
+        })
+        self.authenticate("web3d_outsider", "web3d_outsider")
+        look = self.url_open("/plm/material_appearance?name=aisi 304").json()
+        self.assertEqual("AISI 304", look["name"])
+        self.assertEqual("#b4b8bd", look["color"])
+        self.assertEqual((0.9, 0.2, 1.0), (look["metalness"], look["roughness"], look["opacity"]))
+        self.assertIsNone(look["texture"])
+        self.assertEqual({}, self.url_open("/plm/material_appearance?name=AISI%").json())
+        self.assertEqual({}, self.url_open("/plm/material_appearance?name=Unobtainium").json())
+
+    def test_the_backgrounds_are_the_active_ones(self):
+        """The five HDRIs come with the module; an archived background is
+        neither offered nor served."""
+        studio = self.env.ref("plm_web_3d.web3d_background_studio")
+        self.assertEqual("hdr", studio.file_type)
+        warehouse = self.env.ref("plm_web_3d.web3d_background_warehouse")
+        warehouse.active = False
+        self.authenticate("web3d_insider", "web3d_insider")
+        page = self.url_open(
+            "/plm/show_treejs_model?document_id=%s&document_name=WEB3D-1.stl"
+            % self.document.id
+        ).text
+        self.assertIn('value="bg_%s"' % studio.id, page)
+        self.assertNotIn('value="bg_%s"' % warehouse.id, page)
+        served = self.url_open("/plm/web3d_background?background_id=%s" % studio.id)
+        self.assertEqual(200, served.status_code)
+        self.assertTrue(served.content.startswith(b"#?RADIANCE"))
+        backdrop = self.url_open(
+            "/plm/web3d_background?background_id=%s&part=backdrop" % studio.id
+        )
+        self.assertEqual(200, backdrop.status_code)
+        self.assertTrue(backdrop.content.startswith(b"\xff\xd8"), "a JPEG")
+        hidden = self.url_open("/plm/web3d_background?background_id=%s" % warehouse.id)
+        self.assertEqual(404, hidden.status_code)
+
+    def test_a_background_is_an_hdri_or_a_photo(self):
+        with self.assertRaises(ValidationError):
+            self.env["plm.web3d.background"].create(
+                {"name": "Wrong", "file": base64.b64encode(RAW).decode(), "file_name": "drawing.pdf"}
+            )
 
     def test_product_info_follows_the_node(self):
         self.assertIn("document", self._product_info("web3d_insider"))

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- HDRIs by Poly Haven (polyhaven.com), CC0 1.0: see the manifest. The
+         backdrops are Poly Haven's tonemapped JPGs of them, resized to 4k. -->
+    <record id="web3d_background_studio" model="plm.web3d.background">
+        <field name="name">Studio</field>
+        <field name="sequence">10</field>
+        <field name="file_name">studio_small_09_1k.hdr</field>
+        <field name="file" type="base64" file="plm_web_3d/static/src/img/hdri/studio_small_09_1k.hdr"/>
+        <field name="backdrop_name">studio_small_09_4k.jpg</field>
+        <field name="backdrop" type="base64" file="plm_web_3d/static/src/img/hdri/studio_small_09_4k.jpg"/>
+    </record>
+    <record id="web3d_background_studio_loft" model="plm.web3d.background">
+        <field name="name">Studio Loft</field>
+        <field name="sequence">20</field>
+        <field name="file_name">photo_studio_loft_hall_1k.hdr</field>
+        <field name="file" type="base64" file="plm_web_3d/static/src/img/hdri/photo_studio_loft_hall_1k.hdr"/>
+        <field name="backdrop_name">photo_studio_loft_hall_4k.jpg</field>
+        <field name="backdrop" type="base64" file="plm_web_3d/static/src/img/hdri/photo_studio_loft_hall_4k.jpg"/>
+    </record>
+    <record id="web3d_background_studio_warm" model="plm.web3d.background">
+        <field name="name">Warm Studio</field>
+        <field name="sequence">30</field>
+        <field name="file_name">brown_photostudio_02_1k.hdr</field>
+        <field name="file" type="base64" file="plm_web_3d/static/src/img/hdri/brown_photostudio_02_1k.hdr"/>
+        <field name="backdrop_name">brown_photostudio_02_4k.jpg</field>
+        <field name="backdrop" type="base64" file="plm_web_3d/static/src/img/hdri/brown_photostudio_02_4k.jpg"/>
+    </record>
+    <record id="web3d_background_machine_shop" model="plm.web3d.background">
+        <field name="name">Machine Shop</field>
+        <field name="sequence">40</field>
+        <field name="file_name">machine_shop_02_1k.hdr</field>
+        <field name="file" type="base64" file="plm_web_3d/static/src/img/hdri/machine_shop_02_1k.hdr"/>
+        <field name="backdrop_name">machine_shop_02_4k.jpg</field>
+        <field name="backdrop" type="base64" file="plm_web_3d/static/src/img/hdri/machine_shop_02_4k.jpg"/>
+    </record>
+    <record id="web3d_background_warehouse" model="plm.web3d.background">
+        <field name="name">Warehouse</field>
+        <field name="sequence">50</field>
+        <field name="file_name">empty_warehouse_01_1k.hdr</field>
+        <field name="file" type="base64" file="plm_web_3d/static/src/img/hdri/empty_warehouse_01_1k.hdr"/>
+        <field name="backdrop_name">empty_warehouse_01_4k.jpg</field>
+        <field name="backdrop" type="base64" file="plm_web_3d/static/src/img/hdri/empty_warehouse_01_4k.jpg"/>
+    </record>
+</odoo>

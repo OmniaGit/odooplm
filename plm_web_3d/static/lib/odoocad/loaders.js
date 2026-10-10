@@ -1,5 +1,6 @@
 // treejs main import
 import * as THREE from '../three.js/build/three.module.js';
+import { addHoleTextures, applyAppearance } from '../../src/js/cad3d_features.js';
 // loaders
 import { GLTFLoader } from '../three.js/examples/jsm/loaders/GLTFLoader.js';
 import { DRACOLoader } from '../three.js/examples/jsm/loaders/DRACOLoader.js';
@@ -232,6 +233,9 @@ class Loader {
 		loader.load(url,
 			function (obj) {
 				const out_html_structure = self.odooCad.addItemToScene(obj);
+				// After addItemToScene: it replaces every mesh material.
+				applyAppearance(obj);
+				addHoleTextures(obj);
 				self.odooCad.create_tree_structure(out_html_structure);
 				self._hideProgress();
 			},

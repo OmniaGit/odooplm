@@ -205,6 +205,12 @@ class Web3DView(Controller):
                 "document_id": document_id,
                 "document_name": document_name,
                 "can_markup": _can_markup(document),
+                # Odoo's debug mode (?debug=1, kept in the session): the
+                # viewer shows the CAD dimensions of a feature only then.
+                "debug": bool(request.session.debug),
+                # Read in sudo: a background is no secret, and the portal
+                # cannot read the table.
+                "backgrounds": request.env["plm.web3d.background"].sudo().search([]),
             },
         )
 
@@ -357,6 +363,58 @@ class Web3DView(Controller):
         except Exception as e:
             _logger.warning("Failed to save preview: %s", e)
             return {'success': False, 'error': str(e)}
+
+    @route("/plm/material_appearance", type="http", auth="user")
+    @webservice
+    def material_appearance(self, name=None):
+        """The 3D appearance of the plm.material whose designation is name,
+        whatever the case; {} when there is none. A cad3d export names its
+        material and the viewer asks here. Read in sudo: how a material looks
+        is no secret, and a portal user viewing their part cannot read
+        plm.material."""
+        material = request.env["plm.material"]
+        if name:
+            pattern = name.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
+            material = material.sudo().search([("name", "=ilike", pattern)], limit=1)
+        if not material:
+            return request.make_json_response({})
+        return request.make_json_response({
+            "name": material.name,
+            "color": material.web3d_color or None,
+            "metalness": material.web3d_metalness,
+            "roughness": material.web3d_roughness,
+            "opacity": material.web3d_opacity,
+            "texture": (
+                "/plm/material_texture?material_id=%s" % material.id
+                if material.web3d_texture else None
+            ),
+            "texture_size": material.web3d_texture_size,
+        })
+
+    @route("/plm/web3d_background", type="http", auth="user")
+    def web3d_background(self, background_id=None, part="file"):
+        """The file (or with part=backdrop, the backdrop) of an active
+        background of the viewer, in sudo like the list the page offers."""
+        background = request.env["plm.web3d.background"]
+        if background_id and str(background_id).isdigit():
+            background = background.sudo().browse(int(background_id)).exists()
+        field, name = ("backdrop", "backdrop_name") if part == "backdrop" else ("file", "file_name")
+        if not background or not background.active or not background[field]:
+            raise request.not_found()
+        return request.env["ir.binary"]._get_stream_from(
+            background, field, filename=background[name]
+        ).get_response()
+
+    @route("/plm/material_texture", type="http", auth="user")
+    def material_texture(self, material_id=None):
+        material = request.env["plm.material"]
+        if material_id and str(material_id).isdigit():
+            material = material.sudo().browse(int(material_id)).exists()
+        if not material or not material.web3d_texture:
+            raise request.not_found()
+        return request.env["ir.binary"]._get_image_stream_from(
+            material, "web3d_texture"
+        ).get_response()
 
     @http.route('/plm/part_colors/load', type='http', auth='user')
     def part_colors_load(self, document_id=None):

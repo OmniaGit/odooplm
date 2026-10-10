@@ -4,9 +4,12 @@
 
 import * as THREE from '../../lib/three.js/build/three.module.js';
 import * as ODOOCAD from '../../lib/odoocad/odoocad.js';
+import * as CAD3D from './cad3d_features.js';
 // controls
 import { OrbitControls } from '../../lib/three.js/examples/jsm/controls/OrbitControls.js';
 import { TransformControls } from '../../lib/three.js/examples/jsm/controls/TransformControls.js';
+import { RGBELoader } from '../../lib/three.js/examples/jsm/loaders/RGBELoader.js';
+import { RoomEnvironment } from '../../lib/three.js/examples/jsm/environments/RoomEnvironment.js';
 import Stats from '../../lib/three.js/examples/jsm/libs/stats.module.js';
 import {
 	CSS2DRenderer,
@@ -35,7 +38,6 @@ let objectAxesHelper;
 let raycaster;
 let light1, light2, light3, cameraLight, ambientLight;
 var srcRefresh = false;
-var togleBackgoundV = false;
 let drawingLine = false;
 let lineId = 0;
 let bbox_center = new THREE.Vector3();
@@ -601,17 +603,7 @@ function destroySectionCap() {
 	}
 }
 
-document.getElementById("toggle_light_settings").onclick = function () {
-	const group = document.getElementById("light_settings_group");
 
-	if (group.style.display === "none") {
-		group.style.display = "block";
-		this.innerHTML = "<b>▼ Light Settings</b>";
-	} else {
-		group.style.display = "none";
-		this.innerHTML = "<b>▶ Light Settings</b>";
-	}
-};
 
 
 function fitCameraToSelection(selection, fitOffset = 1.2) {
@@ -657,17 +649,6 @@ function addAmbient() {
 	tecnicalBckground();
 }
 
-function togleBackgound() {
-	if (togleBackgoundV) {
-		togleBackgoundV = false;
-		tecnicalBckground();
-	}
-	else {
-		togleBackgoundV = true;
-		imageBckground('/plm_web_3d/static/src/img/bakgroung_360/room.jpg');
-	}
-}
-
 function tecnicalBckground() {
 	objectAxesHelper.visible = true;
 	planeMeshFloar = new THREE.Mesh(new THREE.PlaneGeometry(2000, 2000),
@@ -682,40 +663,50 @@ function tecnicalBckground() {
 	planeGrid.visible = true;
 	planeMeshFloar.visible = true;
 	scene.background = new THREE.Color(0xe0e0e0);
+	scene.environment = studioEnvironment();
+	setToneMapping(false);
 	render();
 }
 
 var change_background = function () {
-	var value = document.getElementById("webgl_background").value;
-	switch (value) {
-		case 'tecnical':
-			tecnicalBckground();
-			break;
-		case 'room1':
-			imageBckground('/plm_web_3d/static/src/img/bakgroung_360/room.jpg');
-			break;
-		case 'room2':
-			imageBckground('/plm_web_3d/static/src/img/bakgroung_360/white_room.png');
-			break;
-		case 'workshop1':
-			imageBckground('/plm_web_3d/static/src/img/bakgroung_360/workshop1.png');
-			break;
-		case 'workshop2':
-			imageBckground('/plm_web_3d/static/src/img/bakgroung_360/workshop2.png');
-			break;
-		case 'workshop3':
-			imageBckground('/plm_web_3d/static/src/img/bakgroung_360/workshop3.png');
-			break;
-		case 'outdoor':
-			imageBckground('/plm_web_3d/static/src/img/bakgroung_360/outdoor.png');
-			break;
-		case 'clean':
-			cleanBackground();
-			break;
-		default:
-			tecnicalBckground();
-
+	const selector = document.getElementById("webgl_background");
+	const value = selector.value;
+	if (value === 'clean') {
+		cleanBackground();
+	} else if (value.startsWith('bg_')) {
+		const option = selector.selectedOptions[0];
+		imageBckground(option.dataset.url, option.dataset.type, option.dataset.backdrop);
+	} else {
+		tecnicalBckground();
 	}
+}
+
+// The light the parts reflect. The built-in backgrounds get a studio made by
+// three.js; an HDRI or a 360 photo is its own (imageBckground).
+let _pmremGenerator = null;
+let _studioEnvironment = null;
+
+function _pmrem() {
+	if (!_pmremGenerator) _pmremGenerator = new THREE.PMREMGenerator(renderer);
+	return _pmremGenerator;
+}
+
+// ACES tone mapping with an HDRI only: its lights are far brighter than a
+// screen shows. The built-in backgrounds keep the colours untouched.
+function setToneMapping(hdr) {
+	const mapping = hdr ? THREE.ACESFilmicToneMapping : THREE.NoToneMapping;
+	if (renderer.toneMapping === mapping) return;
+	renderer.toneMapping = mapping;
+	// The shaders hold the tone mapping: they are compiled again.
+	scene.traverse((child) => {
+		const materials = Array.isArray(child.material) ? child.material : [child.material];
+		materials.forEach((material) => { if (material) material.needsUpdate = true; });
+	});
+}
+
+function studioEnvironment() {
+	if (!_studioEnvironment) _studioEnvironment = _pmrem().fromScene(new RoomEnvironment(), 0.04).texture;
+	return _studioEnvironment;
 }
 
 function cleanBackground() {
@@ -723,30 +714,39 @@ function cleanBackground() {
 	planeGrid.visible = false;
 	planeMeshFloar.visible = false;
 	scene.background = new THREE.Color(0xf5f5f5);
+	scene.environment = studioEnvironment();
+	setToneMapping(false);
 	render();
 }
 
-function imageBckground(path_to_load) {
+/**
+ * A background from the plm.web3d.background table: an HDRI (type 'hdr') or
+ * a 360 degree photo. It is the light the parts reflect, so metals look like
+ * metals, and the backdrop too, unless a sharper photo of the same place
+ * (backdropUrl) is shown instead.
+ */
+function imageBckground(url, type, backdropUrl) {
 	objectAxesHelper.visible = false;
-	const loader = new THREE.TextureLoader();
 	planeGrid.visible = false;
 	planeMeshFloar.visible = false;
-	const texture = loader.load(
-		path_to_load,
-		() => {
-			texture.encoding = THREE.sRGBEncoding;
-			texture.mapping = THREE.EquirectangularReflectionMapping;
-			const rt = new THREE.WebGLCubeRenderTarget(texture.image.height);
-			rt.fromEquirectangularTexture(renderer, texture);
-
-			scene.background = texture;
-
-			const cubeCamera = new THREE.CubeCamera(1, 100000, rt);
-			scene.add(cubeCamera);
-
+	const loader = type === 'hdr' ? new RGBELoader() : new THREE.TextureLoader();
+	loader.load(url, (texture) => {
+		texture.mapping = THREE.EquirectangularReflectionMapping;
+		if (type !== 'hdr') texture.encoding = THREE.sRGBEncoding;
+		if (!backdropUrl) scene.background = texture;
+		scene.environment = _pmrem().fromEquirectangular(texture).texture;
+		setToneMapping(type === 'hdr');
+		render();
+		controls.update();
+	});
+	if (backdropUrl) {
+		new THREE.TextureLoader().load(backdropUrl, (backdrop) => {
+			backdrop.mapping = THREE.EquirectangularReflectionMapping;
+			backdrop.encoding = THREE.sRGBEncoding;
+			scene.background = backdrop;
 			render();
-			controls.update();
 		});
+	}
 }
 
 function mesuraments() {
@@ -878,14 +878,10 @@ function init() {
 		if (planeMeshFloar) planeMeshFloar.visible = false;
 		if (planeGrid) planeGrid.visible = false;
 		if (objectAxesHelper) objectAxesHelper.visible = false;
-		[
-			document.getElementById('webgl_background')?.closest('.plm_button'),
-			document.getElementById('toggle_light_settings'),
-			document.getElementById('light_settings_group'),
-			document.getElementById('object_transparency')?.closest('.plm_button'),
-			document.getElementById('color_object_grp')?.closest('.plm_button'),
-			document.getElementById('plm_button1'),
-		].forEach(el => { if (el) el.style.display = 'none'; });
+		// Background, lights, transparency and explosion mean nothing on a
+		// drawing: no settings at all.
+		const settingsButton = document.getElementById('activatorClick');
+		if (settingsButton) settingsButton.style.display = 'none';
 	}
 	/*
 	 * Inizialize tree view search
@@ -945,8 +941,7 @@ function initcommand() {
 	}
 
 	let click_show = document.getElementById("click_show");
-	let activatorClick = document.getElementById("activatorClick");
-	activatorClick.addEventListener("click", onActivatorClick);
+	_setupSettingsMenu();
 
 	const markupLogsPerm = document.getElementById("markup_logs_perm");
 	if (markupLogsPerm) markupLogsPerm.addEventListener("click", onMarkupLogsClick);
@@ -1158,7 +1153,12 @@ function initcommand() {
 	html_canvas.addEventListener("OdooCAD_fit_items", function _loadSavedColors() {
 		html_canvas.removeEventListener("OdooCAD_fit_items", _loadSavedColors);
 		if (!_partColorsDocId) return;
-		fetch(`/plm/part_colors/load?document_id=${_partColorsDocId}`)
+		// The colours saved by hand win: laid on after the material's. This
+		// event fires inside addItemToScene, before the loader asks for the
+		// material: wait for the loader's turn to end, then for the material.
+		Promise.resolve()
+			.then(() => CAD3D.appearanceReady)
+			.then(() => fetch(`/plm/part_colors/load?document_id=${_partColorsDocId}`))
 			.then(r => r.json())
 			.then(stored => {
 				if (stored && Object.keys(stored).length > 0) {
@@ -1170,6 +1170,7 @@ function initcommand() {
 	}, false);
 	html_canvas.addEventListener("OdooCAD_render", () => { render(); }, false);
 
+	_setupDisplayModeMenu();
 	document.getElementById('save_part_colors_btn').addEventListener('click', _savePartColors);
 	document.getElementById('save_preview_btn').addEventListener('click', savePreviewToOdoo);
 	// light
@@ -1218,22 +1219,6 @@ function initcommand() {
 	};
 	xmlhttp.open("GET", url, true);
 	xmlhttp.send();
-}
-function onActivatorClick(event) {
-	const activatorDiv = document.getElementById("activatorDiv");
-	const btn = document.getElementById("activatorClick");
-	const isOpen = !activatorDiv.classList.contains('d-none');
-	if (isOpen) {
-		activatorDiv.style.visibility = 'hidden';
-		activatorDiv.style.opacity = 0;
-		activatorDiv.classList.add('d-none');
-		btn?.classList.remove('active');
-	} else {
-		activatorDiv.style.visibility = 'visible';
-		activatorDiv.style.opacity = 0.95;
-		activatorDiv.classList.remove('d-none');
-		btn?.classList.add('active');
-	}
 }
 
 function onMarkupLogsClick(event) {
@@ -1507,6 +1492,9 @@ var onClick = function (e) {
 			lineId++;
 		}
 	} else {
+		if (e.target === renderer.domElement) {
+			showCad3dInfo(e);
+		}
 		// 3D part color Feature
 		if (window.last_highlighted_li) {
 			const guid = window.last_highlighted_li;
@@ -1532,6 +1520,110 @@ var onClick = function (e) {
 		}
 	}
 
+}
+
+// Display mode: colour, material or wireframe, from the toolbar menu or M.
+const DISPLAY_MODE_LABELS = { color: 'Color', material: 'Material', wireframe: 'Wireframe' };
+
+function _showDisplayMode(mode) {
+	const button = document.getElementById('display_mode_btn');
+	if (button) button.title = `Display: ${DISPLAY_MODE_LABELS[mode]} (M)`;
+	document.querySelectorAll('#display_mode_menu .unfold_item').forEach((item) => {
+		item.classList.toggle('active', item.dataset.mode === mode);
+	});
+}
+
+/**
+ * A strip of icons unfolding to the right of a toolbar button: the button
+ * opens and closes it, a click elsewhere closes it (and onClose runs).
+ * Returns { open, close } of the strip.
+ */
+function _setupUnfoldMenu(button, menu, onClose) {
+	// In the page itself, so the toolbar's own layout does not move it.
+	document.body.appendChild(menu);
+	const close = () => {
+		menu.classList.remove('open');
+		button.classList.remove('active');
+		if (onClose) onClose();
+	};
+	button.addEventListener('click', () => {
+		if (menu.classList.contains('open')) {
+			close();
+			return;
+		}
+		const rect = button.getBoundingClientRect();
+		menu.style.left = `${rect.right + 4}px`;
+		menu.style.top = `${rect.top + rect.height / 2}px`;
+		menu.classList.add('open');
+		button.classList.add('active');
+	});
+	return { close, isInside: (target) => menu.contains(target) || button.contains(target) };
+}
+
+function _setupDisplayModeMenu() {
+	const button = document.getElementById('display_mode_btn');
+	const menu = document.getElementById('display_mode_menu');
+	if (!button || !menu) return;
+	const strip = _setupUnfoldMenu(button, menu);
+	_showDisplayMode(CAD3D.getDisplayMode());
+	menu.querySelectorAll('.unfold_item').forEach((item) => {
+		item.addEventListener('click', () => {
+			CAD3D.setDisplayMode(OdooCad.items, item.dataset.mode);
+			_showDisplayMode(item.dataset.mode);
+			strip.close();
+		});
+	});
+	document.addEventListener('pointerdown', (e) => {
+		if (menu.classList.contains('open') && !strip.isInside(e.target)) strip.close();
+	});
+}
+
+// Settings: background, lights, transparency, explosion; each icon of the
+// strip opens its panel beside it, one at a time.
+function _setupSettingsMenu() {
+	const button = document.getElementById('activatorClick');
+	const menu = document.getElementById('settings_menu');
+	if (!button || !menu) return;
+	const panels = [...menu.querySelectorAll('.unfold_item')].map((item) => {
+		const panel = document.getElementById(item.dataset.panel);
+		document.body.appendChild(panel);
+		return [item, panel];
+	});
+	const closePanels = () => panels.forEach(([item, panel]) => {
+		item.classList.remove('active');
+		panel.classList.remove('open');
+	});
+	const strip = _setupUnfoldMenu(button, menu, closePanels);
+	for (const [item, panel] of panels) {
+		item.addEventListener('click', () => {
+			const opening = !panel.classList.contains('open');
+			closePanels();
+			if (!opening) return;
+			const rect = menu.getBoundingClientRect();
+			panel.style.left = `${rect.right + 6}px`;
+			panel.style.top = `${rect.top}px`;
+			panel.classList.add('open');
+			item.classList.add('active');
+		});
+	}
+	document.addEventListener('pointerdown', (e) => {
+		if (!menu.classList.contains('open') || strip.isInside(e.target)) return;
+		if (panels.some(([, panel]) => panel.contains(e.target))) return;
+		strip.close();
+	});
+}
+
+// A click on a face of a cad3d export shows its hole, fillet or chamfer;
+// anywhere else it closes that popup.
+function showCad3dInfo(e) {
+	const rect = canvas.getBoundingClientRect();
+	pointer.x = ((e.clientX - rect.left) / canvas.clientWidth) * 2 - 1;
+	pointer.y = -((e.clientY - rect.top) / canvas.clientHeight) * 2 + 1;
+	raycaster.setFromCamera(pointer, camera);
+	const hit = raycaster.intersectObjects(OdooCad.items, true)
+		.find((h) => h.object.isMesh && h.object.visible);
+	CAD3D.showFeatureInfo(hit, e.clientX, e.clientY);
+	CAD3D.updateFeatureLeader(camera, renderer.domElement);
 }
 
 /**
@@ -1824,6 +1916,9 @@ function onKeyDone(event) {
 		show_all_scene_item();
 		render();
 	}
+	if ((event.key === 'm' || event.key === 'M') && !event.target.closest('input, textarea, select')) {
+		_showDisplayMode(CAD3D.nextDisplayMode(OdooCad.items));
+	}
 	if (event.key === 'h' || event.key === 'H') {
 		const guid = window.last_highlighted_li;
 		if (guid && OdooCad?.tree_ref_elements?.[guid]) {
@@ -2064,6 +2159,7 @@ function render() {
 	});
 	updateOrientationCube(camera);
 	labelRenderer.render(scene, camera);
+	CAD3D.updateFeatureLeader(camera, renderer.domElement);
 	renderer.render(scene, camera);
 	Object.values(measurementLabels).forEach(label => {
 		if (label) {

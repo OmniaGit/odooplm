@@ -1545,3 +1545,168 @@ canvas#odoo_canvas {
     transition: background-color 0.2s;
 }
 
+
+/* Popup of the hole, fillet or chamfer under a click (cad3d_features.js) */
+.cad3d_info_popup {
+    position: fixed;
+    z-index: 1000;
+    min-width: 220px;
+    max-width: 360px;
+    max-height: 60vh;
+    overflow-y: auto;
+    padding: 8px 10px;
+    background: #ffffff;
+    border: 1px solid #714B67;
+    border-radius: 6px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+    font-family: sans-serif;
+    font-size: 13px;
+    color: #222;
+}
+.cad3d_info_header {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 6px;
+    color: #714B67;
+}
+.cad3d_info_close {
+    cursor: pointer;
+}
+.cad3d_info_caption {
+    margin: 8px 0 2px;
+    font-weight: bold;
+    color: #714B67;
+}
+.cad3d_info_table {
+    border-collapse: collapse;
+    width: 100%;
+}
+.cad3d_info_table td {
+    padding: 2px 4px;
+    border-bottom: 1px solid #eee;
+    vertical-align: top;
+}
+.cad3d_info_table td:first-child {
+    color: #666;
+    white-space: nowrap;
+}
+.cad3d_info_note,
+.cad3d_info_foot {
+    color: #a0522d;
+}
+.cad3d_info_foot {
+    margin-top: 6px;
+    font-size: 11px;
+}
+
+/* Leader line from the clicked point to its popup (cad3d_features.js) */
+.cad3d_info_leader {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 999;
+    pointer-events: none;
+    overflow: visible;
+}
+.cad3d_info_leader line {
+    stroke: #714B67;
+    stroke-width: 1.5;
+}
+.cad3d_info_leader circle {
+    fill: #714B67;
+    stroke: #ffffff;
+    stroke-width: 1.5;
+}
+.cad3d_info_handle {
+    cursor: move;
+    user-select: none;
+}
+.cad3d_info_toggle {
+    cursor: pointer;
+    user-select: none;
+}
+
+/* Unfolding toolbar menus (display mode, settings): a strip of icons that
+   unfolds to the right of its toolbar button. */
+.unfold_menu {
+    position: fixed;
+    z-index: 1001;
+    display: flex;
+    gap: 2px;
+    padding: 3px;
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+    transform: translateY(-50%) scaleX(0);
+    transform-origin: left center;
+    opacity: 0;
+    pointer-events: none;
+    transition: transform 0.22s ease-out, opacity 0.18s ease-out;
+}
+.unfold_menu.open {
+    transform: translateY(-50%) scaleX(1);
+    opacity: 1;
+    pointer-events: auto;
+}
+.unfold_item {
+    width: 26px;
+    height: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    cursor: pointer;
+    color: #333;
+    opacity: 0;
+    transform: translateX(-8px);
+    transition: opacity 0.18s ease-out, transform 0.18s ease-out, background-color 0.15s ease;
+}
+.unfold_menu.open .unfold_item {
+    opacity: 1;
+    transform: translateX(0);
+}
+/* One after the other, as the strip unfolds. */
+.unfold_menu.open .unfold_item:nth-child(2) { transition-delay: 0.05s; }
+.unfold_menu.open .unfold_item:nth-child(3) { transition-delay: 0.1s; }
+.unfold_menu.open .unfold_item:nth-child(4) { transition-delay: 0.15s; }
+.unfold_item:hover {
+    background-color: rgba(113, 75, 103, 0.15);
+}
+.unfold_item.active {
+    background-color: #714B67;
+    color: white;
+}
+
+/* The panel an icon of the settings strip opens, beside the strip. */
+.settings_panel {
+    position: fixed;
+    z-index: 1001;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 180px;
+    padding: 8px 10px;
+    background-color: rgba(255, 255, 255, 0.95);
+    border: 1px solid #714B67;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+    font-family: sans-serif;
+    font-size: 12px;
+    color: #333;
+    opacity: 0;
+    transform: translateX(-6px);
+    pointer-events: none;
+    transition: opacity 0.18s ease-out, transform 0.18s ease-out;
+}
+.settings_panel.open {
+    opacity: 1;
+    transform: translateX(0);
+    pointer-events: auto;
+}
+.settings_panel label {
+    margin-top: 4px;
+    color: #714B67;
+}
