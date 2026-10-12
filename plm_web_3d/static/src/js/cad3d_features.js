@@ -10,7 +10,7 @@ import * as THREE from '../../lib/three.js/build/three.module.js';
 const SCHEMA = 'odooplm.cad3d';
 const POPUP_ID = 'cad3d_info_popup';
 
-const FEATURE_TYPES = { hole: 'Hole', fillet: 'Fillet', chamfer: 'Chamfer' };
+const FEATURE_TYPES = { hole: 'Hole', fillet: 'Fillet', chamfer: 'Chamfer', assembly: 'Assembly feature' };
 const HOLE_TYPES = {
 	simple: 'Simple', counterbore: 'Counterbore', countersink: 'Countersink',
 	spotface: 'Spotface', tapped: 'Tapped', counterdrill: 'Counterdrill', tapered: 'Tapered',
@@ -260,7 +260,10 @@ export function showFeatureInfo(hit, x, y) {
 			anyEstimated = anyEstimated || Boolean(note);
 			row(table, label, format(value), note);
 		}
-	} else {
+	}
+	// The face itself: what a face without a feature shows, and what an
+	// assembly feature (which has no parameters of its own) shows of the cut.
+	if (!feature || feature.type === 'assembly') {
 		const params = face.params || {};
 		if (params.radius !== undefined) {
 			row(table, face.surface === 'cylinder' ? 'Diameter' : 'Radius',
@@ -679,4 +682,181 @@ export function nextDisplayMode(roots) {
 	const next = DISPLAY_MODES[(DISPLAY_MODES.indexOf(displayMode) + 1) % DISPLAY_MODES.length];
 	setDisplayMode(roots, next);
 	return next;
+}
+
+
+// Hole centres (plm.hole_axes: the two ends of every round hole's axis), for
+// measuring centre to centre: shown as dots while the measure is on, and the
+// first thing the measure snaps to.
+
+const CENTER_MARKER_NAME = '__cad3d_hole_centers__';
+let centerDot = null;
+
+/** A round dot with a white ring: points are drawn square otherwise. */
+function centerDotTexture() {
+	if (centerDot) return centerDot;
+	const canvas = document.createElement('canvas');
+	canvas.width = canvas.height = 32;
+	const ctx = canvas.getContext('2d');
+	ctx.beginPath();
+	ctx.arc(16, 16, 13, 0, 2 * Math.PI);
+	ctx.fillStyle = '#ffffff';
+	ctx.fill();
+	ctx.beginPath();
+	ctx.arc(16, 16, 10, 0, 2 * Math.PI);
+	ctx.fillStyle = '#ff7a00';
+	ctx.fill();
+	centerDot = new THREE.CanvasTexture(canvas);
+	return centerDot;
+}
+
+function plmRoots(roots) {
+	const out = [];
+	for (const root of roots) {
+		root.traverse((child) => {
+			const plm = child.userData && child.userData.plm;
+			if (plm && plm.schema === SCHEMA && (plm.hole_axes || []).length) out.push(child);
+		});
+	}
+	return out;
+}
+
+/** Show or hide the dots of the hole centres under roots. */
+export function showHoleCenters(roots, visible) {
+	for (const root of plmRoots(roots)) {
+		let dots = root.getObjectByName(CENTER_MARKER_NAME);
+		if (!dots && visible) {
+			const points = [];
+			for (const hole of root.userData.plm.hole_axes) points.push(...hole.start, ...hole.end);
+			const geometry = new THREE.BufferGeometry();
+			geometry.setAttribute('position', new THREE.Float32BufferAttribute(points, 3));
+			dots = new THREE.Points(geometry, new THREE.PointsMaterial({
+				map: centerDotTexture(),
+				size: 12,
+				sizeAttenuation: false,     // the same size on screen at any zoom
+				transparent: true,
+				alphaTest: 0.5,
+				depthTest: false,
+			}));
+			dots.name = CENTER_MARKER_NAME;
+			dots.renderOrder = 999;
+			dots.raycast = () => { };
+			root.add(dots);
+		}
+		if (dots) dots.visible = visible;
+	}
+	requestRender();
+}
+
+/**
+ * The hole centre nearest the pointer on screen, within maxPixels, as a world
+ * Vector3; null when there is none. pointer is in normalized device
+ * coordinates, like the raycaster's.
+ */
+export function nearestHoleCenter(roots, camera, canvas, pointer, maxPixels) {
+	const width = canvas.clientWidth;
+	const height = canvas.clientHeight;
+	let best = null;
+	let bestDistance = maxPixels;
+	const world = new THREE.Vector3();
+	const screen = new THREE.Vector3();
+	for (const root of plmRoots(roots)) {
+		if (!isShown(root)) continue;
+		for (const hole of root.userData.plm.hole_axes) {
+			for (const end of [hole.start, hole.end]) {
+				world.set(end[0], end[1], end[2]);
+				root.localToWorld(world);
+				screen.copy(world).project(camera);
+				if (screen.z < -1 || screen.z > 1) continue;
+				const dx = (screen.x - pointer.x) * width / 2;
+				const dy = (screen.y - pointer.y) * height / 2;
+				const distance = Math.hypot(dx, dy);
+				if (distance < bestDistance) {
+					bestDistance = distance;
+					best = world.clone();
+				}
+			}
+		}
+	}
+	return best;
+}
+
+
+// Assemblies (plm.kind "assembly"): a group per component, placed by its
+// matrix. A component the assembly changed holds its own mesh; any other is
+// the export of its part, loaded once: the viewer asks for the document with
+// the component's code and revision, then its Web3DTree export in the
+// assembly's own format.
+
+const assemblyLoader = new THREE.ObjectLoader();
+
+/** The format of an export, from its name: ".cad3d.json", ".3mf", ... */
+export function exportSuffix(name) {
+	const match = (name || '').toLowerCase().match(/(\.cad3d)?\.[a-z0-9]+$/);
+	return match ? match[0] : '';
+}
+
+export function isAssembly(root) {
+	const plm = root && root.userData && root.userData.plm;
+	return Boolean(plm && plm.schema === SCHEMA && plm.kind === 'assembly');
+}
+
+/** The component groups of an assembly, the changed ones first or not. */
+export function assemblyNodes(root) {
+	return root.children.filter((node) => node.userData && node.userData.plm_component);
+}
+
+/**
+ * Load the parts of the assembly root, each once, into every group of it;
+ * onComponent(part) runs on each copy placed. Resolves with what was not
+ * found, by name.
+ */
+export function loadAssemblyComponents(root, documentName, onComponent) {
+	if (!isAssembly(root)) return Promise.resolve([]);
+	const suffix = exportSuffix(documentName);
+	const byPart = new Map();
+	for (const node of assemblyNodes(root)) {
+		const info = node.userData.plm_component;
+		if (info.modified) continue;
+		const key = `${info.engineering_code}|${info.engineering_revision}`;
+		if (!byPart.has(key)) byPart.set(key, { info, nodes: [] });
+		byPart.get(key).nodes.push(node);
+	}
+	const missing = [];
+	const jobs = [...byPart.values()].map(({ info, nodes }) => {
+		if (!info.engineering_code || info.engineering_revision === null || info.engineering_revision === undefined) {
+			missing.push(info.name);
+			return Promise.resolve();
+		}
+		const query = new URLSearchParams({
+			engineering_code: info.engineering_code,
+			engineering_revision: info.engineering_revision,
+			suffix,
+		});
+		return fetch(`/plm/web3d_component?${query}`)
+			.then((response) => response.json())
+			.then((found) => new Promise((resolve) => {
+				if (!found || !found.url) {
+					missing.push(`${info.engineering_code} rev ${info.engineering_revision}`);
+					resolve();
+					return;
+				}
+				assemblyLoader.load(found.url, (part) => {
+					for (const node of nodes) {
+						const copy = part.clone();
+						node.add(copy);
+						if (onComponent) onComponent(copy);
+					}
+					resolve();
+				}, undefined, () => {
+					missing.push(found.name);
+					resolve();
+				});
+			}))
+			.catch(() => missing.push(info.name));
+	});
+	return Promise.all(jobs).then(() => {
+		if (missing.length) console.warn('assembly components not found:', missing);
+		return missing;
+	});
 }
