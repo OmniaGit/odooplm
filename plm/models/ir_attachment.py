@@ -461,18 +461,16 @@ class IrAttachment(models.Model):
                         and doc_rel_id.parent_id.document_type == "3d"
                     ):
                         good_id = doc_rel_id.parent_id
-                if good_id and good_id.i not in out:
+                if good_id and good_id.id not in out:
                     if getOnyChkOut:
                         if not good_id.is_checkout:
                             continue
                     out.append(good_id.id)
                     if recursion:
-                        for recursion_id in _getRelatedPrTree(good_id.id):
-                            if recursion_id not in out:
-                                out.append(recursion_id)
+                        _getRelatedPrTree(good_id.id)
 
         _getRelatedPrTree(root_doc_id)
-        return list(set(out))
+        return list(set(out) - {root_doc_id})
 
     @api.model
     def getRelatedRfTree(self, doc_id, recursion=True, evaluated=False):
