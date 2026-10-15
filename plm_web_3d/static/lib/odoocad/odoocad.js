@@ -61,9 +61,11 @@ class OdooCAD {
             object.castShadow = true;
             var randomColor = "#000000".replace(/0/g, function () { return (~~(Math.random() * 16)).toString(16); });
             var material = new THREE.MeshPhongMaterial({ color: randomColor });
+            // A material of its own for every part: the preselection, the
+            // colour (C) and the transparency (T) change one part, not all
             object.traverse(function (child) {
                 if (child instanceof THREE.Mesh) {
-                    child.material = material;
+                    child.material = material.clone();
                 }
             });
             object.material = material;

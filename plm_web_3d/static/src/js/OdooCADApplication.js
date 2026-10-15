@@ -5,7 +5,7 @@
 import * as THREE from '../../lib/three.js/build/three.module.js';
 import * as ODOOCAD from '../../lib/odoocad/odoocad.js';
 import * as CAD3D from './cad3d_features.js';
-import { clearSelection, initSelection, selectedObjects, toggleSelection } from './selection.js';
+import { clearSelection, initSelection, selectedObjects, toggleSelection, updateSelectionOutlines } from './selection.js';
 import { buildCrate, disposeCrate } from './crate_box.js';
 // controls
 import { OrbitControls } from '../../lib/three.js/examples/jsm/controls/OrbitControls.js';
@@ -880,7 +880,7 @@ function init() {
 	 * inizialize OdooCAD
 	 */
 	OdooCad = new ODOOCAD.OdooCAD(scene);
-	initSelection((guid) => OdooCad.tree_ref_elements?.[guid], _onSelectionChanged);
+	initSelection((guid) => OdooCad.tree_ref_elements?.[guid], _onSelectionChanged, scene);
 	// Shift+click on a row of the tree (odoocad.js)
 	document.addEventListener('OdooCAD_toggle_selection', (e) => toggleSelection(e.detail.guid));
 	OdooCad.load_document(document_id, document_name);
@@ -1682,6 +1682,20 @@ function expandAncestors(element) {
 }
 
 
+// The preselection colour of a part: the opposite of its own, always easy to
+// tell apart. Pure RGB inversion leaves a mid grey grey (#808080 -> #7f7f7f),
+// so the hue turns half way round, the lightness moves 0.45 to the other side
+// (within 0.1-0.9: never less than 0.4 apart) and the colour is kept
+// saturated; a grey, which has no hue to turn, takes a fixed blue.
+const PRESELECTION_GREY_HUE = 0.6;
+function preselectionColor(color) {
+	const hsl = {};
+	color.getHSL(hsl);
+	const hue = hsl.s < 0.12 ? PRESELECTION_GREY_HUE : (hsl.h + 0.5) % 1;
+	const lightness = hsl.l >= 0.5 ? Math.max(0.1, hsl.l - 0.45) : Math.min(0.9, hsl.l + 0.45);
+	return new THREE.Color().setHSL(hue, Math.max(hsl.s, 0.7), lightness);
+}
+
 window.highlight3D = function (guid, enable = true) {
 	if (!OdooCad?.tree_ref_elements?.[guid]) return;
 	const obj = OdooCad.tree_ref_elements[guid];
@@ -1691,7 +1705,7 @@ window.highlight3D = function (guid, enable = true) {
 			if (!child.material.userData.originalColor) {
 				child.material.userData.originalColor = child.material.color.clone();
 			}
-			child.material.color.copy(window.ODOO_HILIGHT_COLOR);
+			child.material.color.copy(preselectionColor(child.material.userData.originalColor));
 			if (!child.getObjectByName('__highlight_edges__')) {
 				const edges = new THREE.EdgesGeometry(child.geometry);
 				const edgeMat = new THREE.LineBasicMaterial({ color: 0x714B67 });
@@ -2311,6 +2325,7 @@ function resizeCanvasToDisplaySize() {
 		renderer.setSize(clientWidth, clientHeight);
 		labelRenderer.setSize(clientWidth, clientHeight);
 	}
+	updateSelectionOutlines(clientWidth, clientHeight);
 	if (cube) {
 		cube.style.left = clientWidth - 100 + 'px';
 		cube.style.top = clientHeight - 50 + 'px';
