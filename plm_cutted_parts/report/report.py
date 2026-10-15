@@ -31,7 +31,8 @@ class ReportDocumentPdf(models.AbstractModel):
 
         def _get_rec(bom_object, level, parent_qty=1):
             for line in bom_object.bom_line_ids:
-                line_qty = line.product_qty
+                # quantity for one top product: the line times every level above
+                line_qty = line.product_qty * parent_qty
                 if line.product_id.is_row_material:
                     eng_code = line.product_id.engineering_code
                     res = {}
@@ -43,7 +44,7 @@ class ReportDocumentPdf(models.AbstractModel):
                     res["p_desc"] = _(product.name)
                     res["p_code"] = line.product_id.default_code
                     res["p_rev"] = product.engineering_revision
-                    res["p_qty"] = line_qty * 1 if parent_qty < 1 else parent_qty
+                    res["p_qty"] = line_qty
                     res["u_name"] = line.uom_id.name
                     res["p_weight"] = product.weight
                     res["code"] = eng_code
