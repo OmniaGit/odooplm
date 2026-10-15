@@ -2377,6 +2377,13 @@ function explode(obj, guid, globalCenter, speed, maxSize) {
 
 	// Displacement is proportional to the max dimension of the assembly
 	dir.normalize().multiplyScalar((speed / 100) * maxSize);
+	// dir is in the world; the position is in the parent's frame, which may
+	// be rotated or scaled (a glTF root brought to mm): turn it into that frame
+	if (obj.parent) {
+		const toParent = new THREE.Matrix3().setFromMatrix4(
+			new THREE.Matrix4().copy(obj.parent.matrixWorld).invert());
+		dir.applyMatrix3(toParent);
+	}
 
 	obj.position.set(
 		originalPos.x + dir.x,

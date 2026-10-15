@@ -27,6 +27,9 @@ const stlLoader = new STLLoader();
 const svgloader = new SVGLoader();
 const dxfLoader = new DXFLoader();
 const threeMFLoader = new ThreeMFLoader();
+// glTF is in metres (as the standard says), the viewer in millimetres: the
+// measure, the crate, the snap and the cad3d values all print mm
+const GLTF_TO_MM = 1000;
 const loader = new THREE.ObjectLoader();
 
 
@@ -155,6 +158,9 @@ class Loader {
 					if (children[i].isCamera || children[i].isLight) {
 						continue;
 					}
+					// in mm before it is added: addItemToScene fits the camera on it
+					children[i].position.multiplyScalar(GLTF_TO_MM);
+					children[i].scale.multiplyScalar(GLTF_TO_MM);
 					// the parts of a glTF are meshes: the tree starts from the node
 					out_html_structure += self.odooCad.addItemToScene(children[i], true, true);
 					// a cad3d export (MultiCad cad3d_export): its CAD faces,
