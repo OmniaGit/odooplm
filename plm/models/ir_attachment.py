@@ -4872,9 +4872,11 @@ class IrAttachment(models.Model):
             last_revision_id = self.browseLastRev()
             if last_revision_id.id !=self.id:
                 #
-                # latest version is present
+                # latest version is present: its file has the same name, so this
+                # revision may not overwrite it where it is checked out, which is
+                # only this machine and pws
                 #
-                if last_revision_id.isCheckedOutByMe():
+                if last_revision_id.isCheckedOutByMeOr(hostname, pws_path)[0]:
                     return "CHECK-OUT-LATEST"
                 return "DOWNLOAD"
             else:
