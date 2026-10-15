@@ -1,6 +1,6 @@
 // treejs main import
 import * as THREE from '../three.js/build/three.module.js';
-import { addHoleTextures, applyAppearance, assemblyNodes, isAssembly, loadAssemblyComponents } from '../../src/js/cad3d_features.js';
+import { addHoleTextures, applyAppearance, assemblyNodes, isAssembly, loadAssemblyComponents, prepareGlbFaces } from '../../src/js/cad3d_features.js';
 // loaders
 import { GLTFLoader } from '../three.js/examples/jsm/loaders/GLTFLoader.js';
 import { DRACOLoader } from '../three.js/examples/jsm/loaders/DRACOLoader.js';
@@ -156,6 +156,12 @@ class Loader {
 						continue;
 					}
 					out_html_structure += self.odooCad.addItemToScene(children[i]);
+					// a cad3d export (MultiCad cad3d_export): its CAD faces,
+					// look and holes, as the JSON gets them; after
+					// addItemToScene, which replaces every mesh material
+					prepareGlbFaces(children[i]);
+					applyAppearance(children[i]);
+					addHoleTextures(children[i]);
 				}
 				self.odooCad.create_tree_structure(out_html_structure);
 				self._hideProgress();

@@ -3,7 +3,10 @@
 // chamfer) that owns it, and a small popup with what the CAD said of it.
 //
 // The mesh carries one geometry group per CAD face; userData.plm.faces[i].group
-// names the group, features[].face_ids the faces of each feature.
+// names the group, features[].face_ids the faces of each feature. A .glb has
+// one primitive per colour and says where each face is in it
+// (faces[i].primitive, start, count): prepareGlbFaces turns that into the same
+// groups, each mesh knowing its primitive (userData.cad3dPrimitive).
 
 import * as THREE from '../../lib/three.js/build/three.module.js';
 
@@ -75,7 +78,8 @@ export function featureAtHit(hit) {
 	const start = hit.faceIndex * 3;
 	const groups = geometry.groups || [];
 	const group = groups.findIndex((g) => start >= g.start && start < g.start + g.count);
-	const face = (plm.faces || []).find((f) => f.group === group) || null;
+	const primitive = hit.object.userData.cad3dPrimitive;
+	const face = (plm.faces || []).find((f) => f.group === group && f.primitive === primitive) || null;
 	if (!face) return null;
 	const feature = (plm.features || []).find((f) => (f.face_ids || []).includes(face.id)) || null;
 	return { plm, face, feature };
@@ -463,6 +467,42 @@ function cylinderTriangles(geometry, group, axis, vOf, out) {
  * Lay the hole texture over the cylindrical faces of the holes of every
  * cad3d mesh under root. Call it after the viewer has set its materials.
  */
+/**
+ * The faces of a .glb export as geometry groups, the way the cad3d JSON has
+ * them. GLTFLoader makes a glTF mesh one Mesh per primitive: the Mesh itself
+ * when there is one primitive, else the children of a Group, in order; each
+ * face says its primitive and its range of indices in it.
+ */
+export function prepareGlbFaces(root) {
+	const byPlm = new Map();
+	root.traverse((object) => {
+		if (!object.isMesh || object.name === OVERLAY_NAME) return;
+		const plm = plmData(object);
+		if (!plm || !(plm.faces || []).some((f) => f.primitive !== undefined)) return;
+		const parent = object.parent;
+		const split = parent && parent.isGroup && parent.children.length > 1
+			&& parent.children.every((c) => c.isMesh);
+		const primitive = split ? parent.children.indexOf(object) : 0;
+		if (!byPlm.has(plm)) byPlm.set(plm, []);
+		byPlm.get(plm)[primitive] = object;
+	});
+	for (const [plm, meshes] of byPlm) {
+		meshes.forEach((mesh, primitive) => {
+			mesh.userData.cad3dPrimitive = primitive;
+			mesh.geometry.clearGroups();
+		});
+		for (const face of plm.faces) {
+			const mesh = face.primitive === null ? null : meshes[face.primitive];
+			if (!mesh) {
+				face.group = -1;           // no triangles: nothing to click
+				continue;
+			}
+			face.group = mesh.geometry.groups.length;
+			mesh.geometry.addGroup(face.start, face.count, 0);
+		}
+	}
+}
+
 export function addHoleTextures(root) {
 	const meshes = [];
 	root.traverse((child) => {
@@ -472,7 +512,9 @@ export function addHoleTextures(root) {
 		const plm = plmData(mesh);
 		const geometry = mesh.geometry;
 		if (!geometry.attributes.normal || !geometry.groups) continue;
-		const faceGroup = new Map((plm.faces || []).map((f) => [f.id, f.group]));
+		const primitive = mesh.userData.cad3dPrimitive;
+		const faceGroup = new Map((plm.faces || []).filter((f) => f.primitive === primitive)
+			.map((f) => [f.id, f.group]));
 		const kinds = { drill: { positions: [], normals: [], uvs: [] }, thread: { positions: [], normals: [], uvs: [] } };
 		for (const feature of plm.features || []) {
 			if (feature.type !== 'hole' || feature.suppressed) continue;
