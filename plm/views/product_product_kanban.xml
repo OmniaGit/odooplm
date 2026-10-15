@@ -95,7 +95,7 @@
                                             <a type="object" name="open_related_docs_action">
                                                 <span title="Number Related Documents">
                                                     <b>
-                                                        <t t-esc="dashboard.number_documents"/>
+                                                        <t t-out="dashboard.number_documents"/>
                                                         Docs
                                                     </b>
                                                 </span>
@@ -105,7 +105,7 @@
                                             <a type="object" name="open_related_boms_action">
                                                 <span title="Number Related Boms">
                                                     <b>
-                                                        <t t-esc="dashboard.number_boms"/>
+                                                        <t t-out="dashboard.number_boms"/>
                                                         Boms
                                                     </b>
                                                 </span>

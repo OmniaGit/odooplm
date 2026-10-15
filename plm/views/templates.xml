@@ -26,41 +26,41 @@
                     <b style="color:white">
                         <t t-if="doc.engineering_state in ['released', 'confirmed', 'obsoleted']">
                             <div style="background-color:red">
-                                <t t-esc="doc.engineering_code"/>
+                                <t t-out="doc.engineering_code"/>
                                 -
-                                <t t-esc="doc.engineering_revision"/>
+                                <t t-out="doc.engineering_revision"/>
                             </div>
                             <div style="background-color:red"/>Status:
-                            <t t-esc="doc.engineering_state"/>
+                            <t t-out="doc.engineering_state"/>
                         </t>
                         <t t-else="">
                             <t t-set="checkout_user" t-value="doc.checkoutByMeWithUser()"/>
                             <t t-if="checkout_user[0]">
                                 <div style="background-color:green">
-                                    <t t-esc="doc.engineering_code"/>
+                                    <t t-out="doc.engineering_code"/>
                                     -
-                                    <t t-esc="doc.engineering_revision"/>
+                                    <t t-out="doc.engineering_revision"/>
                                 </div>
                                 <div style="background-color:green"/>Status:
-                                <t t-esc="doc.engineering_state"/>
+                                <t t-out="doc.engineering_state"/>
                             </t>
                             <t t-if="not checkout_user[0] and checkout_user[1] != ''">
                                 <div style="background-color:red">
-                                    <t t-esc="doc.engineering_code"/>
+                                    <t t-out="doc.engineering_code"/>
                                     -
-                                    <t t-esc="doc.engineering_revision"/>
+                                    <t t-out="doc.engineering_revision"/>
                                 </div>
                                 <div style="background-color:red"/>CheckOutUser:
-                                <t t-esc="checkout_user[1]"/>
+                                <t t-out="checkout_user[1]"/>
                             </t>
                             <t t-if="checkout_user[1] == ''">
                                 <div style="background-color:#ffd800">
-                                    <t t-esc="doc.engineering_code"/>
+                                    <t t-out="doc.engineering_code"/>
                                     -
-                                    <t t-esc="doc.engineering_revision"/>
+                                    <t t-out="doc.engineering_revision"/>
                                 </div>
                                 <div style="background-color:#ffd800"/>Status:
-                                <t t-esc="doc.engineering_state"/>
+                                <t t-out="doc.engineering_state"/>
                             </t>
                         </t>
                     </b>
@@ -81,35 +81,35 @@
                         <div class="info_header">
                             <b>Document Information</b>
                             <div>
-                                <t t-esc="doc.engineering_code"/>
+                                <t t-out="doc.engineering_code"/>
                                 -
-                                <t t-esc="doc.engineering_revision"/>
+                                <t t-out="doc.engineering_revision"/>
                             </div>
                         </div>
                         <hr class="datacard_line"/>
                         <lu id="document_info">
                             <li>
                                 <b>Last Write User:</b>
-                                <t t-esc="doc.write_uid.display_name"/>
+                                <t t-out="doc.write_uid.display_name"/>
                             </li>
                             <li>
                                 <b>Last Write Date:</b>
-                                <t t-esc="doc.write_date"/>
+                                <t t-out="doc.write_date"/>
                             </li>
                             <li>
                                 <b>Create User:</b>
-                                <t t-esc="doc.create_uid.display_name"/>
+                                <t t-out="doc.create_uid.display_name"/>
                             </li>
                             <li>
                                 <b>Crate Date:</b>
-                                <t t-esc="doc.create_date"/>
+                                <t t-out="doc.create_date"/>
                             </li>
                             <li>
                                 <hr/>
                             </li>
                             <li>
                                 <b>State:</b>
-                                <t t-esc="doc.engineering_state"/>
+                                <t t-out="doc.engineering_state"/>
                             </li>
                             <li>
                                 <hr/>
@@ -127,7 +127,7 @@
                                     </t>
                                     <t t-if="not checkout_user[0] and checkout_user[1] != ''">
                                         <li><div style="background-color:red"/>CheckOutUser:
-                                            <t t-esc="checkout_user[1]"/>
+                                            <t t-out="checkout_user[1]"/>
                                         </li>
                                     </t>
                                     <t t-if="checkout_user[1] == ''">
