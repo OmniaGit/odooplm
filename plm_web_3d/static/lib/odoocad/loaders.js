@@ -155,7 +155,8 @@ class Loader {
 					if (children[i].isCamera || children[i].isLight) {
 						continue;
 					}
-					out_html_structure += self.odooCad.addItemToScene(children[i]);
+					// the parts of a glTF are meshes: the tree starts from the node
+					out_html_structure += self.odooCad.addItemToScene(children[i], true, true);
 					// a cad3d export (MultiCad cad3d_export): its CAD faces,
 					// look and holes, as the JSON gets them; after
 					// addItemToScene, which replaces every mesh material

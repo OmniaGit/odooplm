@@ -48,10 +48,13 @@ class OdooCAD {
         return box;
     }
 
-    addItemToScene(object, force_material = true) {
+    addItemToScene(object, force_material = true, rootInTree = false) {
         var self = this;
         /*
-         * Add item to scene taking care of adding it to the geometry array
+         * Add item to scene taking care of adding it to the geometry array.
+         * rootInTree: the tree starts from the object itself, so parts that
+         * are meshes (a glTF node holding a mesh) get a row and an id too;
+         * otherwise only the groups under the object do.
          */
         if (force_material === true) {
             object.receiveShadow = true;
@@ -69,7 +72,9 @@ class OdooCAD {
         this.scene.add(object);
         this.items.push(object);
         //
-        const out_htm_structure = this.create_relation_structure(object);
+        const out_htm_structure = rootInTree
+            ? this.get_li_structure({ children: [object] })[0]
+            : this.create_relation_structure(object);
         // Center the object
         // fit item
         var fitItem = new CustomEvent("OdooCAD_fit_items");
