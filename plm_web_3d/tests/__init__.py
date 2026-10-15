@@ -19,3 +19,4 @@
 #
 ##############################################################################
 from . import test_viewer_routes
+from . import test_step_to_3mf

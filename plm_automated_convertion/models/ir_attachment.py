@@ -162,18 +162,54 @@ def _import_step_preserve_names(path: str) -> cq.Assembly:
                                     color=color, material=material)
                 parent.add(child, name=inst_name)
 
+    def _referred(lbl: TDF_Label) -> TDF_Label:
+        if shape_tool.IsReference_s(lbl):
+            tmp = TDF_Label()
+            shape_tool.GetReferredShape_s(lbl, tmp)
+            return tmp
+        return lbl
+
     labels = TDF_LabelSequence()
     shape_tool.GetFreeShapes(labels)
-    top_label = labels.Value(1)
-
-    if shape_tool.IsReference_s(top_label):
-        tmp = TDF_Label()
-        shape_tool.GetReferredShape_s(top_label, tmp)
-        top_label = tmp
-
+    free_labels = [_referred(labels.Value(i + 1)) for i in range(labels.Length())]
+    if not free_labels:
+        raise ValueError(f"The STEP file holds no shape: {path}")
+    top_label = free_labels[0]
     top_name = _get_name(top_label) or "root"
-    assy = cq.Assembly(name=top_name)
-    _process(top_label, assy)
+
+    # Single part (no sub-components): put the shape on the root itself, so
+    # _collect finds it via node.obj and split / BOM recovery see no children.
+    if len(free_labels) == 1 and not shape_tool.IsAssembly_s(top_label):
+        occ_shape = shape_tool.GetShape_s(top_label)
+        if occ_shape.IsNull():
+            return cq.Assembly(name=top_name)
+        return cq.Assembly(Shape.cast(occ_shape), name=top_name,
+                           color=_get_shape_color(occ_shape, color_tool),
+                           material=_get_material(top_label))
+
+    if shape_tool.IsAssembly_s(top_label):
+        assy = cq.Assembly(name=top_name)
+        _process(top_label, assy)
+        others = free_labels[1:]
+    else:
+        assy = cq.Assembly(name="root")
+        others = free_labels
+
+    # Further free shapes of the same STEP file become children of the root.
+    for i, lbl in enumerate(others, start=len(free_labels) - len(others)):
+        lbl_name = f"{_get_name(lbl) or 'part'}:{i}"
+        if shape_tool.IsAssembly_s(lbl):
+            sub = cq.Assembly(name=lbl_name)
+            _process(lbl, sub)
+            assy.add(sub, name=lbl_name)
+        else:
+            occ_shape = shape_tool.GetShape_s(lbl)
+            if occ_shape.IsNull():
+                continue
+            child = cq.Assembly(Shape.cast(occ_shape), name=lbl_name,
+                                color=_get_shape_color(occ_shape, color_tool),
+                                material=_get_material(lbl))
+            assy.add(child, name=lbl_name)
     return assy
 
 def _export_assembly_to_3mf(assembly, output_path):
@@ -240,6 +276,9 @@ def _export_assembly_to_3mf(assembly, output_path):
             })
 
         ET.SubElement(build_elem, _tag("item"), {"objectid": str(obj_id)})
+
+    if not len(resources_elem):
+        raise ValueError("The STEP file holds no shape that can be exported to 3MF")
 
     content_types = (
         '<?xml version="1.0" encoding="UTF-8"?>'
