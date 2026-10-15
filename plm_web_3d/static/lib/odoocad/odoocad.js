@@ -340,9 +340,21 @@ class OdooCAD {
             // =========================
             // CLICK
             // =========================
+            // Shift+click selects; the browser would select the text instead
+            hoverTargets[i].addEventListener("mousedown", function (event) {
+                if (event.shiftKey) event.preventDefault();
+            });
             hoverTargets[i].addEventListener("click", function (event) {
                 if (event.target.tagName === 'I' || event.target.tagName === 'INPUT') return;
                 const webgl_name = this.getAttribute('webgl_ref_name');
+                if (event.shiftKey) {
+                    // Into the selection or out of it (selection.js), no popup
+                    event.stopPropagation();
+                    document.dispatchEvent(new CustomEvent('OdooCAD_toggle_selection', {
+                        detail: { guid: webgl_name },
+                    }));
+                    return;
+                }
                 const obj = self.tree_ref_elements[webgl_name];
                 if (!obj) return;
                 const eng_code = obj.userData && obj.userData.engineering_code;

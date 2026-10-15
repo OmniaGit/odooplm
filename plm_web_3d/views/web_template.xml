@@ -101,6 +101,9 @@
                             <div class="unfold_item" data-mode="material" title="Material"><i class="fa fa-diamond"></i></div>
                             <div class="unfold_item" data-mode="wireframe" title="Wireframe"><i class="fa fa-th"></i></div>
                         </div>
+                        <div class="plm_button_per" id="crate_btn_perm" title="Packing Crate of the Selection (B)">
+                            <i class="fa fa-archive"></i>
+                        </div>
                         <div class="plm_button_per" id="section_plane_btn" title="Section Plane">
                             <i class="fa fa-scissors"></i>
                         </div>
@@ -273,6 +276,7 @@
                         <i class="fa fa-question-circle"></i>
                     </div>
 
+                    <div id="viewer_notice"></div>
                     <div id="shortcut_modal">
                         <div id="shortcut_modal_inner">
                             <span id="shortcut_modal_close">✖</span>
@@ -314,12 +318,20 @@
                                         <td>Next display mode: color, material, wireframe</td>
                                     </tr>
                                     <tr>
+                                        <td><kbd>Shift</kbd> + click</td>
+                                        <td>Add a part to the selection, or take it out (in the view or in the tree)</td>
+                                    </tr>
+                                    <tr>
+                                        <td><kbd>B</kbd></td>
+                                        <td>Show / hide the packing crate of the selected parts</td>
+                                    </tr>
+                                    <tr>
                                         <td><kbd>Ctrl</kbd></td>
                                         <td>Toggle measure mode on / off</td>
                                     </tr>
                                     <tr>
                                         <td><kbd>Esc</kbd></td>
-                                        <td>Cancel active tool (measure / zoom window / color picker)</td>
+                                        <td>Cancel active tool (measure / zoom window / color picker), else clear the selection</td>
                                     </tr>
                                     <tr>
                                         <td>&#xf07e; Ruler button</td>

@@ -5,6 +5,8 @@
 import * as THREE from '../../lib/three.js/build/three.module.js';
 import * as ODOOCAD from '../../lib/odoocad/odoocad.js';
 import * as CAD3D from './cad3d_features.js';
+import { clearSelection, initSelection, selectedObjects, toggleSelection } from './selection.js';
+import { buildCrate, disposeCrate } from './crate_box.js';
 // controls
 import { OrbitControls } from '../../lib/three.js/examples/jsm/controls/OrbitControls.js';
 import { TransformControls } from '../../lib/three.js/examples/jsm/controls/TransformControls.js';
@@ -70,6 +72,8 @@ let _partColorsDocId = null;
 let last_highlighted_li = null;
 let last_highlighted_part = null;
 const ODOO_HILIGHT_COLOR = new THREE.Color("#eda3da");
+// The packing crate of the selected parts (crate_box.js), while it is shown
+let crateBox = null;
 
 function createSpriteTexture(hexColor) {
 	const size = 64;
@@ -876,6 +880,9 @@ function init() {
 	 * inizialize OdooCAD
 	 */
 	OdooCad = new ODOOCAD.OdooCAD(scene);
+	initSelection((guid) => OdooCad.tree_ref_elements?.[guid], _onSelectionChanged);
+	// Shift+click on a row of the tree (odoocad.js)
+	document.addEventListener('OdooCAD_toggle_selection', (e) => toggleSelection(e.detail.guid));
 	OdooCad.load_document(document_id, document_name);
 	if (document_name && document_name.split('.').pop().toLowerCase() === 'dxf') {
 		controls.enableRotate = false;
@@ -1045,6 +1052,7 @@ function initcommand() {
 		if (zoomWindowActive) _deactivateZoomWindow();
 		else _activateZoomWindow();
 	};
+	document.getElementById("crate_btn_perm").onclick = toggleCrate;
 
 	// Part color picker — apply color on change, sync tree input
 	const partColorInput = document.getElementById('part_color_input');
@@ -1441,6 +1449,13 @@ var fitCameraToSelectionEvent = function (e) {
  * canvas.clientHeight ) * 2 + 1; }
  */
 var onClick = function (e) {
+	// Shift+click on a part: into the selection or out of it, and nothing else
+	if (e.shiftKey && !ctrlDown) {
+		if (e.target === renderer.domElement && window.last_highlighted_li) {
+			toggleSelection(window.last_highlighted_li);
+		}
+		return;
+	}
 	if (ctrlDown) {
 		if (!lines[lineId]) {
 			// start the line
@@ -1895,6 +1910,7 @@ function onKeyDone(event) {
 		}
 		if (zoomWindowActive) _deactivateZoomWindow();
 		else if (ctrlDown) _deactivateMeasure();
+		else clearSelection();
 		return;
 	}
 	if (event.key === 'w' || event.key === 'W') {
@@ -1916,6 +1932,9 @@ function onKeyDone(event) {
 	}
 	if (event.key === 'f' || event.key === 'F') {
 		fitCameraToSelectionEvent();
+	}
+	if (event.key === 'b' || event.key === 'B') {
+		toggleCrate();
 	}
 	if (event.key === 'a' || event.key === 'A') {
 		show_all_scene_item();
@@ -1953,6 +1972,79 @@ function onKeyDone(event) {
 	}
 }
 
+
+// The packing crate: on the bounding box of the selected parts, as they are
+// shown; a part hidden, or under a hidden assembly, is not in it.
+function _isShown(object) {
+	for (let o = object; o; o = o.parent) {
+		if (!o.visible) return false;
+	}
+	return true;
+}
+
+function _selectionBox() {
+	const box = new THREE.Box3();
+	const point = new THREE.Vector3();
+	for (const root of selectedObjects()) {
+		if (!_isShown(root)) continue;
+		root.updateWorldMatrix(true, true);
+		root.traverseVisible((child) => {
+			// The part's own geometry only: not the overlays, edges and
+			// sprites hung on it, which never make it bigger anyway
+			if (!child.isMesh || child.name.startsWith('__')) return;
+			const position = child.geometry?.attributes?.position;
+			if (!position) return;
+			for (let i = 0; i < position.count; i++) {
+				box.expandByPoint(point.fromBufferAttribute(position, i).applyMatrix4(child.matrixWorld));
+			}
+		});
+	}
+	return box;
+}
+
+function _showNotice(text) {
+	const notice = document.getElementById('viewer_notice');
+	if (!notice) return;
+	notice.textContent = text;
+	notice.classList.add('open');
+	clearTimeout(_showNotice.timer);
+	_showNotice.timer = setTimeout(() => notice.classList.remove('open'), 3000);
+}
+
+function _hideCrate() {
+	disposeCrate(crateBox);
+	crateBox = null;
+	document.getElementById('crate_btn_perm')?.classList.remove('active');
+}
+
+// Build the crate again on the current selection; false when nothing selected
+// is shown
+function _showCrate() {
+	if (crateBox) {
+		disposeCrate(crateBox);
+		crateBox = null;
+	}
+	const crate = buildCrate(_selectionBox());
+	if (!crate) {
+		_hideCrate();
+		return false;
+	}
+	crateBox = crate;
+	scene.add(crateBox);
+	document.getElementById('crate_btn_perm')?.classList.add('active');
+	return true;
+}
+
+function toggleCrate() {
+	if (crateBox) _hideCrate();
+	else if (!_showCrate()) _showNotice('Select the parts with Shift+click, then press B');
+	render();
+}
+
+function _onSelectionChanged() {
+	if (crateBox) _showCrate();
+	render();
+}
 
 function onKeyup(event) {
 	// Control key release is intentionally ignored — measure mode is toggled

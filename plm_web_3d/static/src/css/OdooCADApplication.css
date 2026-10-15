@@ -1710,3 +1710,42 @@ canvas#odoo_canvas {
     margin-top: 4px;
     color: #714B67;
 }
+
+/* Multiple selection (selection.js) */
+.document_tree_line_selected {
+    outline: 2px solid #ff8c00;
+    outline-offset: -1px;
+    border-radius: 4px;
+}
+
+/* Dimensions of the packing crate (crate_box.js) */
+.crate_dimension {
+    font-family: monospace;
+    font-size: 12px;
+    background-color: rgba(74, 45, 18, 0.85);
+    color: #fff3dc;
+    padding: 1px 5px;
+    border-radius: 3px;
+    white-space: nowrap;
+    pointer-events: none;
+}
+
+/* A short message over the view */
+#viewer_notice {
+    position: fixed;
+    left: 50%;
+    bottom: 40px;
+    transform: translateX(-50%);
+    background-color: rgba(113, 75, 103, 0.92);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    z-index: 2000;
+    display: none;
+    pointer-events: none;
+}
+
+#viewer_notice.open {
+    display: block;
+}
