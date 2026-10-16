@@ -980,6 +980,46 @@ class MrpBomExtension(models.Model):
         """
         return False
 
+    def _plm_save_bom_type(self):
+        """The type of the BOM a CAD save writes into: ebom when plm_engineering
+        is installed, normal otherwise. saveRelationNew and plm.client's
+        get_bom_state both ask here, so they cannot disagree."""
+        domain = [
+            ("state", "in", ["installed", "to upgrade", "to remove"]),
+            ("name", "=", "plm_engineering"),
+        ]
+        if self.env["ir.module.module"].sudo().search_read(domain, ["name"]):
+            return "ebom"
+        return "normal"
+
+    @api.model
+    def _plm_bom_line_key(self, product_id, source_document_id, relation_attributes):
+        """The key that pairs a row of the CAD with a line of the BOM: the
+        component and the document it comes from, plus the position for a
+        cut item."""
+        key = f"{product_id}_{source_document_id}"
+        if relation_attributes.get("CUTTED_COMP"):
+            key = f"{key}_{relation_attributes.get('POSITION')}"
+        return key
+
+    def _plm_bom_line_pool(self, source_document_id, bom_type):
+        """The lines of this BOM a save from that document may reuse, by key:
+        those it wrote itself (same source document, same type). The same
+        component can legitimately sit on several lines -- five occurrences of
+        a sub-assembly are five rows -- so each key holds a pool of lines, in
+        the order the save consumes them. Lines from another source (added by
+        hand in Odoo) are not in it, and a save neither reuses nor deletes them."""
+        pool = {}
+        if not self or not source_document_id:
+            return pool
+        for line in self.bom_line_ids:
+            if line.source_id.id == source_document_id and line.type == bom_type:
+                line_key = f"{line.product_id.id}_{source_document_id}"
+                if line.cutted_type == "client":
+                    line_key = f"{line_key}_{line.position}"
+                pool.setdefault(line_key, []).append(line)
+        return pool
+
     @api.model
     def saveRelationNew(self, clientArgs):
         product_product = self.env["product.product"]
@@ -988,14 +1028,7 @@ class MrpBomExtension(models.Model):
             #
             # check module installation for setting the default bom type creation
             #
-            domain = [
-                ("state", "in", ["installed", "to upgrade", "to remove"]),
-                ("name", "=", "plm_engineering"),
-            ]
-            apps = self.env["ir.module.module"].sudo().search_read(domain, ["name"])
-            bomType = "normal"
-            if apps:
-                bomType = "ebom"
+            bomType = self._plm_save_bom_type()
             parentOdooTuple, childrenOdooTuple = clientArgs
             l_tree_document_id, parent_product_product_id, parent_ir_attachment_id = (
                 parentOdooTuple
@@ -1035,13 +1068,8 @@ class MrpBomExtension(models.Model):
             existing_lines = {}
             if mrp_bom_found_id:
                 bomType = mrp_bom_found_id.type
-                for line in mrp_bom_found_id.bom_line_ids:
-                    if (line.source_id.id == parent_ir_attachment_id
-                            and line.type == bomType):
-                        line_key = f"{line.product_id.id}_{parent_ir_attachment_id}"
-                        if line.cutted_type == "client":
-                            line_key = f"{line_key}_{line.position}"
-                        existing_lines.setdefault(line_key, []).append(line)
+                existing_lines = mrp_bom_found_id._plm_bom_line_pool(
+                    parent_ir_attachment_id, bomType)
             bom_changed = False
             #
             # diff-based update: update/keep/add rows
@@ -1059,10 +1087,9 @@ class MrpBomExtension(models.Model):
                 #
                 if not relationAttributes.get('EXCLUDE', False) and mrp_bom_found_id:
                     if mrp_bom_found_id and child_product_product_id:
-                        key = f"{child_product_product_id}_{parent_ir_attachment_id}"
-                        if relationAttributes.get('CUTTED_COMP'):
-                            position = relationAttributes.get('POSITION')
-                            key = f"{key}_{position}"
+                        key = self._plm_bom_line_key(child_product_product_id,
+                                                     parent_ir_attachment_id,
+                                                     relationAttributes)
                         incoming_qty = relationAttributes.get('product_qty', 1)
                         if summarize_bom and key in cache_row:
                             cache_row[key].product_qty += incoming_qty

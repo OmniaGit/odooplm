@@ -420,6 +420,102 @@ class PlmClient(models.TransientModel):
             out.append(attachment_id.get_open_attachment_data_out())
         return out
 
+    def _plm_find_by_code(self, model_name, code_revision):
+        """The record of that engineering code and revision, empty when there
+        is none. An empty revision is 0, the client's general rule."""
+        records = self.env[model_name]
+        if not code_revision or not code_revision[0]:
+            return records
+        code = code_revision[0]
+        revision = code_revision[1] if len(code_revision) > 1 else 0
+        return records.search(
+            [("engineering_code", "=", code),
+             ("engineering_revision", "=", int(revision or 0))],
+            limit=1,
+        )
+
+    @api.model
+    def get_bom_state(self, structure_json):
+        """What a CAD save would find in Odoo, asked before saving. Read only:
+        nothing is created, written or deleted.
+
+        `structure_json` is a JSON list of parents, each
+            {"product": [code, revision], "document": [code, revision],
+             "children": [{"product": [code, revision],
+                           "document": [code, revision],
+                           "attributes": {"EXCLUDE": ..., "CUTTED_COMP": ...,
+                                          "POSITION": ...}}, ...]}
+        The answer is a JSON list in the same order, each
+            {"product_id", "document_id",
+             "bom_id": the BOM the save writes into, False when it would create one,
+             "bom_type",
+             "children": [{"product_id", "document_id",
+                           "line_id": the line the save reuses, False for a new one}],
+             "lines_removed": the ids of the lines the save would delete,
+             "bom_removed": True when the save would leave the BOM empty and delete it}
+
+        It follows saveRelationNew step by step through the same helpers
+        (_plm_save_bom_type, _saveRelationNewGetBom, _plm_bom_line_pool,
+        _plm_bom_line_key, custom_exclude), so the answer is what the save does.
+        """
+        mrp_bom = self.env["mrp.bom"]
+        summarize_bom = self.env.context.get("SUMMARIZE_BOM", False)
+        out = []
+        for parent in json.loads(structure_json):
+            product = self._plm_find_by_code("product.product", parent.get("product"))
+            document = self._plm_find_by_code("ir.attachment", parent.get("document"))
+            bom_type = mrp_bom._plm_save_bom_type()
+            bom = mrp_bom
+            if product:
+                # n_child_row 0: find the BOM, never create it
+                bom = mrp_bom._saveRelationNewGetBom(
+                    product.product_tmpl_id.id, bom_type, product, 0
+                ) or mrp_bom
+            pool = {}
+            if bom:
+                bom_type = bom.type
+                pool = bom._plm_bom_line_pool(document.id, bom_type)
+            children = []
+            new_lines = 0
+            summarized = {}
+            for child in parent.get("children") or []:
+                attributes = child.get("attributes") or {}
+                child_product = self._plm_find_by_code("product.product", child.get("product"))
+                child_document = self._plm_find_by_code("ir.attachment", child.get("document"))
+                line_id = False
+                if (not mrp_bom.custom_exclude(child_product.id, child_document.id,
+                                               attributes, bom)
+                        and not attributes.get("EXCLUDE", False)
+                        and bom and child_product):
+                    key = mrp_bom._plm_bom_line_key(child_product.id, document.id, attributes)
+                    if summarize_bom and key in summarized:
+                        line_id = summarized[key]
+                    else:
+                        reusable_lines = pool.get(key)
+                        if reusable_lines:
+                            line_id = reusable_lines.pop(0).id
+                        else:
+                            new_lines += 1
+                        if summarize_bom:
+                            summarized[key] = line_id
+                children.append({
+                    "product_id": child_product.id or False,
+                    "document_id": child_document.id or False,
+                    "line_id": line_id,
+                })
+            lines_removed = [line.id for lines in pool.values() for line in lines]
+            out.append({
+                "product_id": product.id or False,
+                "document_id": document.id or False,
+                "bom_id": bom.id or False,
+                "bom_type": bom_type,
+                "children": children,
+                "lines_removed": lines_removed,
+                "bom_removed": bool(bom) and not new_lines
+                and len(bom.bom_line_ids) == len(lines_removed),
+            })
+        return json.dumps(out)
+
     def CheckAllFiles(self, request, default=None):
         """
         Evaluate documents to return
