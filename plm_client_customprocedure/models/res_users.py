@@ -51,7 +51,8 @@ class ResUsers(models.Model):
         ctx['erase_customprocedure'] = False
         for groupBrws in self:
             if groupBrws.custom_procedure:
-                fileReadableContent = base64.b64decode(groupBrws.custom_procedure)
+                # the field's value is the file itself on Odoo 20, no longer base64
+                fileReadableContent = groupBrws.custom_procedure.content.decode('utf-8', errors='replace')
                 if self.custom_read_content:
                     fileReadableContent = ''
                 self.with_context({
@@ -63,7 +64,7 @@ class ResUsers(models.Model):
         ctx['erase_multicad'] = False
         for groupBrws in self:
             if groupBrws.custom_multicad:
-                fileReadableContent = base64.b64decode(groupBrws.custom_multicad)
+                fileReadableContent = groupBrws.custom_multicad.content.decode('utf-8', errors='replace')
                 if self.custom_multicad_content:
                     fileReadableContent = ''
                 self.with_context({
@@ -92,31 +93,36 @@ class ResUsers(models.Model):
             )
 
     @api.model
-    def commonSave(self, vals, binary_field,
-                   content_field, fname, custom_file):
-        vals[binary_field] = base64.b64encode(vals.get(content_field, '').encode('utf-8'))
+    def commonSave(self, vals, binary_field, content_field, fname, custom_file):
+        # A Binary field takes base64 text on Odoo 20: bytes are refused
+        vals[binary_field] = base64.b64encode(vals.get(content_field, '').encode('utf-8')).decode()
         tmpFolder = tempfile.gettempdir()
-        if fname:
+        if fname and custom_file:
             customFilePath = os.path.join(tmpFolder, fname)
             with open(customFilePath, 'wb') as writeFile:
-                writeFile.write(base64.b64decode(custom_file))
+                writeFile.write(custom_file.content)
         vals[content_field] = ''
 
     def getCustomProcedure(self):
         """
-        This method is used on customer side.
+        The CustomProcedure of the CAD client (called by it over XML-RPC):
+        the user's own, else the one of the first of their groups that has
+        one; ('', '') when there is none.
+
+        The content goes as base64 text, which the client decodes: XML-RPC
+        cannot send an Odoo 20 Binary value. An empty Binary is falsy but is
+        not False, so a group is tested for a value, not compared to False.
         """
-        CLINET_FILE_NAME="CustomProcedure.py"
-        sudo_user_id = self.env.user.sudo()
-        for sudo_user_id in sudo_user_id:
-            if sudo_user_id.custom_procedure:
-                return sudo_user_id.custom_procedure, CLINET_FILE_NAME
-            else:
-                logging.info(f"Custom procedure not found for user {sudo_user_id.display_name}")
-                for group_id in sudo_user_id.group_ids.filtered(lambda x :x.custom_procedure!=False):
-                    return group_id.custom_procedure, CLINET_FILE_NAME
-                logging.warning(f"No user related groups contain custom procedure {sudo_user_id.display_name}")
-        logging.warning("Unable to get custom procedure")
+        CLIENT_FILE_NAME = "CustomProcedure.py"
+        user = self.env.user.sudo()
+        if user.custom_procedure:
+            return user.custom_procedure.to_base64(), CLIENT_FILE_NAME
+        logging.info(f"Custom procedure not found for user {user.display_name}")
+        for group in user.group_ids:
+            if group.custom_procedure:
+                logging.info(f"Custom procedure of the group {group.display_name} for user {user.display_name}")
+                return group.custom_procedure.to_base64(), CLIENT_FILE_NAME
+        logging.warning(f"No user related groups contain custom procedure {user.display_name}")
         return '', ''
 
     def getCustomMulticad(self):
