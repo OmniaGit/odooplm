@@ -1229,7 +1229,7 @@ class IrAttachment(models.Model):
             return super(IrAttachment, self).create(vals)
         to_create_vals = []
         for vals_dict in vals:
-            if "res_model" not in vals_dict:
+            if not vals_dict.get("res_model"):
                 vals_dict["res_model"] = "plm.access"
                 vals_dict["res_id"] = self._get_plm_access_for(
                     vals_dict.get("engineering_code")

@@ -70,6 +70,20 @@ class PlmDocumentCode(TransactionCase):
         self.assertEqual(document.engineering_code, "PRT-DOC-001")
         self.assertTrue(document.is_plm)
 
+    def test_form_document_gets_a_plm_access(self):
+        """The form sends plm_access_id False: the document still goes to a
+        node, as every PLM document must."""
+        form = self._plm_form()
+        form.name = "PRT-DOC-004.SLDPRT"
+        form.raw = FILE_CONTENT
+        document = form.save()
+        self.assertTrue(document.is_plm)
+        self.assertEqual(document.res_model, "plm.access")
+        self.assertTrue(document.plm_access_id)
+        self.assertEqual(
+            document.plm_access_id, self.Attachment._get_plm_access_for("PRT-DOC-004")
+        )
+
     def test_file_name_without_extension(self):
         form = self._plm_form()
         form.name = "PRT-DOC-002"
