@@ -40,8 +40,10 @@ class TestCustomProcedure(HttpCase):
         super().setUp()
         self.admin = self.env.ref("base.user_admin")
         self.admin.custom_procedure = False
-        for group in self.admin.group_ids.filtered("custom_procedure"):
+        self.admin.custom_multicad = False
+        for group in self.admin.group_ids:
             group.custom_procedure = False
+            group.custom_multicad = False
 
     def _client_call(self):
         """The call the CAD client makes, decoded as it decodes it."""
@@ -69,3 +71,27 @@ class TestCustomProcedure(HttpCase):
         self.assertEqual(group.custom_read_content, "edited = 1\n")
         self.admin.write({"custom_read_content": "user_edited = 1\n"})
         self.assertEqual(self.admin.custom_procedure.content, b"user_edited = 1\n")
+
+    def _rpc(self, model, method, ids):
+        return self.xmlrpc_object.execute_kw(self.env.cr.dbname, self.admin.id, "admin", model, method, [ids])
+
+    def test_multicad_group_then_user(self):
+        self.assertEqual(self._rpc("res.users", "getCustomMulticad", []), ["", ""])
+        group = self.env["res.groups"].create({"name": "MC group", "custom_multicad": _b64("group mc"),
+                                               "custom_multicad_fname": "group.zip"})
+        self.admin.group_ids = [(4, group.id)]
+        value, name = self._rpc("res.users", "getCustomMulticad", [])
+        self.assertEqual((base64.b64decode(value), name), (b"group mc", "group.zip"))
+        self.admin.write({"custom_multicad": _b64("user mc"), "custom_multicad_fname": "user.zip"})
+        value, name = self._rpc("res.users", "getCustomMulticad", [])
+        self.assertEqual((base64.b64decode(value), name), (b"user mc", "user.zip"))
+
+    def test_group_methods_over_rpc(self):
+        group = self.env["res.groups"].create({"name": "RPC group", "custom_procedure": _b64("p = 1\n"),
+                                               "custom_procedure_fname": "CustomProcedure.py",
+                                               "custom_multicad": _b64("mc"), "custom_multicad_fname": "mc.zip"})
+        found, value, name = self._rpc("res.groups", "getCustomProcedure", [group.id])
+        self.assertEqual((found, base64.b64decode(value), name), (True, b"p = 1\n", "CustomProcedure.py"))
+        found, value, name = self._rpc("res.groups", "getCustomMulticad", [group.id])
+        self.assertEqual((found, base64.b64decode(value), name), (True, b"mc", "mc.zip"))
+        self.assertEqual(self._rpc("res.groups", "getCustomMulticad", []), [False, "", ""])

@@ -127,22 +127,20 @@ class ResUsers(models.Model):
 
     def getCustomMulticad(self):
         """
-        This method is used on customer side.
-        """
+        The custom Multicad file of the CAD client: the user's own, else the
+        one of the first of their groups that has one, with its file name;
+        ('', '') when there is none.
 
-        for userBrws in self.browse(self.env.uid):
-            logging.info(
-                'Request Multicad file for user %r' % (userBrws.env.uid)
-            )
-            if userBrws.custom_multicad:
-                return userBrws.custom_multicad, userBrws.custom_multicad_fname
-            else:
-                for groupBrws in userBrws.groups_id:
-                    res, fileContent, fileName = groupBrws.getCustomMulticad()
-                    if not res:
-                        continue
-                    else:
-                        logging.info('Got Multicad file from group %r-%r with ID %r' % (
-                            groupBrws.category_id.name, groupBrws.name, groupBrws.id))
-                        return fileContent, fileName
+        As getCustomProcedure: base64 text, since XML-RPC cannot send an
+        Odoo 20 Binary value, and a group tested for a value. The groups are
+        group_ids on Odoo 20 (groups_id is gone).
+        """
+        user = self.env.user.sudo()
+        logging.info('Request Multicad file for user %r' % user.id)
+        if user.custom_multicad:
+            return user.custom_multicad.to_base64(), user.custom_multicad_fname or ''
+        for group in user.group_ids:
+            if group.custom_multicad:
+                logging.info('Got Multicad file from group %r with ID %r' % (group.display_name, group.id))
+                return group.custom_multicad.to_base64(), group.custom_multicad_fname or ''
         return '', ''
