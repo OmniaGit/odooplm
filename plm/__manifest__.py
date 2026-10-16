@@ -63,6 +63,8 @@
         "report/product_change_impact_template.xml",
         "report/attachment_change_impact_template.xml",
         "views/product_product_first.xml",
+        # before the document views: their Import GLB button names its action
+        "wizard/plm_glb_structure_import_view.xml",
         "views/ir_attachment_view.xml",
         "views/ir_attachment_relations.xml",
         "views/plm_dbthread.xml",
@@ -88,7 +90,6 @@
         "views/plm_temporaty.xml",
         "views/mrp_production.xml",
         "wizard/plm_bom_report_wizard_view.xml",
-        "wizard/plm_glb_structure_import_view.xml",
         "views/templates.xml",
     ],
     "assets": {
