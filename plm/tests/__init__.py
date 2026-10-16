@@ -30,5 +30,6 @@ from . import test_permission_levels
 from . import test_controllers
 from . import test_portal_scope
 from . import test_workflow_transitions
+from . import test_glb_structure_import
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

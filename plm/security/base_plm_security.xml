@@ -93,6 +93,13 @@
         <field name="operation">crud</field>
     </record>
 
+    <record id="model_plm_glb_structure_import_user" model="ir.access">
+        <field name="name">PLM GLB structure import</field>
+        <field name="model_id" ref="model_plm_glb_structure_import"/>
+        <field name="group_id" ref="group_plm_integration_user"/>
+        <field name="operation">crud</field>
+    </record>
+
     <record id="model_plm_bom_report_wizard_user" model="ir.access">
         <field name="name">PLM BoM Report Wizard</field>
         <field name="model_id" ref="model_plm_bom_report_wizard"/>

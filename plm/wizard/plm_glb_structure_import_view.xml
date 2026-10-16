@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_plm_glb_structure_import_form" model="ir.ui.view">
+        <field name="name">plm.glb.structure.import.form</field>
+        <field name="model">plm.glb.structure.import</field>
+        <field name="arch" type="xml">
+            <form string="Import GLB structure">
+                <field name="state" invisible="1"/>
+                <div invisible="state != 'draft'">
+                    <p>
+                        Load the zip written by OmniaGLTFConverter with "All files with data":
+                        its .glb files and structure.json. Every document of the json gets its
+                        component and its native CAD document (created empty, and checked out to
+                        you, when it is not in Odoo yet); the .glb is attached to the native
+                        document for the 3D viewer, and the assemblies get their BoM.
+                    </p>
+                    <group>
+                        <field name="zip_file" filename="zip_name"/>
+                        <field name="zip_name" invisible="1"/>
+                    </group>
+                </div>
+                <group invisible="state != 'done'">
+                    <field name="result" nolabel="1" colspan="2"/>
+                    <field name="document_ids" invisible="1"/>
+                </group>
+                <footer>
+                    <button name="action_import" string="Import" type="object" class="btn-primary"
+                            invisible="state != 'draft'"/>
+                    <button name="action_open_documents" string="Open the documents" type="object"
+                            class="btn-primary" invisible="state != 'done'"/>
+                    <button string="Close" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_plm_glb_structure_import" model="ir.actions.act_window">
+        <field name="name">Import GLB structure (zip)</field>
+        <field name="res_model">plm.glb.structure.import</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="binding_model_id" ref="base.model_ir_attachment"/>
+        <field name="binding_view_types">list,form</field>
+        <field name="group_ids" eval="[(4, ref('plm.group_plm_integration_user'))]"/>
+    </record>
+</odoo>

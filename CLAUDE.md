@@ -146,6 +146,40 @@ The level is `plm_portal_access` on `res.partner` (`none`, `view`, `markup`) wit
 
 Uses Three.js and a DXF viewer (both as git submodules under `static/lib/`, with `odoocad` beside them). The submodule at `plm_web_3d/static/lib/dxf-viewer` may appear dirty in git status — this is expected. They live in `static/lib/`, not under `static/src/`, because Odoo's asset pregeneration globs `**/src/**/*.js` and opens every match: the `three.js` submodule is a *directory* whose name ends in `.js`, so every HTTP test run on a database with this module installed died on `IsADirectoryError` (decided 2026-09-18).
 
+### GLB structure import (OmniaGLTFConverter)
+
+`plm/wizard/plm_glb_structure_import.py` (*Import GLB structure (zip)*, in the
+Action menu of the documents; tests tagged `odoo_plm_glb_import`) imports the
+*All files with data* zip of **OmniaGLTFConverter**
+(`/media/TwoTDisk/workspace_new_client/OmniaGLTFConverter`, its `CLAUDE.md`,
+"OdooPLM imports the zip"): one `.glb` per document plus `structure.json`,
+written by `omnia_threejs_export.cad3d_export.structure`
+(`/media/TwoTDisk/workspace_new_client/omnia_threejs_export`). **That json is
+a contract with those two repositories** (schema `omnia.gltf.structure`,
+version 1): change it on both sides together.
+
+- Every document entry needs `file_name` (the CAD file's base name, which
+  names the native document; missing, the import stops), `engineering_code`
+  and `engineering_revision`; every `.glb` the json names must be in the zip.
+- The product and the native CAD document are found by code and revision;
+  a native document Odoo does not have is created **empty and checked out to
+  the importing user**, so that their CAD client saves the file into it
+  (`needUpdate` wants that checkout). An existing one keeps its content.
+- Each `.glb` is a child of its native document with `link_kind='Web3DTree'`
+  (parent native, child web file: what `plm_web_3d` reads), linked to the
+  component; a part in two configurations has two. `has_web3d` is stored and
+  depends on the name only, so the wizard recomputes it.
+- Assemblies get their BoM and HiTree through `mrp.bom.saveRelationNew`, one
+  row per child with its `quantity`; a component released or obsoleted keeps
+  its BoM, and its `.glb` is attached all the same.
+- CAD properties go to fields through the **client CustomProcedure** of the
+  user, else of their first group that has one (`plm_client_customprocedure`):
+  the `*_CONVERTION` / `*_TYPES` dictionaries of the class
+  `integrationSettings()` names for the json's `cad`. It is Python 2 client
+  code, so it is **read, never run** on the server: only dictionaries written
+  as literals are taken, a class inherits its bases' dictionaries, and the
+  component code is the document's unless `COMPONENT_CONVERTION` maps it.
+
 ### External Python Dependencies
 
 Declared in `aaa_requirements.txt` and individual module manifests: `ezdxf`, `matplotlib`, `cadquery`, `numpy-stl`, `base64io`, `to-3mf`. These must be installed in the Odoo environment before installing the corresponding modules.

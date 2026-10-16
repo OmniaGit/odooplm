@@ -19,3 +19,4 @@
 #
 ##############################################################################
 from . import plm_bom_report_wizard
+from . import plm_glb_structure_import

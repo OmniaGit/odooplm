@@ -88,6 +88,7 @@
         "views/plm_temporaty.xml",
         "views/mrp_production.xml",
         "wizard/plm_bom_report_wizard_view.xml",
+        "wizard/plm_glb_structure_import_view.xml",
         "views/templates.xml",
     ],
     "assets": {
