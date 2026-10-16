@@ -412,7 +412,7 @@ function zoomToWindow(canvasX, canvasY, selW, selH) {
 
 	// Find new orbit target: hit scene geometry, else current focal plane
 	let newTarget;
-	const hits = ray.intersectObjects(OdooCad.items, true);
+	const hits = _shownHits(ray.intersectObjects(OdooCad.items, true));
 	if (hits.length > 0) {
 		newTarget = hits[0].point.clone();
 	} else {
@@ -882,7 +882,11 @@ function init() {
 	OdooCad = new ODOOCAD.OdooCAD(scene);
 	initSelection((guid) => OdooCad.tree_ref_elements?.[guid], _onSelectionChanged, scene);
 	// Shift+click on a row of the tree (odoocad.js)
-	document.addEventListener('OdooCAD_toggle_selection', (e) => toggleSelection(e.detail.guid));
+	document.addEventListener('OdooCAD_toggle_selection', (e) => {
+		// a hidden part takes no command, from the tree neither
+		const part = OdooCad.tree_ref_elements?.[e.detail.guid];
+		if (part && _isShown(part)) toggleSelection(e.detail.guid);
+	});
 	OdooCad.load_document(document_id, document_name);
 	if (document_name && document_name.split('.').pop().toLowerCase() === 'dxf') {
 		controls.enableRotate = false;
@@ -1640,8 +1644,8 @@ function showCad3dInfo(e) {
 	pointer.x = ((e.clientX - rect.left) / canvas.clientWidth) * 2 - 1;
 	pointer.y = -((e.clientY - rect.top) / canvas.clientHeight) * 2 + 1;
 	raycaster.setFromCamera(pointer, camera);
-	const hit = raycaster.intersectObjects(OdooCad.items, true)
-		.find((h) => h.object.isMesh && h.object.visible);
+	const hit = _shownHits(raycaster.intersectObjects(OdooCad.items, true))
+		.find((h) => h.object.isMesh);
 	CAD3D.showFeatureInfo(hit, e.clientX, e.clientY);
 	CAD3D.updateFeatureLeader(camera, renderer.domElement);
 }
@@ -1759,7 +1763,7 @@ window.onPointerMove = function (event) {
 	pointer.y = -(y / canvas.clientHeight) * 2 + 1;
 
 	raycaster.setFromCamera(pointer, camera);
-	const intersects = raycaster.intersectObjects(OdooCad.items, true);
+	const intersects = _shownHits(raycaster.intersectObjects(OdooCad.items, true));
 
 	let hoveredGuid = null;
 	if (intersects.length > 0) {
@@ -1977,9 +1981,11 @@ function onKeyDone(event) {
 				}
 			}
 			if (!show) {
-				// remove highlight/edges when hiding; keep last_highlighted_li so a
-				// second h-press (without moving the mouse) can toggle it back
+				// A hidden part takes no command: the hover moves on to
+				// what is behind it, or to nothing. It comes back through
+				// the tree's eye or A (show all).
 				window.highlight3D(guid, false);
+				window.onPointerMove({ clientX: _lastPointerX, clientY: _lastPointerY });
 			}
 			render();
 		}
@@ -1994,6 +2000,14 @@ function _isShown(object) {
 		if (!o.visible) return false;
 	}
 	return true;
+}
+
+// The hits of a ray on what is shown: three.js tests hidden objects too, and
+// a part hidden (H, the tree's eye) is a group whose meshes stay visible. So
+// hover, picking, measure and zoom pass through a hidden part, and no
+// command reaches it.
+function _shownHits(hits) {
+	return hits.filter((hit) => _isShown(hit.object));
 }
 
 function _selectionBox() {
@@ -2175,7 +2189,7 @@ function showSnapPoint() {
 		? CAD3D.nearestHoleCenter(OdooCad.items, camera, renderer.domElement, pointer, 14)
 		: null;
 	raycaster.setFromCamera(pointer, camera);
-	const intersections = centre ? [] : raycaster.intersectObjects(OdooCad.items, true);
+	const intersections = centre ? [] : _shownHits(raycaster.intersectObjects(OdooCad.items, true));
 	const intersection = intersections.length > 0 ? intersections[0] : null;
 	if (!intersection && !centre) {
 		sphereHelper.visible = false;
