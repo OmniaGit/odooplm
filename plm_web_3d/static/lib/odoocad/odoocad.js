@@ -122,6 +122,11 @@ class OdooCAD {
             if (child.name === '' && !['Group', 'Object3D', 'Mesh'].includes(child.type)) {
                 continue;
             }
+            // Nor the viewer's own overlays (hole textures, edges, ...),
+            // named "__..."
+            if ((child.name || '').startsWith('__')) {
+                continue;
+            }
 
             // Recursively get children structure
             const [inner_html, children_found] = self.get_li_structure(child, true);

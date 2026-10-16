@@ -397,9 +397,11 @@ class Web3DView(Controller):
                         parent_id=None):
         """The web export of a component, for a viewer building an assembly.
 
-        First the WebHiTree child named name of parent_id, the web file of
-        the assembly shown (the GLB structure import links them): no native
-        CAD document is needed. Else the document with that code and revision
+        First the file named name among the WebHiTree descendants of
+        parent_id, the web file of the assembly shown (the GLB structure
+        import links them): no native CAD document is needed. Descendants,
+        not children only: an assembly .glb may name the parts of its
+        subassemblies directly, its leaves flattened. Else the document with that code and revision
         (the native CAD file), then its Web3DTree child named name when the
         assembly names the file (a .glb by references, one file per
         configuration), else the one whose name ends with suffix, the format
@@ -408,17 +410,22 @@ class Web3DView(Controller):
 
         Read as the user: what they may not read is not found."""
         if name and parent_id and str(parent_id).isdigit():
-            web_children = request.env["ir.attachment.relation"].search([
-                ("parent_id", "=", int(parent_id)),
-                ("link_kind", "=", "WebHiTree"),
-            ]).mapped("child_id")
-            for child in web_children:
-                if (child.name or "").lower() == name.lower() and child.has_access("read"):
-                    return request.make_json_response({
-                        "document_id": child.id,
-                        "name": child.name,
-                        "url": "/plm/download_treejs_model?document_id=%s" % child.id,
-                    })
+            relations = request.env["ir.attachment.relation"]
+            level, seen = [int(parent_id)], {int(parent_id)}
+            while level:
+                children = relations.search([
+                    ("parent_id", "in", level),
+                    ("link_kind", "=", "WebHiTree"),
+                ]).mapped("child_id")
+                for child in children:
+                    if (child.name or "").lower() == name.lower() and child.has_access("read"):
+                        return request.make_json_response({
+                            "document_id": child.id,
+                            "name": child.name,
+                            "url": "/plm/download_treejs_model?document_id=%s" % child.id,
+                        })
+                level = [child.id for child in children if child.id not in seen]
+                seen.update(level)
         if not engineering_code or engineering_revision in (None, "") or not suffix:
             return request.make_json_response({})
         try:

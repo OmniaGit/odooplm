@@ -187,6 +187,13 @@ class PlmWeb3dRoutes(HttpCase):
         self.assertEqual(found["document_id"], part.id)
         # another document's tree does not answer, and no native: nothing
         self.assertEqual(self.url_open(base + "&name=WEB3D-PRT_0_Default.glb&parent_id=%s" % part.id).json(), {})
+        # a top assembly naming the part of its subassembly (leaves flattened)
+        top = Attachment.create({"name": "WEB3D-TOP_0.glb", "engineering_code": "WEB3D-TOP_0.glb",
+                                 "is_plm": True, "raw": b"glTF"})
+        self.env["ir.attachment.relation"].create({"parent_id": top.id, "child_id": assembly.id,
+                                                   "link_kind": "WebHiTree"})
+        found = self.url_open(base + "&name=WEB3D-PRT_0_Default.glb&parent_id=%s" % top.id).json()
+        self.assertEqual(found["document_id"], part.id)
 
     def test_product_info_follows_the_node(self):
         self.assertIn("document", self._product_info("web3d_insider"))
