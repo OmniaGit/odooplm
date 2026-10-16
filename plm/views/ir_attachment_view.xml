@@ -285,6 +285,14 @@
                   decoration-success="engineering_state == 'released'"
                   decoration-warning="engineering_state == 'undermodify'"
                   decoration-muted="engineering_state == 'obsoleted'">
+                <header>
+                    <button type="action"
+                            name="%(plm.action_plm_glb_structure_import)d"
+                            string="Import GLB"
+                            class="btn btn-secondary"
+                            groups="plm.group_plm_integration_user"
+                            display="always"/>
+                </header>
                 <field name="document_type" invisible="True"/>
                 <field name="preview" widget="image" invisible="preview == False" options="{ 'size': [60, 60]}"/>
                 <field name="preview_related" widget="image" invisible="preview != False"
@@ -399,6 +407,14 @@
         <field name="priority" eval="20"/>
         <field name="arch" type="xml">
             <kanban>
+                <header>
+                    <button type="action"
+                            name="%(plm.action_plm_glb_structure_import)d"
+                            string="Import GLB"
+                            class="btn btn-secondary"
+                            groups="plm.group_plm_integration_user"
+                            display="always"/>
+                </header>
                 <field name="id"/>
                 <field name="engineering_code"/>
                 <field name="engineering_revision"/>

@@ -55,8 +55,8 @@
         <field name="res_model">plm.glb.structure.import</field>
         <field name="view_mode">form</field>
         <field name="target">new</field>
-        <field name="binding_model_id" ref="base.model_ir_attachment"/>
-        <field name="binding_view_types">list,form</field>
+        <!-- Opened from the Import GLB button of the document views, not from the Action menu -->
+        <field name="binding_model_id" eval="False"/>
         <field name="group_ids" eval="[(4, ref('plm.group_plm_integration_user'))]"/>
     </record>
 </odoo>
