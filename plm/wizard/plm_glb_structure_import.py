@@ -95,7 +95,7 @@ def _literal_dict(text, brace):
     return None
 
 
-def read_custom_mapping(source, cad):
+def read_custom_mapping(source, cad, env=None):
     """The *_CONVERTION / *_TYPES dictionaries the CustomProcedure gives the
     CAD, as {name: dict}, and the warnings met reading them.
 
@@ -103,8 +103,12 @@ def read_custom_mapping(source, cad):
     its classes are found by their header, their dictionaries by their
     assignment (in __init__ or in the class body), a class inherits the
     dictionaries of its bases, and integrationSettings() says which class is
-    the CAD's. A dictionary that is not a literal is skipped with a warning.
+    the CAD's. A dictionary that is not a literal is skipped with a warning,
+    translated through env when one is given.
     """
+    def _(message, **values):
+        return env._(message, **values) if env is not None else message % values
+
     warnings = []
     classes = {}
     for match in _CLASS_RE.finditer(source):
@@ -233,20 +237,13 @@ class PlmGlbStructureImport(models.TransientModel):
         return archive, names, structure
 
     def _custom_procedure(self):
-        """The CustomProcedure of the user, else of the first of their groups
-        that has one (plm_client_customprocedure), as bytes; b"" without one.
-
-        The priority is res.users.getCustomProcedure's, but that method keeps
-        every group with custom_procedure != False, and an empty Binary is not
-        False on Odoo 20: it answers the empty value of the first group."""
-        user = self.env.user.sudo()
-        if "custom_procedure" not in user._fields:
+        """The CustomProcedure the CAD client gets, as bytes: the user's,
+        else the first of their groups' (res.users.getCustomProcedure of
+        plm_client_customprocedure, which sends base64); b"" without one."""
+        if "custom_procedure" not in self.env["res.users"]._fields:
             return b""
-        for record in [user, *user.group_ids]:
-            value = record.custom_procedure
-            if value:
-                return value.content if hasattr(value, "content") else base64.b64decode(value)
-        return b""
+        value, _file_name = self.env.user.getCustomProcedure()
+        return base64.b64decode(value) if value else b""
 
     def _custom_mapping(self, cad):
         """The mapping the CustomProcedure gives the CAD, and its warnings;
@@ -255,7 +252,7 @@ class PlmGlbStructureImport(models.TransientModel):
         if not content:
             return {}, []
         source = content.decode("utf-8", errors="replace").replace("\r\n", "\n")
-        return read_custom_mapping(source, cad)
+        return read_custom_mapping(source, cad, self.env)
 
     # -------------------------------------------------------------- importing
 
