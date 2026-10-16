@@ -402,7 +402,6 @@
                 <field name="engineering_code"/>
                 <field name="engineering_revision"/>
                 <field name="description"/>
-                <field name="raw" groups="plm.group_plm_admin"/>
                 <field name="name"/>
                 <field name="engineering_state"/>
                 <field name="document_type"/>
@@ -499,12 +498,6 @@
                                                         <t t-else="">
                                                             <hr style="background-color: black;height: 1px;"></hr>
                                                         </t>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <field name="raw" filename="name" widget="binary"
-                                                               groups="plm.group_plm_admin"/>
                                                     </td>
                                                 </tr>
                                                 <tr>
