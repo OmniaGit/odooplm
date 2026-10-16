@@ -169,6 +169,11 @@ version 1): change it on both sides together.
   (parent native, child web file: what `plm_web_3d` reads), linked to the
   component; a part in two configurations has two. `has_web3d` is stored and
   depends on the name only, so the wizard recomputes it.
+- Each document's `preview` (`<its .glb's name>.png` in the zip, named in the
+  json) replaces the `preview` of its native document, the CAD client's
+  included, except on a released or obsoleted one, and is always set on the
+  `.glb`; `null` or a png missing from the zip is reported, a zip without the
+  key imports as before.
 - Assemblies get their BoM and HiTree through `mrp.bom.saveRelationNew`, one
   row per child with its `quantity`; a component released or obsoleted keeps
   its BoM, and its `.glb` is attached all the same.

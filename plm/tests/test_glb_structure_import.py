@@ -22,6 +22,8 @@ import io
 import json
 import zipfile
 
+from PIL import Image
+
 from odoo.exceptions import UserError
 from odoo.tests import TransactionCase, tagged
 
@@ -84,12 +86,38 @@ def _structure(cad="solidworks"):
     }
 
 
+def _png(color):
+    buffer = io.BytesIO()
+    Image.new("RGB", (4, 4), color).save(buffer, "PNG")
+    return buffer.getvalue()
+
+
+def _colour(image_value):
+    """The colour of a preview, as Odoo stores it."""
+    return Image.open(io.BytesIO(image_value.content)).convert("RGB").getpixel((0, 0))
+
+
+def _with_previews(structure):
+    """Each document names its preview, <its .glb's name>.png, as the
+    converter writes it."""
+    for name, entry in structure["documents"].items():
+        entry["preview"] = name[:-4] + ".png"
+    return structure
+
+
+PREVIEW_COLOURS = {"A-1_0.png": (255, 0, 0), "B-1_2.png": (0, 255, 0),
+                   "B-1_2_Long.png": (0, 255, 0), "S-1_0.png": (0, 0, 255)}
+
+
 def _zip(structure, skip=()):
     buffer = io.BytesIO()
     with zipfile.ZipFile(buffer, "w") as archive:
-        for name in structure["documents"]:
+        for name, entry in structure["documents"].items():
             if name not in skip:
                 archive.writestr(name, b"glTF" + name.encode())
+            png = entry.get("preview")
+            if png and png not in skip:
+                archive.writestr(png, _png(PREVIEW_COLOURS.get(png, (9, 9, 9))))
         archive.writestr("structure.json", json.dumps(structure))
     return base64.b64encode(buffer.getvalue()).decode()
 
@@ -255,3 +283,38 @@ class TestGlbStructureImport(TransactionCase):
         self.env.user.custom_procedure = base64.b64encode(b"WEB_GLB_IMPORT = {'*': {'bom': {}}}\n").decode()
         with self.assertRaises(UserError):
             self._import(_structure())
+
+    def test_previews(self):
+        wizard = self._import(_with_previews(_structure()))
+        top = self._doc("A-1")
+        self.assertEqual(_colour(top.preview), (255, 0, 0))
+        self.assertEqual(_colour(self._web3d(top).preview), (255, 0, 0))
+        self.assertEqual(_colour(self._doc("S-1").preview), (0, 0, 255))
+        self.assertNotIn("preview", wizard.result)
+
+    def test_preview_replaces_the_existing_one(self):
+        native = self.env["ir.attachment"].create({
+            "name": "b.par", "engineering_code": "B-1", "engineering_revision": 2, "is_plm": True,
+            "preview": base64.b64encode(_png((1, 2, 3))).decode()})
+        self._import(_with_previews(_structure()))
+        self.assertEqual(_colour(native.preview), (0, 255, 0))
+
+    def test_released_document_keeps_its_preview(self):
+        native = self.env["ir.attachment"].create({
+            "name": "b.par", "engineering_code": "B-1", "engineering_revision": 2, "is_plm": True,
+            "preview": base64.b64encode(_png((1, 2, 3))).decode()})
+        native.engineering_state = "released"
+        wizard = self._import(_with_previews(_structure()))
+        self.assertEqual(_colour(native.preview), (1, 2, 3))
+        # its .glb gets the preview all the same
+        self.assertEqual(_colour(self._web3d(native)[0].preview), (0, 255, 0))
+        self.assertEqual(wizard.result.count("its preview is left as it is"), 1)
+
+    def test_missing_previews_are_reported(self):
+        structure = _with_previews(_structure())
+        structure["documents"]["S-1_0.glb"]["preview"] = None
+        wizard = self._import(structure, skip=("A-1_0.png",))
+        self.assertIn("S-1_0.glb: no preview in the zip", wizard.result)
+        self.assertIn("A-1_0.glb: its preview A-1_0.png is not in the zip", wizard.result)
+        self.assertFalse(self._doc("A-1").preview)
+        self.assertEqual(_colour(self._doc("B-1", 2).preview), (0, 255, 0))

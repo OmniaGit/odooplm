@@ -298,6 +298,21 @@ class PlmGlbStructureImport(models.TransientModel):
             self.env["plm.component.document.rel"].createFromIds(product, glb)
         return glb
 
+    def _preview(self, entry, glb_name, archive, names, log):
+        """The preview png of the entry, base64 text, or False: structure.json
+        names it ("preview", <its .glb's name>.png) since the converter puts
+        one beside each .glb; null, or a file not in the zip, is reported."""
+        if "preview" not in entry:
+            return False  # a zip written before the converter had previews
+        png = entry.get("preview")
+        if not png:
+            log.append(_("%(glb)s: no preview in the zip", glb=glb_name))
+            return False
+        if png not in names:
+            log.append(_("%(glb)s: its preview %(png)s is not in the zip", glb=glb_name, png=png))
+            return False
+        return base64.b64encode(archive.read(names[png])).decode()
+
     def action_import(self):
         self.ensure_one()
         archive, names, structure = self._read_zip()
@@ -307,13 +322,26 @@ class PlmGlbStructureImport(models.TransientModel):
         documents = structure["documents"]
         nodes = {}
         natives = self.env["ir.attachment"]
+        locked_previews = self.env["ir.attachment"]
         for glb_name, entry in documents.items():
             properties = flat_properties(entry.get("properties"))
             product = product_model.createFromProps(self._product_values(entry, properties, mapping))
             native = self._native_document(entry, self._document_values(entry, properties, mapping), log)
             if product:
                 self.env["plm.component.document.rel"].createFromIds(product, native)
-            self._glb_document(glb_name, archive.read(names[glb_name]), native, product)
+            glb = self._glb_document(glb_name, archive.read(names[glb_name]), native, product)
+            preview = self._preview(entry, glb_name, archive, names, log)
+            if preview:
+                # The zip's preview replaces the document's, the CAD client's
+                # included, but not on a released or obsoleted document
+                glb.preview = preview
+                if native.engineering_state in LOCKED_STATES:
+                    if native not in locked_previews:
+                        locked_previews |= native
+                        log.append(_("%(file)s is %(state)s: its preview is left as it is",
+                                     file=native.name, state=native.engineering_state))
+                else:
+                    native.preview = preview
             nodes[glb_name] = (product, native)
             natives |= native
         boms = 0
@@ -363,6 +391,11 @@ class PlmGlbStructureImport(models.TransientModel):
             "type": "ir.actions.act_window",
             "name": _("Imported documents"),
             "res_model": "ir.attachment",
-            "view_mode": "list,form",
+            "view_mode": "kanban,list,form",
+            # the PLM document views, which show the preview
+            "views": [(self.env.ref("plm.document_kanban_view").id, "kanban"),
+                      (self.env.ref("plm.ir_attachment_list").id, "list"),
+                      (self.env.ref("plm.view_attachment_form_plm_hinerit").id, "form")],
             "domain": [("id", "in", self.document_ids.ids)],
+            "context": {"odooPLM": True},
         }
