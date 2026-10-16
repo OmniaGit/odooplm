@@ -435,6 +435,14 @@ class PlmClient(models.TransientModel):
         )
 
     @api.model
+    def get_next_product_code(self, prefix="PROD", digit=5):
+        """The next code of the PLM sequence PLM_SEQUENCE_<prefix>, made on the
+        fly the first time: the CAD client's unique product code (the 2019
+        client's "Component unique", which asked product.template for "PROD"
+        with 5 digits)."""
+        return self.env["product.template"].getSequenceFrom(prefix, int(digit))
+
+    @api.model
     def get_bom_state(self, structure_json):
         """What a CAD save would find in Odoo, asked before saving. Read only:
         nothing is created, written or deleted.
