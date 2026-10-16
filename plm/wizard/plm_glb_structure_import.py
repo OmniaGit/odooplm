@@ -32,11 +32,21 @@ that the CAD client can save its file into it), uploads the .glb as a child of
 the native document (Web3DTree, the relation the 3D viewer reads) and builds
 the BoM and the HiTree relations of the assemblies.
 
-The CAD properties go to Odoo fields through the client CustomProcedure of
-the user or of their group, as the CAD client does: the *_CONVERTION
-dictionaries of the class integrationSettings() names for the CAD. The
-procedure is Python 2 code written for the client: it is read, never run on
-the server; only its dictionaries written as literals are taken.
+The CAD properties go to Odoo fields through WEB_GLB_IMPORT, a dictionary
+of this import alone, written in the CustomProcedure of the user, else of
+their first group that has one:
+
+    WEB_GLB_IMPORT = {
+        "*": {"product": {"name": "Description"},          # every CAD
+              "document": {"description": "Title"}},
+        "solidworks": {"product": {"engineering_surface": "Finish"}},
+    }
+
+{odoo field: property name in the json} for the component and for the native
+document, under "*" and under the json's "cad", the CAD's entries added to
+"*" field by field; a value is converted to the type of its field. Nothing
+else of the procedure is read: it is client code, so it is never run here,
+and only that dictionary, written as a literal, is taken.
 """
 import ast
 import base64
@@ -56,102 +66,56 @@ _logger = logging.getLogger(__name__)
 STRUCTURE_FILE = "structure.json"
 STRUCTURE_SCHEMA = "omnia.gltf.structure"
 LOCKED_STATES = (RELEASED_STATUS, OBSOLATED_STATUS)
-MAPPING_NAMES = (
-    "DOCUMENT_CONVERTION", "DOCUMENT_TYPES",
-    "COMPONENT_CONVERTION", "COMPONENT_TYPES",
-    "RELATION_CONVERTION", "RELATION_TYPES",
-)
-_CLASS_RE = re.compile(r"^class\s+(\w+)\s*(?:\(([^)]*)\))?\s*:", re.M)
-_ASSIGN_RE = re.compile(r"(?:\bself\.)?\b(%s)\s*=\s*\{" % "|".join(MAPPING_NAMES))
-_SETTINGS_RE = re.compile(r"^def\s+integrationSettings\s*\(", re.M)
-_SETTING_ITEM_RE = re.compile(r"""\[\s*['"](\w+)['"]\s*\]\s*=\s*([A-Za-z_]\w*)|['"](\w+)['"]\s*:\s*([A-Za-z_]\w*)""")
+WEB_MAPPING_NAME = "WEB_GLB_IMPORT"
+WEB_MAPPING_SECTIONS = ("product", "document")
+_WEB_MAPPING_RE = re.compile(r"^%s\s*=\s*\{" % WEB_MAPPING_NAME, re.M)
 
 
-def _top_level_block(source, start):
-    """The text from start to the next line written at column 0."""
-    end = len(source)
-    for match in re.finditer(r"^\S", source[start:], re.M):
-        if match.start() > 0:
-            end = start + match.start()
-            break
-    return source[start:end]
-
-
-def _literal_dict(text, brace):
-    """The dict literal opening at text[brace], or None when it is not a
-    literal (a key such as BaseDbIntegration.documentName)."""
-    depth = 0
-    for index in range(brace, len(text)):
-        if text[index] == "{":
+def read_web_mapping(source):
+    """The WEB_GLB_IMPORT dictionary of a CustomProcedure, or None when the
+    procedure has none. It is read as text, never run, and must be a literal
+    {cad or "*": {"product"|"document": {odoo field: property name}}}: a
+    ValueError says what is wrong with it otherwise."""
+    match = _WEB_MAPPING_RE.search(source)
+    if not match:
+        return None
+    brace, depth = match.end() - 1, 0
+    for index in range(brace, len(source)):
+        if source[index] == "{":
             depth += 1
-        elif text[index] == "}":
+        elif source[index] == "}":
             depth -= 1
             if depth == 0:
-                try:
-                    value = ast.literal_eval(text[brace:index + 1])
-                except (ValueError, SyntaxError):
-                    return None
-                return value if isinstance(value, dict) else None
-    return None
+                break
+    else:
+        raise ValueError("%s has no closing brace" % WEB_MAPPING_NAME)
+    try:
+        mapping = ast.literal_eval(source[brace:index + 1])
+    except (ValueError, SyntaxError) as ex:
+        raise ValueError("%s is not a literal dictionary: %s" % (WEB_MAPPING_NAME, ex)) from ex
+    for cad, sections in mapping.items():
+        if not isinstance(cad, str) or not isinstance(sections, dict):
+            raise ValueError("%s: %r must name a CAD and hold a dictionary" % (WEB_MAPPING_NAME, cad))
+        for section, fields_map in sections.items():
+            if section not in WEB_MAPPING_SECTIONS:
+                raise ValueError("%s[%r]: %r is not one of %s"
+                                 % (WEB_MAPPING_NAME, cad, section, ", ".join(WEB_MAPPING_SECTIONS)))
+            if not isinstance(fields_map, dict) or not all(
+                    isinstance(key, str) and isinstance(value, str) for key, value in fields_map.items()):
+                raise ValueError("%s[%r][%r] must be {odoo field: property name}"
+                                 % (WEB_MAPPING_NAME, cad, section))
+    return mapping
 
 
-def read_custom_mapping(source, cad, env=None):
-    """The *_CONVERTION / *_TYPES dictionaries the CustomProcedure gives the
-    CAD, as {name: dict}, and the warnings met reading them.
-
-    The procedure is the client's Python 2 module, so it is never imported:
-    its classes are found by their header, their dictionaries by their
-    assignment (in __init__ or in the class body), a class inherits the
-    dictionaries of its bases, and integrationSettings() says which class is
-    the CAD's. A dictionary that is not a literal is skipped with a warning,
-    translated through env when one is given.
-    """
-    def _(message, **values):
-        return env._(message, **values) if env is not None else message % values
-
-    warnings = []
-    classes = {}
-    for match in _CLASS_RE.finditer(source):
-        name, bases = match.group(1), match.group(2) or ""
-        block = _top_level_block(source, match.start())
-        mapping = {}
-        for assign in _ASSIGN_RE.finditer(block):
-            value = _literal_dict(block, assign.end() - 1)
-            if value is None:
-                warnings.append(_("CustomProcedure: %(name)s of %(cls)s is not a literal dictionary, skipped",
-                                  name=assign.group(1), cls=name))
-                continue
-            mapping[assign.group(1)] = value
-        classes[name] = ([base.strip().split(".")[-1] for base in bases.split(",") if base.strip()], mapping)
-
-    def resolved(name, seen=()):
-        if name not in classes or name in seen:
-            return {}
-        bases, own = classes[name]
-        out = {}
-        for base in bases:
-            out.update(resolved(base, seen + (name,)))
-        out.update(own)
-        return out
-
-    match = _SETTINGS_RE.search(source)
-    if not match:
-        warnings.append(_("CustomProcedure: no integrationSettings(), the default mapping is used"))
-        return {}, warnings
-    by_cad = {}
-    for item in _SETTING_ITEM_RE.finditer(_top_level_block(source, match.start())):
-        key = item.group(1) or item.group(3)
-        by_cad[key.lower()] = item.group(2) or item.group(4)
-    class_name = by_cad.get((cad or "").lower())
-    if not class_name:
-        warnings.append(_("CustomProcedure: integrationSettings() has no class for the CAD %(cad)r, "
-                          "the default mapping is used", cad=cad))
-        return {}, warnings
-    if class_name not in classes:
-        warnings.append(_("CustomProcedure: class %(cls)s not found, the default mapping is used",
-                          cls=class_name))
-        return {}, warnings
-    return resolved(class_name), warnings
+def mapping_for_cad(mapping, cad):
+    """{"product": {...}, "document": {...}} of the CAD: the "*" entries, the
+    CAD's added to them field by field."""
+    by_cad = {str(key).lower(): value for key, value in (mapping or {}).items()}
+    out = {}
+    for section in WEB_MAPPING_SECTIONS:
+        out[section] = dict(by_cad.get("*", {}).get(section, {}))
+        out[section].update(by_cad.get((cad or "").lower(), {}).get(section, {}))
+    return out
 
 
 def flat_properties(properties):
@@ -166,29 +130,36 @@ def flat_properties(properties):
     return out
 
 
-def _cast(value, kind):
-    if value is None or kind in (None, "char"):
-        return value if value is None else str(value)
+TEXT_FIELD_TYPES = ("char", "text", "html", "selection")
+WEB_FIELD_TYPES = TEXT_FIELD_TYPES + ("integer", "float", "monetary", "boolean")
+
+
+def _cast(value, field_type):
+    """The json value as the field type wants it; None when it cannot be."""
+    if value is None:
+        return None
     try:
-        if kind == "int":
-            return int(float(value))
-        if kind == "float":
+        if field_type == "integer":
+            return int(float(str(value).replace(",", ".")))
+        if field_type in ("float", "monetary"):
             return float(str(value).replace(",", "."))
-        if kind == "bool":
+        if field_type == "boolean":
             return str(value).strip().lower() in ("1", "true", "yes", "y", "si", "sì", "x")
     except (TypeError, ValueError):
         return None
-    return value
+    return str(value)
 
 
-def mapped_values(conversion, types, properties):
-    """{odoo field: value} of the CAD properties a *_CONVERTION names."""
+def mapped_values(model, fields_map, properties):
+    """{odoo field: value} of the json properties fields_map names, for the
+    fields of model of a type the import writes."""
     out = {}
-    for field_name, cad_name in (conversion or {}).items():
-        if not isinstance(cad_name, str):
+    for field_name, property_name in (fields_map or {}).items():
+        field = model._fields.get(field_name)
+        if field is None or field.type not in WEB_FIELD_TYPES:
             continue
-        if cad_name.lower() in properties:
-            value = _cast(properties[cad_name.lower()], (types or {}).get(field_name))
+        if property_name.lower() in properties:
+            value = _cast(properties[property_name.lower()], field.type)
             if value is not None:
                 out[field_name] = value
     return out
@@ -245,29 +216,45 @@ class PlmGlbStructureImport(models.TransientModel):
         value, _file_name = self.env.user.getCustomProcedure()
         return base64.b64decode(value) if value else b""
 
-    def _custom_mapping(self, cad):
-        """The mapping the CustomProcedure gives the CAD, and its warnings;
-        ({}, []) without a procedure."""
+    def _web_mapping(self, cad):
+        """WEB_GLB_IMPORT of the CustomProcedure for the CAD, as
+        {"product": {...}, "document": {...}}, and the lines to report."""
+        empty = {section: {} for section in WEB_MAPPING_SECTIONS}
         content = self._custom_procedure()
         if not content:
-            return {}, []
+            return empty, [_("No CustomProcedure: only code and revision are imported")]
         source = content.decode("utf-8", errors="replace").replace("\r\n", "\n")
-        return read_custom_mapping(source, cad, self.env)
+        try:
+            mapping = read_web_mapping(source)
+        except ValueError as ex:
+            raise UserError(_("The CustomProcedure of %(user)s: %(error)s", user=self.env.user.name, error=ex)) from ex
+        if mapping is None:
+            return empty, [_("The CustomProcedure has no %s: only code and revision are imported", WEB_MAPPING_NAME)]
+        mapping = mapping_for_cad(mapping, cad)
+        log = [_("%(name)s of the CustomProcedure used for the CAD %(cad)s", name=WEB_MAPPING_NAME, cad=cad or "?")]
+        # Fields the import cannot write are said once, not per document
+        for section, model in (("product", "product.product"), ("document", "ir.attachment")):
+            fields_map = self.env[model]._fields
+            skipped = sorted(name for name in mapping[section]
+                             if name not in fields_map or fields_map[name].type not in WEB_FIELD_TYPES)
+            if skipped:
+                log.append(_("%(name)s %(section)s: %(fields)s is not a field %(model)s has, or of a type "
+                             "the import writes: ignored", name=WEB_MAPPING_NAME, section=section,
+                             fields=", ".join(skipped), model=model))
+        return mapping, log
 
     # -------------------------------------------------------------- importing
 
     def _product_values(self, entry, properties, mapping):
-        values = mapped_values(mapping.get("COMPONENT_CONVERTION"), mapping.get("COMPONENT_TYPES"), properties)
-        # The component's code is the document's unless the procedure maps
-        # it to a property of its own
+        values = mapped_values(self.env["product.product"], mapping["product"], properties)
+        # The component's code is the document's unless the mapping takes it
+        # from a property of its own
         values.setdefault("engineering_code", entry["engineering_code"])
         values.setdefault("engineering_revision", entry.get("engineering_revision") or 0)
         return values
 
     def _document_values(self, entry, properties, mapping):
-        attachment = self.env["ir.attachment"]
-        values = mapped_values(mapping.get("DOCUMENT_CONVERTION"), mapping.get("DOCUMENT_TYPES"), properties)
-        values = {key: value for key, value in values.items() if key in attachment._fields}
+        values = mapped_values(self.env["ir.attachment"], mapping["document"], properties)
         # The json's code and revision are the document's: the converter read
         # them from the properties it was set to
         values.update(engineering_code=entry["engineering_code"],
@@ -315,9 +302,7 @@ class PlmGlbStructureImport(models.TransientModel):
         self.ensure_one()
         archive, names, structure = self._read_zip()
         cad = structure.get("cad")
-        mapping, log = self._custom_mapping(cad)
-        if mapping:
-            log.append(_("CustomProcedure of %(user)s used for the CAD %(cad)s", user=self.env.user.name, cad=cad))
+        mapping, log = self._web_mapping(cad)
         product_model = self.env["product.product"]
         documents = structure["documents"]
         nodes = {}

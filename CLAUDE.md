@@ -172,13 +172,19 @@ version 1): change it on both sides together.
 - Assemblies get their BoM and HiTree through `mrp.bom.saveRelationNew`, one
   row per child with its `quantity`; a component released or obsoleted keeps
   its BoM, and its `.glb` is attached all the same.
-- CAD properties go to fields through the **client CustomProcedure** of the
-  user, else of their first group that has one (`plm_client_customprocedure`):
-  the `*_CONVERTION` / `*_TYPES` dictionaries of the class
-  `integrationSettings()` names for the json's `cad`. It is Python 2 client
-  code, so it is **read, never run** on the server: only dictionaries written
-  as literals are taken, a class inherits its bases' dictionaries, and the
-  component code is the document's unless `COMPONENT_CONVERTION` maps it.
+- CAD properties go to fields through **`WEB_GLB_IMPORT`**, a dictionary of
+  this import alone, written in the CustomProcedure of the user, else of their
+  first group that has one (`res.users.getCustomProcedure`,
+  `plm_client_customprocedure`):
+  `{"*" or cad: {"product"|"document": {odoo field: json property name}}}`;
+  the json's `cad` entries are added to `"*"` field by field, and a value is
+  converted to its field's type. Nothing else of the procedure is read: it is
+  client code, so it is **never run** on the server, and the dictionary must
+  be a literal (otherwise the import stops). Without it only code and revision
+  are imported; the document's code and revision are always the json's, the
+  component's too unless `product` maps them. **Nothing of the CAD client's
+  own code or default mapping goes into this repository** (decided
+  2026-10-16): it is closed source, this one is public.
 
 ### External Python Dependencies
 

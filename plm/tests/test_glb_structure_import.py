@@ -25,49 +25,26 @@ import zipfile
 from odoo.exceptions import UserError
 from odoo.tests import TransactionCase, tagged
 
-from odoo.addons.plm.wizard.plm_glb_structure_import import read_custom_mapping
+from odoo.addons.plm.wizard.plm_glb_structure_import import mapping_for_cad, read_web_mapping
 
 #
 # --test-tags=odoo_plm_glb_import
 #
 
-# A CustomProcedure as the CAD client gets it: Python 2, a base class, a CAD
-# class inheriting it, a dictionary that is no literal
+# A CustomProcedure holding WEB_GLB_IMPORT among other code, Python 2 that a
+# Python 3 server could not import: only the dictionary is read
 CUSTOM_PROCEDURE = '''# -*- coding: utf-8 -*-
-import logging
-clerckHook_some_option = True
+SOME_OPTION = True
 
-def hook_something(self):
-    print "python 2 print"
-    try:
-        pass
-    except Exception, ex:
-        logging.error(ex)
+def some_function(self):
+    print "python 2"
 
-class BaseAttributes(object):
-    def __init__(self):
-        self.DOCUMENT_CONVERTION = {'engineering_code': 'd_engineering_code',
-                                    'engineering_revision': 'd_engineering_revision',
-                                    'description': 'DOCDESC'}
-        self.DOCUMENT_TYPES = {'engineering_code': 'char', 'engineering_revision': 'int'}
-        self.COMPONENT_CONVERTION = {'engineering_code': 'c_engineering_code',
-                                     'name': 'c_name'}
-        self.COMPONENT_TYPES = {'engineering_code': 'char', 'name': 'char'}
-
-class SolidWorksIntegrationSetting(BaseAttributes):
-    def __init__(self):
-        BaseAttributes.__init__(self)
-        self.COMPONENT_CONVERTION = {'name': 'COMPDESC', 'engineering_material': 'COMPMAT'}
-        self.RELATION_CONVERTION = {BaseDbIntegration.qty: 'RELQTY'}
-
-class InventorIntegrationSetting(BaseAttributes):
-    pass
-
-def integrationSettings():
-    integrations = {}
-    integrations["solidworks"] = SolidWorksIntegrationSetting
-    integrations["inventor"] = InventorIntegrationSetting
-    return integrations
+WEB_GLB_IMPORT = {
+    "*": {"product": {"name": "Label", "engineering_material": "Stuff"},
+          "document": {"description": "Title"}},
+    "solidworks": {"product": {"name": "Long label", "engineering_surface": "Finish"}},
+    "inventor": {"product": {"engineering_surface": "Coat"}},
+}
 '''
 
 
@@ -88,7 +65,8 @@ def _child(glb, kind, file_name, quantity):
 def _structure(cad="solidworks"):
     """top.asm (A-1) = 2 x B-1 + 1 x B-1 'Long' + 1 x sub.asm (S-1);
     sub.asm = 3 x B-1; B-1 is one part in two configurations, two .glb."""
-    part_props = {"Custom": {"COMPDESC": "Bracket", "COMPMAT": "Steel"}}
+    part_props = {"Custom": {"Label": "Bracket", "Long label": "Bracket plate", "Stuff": "Steel",
+                             "Finish": "Painted", "Title": "The bracket"}}
     return {
         "schema": "omnia.gltf.structure", "version": 1, "exporter": "omnia_threejs_export test",
         "cad": cad, "root": "A-1_0.glb",
@@ -117,31 +95,28 @@ def _zip(structure, skip=()):
 
 
 @tagged("-standard", "odoo_plm_glb_import")
-class TestReadCustomMapping(TransactionCase):
-    """The CustomProcedure is read, never run: Python 2 code is fine."""
+class TestReadWebMapping(TransactionCase):
+    """WEB_GLB_IMPORT is read as text, never run."""
 
-    def test_cad_class_with_base(self):
-        mapping, warnings = read_custom_mapping(CUSTOM_PROCEDURE, "solidworks")
-        # the CAD class overrides the whole dictionary, as the client does
-        self.assertEqual(mapping["COMPONENT_CONVERTION"], {"name": "COMPDESC", "engineering_material": "COMPMAT"})
-        # inherited from its base
-        self.assertEqual(mapping["DOCUMENT_CONVERTION"]["description"], "DOCDESC")
-        # not a literal: skipped, with a warning
-        self.assertNotIn("RELATION_CONVERTION", mapping)
-        self.assertTrue(any("RELATION_CONVERTION" in str(w) for w in warnings))
+    def test_star_and_cad(self):
+        mapping = read_web_mapping(CUSTOM_PROCEDURE)
+        solidworks = mapping_for_cad(mapping, "SolidWorks")
+        # the CAD's entries are added to "*" field by field
+        self.assertEqual(solidworks["product"], {"name": "Long label", "engineering_material": "Stuff",
+                                                 "engineering_surface": "Finish"})
+        self.assertEqual(solidworks["document"], {"description": "Title"})
+        # a CAD with no entry of its own takes "*"
+        self.assertEqual(mapping_for_cad(mapping, "solidedge")["product"],
+                         {"name": "Label", "engineering_material": "Stuff"})
 
-    def test_other_cad_and_missing_cad(self):
-        mapping, _warnings = read_custom_mapping(CUSTOM_PROCEDURE, "Inventor")
-        self.assertEqual(mapping["COMPONENT_CONVERTION"]["name"], "c_name")
-        mapping, warnings = read_custom_mapping(CUSTOM_PROCEDURE, "solidedge")
-        self.assertEqual(mapping, {})
-        self.assertTrue(warnings)
-
-    def test_return_dict_style(self):
-        source = ("class Sw(object):\n    COMPONENT_CONVERTION = {'name': 'X'}\n\n"
-                  "def integrationSettings():\n    return {'solidworks': Sw}\n")
-        mapping, _warnings = read_custom_mapping(source, "solidworks")
-        self.assertEqual(mapping["COMPONENT_CONVERTION"], {"name": "X"})
+    def test_absent_and_invalid(self):
+        self.assertIsNone(read_web_mapping("OTHER = {}\n"))
+        for bad in ("WEB_GLB_IMPORT = {'*': {'product': {'name': some_variable}}}\n",
+                    "WEB_GLB_IMPORT = {'*': {'bom': {'name': 'X'}}}\n",
+                    "WEB_GLB_IMPORT = {'*': {'product': {'name': 3}}}\n",
+                    "WEB_GLB_IMPORT = {'*': {'product': {'name': 'X'}}\n"):
+            with self.assertRaises(ValueError):
+                read_web_mapping(bad)
 
 
 @tagged("-standard", "odoo_plm_glb_import")
@@ -238,13 +213,45 @@ class TestGlbStructureImport(TransactionCase):
         self.assertEqual(sorted(bom.bom_line_ids.ids), before)
         self.assertIn("released", wizard.result)
 
-    def test_custom_procedure_of_the_group(self):
+    def _clear_procedures(self):
         if "custom_procedure" not in self.env["res.users"]._fields:
             self.skipTest("plm_client_customprocedure is not installed")
+        self.env.user.custom_procedure = False
+        for group in self.env.user.group_ids:
+            group.custom_procedure = False
+
+    def test_web_mapping_of_the_group(self):
+        self._clear_procedures()
         group = self.env["res.groups"].create({"name": "GLB import mapping",
                                                "custom_procedure": base64.b64encode(CUSTOM_PROCEDURE.encode()).decode()})
         self.env.user.group_ids = [(4, group.id)]
-        self.env.user.custom_procedure = False
         wizard = self._import(_structure())
-        self.assertEqual(self._product("B-1", 2).name, "Bracket")
-        self.assertIn("CustomProcedure", wizard.result)
+        product = self._product("B-1", 2)
+        self.assertEqual(product.name, "Bracket plate")
+        self.assertEqual(product.engineering_material, "Steel")
+        self.assertEqual(product.engineering_surface, "Painted")
+        self.assertEqual(self._doc("B-1", 2).description, "The bracket")
+        self.assertIn("WEB_GLB_IMPORT", wizard.result)
+
+    def test_field_types_and_unknown_fields(self):
+        self._clear_procedures()
+        procedure = ("WEB_GLB_IMPORT = {'*': {'product': {'weight': 'Mass', 'no_such_field': 'Label'}}}\n")
+        self.env.user.custom_procedure = base64.b64encode(procedure.encode()).decode()
+        structure = _structure()
+        structure["documents"]["B-1_2.glb"]["properties"]["Custom"]["Mass"] = "1,5"
+        wizard = self._import(structure)
+        self.assertEqual(self._product("B-1", 2).weight, 1.5)
+        self.assertIn("no_such_field", wizard.result)
+
+    def test_no_web_mapping(self):
+        self._clear_procedures()
+        self.env.user.custom_procedure = base64.b64encode(b"SOMETHING = 1\n").decode()
+        wizard = self._import(_structure())
+        self.assertEqual(self._product("B-1", 2).name, "B-1")
+        self.assertIn("has no WEB_GLB_IMPORT", wizard.result)
+
+    def test_invalid_web_mapping_stops(self):
+        self._clear_procedures()
+        self.env.user.custom_procedure = base64.b64encode(b"WEB_GLB_IMPORT = {'*': {'bom': {}}}\n").decode()
+        with self.assertRaises(UserError):
+            self._import(_structure())
