@@ -99,6 +99,7 @@
             "plm/static/src/xml/mrp_bom_overview_table_inherit.xml",
             "plm/static/src/js/many2one_widget/many2one_widget.js",
             "plm/static/src/js/many2one_widget/many2one_widget.xml",
+            "plm/static/src/js/x2many_open_form/x2many_open_form.js",
         ],
         "web.report_assets_common": [
             "plm/static/src/scss/document_bom.scss",

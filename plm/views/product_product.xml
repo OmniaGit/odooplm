@@ -465,7 +465,9 @@
                     </group>
 
                     <field name="linkeddocuments" nolabel="1" mode="kanban" domain="[('is_plm', '=', True)]"
+                           widget="plm_x2many_open_form"
                            context="{'odooPLM': True,
+                                     'plm_open_action': 'plm.plm_action_document_form',
                                      'kanban_view_ref':'plm.document_kanban_view',
 		 					         'list_view_ref':'plm.ir_attachment_list',
 		                             'form_view_ref':'plm.view_attachment_form_plm_hinerit'}"/>
