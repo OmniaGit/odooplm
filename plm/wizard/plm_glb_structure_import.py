@@ -26,11 +26,14 @@ for every .glb its CAD file name, code, revision and property sets, and for
 an assembly its direct children with their quantity. The native CAD files are
 not in it.
 
-For every document of the json the wizard finds or creates the product and
-the native CAD document (empty when new, checked out to the importing user so
-that the CAD client can save its file into it), uploads the .glb as a child of
-the native document (Web3DTree, the relation the 3D viewer reads) and builds
-the BoM and the HiTree relations of the assemblies.
+For every document of the json the wizard finds or creates the product,
+uploads the .glb linked to it and, when Odoo has the native CAD document
+(same code and revision), as its child (Web3DTree); a native document is
+never created: a record named as a CAD file must hold that file. Each
+assembly's .glb is the parent of its children's (WebHiTree, a relation of the
+web files alone, which the 3D viewer follows to load an assembly by
+references), and the assemblies get a BoM, with the .glb as source document
+or with none (bom_mode).
 
 The CAD properties go to Odoo fields through WEB_GLB_IMPORT, a dictionary
 of this import alone, written in the CustomProcedure of the user, else of
@@ -57,7 +60,7 @@ import re
 import zipfile
 
 from odoo import _, fields, models
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 
 from odoo.addons.plm.models.plm_mixin import OBSOLATED_STATUS, RELEASED_STATUS
 
@@ -66,6 +69,10 @@ _logger = logging.getLogger(__name__)
 STRUCTURE_FILE = "structure.json"
 STRUCTURE_SCHEMA = "omnia.gltf.structure"
 LOCKED_STATES = (RELEASED_STATUS, OBSOLATED_STATUS)
+# The relation of the web files of an assembly: its .glb is the parent of its
+# children's. Apart from HiTree, the CAD structure, which the check-out,
+# the client's download and saveRelationNew follow.
+WEB_TREE = "WebHiTree"
 WEB_MAPPING_NAME = "WEB_GLB_IMPORT"
 WEB_MAPPING_SECTIONS = ("product", "document")
 _WEB_MAPPING_RE = re.compile(r"^%s\s*=\s*\{" % WEB_MAPPING_NAME, re.M)
@@ -171,6 +178,17 @@ class PlmGlbStructureImport(models.TransientModel):
 
     zip_file = fields.Binary(string="Zip file", required=True)
     zip_name = fields.Char(string="File name")
+    force_product_images = fields.Boolean(
+        string="Force the product images",
+        help="Off, a product gets the document's preview as its image only when it has none; "
+             "on, the preview replaces the product's image.")
+    bom_mode = fields.Selection(
+        [("web", "With references to the web files"), ("none", "Without references")],
+        string="BoM", default="web", required=True,
+        help="With references, every BoM line has the assembly's .glb as source document: a new "
+             "import of the same zip updates the lines. Without references, the lines hold only the "
+             "component and its quantity: a new import cannot tell them apart, so an assembly whose "
+             "BoM already has lines is skipped, and the BoM must be deleted before re-importing.")
     state = fields.Selection([("draft", "To import"), ("done", "Imported")], default="draft")
     result = fields.Text(string="Result", readonly=True)
     document_ids = fields.Many2many("ir.attachment", string="Documents", readonly=True)
@@ -261,31 +279,23 @@ class PlmGlbStructureImport(models.TransientModel):
                       engineering_revision=entry.get("engineering_revision") or 0)
         return values
 
-    def _native_document(self, entry, values, log):
-        """The native CAD document of the entry: found by code and revision,
-        else created empty, named as the CAD file, and checked out to the
-        importing user so that their CAD client can save the file into it."""
-        attachment = self.env["ir.attachment"]
-        document = attachment.search([("engineering_code", "=", values["engineering_code"]),
-                                      ("engineering_revision", "=", values["engineering_revision"])], limit=1)
-        if document:
-            writable = {key: value for key, value in values.items()
-                        if key not in ("engineering_code", "engineering_revision")}
-            if writable and document.engineering_state not in LOCKED_STATES:
-                document.write(writable)
-            return document
-        document = attachment.create(dict(values, name=entry["file_name"], is_plm=True))
-        self.env["plm.checkout"].create({"userid": self.env.uid, "documentid": document.id})
-        log.append(_("%(file)s: native document %(code)s rev %(rev)s created, checked out to you",
-                     file=entry["file_name"], code=document.engineering_code, rev=document.engineering_revision))
-        return document
+    def _native_document(self, values):
+        """The native CAD document with the entry's code and revision, or an
+        empty recordset: the import never creates one."""
+        return self.env["ir.attachment"].search([("engineering_code", "=", values["engineering_code"]),
+                                                 ("engineering_revision", "=", values["engineering_revision"])],
+                                                limit=1)
 
-    def _glb_document(self, glb_name, content, native, product):
-        """The .glb as a child of its native document (Web3DTree), linked to
-        the component; a new import refreshes its content."""
+    def _glb_document(self, glb_name, content, native, product, values):
+        """The .glb, linked to the component and, when Odoo has it, a child of
+        the native document (Web3DTree); a new import refreshes its content.
+        values are the document fields WEB_GLB_IMPORT maps, its own code
+        being its file name."""
         attachment = self.env["ir.attachment"]
-        values = {"raw": content}
-        if "source_convert_document" in attachment._fields:
+        values = {key: value for key, value in values.items()
+                  if key not in ("engineering_code", "engineering_revision")}
+        values["raw"] = content
+        if native and "source_convert_document" in attachment._fields:
             values.update(is_converted_document=True, source_convert_document=native.id)
         glb = attachment.search([("engineering_code", "=", glb_name), ("engineering_revision", "=", 0)], limit=1)
         if glb:
@@ -293,10 +303,69 @@ class PlmGlbStructureImport(models.TransientModel):
         else:
             glb = attachment.create(dict(values, name=glb_name, engineering_code=glb_name,
                                          engineering_revision=0, is_plm=True))
-        self.env["ir.attachment.relation"].saveDocumentRelationNew(native.id, glb.id, link_kind="Web3DTree")
+        if native:
+            self.env["ir.attachment.relation"].saveDocumentRelationNew(native.id, glb.id, link_kind="Web3DTree")
         if product:
             self.env["plm.component.document.rel"].createFromIds(product, glb)
         return glb
+
+    def _web_tree(self, parent, children):
+        """The WebHiTree of an assembly's .glb: its children's .glb, the
+        relations no longer in the json removed."""
+        relation = self.env["ir.attachment.relation"]
+        current = relation.search([("parent_id", "=", parent.id), ("link_kind", "=", WEB_TREE)])
+        current.filtered(lambda rel: rel.child_id not in children).unlink()
+        for child in children:
+            relation.saveDocumentRelationNew(parent.id, child.id, link_kind=WEB_TREE)
+
+    def _bom(self, product):
+        """The BoM of the component the import writes: its type as the CAD
+        client's (ebom with plm_engineering, phantom for a kit), created
+        when missing."""
+        installed = self.env["ir.module.module"].sudo().search_count(
+            [("name", "=", "plm_engineering"), ("state", "in", ["installed", "to upgrade"])])
+        return self.env["mrp.bom"]._saveRelationNewGetBom(
+            product.product_tmpl_id.id, "ebom" if installed else "normal", product, 1)
+
+    def _write_bom_web(self, product, source, rows):
+        """The BoM lines of source (the assembly's .glb) brought to rows
+        [(component, quantity)]: lines reused one per row, missing ones
+        added, the others of that source removed. A line of another source,
+        the CAD client's, is left as it is."""
+        bom = self._bom(product)
+        pool = {}
+        for line in bom.bom_line_ids.filtered(lambda line: line.source_id == source and line.type == bom.type):
+            pool.setdefault(line.product_id, []).append(line)
+        changed = False
+        for component, quantity in rows:
+            lines = pool.get(component)
+            if lines:
+                line = lines.pop(0)
+                if line.product_qty != quantity:
+                    line.product_qty = quantity
+                    changed = True
+            else:
+                bom.add_child_row(component.id, source.id, {"product_qty": quantity}, bom.type)
+                changed = True
+        left = self.env["mrp.bom.line"].concat(*[line for lines in pool.values() for line in lines])
+        if left:
+            left.unlink()
+            changed = True
+        if changed:
+            bom._set_outdated_bom_in_productions()
+
+    def _write_bom_none(self, product, rows, entry, log):
+        """BoM lines with no source document; an assembly whose BoM already
+        has lines is skipped, since its lines cannot be told apart."""
+        bom = self._bom(product)
+        if bom.bom_line_ids:
+            log.append(_("%(file)s: the BoM of %(code)s already has lines and the import is without "
+                         "references: delete it before re-importing, left as it is",
+                         file=entry["file_name"], code=product.engineering_code))
+            return False
+        self.env["mrp.bom.line"].create([{"bom_id": bom.id, "product_id": component.id, "product_qty": quantity,
+                                          "type": bom.type} for component, quantity in rows])
+        return True
 
     def _preview(self, entry, glb_name, archive, names, log):
         """The preview png of the entry, base64 text, or False: structure.json
@@ -322,34 +391,59 @@ class PlmGlbStructureImport(models.TransientModel):
         documents = structure["documents"]
         nodes = {}
         natives = self.env["ir.attachment"]
+        glbs = self.env["ir.attachment"]
         locked_previews = self.env["ir.attachment"]
+        imaged = self.env["product.product"]
         for glb_name, entry in documents.items():
             properties = flat_properties(entry.get("properties"))
             product = product_model.createFromProps(self._product_values(entry, properties, mapping))
-            native = self._native_document(entry, self._document_values(entry, properties, mapping), log)
-            if product:
-                self.env["plm.component.document.rel"].createFromIds(product, native)
-            glb = self._glb_document(glb_name, archive.read(names[glb_name]), native, product)
+            values = self._document_values(entry, properties, mapping)
+            native = self._native_document(values)
+            if native:
+                writable = {key: value for key, value in values.items()
+                            if key not in ("engineering_code", "engineering_revision")}
+                if writable and native.engineering_state not in LOCKED_STATES:
+                    native.write(writable)
+                if product:
+                    self.env["plm.component.document.rel"].createFromIds(product, native)
+                natives |= native
+            glb = self._glb_document(glb_name, archive.read(names[glb_name]), native, product, values)
+            glbs |= glb
             preview = self._preview(entry, glb_name, archive, names, log)
             if preview:
-                # The zip's preview replaces the document's, the CAD client's
-                # included, but not on a released or obsoleted document
                 glb.preview = preview
-                if native.engineering_state in LOCKED_STATES:
+                # The zip's preview replaces the native document's, the CAD
+                # client's included, but not on a released or obsoleted one
+                if native and native.engineering_state in LOCKED_STATES:
                     if native not in locked_previews:
                         locked_previews |= native
                         log.append(_("%(file)s is %(state)s: its preview is left as it is",
                                      file=native.name, state=native.engineering_state))
-                else:
+                elif native:
                     native.preview = preview
-            nodes[glb_name] = (product, native)
-            natives |= native
+                # The product's image: when it has none, or always when forced;
+                # once per product, its configurations share it
+                if product and product not in imaged and (self.force_product_images or not product.image_1920):
+                    imaged |= product
+                    try:
+                        with self.env.cr.savepoint():
+                            product.image_1920 = preview
+                    except (UserError, ValidationError) as ex:
+                        log.append(_("%(code)s: its image cannot be written: %(error)s",
+                                     code=product.engineering_code, error=ex))
+            nodes[glb_name] = (product, glb)
         boms = 0
         for glb_name, entry in documents.items():
             children = entry.get("children") or []
             if entry.get("kind") != "assembly" or not children:
                 continue
-            product, native = nodes[glb_name]
+            product, glb = nodes[glb_name]
+            found = [(child, nodes.get(child.get("glb"))) for child in children]
+            for child, node in found:
+                if not node:
+                    log.append(_("%(parent)s: child %(child)s has no file in the zip, left out",
+                                 parent=entry["file_name"], child=child.get("file_name") or child.get("glb")))
+            self._web_tree(glb, self.env["ir.attachment"].concat(*[node[1] for _child, node in found if node]))
             if not product:
                 log.append(_("%s: no component, no BoM", entry["file_name"]))
                 continue
@@ -358,25 +452,22 @@ class PlmGlbStructureImport(models.TransientModel):
                              file=entry["file_name"], code=product.engineering_code,
                              state=product.engineering_state))
                 continue
-            rows = []
-            for child in children:
-                child_node = nodes.get(child.get("glb"))
-                if not child_node or not child_node[0]:
-                    log.append(_("%(parent)s: child %(child)s has no file in the zip, left out of the BoM",
-                                 parent=entry["file_name"], child=child.get("file_name") or child.get("glb")))
-                    continue
-                rows.append((child_node[0].id, child_node[1].id, {"product_qty": child.get("quantity") or 1}))
-            if rows:
-                self.env["mrp.bom"].saveRelationNew(((False, product.id, native.id), rows))
+            rows = [(node[0], child.get("quantity") or 1) for child, node in found if node and node[0]]
+            if not rows:
+                continue
+            if self.bom_mode == "web":
+                self._write_bom_web(product, glb, rows)
                 boms += 1
-        if "has_web3d" in natives._fields:
+            elif self._write_bom_none(product, rows, entry, log):
+                boms += 1
+        if natives and "has_web3d" in natives._fields:
             # stored, and computed from the name only: the Web3DTree relation
             # just created does not trigger it
             self.env.add_to_compute(natives._fields["has_web3d"], natives)
         log.insert(0, _("%(docs)s documents imported from %(zip)s, %(boms)s BoM written",
                         docs=len(documents), zip=self.zip_name or STRUCTURE_FILE, boms=boms))
         self.write({"state": "done", "result": "\n".join(str(line) for line in log),
-                    "document_ids": [(6, 0, natives.ids)]})
+                    "document_ids": [(6, 0, (glbs | natives).ids)]})
         return {
             "type": "ir.actions.act_window",
             "res_model": self._name,

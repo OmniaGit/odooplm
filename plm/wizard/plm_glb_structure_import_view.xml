@@ -10,14 +10,30 @@
                     <p>
                         Load the zip written by OmniaGLTFConverter with "All files with data":
                         its .glb files and structure.json. Every document of the json gets its
-                        component and its native CAD document (created empty, and checked out to
-                        you, when it is not in Odoo yet); the .glb is attached to the native
-                        document for the 3D viewer, and the assemblies get their BoM.
+                        component and its .glb, linked to the component and, when Odoo has the
+                        native CAD document, attached to it for the 3D viewer: no native document
+                        is created. The .glb of an assembly is linked to its children's, and the
+                        assemblies get their BoM.
                     </p>
                     <group>
                         <field name="zip_file" filename="zip_name"/>
                         <field name="zip_name" invisible="1"/>
+                        <field name="force_product_images"/>
+                        <field name="bom_mode" widget="radio"/>
                     </group>
+                    <div class="text-muted">
+                        <p>
+                            <b>With references to the web files</b>: every BoM line has the
+                            assembly's .glb as source document, so a new import of the same zip
+                            updates the lines.
+                        </p>
+                        <p>
+                            <b>Without references</b>: the lines hold only the component and its
+                            quantity. A new import cannot tell them apart, so it leaves out an
+                            assembly whose BoM already has lines: delete the BoM before
+                            re-importing.
+                        </p>
+                    </div>
                 </div>
                 <group invisible="state != 'done'">
                     <field name="result" nolabel="1" colspan="2"/>

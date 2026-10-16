@@ -171,6 +171,23 @@ class PlmWeb3dRoutes(HttpCase):
         # no name (a cad3d JSON assembly): the format's file, as before
         self.assertIn(self.url_open(base).json()["document_id"], [f.id for f in files.values()])
 
+    def test_a_component_is_found_in_the_web_tree(self):
+        """An imported assembly .glb with no native CAD document: its parts
+        are its WebHiTree children, found by the name the component gives."""
+        Attachment = self.env["ir.attachment"]
+        assembly = Attachment.create({"name": "WEB3D-ASM_0.glb", "engineering_code": "WEB3D-ASM_0.glb",
+                                      "is_plm": True, "raw": b"glTF"})
+        part = Attachment.create({"name": "WEB3D-PRT_0_Default.glb", "engineering_code": "WEB3D-PRT_0_Default.glb",
+                                  "is_plm": True, "raw": b"glTF"})
+        self.env["ir.attachment.relation"].create({"parent_id": assembly.id, "child_id": part.id,
+                                                   "link_kind": "WebHiTree"})
+        self.authenticate("admin", "admin")
+        base = "/plm/web3d_component?engineering_code=WEB3D-PRT&engineering_revision=0&suffix=.glb"
+        found = self.url_open(base + "&name=WEB3D-PRT_0_Default.glb&parent_id=%s" % assembly.id).json()
+        self.assertEqual(found["document_id"], part.id)
+        # another document's tree does not answer, and no native: nothing
+        self.assertEqual(self.url_open(base + "&name=WEB3D-PRT_0_Default.glb&parent_id=%s" % part.id).json(), {})
+
     def test_product_info_follows_the_node(self):
         self.assertIn("document", self._product_info("web3d_insider"))
         with mute_logger("odoo.addons.plm_web_3d.controllers.main"):

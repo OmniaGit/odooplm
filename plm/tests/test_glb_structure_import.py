@@ -150,9 +150,9 @@ class TestReadWebMapping(TransactionCase):
 @tagged("-standard", "odoo_plm_glb_import")
 class TestGlbStructureImport(TransactionCase):
 
-    def _import(self, structure, skip=()):
+    def _import(self, structure, skip=(), **options):
         wizard = self.env["plm.glb.structure.import"].create(
-            {"zip_file": _zip(structure, skip), "zip_name": "top.zip"})
+            dict({"zip_file": _zip(structure, skip), "zip_name": "top.zip"}, **options))
         wizard.action_import()
         return wizard
 
@@ -160,54 +160,73 @@ class TestGlbStructureImport(TransactionCase):
         return self.env["ir.attachment"].search([("engineering_code", "=", code),
                                                  ("engineering_revision", "=", revision)])
 
+    def _glb(self, name):
+        return self._doc(name, 0)
+
     def _product(self, code, revision=0):
         return self.env["product.product"].search([("engineering_code", "=", code),
                                                    ("engineering_revision", "=", revision)])
 
-    def _web3d(self, native):
+    def _children(self, parent, kind):
         return self.env["ir.attachment.relation"].search(
-            [("parent_id", "=", native.id), ("link_kind", "=", "Web3DTree")]).child_id
+            [("parent_id", "=", parent.id), ("link_kind", "=", kind)]).child_id
 
-    def test_structure(self):
+    def _bom(self, code):
+        return self.env["mrp.bom"].search([("product_tmpl_id", "=", self._product(code).product_tmpl_id.id)])
+
+    def _lines(self, code):
+        return sorted((line.product_id.engineering_code, line.product_qty, line.source_id.name or False)
+                      for line in self._bom(code).bom_line_ids)
+
+    def _native(self, name, code, revision=0, **values):
+        return self.env["ir.attachment"].create(dict(
+            {"name": name, "engineering_code": code, "engineering_revision": revision, "is_plm": True}, **values))
+
+    def test_structure_without_natives(self):
         wizard = self._import(_structure())
         self.assertEqual(wizard.state, "done")
-        top, part, sub = self._doc("A-1"), self._doc("B-1", 2), self._doc("S-1")
-        # native documents named after the CAD file, empty, checked out to me
-        self.assertEqual((top.name, part.name, sub.name), ("top.asm", "b.par", "sub.asm"))
-        for native in top | part | sub:
-            self.assertTrue(native.is_plm)
-            self.assertTrue(self.env["plm.checkout"].search(
-                [("documentid", "=", native.id), ("userid", "=", self.env.uid)]))
-        # each .glb under its native document, the part with its two configurations
-        self.assertEqual(sorted(self._web3d(part).mapped("name")), ["B-1_2.glb", "B-1_2_Long.glb"])
-        self.assertEqual(self._web3d(top).name, "A-1_0.glb")
-        self.assertEqual(self._web3d(top).raw.content, b"glTFA-1_0.glb")
-        # components linked to their documents
-        product_part = self._product("B-1", 2)
-        self.assertIn(part, product_part.linkeddocuments)
-        self.assertIn(self._web3d(part)[0], product_part.linkeddocuments)
-        # BoMs: one line per child of the json, with its quantity
-        top_bom = self.env["mrp.bom"].search([("product_tmpl_id", "=", self._product("A-1").product_tmpl_id.id)])
-        lines = sorted((line.product_id.engineering_code, line.product_qty) for line in top_bom.bom_line_ids)
-        self.assertEqual(lines, [("B-1", 1.0), ("B-1", 2.0), ("S-1", 1.0)])
-        sub_bom = self.env["mrp.bom"].search([("product_tmpl_id", "=", self._product("S-1").product_tmpl_id.id)])
-        self.assertEqual([(line.product_id.engineering_code, line.product_qty) for line in sub_bom.bom_line_ids],
-                         [("B-1", 3.0)])
-        # HiTree between the native documents
-        hitree = self.env["ir.attachment.relation"].search([("parent_id", "=", top.id), ("link_kind", "=", "HiTree")])
-        self.assertEqual(set(hitree.child_id.ids), {part.id, sub.id})
-        # the child with no file is reported, not imported
+        # no native document is created: a CAD file name must hold that file
+        self.assertFalse(self.env["ir.attachment"].search([("name", "in", ["top.asm", "b.par", "sub.asm"])]))
+        top, part, part_long, sub = (self._glb(name) for name in
+                                     ("A-1_0.glb", "B-1_2.glb", "B-1_2_Long.glb", "S-1_0.glb"))
+        self.assertTrue(all((top, part, part_long, sub)))
+        self.assertEqual(top.raw.content, b"glTFA-1_0.glb")
+        self.assertFalse(self.env["plm.checkout"].search([("documentid", "in", (top | part | sub).ids)]))
+        # the .glb linked to its component, both configurations to the one product
+        self.assertEqual(self._product("B-1", 2).linkeddocuments, part | part_long)
+        # WebHiTree between the .glb files, no HiTree
+        self.assertEqual(self._children(top, "WebHiTree"), part | part_long | sub)
+        self.assertEqual(self._children(sub, "WebHiTree"), part)
+        self.assertFalse(self._children(top, "HiTree"))
+        # the BoM lines with the assembly's .glb as source
+        self.assertEqual(self._lines("A-1"), [("B-1", 1.0, "A-1_0.glb"), ("B-1", 2.0, "A-1_0.glb"),
+                                              ("S-1", 1.0, "A-1_0.glb")])
+        self.assertEqual(self._lines("S-1"), [("B-1", 3.0, "S-1_0.glb")])
         self.assertIn("lost.par", wizard.result)
-        if "has_web3d" in top._fields:
-            self.assertTrue(top.has_web3d)
 
-    def test_reimport_is_idempotent(self):
+    def test_reimport_with_references_updates(self):
         self._import(_structure())
-        self._import(_structure())
-        self.assertEqual(len(self._doc("B-1", 2)), 1)
-        self.assertEqual(len(self._web3d(self._doc("B-1", 2))), 2)
-        top_bom = self.env["mrp.bom"].search([("product_tmpl_id", "=", self._product("A-1").product_tmpl_id.id)])
-        self.assertEqual(len(top_bom.bom_line_ids), 3)
+        lines_before = self._bom("A-1").bom_line_ids
+        structure = _structure()
+        top = structure["documents"]["A-1_0.glb"]
+        top["children"] = [child for child in top["children"] if child["glb"] != "S-1_0.glb"]
+        top["children"][0]["quantity"] = 5
+        self._import(structure)
+        self.assertEqual(len(self._glb("B-1_2.glb")), 1)
+        # the WebHiTree follows the json: the subassembly is gone
+        self.assertEqual(self._children(self._glb("A-1_0.glb"), "WebHiTree"),
+                         self._glb("B-1_2.glb") | self._glb("B-1_2_Long.glb"))
+        self.assertEqual(self._lines("A-1"), [("B-1", 1.0, "A-1_0.glb"), ("B-1", 5.0, "A-1_0.glb")])
+        # the lines are the same records, updated
+        self.assertLessEqual(self._bom("A-1").bom_line_ids, lines_before)
+
+    def test_bom_without_references(self):
+        self._import(_structure(), bom_mode="none")
+        self.assertEqual(self._lines("A-1"), [("B-1", 1.0, False), ("B-1", 2.0, False), ("S-1", 1.0, False)])
+        # a new import cannot tell the lines apart: the assembly is left out
+        wizard = self._import(_structure(), bom_mode="none")
+        self.assertEqual(len(self._bom("A-1").bom_line_ids), 3)
+        self.assertIn("delete it before re-importing", wizard.result)
 
     def test_file_name_required(self):
         structure = _structure()
@@ -219,27 +238,38 @@ class TestGlbStructureImport(TransactionCase):
         with self.assertRaises(UserError):
             self._import(_structure(), skip=("S-1_0.glb",))
 
-    def test_existing_native_document_is_reused(self):
-        native = self.env["ir.attachment"].create({"name": "b.par", "engineering_code": "B-1",
-                                                   "engineering_revision": 2, "is_plm": True,
-                                                   "raw": b"native cad file"})
+    def test_existing_native_document(self):
+        native = self._native("b.par", "B-1", 2, raw=b"native cad file")
         self._import(_structure())
-        self.assertEqual(self._doc("B-1", 2), native)
         self.assertEqual(native.raw.content, b"native cad file")
+        self.assertEqual(self._children(native, "Web3DTree"), self._glb("B-1_2.glb") | self._glb("B-1_2_Long.glb"))
+        self.assertIn(native, self._product("B-1", 2).linkeddocuments)
         self.assertFalse(self.env["plm.checkout"].search([("documentid", "=", native.id)]))
-        self.assertEqual(len(self._web3d(native)), 2)
+        if "has_web3d" in native._fields:
+            self.assertTrue(native.has_web3d)
 
     def test_released_component_keeps_its_bom(self):
         self._import(_structure())
-        product_top = self._product("A-1")
-        bom = self.env["mrp.bom"].search([("product_tmpl_id", "=", product_top.product_tmpl_id.id)])
+        bom = self._bom("A-1")
         before = sorted(bom.bom_line_ids.ids)
-        product_top.engineering_state = "released"
+        self._product("A-1").engineering_state = "released"
         structure = _structure()
         structure["documents"]["A-1_0.glb"]["children"] = structure["documents"]["A-1_0.glb"]["children"][:1]
         wizard = self._import(structure)
         self.assertEqual(sorted(bom.bom_line_ids.ids), before)
         self.assertIn("released", wizard.result)
+
+    def test_doc_structure_follows_the_web_tree(self):
+        self._import(_structure())
+        top = self._glb("A-1_0.glb")
+        children = {child["id"] for child in top.getDocBom()["children"]}
+        self.assertEqual(children, set(self._glb("B-1_2.glb") | self._glb("B-1_2_Long.glb") | self._glb("S-1_0.glb")))
+        # a CAD document keeps its HiTree structure
+        cad_top = self._native("cad_top.asm", "CAD-TOP", document_type="3d")
+        cad_child = self._native("cad_child.par", "CAD-CHILD", document_type="3d")
+        self.env["ir.attachment.relation"].create({"parent_id": cad_top.id, "child_id": cad_child.id,
+                                                   "link_kind": "HiTree"})
+        self.assertEqual({child["id"] for child in cad_top.getDocBom()["children"]}, {cad_child})
 
     def _clear_procedures(self):
         if "custom_procedure" not in self.env["res.users"]._fields:
@@ -258,7 +288,8 @@ class TestGlbStructureImport(TransactionCase):
         self.assertEqual(product.name, "Bracket plate")
         self.assertEqual(product.engineering_material, "Steel")
         self.assertEqual(product.engineering_surface, "Painted")
-        self.assertEqual(self._doc("B-1", 2).description, "The bracket")
+        # the document section goes to the .glb (and to a native document, when there is one)
+        self.assertEqual(self._glb("B-1_2.glb").description, "The bracket")
         self.assertIn("WEB_GLB_IMPORT", wizard.result)
 
     def test_field_types_and_unknown_fields(self):
@@ -284,30 +315,35 @@ class TestGlbStructureImport(TransactionCase):
         with self.assertRaises(UserError):
             self._import(_structure())
 
-    def test_previews(self):
+    def test_previews_and_product_images(self):
         wizard = self._import(_with_previews(_structure()))
-        top = self._doc("A-1")
-        self.assertEqual(_colour(top.preview), (255, 0, 0))
-        self.assertEqual(_colour(self._web3d(top).preview), (255, 0, 0))
-        self.assertEqual(_colour(self._doc("S-1").preview), (0, 0, 255))
+        self.assertEqual(_colour(self._glb("A-1_0.glb").preview), (255, 0, 0))
+        self.assertEqual(_colour(self._glb("S-1_0.glb").preview), (0, 0, 255))
+        # a product with no image gets the preview
+        self.assertEqual(_colour(self._product("A-1").image_1920), (255, 0, 0))
+        self.assertEqual(_colour(self._product("B-1", 2).image_1920), (0, 255, 0))
         self.assertNotIn("preview", wizard.result)
 
-    def test_preview_replaces_the_existing_one(self):
-        native = self.env["ir.attachment"].create({
-            "name": "b.par", "engineering_code": "B-1", "engineering_revision": 2, "is_plm": True,
-            "preview": base64.b64encode(_png((1, 2, 3))).decode()})
+    def test_product_image_kept_unless_forced(self):
+        self._import(_structure())
+        product = self._product("A-1")
+        product.image_1920 = base64.b64encode(_png((1, 2, 3))).decode()
+        self._import(_with_previews(_structure()))
+        self.assertEqual(_colour(product.image_1920), (1, 2, 3))
+        self._import(_with_previews(_structure()), force_product_images=True)
+        self.assertEqual(_colour(product.image_1920), (255, 0, 0))
+
+    def test_preview_replaces_the_native_one(self):
+        native = self._native("b.par", "B-1", 2, preview=base64.b64encode(_png((1, 2, 3))).decode())
         self._import(_with_previews(_structure()))
         self.assertEqual(_colour(native.preview), (0, 255, 0))
 
-    def test_released_document_keeps_its_preview(self):
-        native = self.env["ir.attachment"].create({
-            "name": "b.par", "engineering_code": "B-1", "engineering_revision": 2, "is_plm": True,
-            "preview": base64.b64encode(_png((1, 2, 3))).decode()})
+    def test_released_native_keeps_its_preview(self):
+        native = self._native("b.par", "B-1", 2, preview=base64.b64encode(_png((1, 2, 3))).decode())
         native.engineering_state = "released"
         wizard = self._import(_with_previews(_structure()))
         self.assertEqual(_colour(native.preview), (1, 2, 3))
-        # its .glb gets the preview all the same
-        self.assertEqual(_colour(self._web3d(native)[0].preview), (0, 255, 0))
+        self.assertEqual(_colour(self._glb("B-1_2.glb").preview), (0, 255, 0))
         self.assertEqual(wizard.result.count("its preview is left as it is"), 1)
 
     def test_missing_previews_are_reported(self):
@@ -316,5 +352,5 @@ class TestGlbStructureImport(TransactionCase):
         wizard = self._import(structure, skip=("A-1_0.png",))
         self.assertIn("S-1_0.glb: no preview in the zip", wizard.result)
         self.assertIn("A-1_0.glb: its preview A-1_0.png is not in the zip", wizard.result)
-        self.assertFalse(self._doc("A-1").preview)
-        self.assertEqual(_colour(self._doc("B-1", 2).preview), (0, 255, 0))
+        self.assertFalse(self._glb("A-1_0.glb").preview)
+        self.assertEqual(_colour(self._glb("B-1_2.glb").preview), (0, 255, 0))

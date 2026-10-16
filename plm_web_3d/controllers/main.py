@@ -393,15 +393,32 @@ class Web3DView(Controller):
 
     @route("/plm/web3d_component", type="http", auth="user")
     @webservice
-    def web3d_component(self, engineering_code=None, engineering_revision=None, suffix=None, name=None):
-        """The web export of a component, for a viewer building an assembly: the
-        document with that code and revision (the native CAD file), then its
-        Web3DTree child named name when the assembly names the file (a .glb by
-        references, one file per configuration), else the one whose name ends
-        with suffix, the format of the assembly (a customer may export other
-        formats too); {} when there is none.
+    def web3d_component(self, engineering_code=None, engineering_revision=None, suffix=None, name=None,
+                        parent_id=None):
+        """The web export of a component, for a viewer building an assembly.
+
+        First the WebHiTree child named name of parent_id, the web file of
+        the assembly shown (the GLB structure import links them): no native
+        CAD document is needed. Else the document with that code and revision
+        (the native CAD file), then its Web3DTree child named name when the
+        assembly names the file (a .glb by references, one file per
+        configuration), else the one whose name ends with suffix, the format
+        of the assembly (a customer may export other formats too); {} when
+        there is none.
 
         Read as the user: what they may not read is not found."""
+        if name and parent_id and str(parent_id).isdigit():
+            web_children = request.env["ir.attachment.relation"].search([
+                ("parent_id", "=", int(parent_id)),
+                ("link_kind", "=", "WebHiTree"),
+            ]).mapped("child_id")
+            for child in web_children:
+                if (child.name or "").lower() == name.lower() and child.has_access("read"):
+                    return request.make_json_response({
+                        "document_id": child.id,
+                        "name": child.name,
+                        "url": "/plm/download_treejs_model?document_id=%s" % child.id,
+                    })
         if not engineering_code or engineering_revision in (None, "") or not suffix:
             return request.make_json_response({})
         try:

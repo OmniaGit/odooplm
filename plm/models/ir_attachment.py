@@ -371,6 +371,10 @@ class IrAttachment(models.Model):
                 result.extend(self.getRelatedHiTree(doc_id, False))
             elif link_kind == "PkgTree":
                 result.extend(self.getRelatedPkgTree(doc_id))
+            elif link_kind == "WebHiTree":
+                result.extend(self.env["ir.attachment.relation"].search(
+                    [("parent_id", "=", doc_id), ("link_kind", "=", "WebHiTree")]
+                ).child_id.ids)
             else:
                 logging.warning(
                     "getRelatedOneLevelLinks cannot find link_kind %r" % (link_kind)
@@ -4076,9 +4080,14 @@ class IrAttachment(models.Model):
         children_list = []
 
         if recursion and self.document_type and self.document_type.upper() != "2D":
-            children = self.getRelatedOneLevelLinks(
-                self.id, ["RfTree", "LyTree", "HiTree"]
-            )
+            # A web 3D file of an assembly (the GLB structure import) has its
+            # structure in WebHiTree, the relation of the web files alone
+            kinds = ["RfTree", "LyTree", "HiTree"]
+            if self.env["ir.attachment.relation"].search_count(
+                [("parent_id", "=", self.id), ("link_kind", "=", "WebHiTree")], limit=1
+            ):
+                kinds = ["WebHiTree"]
+            children = self.getRelatedOneLevelLinks(self.id, kinds)
 
             for child_id in children:
                 child = self.browse(child_id)

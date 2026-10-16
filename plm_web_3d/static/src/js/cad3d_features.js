@@ -862,9 +862,12 @@ function loadJsonPart(url) {
  * component group: a cad3d JSON by default; the glTF loader passes its own,
  * which brings the part to the viewer's millimetres. A component naming its
  * file (plm_component.glb, a .glb by references) is loaded by that name, so
- * two configurations of one part get their own file.
+ * two configurations of one part get their own file; parentId, the document
+ * of the assembly shown, lets the server find it among that document's
+ * WebHiTree children. onComponent(copy, found) may return a promise (a
+ * subassembly loading its own parts): it is waited for.
  */
-export function loadAssemblyComponents(root, documentName, onComponent, loadPart = loadJsonPart) {
+export function loadAssemblyComponents(root, documentName, onComponent, loadPart = loadJsonPart, parentId = null) {
 	if (!isAssembly(root)) return Promise.resolve([]);
 	const suffix = exportSuffix(documentName);
 	const byPart = new Map();
@@ -887,6 +890,7 @@ export function loadAssemblyComponents(root, documentName, onComponent, loadPart
 			suffix,
 		});
 		if (info.glb) query.set('name', info.glb);
+		if (parentId) query.set('parent_id', parentId);
 		return fetch(`/plm/web3d_component?${query}`)
 			.then((response) => response.json())
 			.then((found) => new Promise((resolve) => {
@@ -896,12 +900,12 @@ export function loadAssemblyComponents(root, documentName, onComponent, loadPart
 					return;
 				}
 				loadPart(found.url).then((part) => {
-					for (const node of nodes) {
+					const placed = nodes.map((node) => {
 						const copy = part.clone();
 						node.add(copy);
-						if (onComponent) onComponent(copy);
-					}
-					resolve();
+						return onComponent ? onComponent(copy, found) : null;
+					});
+					Promise.all(placed).then(() => resolve(), () => resolve());
 				}, () => {
 					missing.push(found.name);
 					resolve();

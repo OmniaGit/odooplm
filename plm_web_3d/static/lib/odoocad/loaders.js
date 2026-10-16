@@ -38,8 +38,14 @@ function gltfRoots(gltf) {
 
 /** A glTF part of an assembly by references, in mm (as loadGltx brings a
  * document), to clone under each component: its root, or its roots in a
- * group when it has several. */
+ * group when it has several. Each file is read once: the copies are clones. */
+const gltfParts = new Map();
 function loadGltfPart(url) {
+	if (!gltfParts.has(url)) gltfParts.set(url, readGltfPart(url));
+	return gltfParts.get(url);
+}
+
+function readGltfPart(url) {
 	return new Promise((resolve, reject) => gLTFLoader.load(url, (gltf) => {
 		const roots = gltfRoots(gltf);
 		for (const root of roots) {
@@ -134,7 +140,7 @@ class Loader {
 		var exte = document_name.split('.').pop();
 		exte = exte.toLowerCase()
 		if (['glb', 'gltf'].includes(exte)) {
-			this.loadGltx(document_name, url);
+			this.loadGltx(document_name, url, document_id);
 		}
 		if (['fbx'].includes(exte)) {
 			this.loadfBXLoader(document_name, url);
@@ -181,7 +187,7 @@ class Loader {
 			}
 		);
 	}
-	loadGltx(document_name, url) {
+	loadGltx(document_name, url, document_id = null) {
 		var self = this;
 		gLTFLoader.load(url,
 			function (gltf) {
@@ -204,15 +210,21 @@ class Loader {
 				// An assembly by references holds no mesh of its parts: each
 				// component names its part's .glb, loaded once and placed in
 				// every component that uses it
+				// a material of its own per copy, as addItemToScene gives every
+				// part; a subassembly by references loads its own parts, found
+				// among its file's WebHiTree children
+				const placePart = (part, found) => {
+					part.traverse((child) => {
+						if (child.isMesh && child.material) child.material = child.material.clone();
+					});
+					prepareGltfPart(part);
+					if (isAssembly(part)) {
+						return loadAssemblyComponents(part, found.name, placePart, loadGltfPart, found.document_id);
+					}
+					return null;
+				};
 				for (const assembly of assemblies) {
-					loadAssemblyComponents(assembly, document_name, (part) => {
-						// a material of its own per copy, as addItemToScene
-						// gives every part
-						part.traverse((child) => {
-							if (child.isMesh && child.material) child.material = child.material.clone();
-						});
-						prepareGltfPart(part);
-					}, loadGltfPart).then(() => {
+					loadAssemblyComponents(assembly, document_name, placePart, loadGltfPart, document_id).then(() => {
 						self.odooCad.create_tree_structure(children.map(
 							(child) => self.odooCad.get_li_structure({ children: [child] })[0]).join(""));
 						const canvas = document.getElementById('odoo_canvas');

@@ -158,25 +158,36 @@ written by `omnia_threejs_export.cad3d_export.structure`
 a contract with those two repositories** (schema `omnia.gltf.structure`,
 version 1): change it on both sides together.
 
-- Every document entry needs `file_name` (the CAD file's base name, which
-  names the native document; missing, the import stops), `engineering_code`
-  and `engineering_revision`; every `.glb` the json names must be in the zip.
-- The product and the native CAD document are found by code and revision;
-  a native document Odoo does not have is created **empty and checked out to
-  the importing user**, so that their CAD client saves the file into it
-  (`needUpdate` wants that checkout). An existing one keeps its content.
-- Each `.glb` is a child of its native document with `link_kind='Web3DTree'`
-  (parent native, child web file: what `plm_web_3d` reads), linked to the
-  component; a part in two configurations has two. `has_web3d` is stored and
-  depends on the name only, so the wizard recomputes it.
-- Each document's `preview` (`<its .glb's name>.png` in the zip, named in the
-  json) replaces the `preview` of its native document, the CAD client's
-  included, except on a released or obsoleted one, and is always set on the
-  `.glb`; `null` or a png missing from the zip is reported, a zip without the
-  key imports as before.
-- Assemblies get their BoM and HiTree through `mrp.bom.saveRelationNew`, one
-  row per child with its `quantity`; a component released or obsoleted keeps
-  its BoM, and its `.glb` is attached all the same.
+- Every document entry needs `file_name` (the CAD file's base name; missing,
+  the import stops), `engineering_code` and `engineering_revision`; every
+  `.glb` the json names must be in the zip.
+- **No native CAD document is created** (decided 2026-10-16): a record named
+  as a CAD file must hold that file. The product is found by code and
+  revision or created, the `.glb` is linked to it (its own code is its file
+  name) and, only when Odoo has the native document with that code and
+  revision, it is that document's child with `link_kind='Web3DTree'` (parent
+  native, child web file); a part in two configurations has two `.glb`.
+  `has_web3d` is stored and depends on the name only, so the wizard
+  recomputes it.
+- **`WebHiTree`**, a relation of the web files alone: each assembly's `.glb`
+  is the parent of its direct children's, realigned to the json at every
+  import. Kept apart from `HiTree` on purpose, since the check-out, the
+  client's download and `saveRelationNew` follow `HiTree`. The 3D viewer
+  loads an assembly by references through it (`/plm/web3d_component` with
+  `parent_id` and `name`), before the native/`Web3DTree` way, and *Doc
+  Structure* (`getDocBom`) walks it from a document that has `WebHiTree`
+  children.
+- Each document's `preview` (`<its .glb's name>.png`, named in the json) is
+  set on the `.glb`, on the native document when there is one (not a released
+  or obsoleted one), and on the product as `image_1920` when it has none, or
+  always with *Force the product images*; `null` or a png missing from the
+  zip is reported.
+- **BoM** (`bom_mode`): *with references to the web files*, every line has the
+  assembly's `.glb` as source document and a new import updates them (lines
+  of another source, the CAD client's, are left alone); *without references*,
+  lines with component and quantity only, which a new import cannot tell
+  apart, so an assembly whose BoM already has lines is skipped (delete the
+  BoM before re-importing). A component released or obsoleted keeps its BoM.
 - CAD properties go to fields through **`WEB_GLB_IMPORT`**, a dictionary of
   this import alone, written in the CustomProcedure of the user, else of their
   first group that has one (`res.users.getCustomProcedure`,
