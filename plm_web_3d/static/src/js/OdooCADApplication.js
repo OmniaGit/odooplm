@@ -802,7 +802,28 @@ function createMarker() {
 	return marker;
 }
 
+// The parts hidden with H, the last one at the end: H with no part under the
+// pointer brings them back, newest first.
+const _hiddenWithH = [];
+
+// Show or hide a part of the tree, its eye in the tree in step
+function _setPartShown(guid, show) {
+	const obj = OdooCad.tree_ref_elements[guid];
+	obj.visible = show;
+	let targetLi = document.querySelector(`li[webgl_ref_name="${guid}"]`);
+	if (!targetLi) {
+		const span = document.querySelector(`span[webgl_ref_name="${guid}"]`);
+		if (span) targetLi = span.closest('li');
+	}
+	const icon = targetLi && targetLi.querySelector('.tree_item_visibility');
+	if (icon) {
+		icon.classList.toggle('fa-eye', show);
+		icon.classList.toggle('fa-eye-slash', !show);
+	}
+}
+
 function show_all_scene_item() {
+	_hiddenWithH.length = 0;
 	var i;
 	var tree_item_visibility = document.getElementsByClassName("tree_item_visibility");
 	for (i = 0; i < tree_item_visibility.length; i++) {
@@ -1964,30 +1985,29 @@ function onKeyDone(event) {
 	if (event.key === 'h' || event.key === 'H') {
 		const guid = window.last_highlighted_li;
 		if (guid && OdooCad?.tree_ref_elements?.[guid]) {
-			const obj = OdooCad.tree_ref_elements[guid];
-			const show = !obj.visible;
-			obj.visible = show;
-			// sync sidebar eye icon
-			let targetLi = document.querySelector(`li[webgl_ref_name="${guid}"]`);
-			if (!targetLi) {
-				const span = document.querySelector(`span[webgl_ref_name="${guid}"]`);
-				if (span) targetLi = span.closest('li');
-			}
-			if (targetLi) {
-				const icon = targetLi.querySelector('.tree_item_visibility');
-				if (icon) {
-					icon.classList.toggle('fa-eye', show);
-					icon.classList.toggle('fa-eye-slash', !show);
+			// H on the part under the pointer hides it, and remembers it
+			_setPartShown(guid, false);
+			_hiddenWithH.push(guid);
+			// A hidden part takes no command: the hover moves on to what is
+			// behind it, or to nothing
+			window.highlight3D(guid, false);
+			window.onPointerMove({ clientX: _lastPointerX, clientY: _lastPointerY });
+			render();
+		} else {
+			// H with no part under the pointer brings back the last part
+			// hidden with H, then the one before, ...; one shown again
+			// meanwhile (the tree's eye) is passed over
+			while (_hiddenWithH.length) {
+				const last = _hiddenWithH.pop();
+				const obj = OdooCad?.tree_ref_elements?.[last];
+				if (obj && !obj.visible) {
+					_setPartShown(last, true);
+					// back under the pointer, it is preselected at once
+					window.onPointerMove({ clientX: _lastPointerX, clientY: _lastPointerY });
+					render();
+					break;
 				}
 			}
-			if (!show) {
-				// A hidden part takes no command: the hover moves on to
-				// what is behind it, or to nothing. It comes back through
-				// the tree's eye or A (show all).
-				window.highlight3D(guid, false);
-				window.onPointerMove({ clientX: _lastPointerX, clientY: _lastPointerY });
-			}
-			render();
 		}
 	}
 }
