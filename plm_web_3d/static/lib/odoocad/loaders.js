@@ -30,6 +30,41 @@ const threeMFLoader = new ThreeMFLoader();
 // glTF is in metres (as the standard says), the viewer in millimetres: the
 // measure, the crate, the snap and the cad3d values all print mm
 const GLTF_TO_MM = 1000;
+
+/** The roots of a glTF scene that are model, cameras and lights left out. */
+function gltfRoots(gltf) {
+	return [...gltf.scene.children].filter((child) => !child.isCamera && !child.isLight);
+}
+
+/** A glTF part of an assembly by references, in mm (as loadGltx brings a
+ * document), to clone under each component: its root, or its roots in a
+ * group when it has several. */
+function loadGltfPart(url) {
+	return new Promise((resolve, reject) => gLTFLoader.load(url, (gltf) => {
+		const roots = gltfRoots(gltf);
+		for (const root of roots) {
+			root.position.multiplyScalar(GLTF_TO_MM);
+			root.scale.multiplyScalar(GLTF_TO_MM);
+		}
+		if (roots.length === 1) {
+			resolve(roots[0]);
+			return;
+		}
+		const group = new THREE.Group();
+		group.name = roots.map((root) => root.name).join(" + ");
+		roots.forEach((root) => group.add(root));
+		resolve(group);
+	}, undefined, reject));
+}
+
+/** What every glTF part gets once placed (cad3d_export): its CAD faces, look
+ * and holes, as the JSON gets them; after addItemToScene, which replaces
+ * every mesh material. */
+function prepareGltfPart(part) {
+	prepareGlbFaces(part);
+	applyAppearance(part);
+	addHoleTextures(part);
+}
 const loader = new THREE.ObjectLoader();
 
 
@@ -152,26 +187,39 @@ class Loader {
 			function (gltf) {
 				// scene.add() takes each object out of gltf.scene.children, so walk a copy;
 				// cameras and lights exported by the CAD are not parts of the model
-				const children = [...gltf.scene.children];
+				const children = gltfRoots(gltf);
+				const assemblies = [];
 				var out_html_structure = "";
 				for (var i = 0; i < children.length; i++) {
-					if (children[i].isCamera || children[i].isLight) {
-						continue;
-					}
 					// in mm before it is added: addItemToScene fits the camera on it
 					children[i].position.multiplyScalar(GLTF_TO_MM);
 					children[i].scale.multiplyScalar(GLTF_TO_MM);
 					// the parts of a glTF are meshes: the tree starts from the node
 					out_html_structure += self.odooCad.addItemToScene(children[i], true, true);
-					// a cad3d export (MultiCad cad3d_export): its CAD faces,
-					// look and holes, as the JSON gets them; after
-					// addItemToScene, which replaces every mesh material
-					prepareGlbFaces(children[i]);
-					applyAppearance(children[i]);
-					addHoleTextures(children[i]);
+					prepareGltfPart(children[i]);
+					if (isAssembly(children[i])) assemblies.push(children[i]);
 				}
 				self.odooCad.create_tree_structure(out_html_structure);
 				self._hideProgress();
+				// An assembly by references holds no mesh of its parts: each
+				// component names its part's .glb, loaded once and placed in
+				// every component that uses it
+				for (const assembly of assemblies) {
+					loadAssemblyComponents(assembly, document_name, (part) => {
+						// a material of its own per copy, as addItemToScene
+						// gives every part
+						part.traverse((child) => {
+							if (child.isMesh && child.material) child.material = child.material.clone();
+						});
+						prepareGltfPart(part);
+					}, loadGltfPart).then(() => {
+						self.odooCad.create_tree_structure(children.map(
+							(child) => self.odooCad.get_li_structure({ children: [child] })[0]).join(""));
+						const canvas = document.getElementById('odoo_canvas');
+						canvas.dispatchEvent(new CustomEvent("OdooCAD_fit_items"));
+						canvas.dispatchEvent(new CustomEvent("OdooCAD_render"));
+					});
+				}
 			},
 			(xhr) => { self._updateProgress(xhr); },
 			(err) => {

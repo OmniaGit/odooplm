@@ -393,11 +393,13 @@ class Web3DView(Controller):
 
     @route("/plm/web3d_component", type="http", auth="user")
     @webservice
-    def web3d_component(self, engineering_code=None, engineering_revision=None, suffix=None):
+    def web3d_component(self, engineering_code=None, engineering_revision=None, suffix=None, name=None):
         """The web export of a component, for a viewer building an assembly: the
         document with that code and revision (the native CAD file), then its
-        Web3DTree child whose name ends with suffix, the format of the assembly
-        (a customer may export other formats too); {} when there is none.
+        Web3DTree child named name when the assembly names the file (a .glb by
+        references, one file per configuration), else the one whose name ends
+        with suffix, the format of the assembly (a customer may export other
+        formats too); {} when there is none.
 
         Read as the user: what they may not read is not found."""
         if not engineering_code or engineering_revision in (None, "") or not suffix:
@@ -419,7 +421,12 @@ class Web3DView(Controller):
             ("link_kind", "=", "Web3DTree"),
         ])
         suffix = suffix.lower()
-        for child in relations.mapped("child_id"):
+        children = relations.mapped("child_id")
+        if name:
+            # the file the assembly names, else nothing: another
+            # configuration's file would put the wrong part in
+            children = children.filtered(lambda child: (child.name or "").lower() == name.lower())
+        for child in children:
             if (child.name or "").lower().endswith(suffix) and child.has_access("read"):
                 return request.make_json_response({
                     "document_id": child.id,

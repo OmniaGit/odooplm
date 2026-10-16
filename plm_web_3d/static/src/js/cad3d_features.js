@@ -848,19 +848,30 @@ export function assemblyNodes(root) {
 	return root.children.filter((node) => node.userData && node.userData.plm_component);
 }
 
+/** A cad3d JSON part, as loadAssemblyComponents loads it by default. */
+function loadJsonPart(url) {
+	return new Promise((resolve, reject) => assemblyLoader.load(url, resolve, undefined, reject));
+}
+
 /**
  * Load the parts of the assembly root, each once, into every group of it;
  * onComponent(part) runs on each copy placed. Resolves with what was not
  * found, by name.
+ *
+ * loadPart(url) resolves with the part, ready to be cloned under a
+ * component group: a cad3d JSON by default; the glTF loader passes its own,
+ * which brings the part to the viewer's millimetres. A component naming its
+ * file (plm_component.glb, a .glb by references) is loaded by that name, so
+ * two configurations of one part get their own file.
  */
-export function loadAssemblyComponents(root, documentName, onComponent) {
+export function loadAssemblyComponents(root, documentName, onComponent, loadPart = loadJsonPart) {
 	if (!isAssembly(root)) return Promise.resolve([]);
 	const suffix = exportSuffix(documentName);
 	const byPart = new Map();
 	for (const node of assemblyNodes(root)) {
 		const info = node.userData.plm_component;
 		if (info.modified) continue;
-		const key = `${info.engineering_code}|${info.engineering_revision}`;
+		const key = info.glb || `${info.engineering_code}|${info.engineering_revision}`;
 		if (!byPart.has(key)) byPart.set(key, { info, nodes: [] });
 		byPart.get(key).nodes.push(node);
 	}
@@ -875,6 +886,7 @@ export function loadAssemblyComponents(root, documentName, onComponent) {
 			engineering_revision: info.engineering_revision,
 			suffix,
 		});
+		if (info.glb) query.set('name', info.glb);
 		return fetch(`/plm/web3d_component?${query}`)
 			.then((response) => response.json())
 			.then((found) => new Promise((resolve) => {
@@ -883,14 +895,14 @@ export function loadAssemblyComponents(root, documentName, onComponent) {
 					resolve();
 					return;
 				}
-				assemblyLoader.load(found.url, (part) => {
+				loadPart(found.url).then((part) => {
 					for (const node of nodes) {
 						const copy = part.clone();
 						node.add(copy);
 						if (onComponent) onComponent(copy);
 					}
 					resolve();
-				}, undefined, () => {
+				}, () => {
 					missing.push(found.name);
 					resolve();
 				});

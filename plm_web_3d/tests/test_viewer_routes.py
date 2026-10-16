@@ -150,6 +150,27 @@ class PlmWeb3dRoutes(HttpCase):
                 {"name": "Wrong", "file": base64.b64encode(RAW).decode(), "file_name": "drawing.pdf"}
             )
 
+    def test_a_component_by_references_gets_the_file_it_names(self):
+        """A .glb assembly by references names each part's file: two
+        configurations of one part are two files under one native document."""
+        Attachment = self.env["ir.attachment"]
+        native = Attachment.create({"name": "WEB3D-CFG.par", "engineering_code": "WEB3D-CFG",
+                                    "engineering_revision": 1, "is_plm": True})
+        files = {}
+        for name in ("WEB3D-CFG_1_Default.glb", "WEB3D-CFG_1_Long.glb"):
+            files[name] = Attachment.create({"name": name, "engineering_code": name, "is_plm": True,
+                                             "raw": b"glTF"})
+            self.env["ir.attachment.relation"].create({"parent_id": native.id, "child_id": files[name].id,
+                                                       "link_kind": "Web3DTree"})
+        self.authenticate("admin", "admin")
+        base = "/plm/web3d_component?engineering_code=WEB3D-CFG&engineering_revision=1&suffix=.glb"
+        long_file = self.url_open(base + "&name=WEB3D-CFG_1_Long.glb").json()
+        self.assertEqual(long_file["document_id"], files["WEB3D-CFG_1_Long.glb"].id)
+        # a name the native document does not have: nothing, not another configuration
+        self.assertEqual(self.url_open(base + "&name=WEB3D-CFG_1_Short.glb").json(), {})
+        # no name (a cad3d JSON assembly): the format's file, as before
+        self.assertIn(self.url_open(base).json()["document_id"], [f.id for f in files.values()])
+
     def test_product_info_follows_the_node(self):
         self.assertIn("document", self._product_info("web3d_insider"))
         with mute_logger("odoo.addons.plm_web_3d.controllers.main"):
