@@ -1248,6 +1248,16 @@ class IrAttachment(models.Model):
         res.with_context(create=True).check_unique()
         return res
 
+    @api.onchange("raw")
+    def _onchange_raw_engineering_code(self):
+        """A file uploaded in the PLM form gives the document its code, the
+        file name without extension, when the user has not written one."""
+        if not self.env.context.get("odooPLM"):
+            return
+        for attachment in self:
+            if attachment.raw and attachment.name and not attachment.engineering_code:
+                attachment.engineering_code = os.path.splitext(attachment.name)[0]
+
     @api.depends("res_model", "res_id")
     def _compute_plm_access_id(self):
         for attachment in self:

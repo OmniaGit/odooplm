@@ -142,6 +142,7 @@
                         <group string="PLM Infos:" name="main_doc_info">
                             <field string="Eng. Document Name"
                                    name="engineering_code"
+                                   required="not id"
                                    readonly="id>0"/>
                             <field string="Engineering revision" name="engineering_revision" readonly="True"/>
                             <field string="Is a Plm Document" name="is_plm" visible="0" widget="boolean_toggle"
