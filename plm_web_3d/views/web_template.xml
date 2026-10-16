@@ -302,6 +302,10 @@
                                         <td>Show all hidden objects</td>
                                     </tr>
                                     <tr>
+                                        <td><kbd>Shift</kbd> + <kbd>A</kbd></td>
+                                        <td>Select every part shown</td>
+                                    </tr>
+                                    <tr>
                                         <td><kbd>W</kbd></td>
                                         <td>Zoom window — drag to zoom into a region</td>
                                     </tr>

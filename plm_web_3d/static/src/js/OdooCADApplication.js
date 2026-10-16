@@ -5,7 +5,7 @@
 import * as THREE from '../../lib/three.js/build/three.module.js';
 import * as ODOOCAD from '../../lib/odoocad/odoocad.js';
 import * as CAD3D from './cad3d_features.js';
-import { clearSelection, initSelection, selectedObjects, toggleSelection, updateSelectionOutlines } from './selection.js';
+import { addToSelection, clearSelection, initSelection, selectedObjects, toggleSelection, updateSelectionOutlines } from './selection.js';
 import { buildCrate, disposeCrate } from './crate_box.js';
 // controls
 import { OrbitControls } from '../../lib/three.js/examples/jsm/controls/OrbitControls.js';
@@ -820,6 +820,16 @@ function _setPartShown(guid, show) {
 		icon.classList.toggle('fa-eye', show);
 		icon.classList.toggle('fa-eye-slash', !show);
 	}
+}
+
+// Every part shown into the selection: the leaf rows of the tree, not the
+// assemblies holding them (their parts would be outlined twice)
+function _selectAllShown() {
+	const guids = [...document.querySelectorAll('.document_tree_line')]
+		.filter((row) => !row.querySelector('.document_tree_line'))
+		.map((row) => row.getAttribute('webgl_ref_name'))
+		.filter((guid) => OdooCad.tree_ref_elements?.[guid] && _isShown(OdooCad.tree_ref_elements[guid]));
+	addToSelection(guids);
 }
 
 function show_all_scene_item() {
@@ -1976,7 +1986,13 @@ function onKeyDone(event) {
 		toggleCrate();
 	}
 	if (event.key === 'a' || event.key === 'A') {
-		show_all_scene_item();
+		// Shift+A selects every part shown; A alone shows them all. Told by
+		// the Shift key, not the capital, so Caps Lock selects nothing
+		if (event.shiftKey) {
+			_selectAllShown();
+		} else {
+			show_all_scene_item();
+		}
 		render();
 	}
 	if ((event.key === 'm' || event.key === 'M') && !event.target.closest('input, textarea, select')) {

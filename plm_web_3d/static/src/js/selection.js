@@ -87,6 +87,19 @@ export function toggleSelection(guid) {
 	onChange();
 }
 
+// Add the parts to the selection, those already in it kept; one change
+export function addToSelection(guids) {
+	let added = false;
+	for (const guid of guids) {
+		const obj = resolve(guid);
+		if (!obj || selected.has(guid)) continue;
+		selected.add(guid);
+		showSelected(guid, obj, true);
+		added = true;
+	}
+	if (added) onChange();
+}
+
 // Empty the selection; return true when there was something to empty
 export function clearSelection() {
 	if (selected.size === 0) return false;
