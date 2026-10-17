@@ -19,7 +19,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-from odoo import fields, models
+from odoo import api, fields, models
 
 
 class MrpBomExtension(models.Model):
@@ -28,6 +28,10 @@ class MrpBomExtension(models.Model):
     type = fields.Selection(
         selection_add=[("spbom", "Spare BoM")], ondelete={"spbom": "cascade"}
     )
+
+    @api.model
+    def _plm_non_production_bom_types(self):
+        return super()._plm_non_production_bom_types() + ["spbom"]
 
 
 class MrpBomLine(models.Model):
