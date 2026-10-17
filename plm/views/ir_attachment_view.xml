@@ -497,7 +497,7 @@
                             </div>
                         </div>
                         <div class="mt-2" style="line-height: 1.3;">
-                            <hr class="my-1" t-attf-style="border-top: 1px solid {{stateColor}};opacity: 1;"/>
+                            <hr class="my-1" style="border-top: 1px solid lightgray;opacity: 1;"/>
                             <div name="name">
                                 <strong>Name:</strong>
                                 <field name="engineering_code"
@@ -521,7 +521,7 @@
                                     </b>
                                 </span>
                             </div>
-                            <hr class="my-1" t-attf-style="border-top: 1px solid {{stateColor}};opacity: 1;"/>
+                            <hr class="my-1" style="border-top: 1px solid lightgray;opacity: 1;"/>
                             <table>
                                 <tr name="attachment_button_box">
                                     <td name="attachment_button_box" style="display: inline-flex;">
