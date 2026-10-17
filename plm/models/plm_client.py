@@ -443,6 +443,51 @@ class PlmClient(models.TransientModel):
         return self.env["product.template"].getSequenceFrom(prefix, int(digit))
 
     @api.model
+    def get_related_documents(self, document_props):
+        """The documents related to the active one, for the CoreBom client's
+        Open related documents, in one call.
+
+        document_props: the document's {"engineering_code",
+        "engineering_revision"}.
+
+        Answers {"document_id": <id, False when Odoo has no such document>,
+        "related": [{id, engineering_code, engineering_revision, description,
+        document_type, preview}]}. The relations and their order are
+        ir.attachment.GetRelatedDocs': the models a drawing shows, the drawings
+        of a model, 3d first.
+
+        One related document is opened straight away, so the previews, base64
+        strings, are sent only when there are several to choose from; "" for a
+        document without one.
+        """
+        document_props = document_props or {}
+        document = self._plm_find_by_code(
+            "ir.attachment",
+            [
+                document_props.get("engineering_code"),
+                document_props.get("engineering_revision"),
+            ],
+        )
+        if not document:
+            return {"document_id": False, "related": []}
+        related = document.GetRelatedDocs(getBrowse=True)
+        with_preview = len(related) > 1
+        return {
+            "document_id": document.id,
+            "related": [
+                {
+                    "id": doc.id,
+                    "engineering_code": doc.engineering_code or "",
+                    "engineering_revision": doc.engineering_revision,
+                    "description": doc.description or "",
+                    "document_type": doc.document_type or "",
+                    "preview": doc._plm_preview_base64() if with_preview else "",
+                }
+                for doc in related
+            ],
+        }
+
+    @api.model
     def get_bom_state(self, structure_json):
         """What a CAD save would find in Odoo, asked before saving. Read only:
         nothing is created, written or deleted.
