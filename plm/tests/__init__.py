@@ -34,6 +34,7 @@ from . import test_glb_structure_import
 from . import test_client_bom_state
 from . import test_document_code
 from . import test_client_product_code
+from . import test_client_recent_documents
 from . import test_bom_overview_image
 from . import test_client_binary_json
 from . import test_client_related_documents

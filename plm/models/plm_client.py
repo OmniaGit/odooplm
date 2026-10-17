@@ -435,6 +435,33 @@ class PlmClient(models.TransientModel):
         )
 
     @api.model
+    def get_recent_documents(self, limit=30):
+        """The documents the user worked on last from a CAD -- opened, saved,
+        checked out (plm.cad.open) --, the most recent first, one row each:
+        the CAD client's Recent files. The limit is the query's, since the
+        history of a user can be long; a document the user may no longer read
+        is left out, so fewer may come back.
+        :return: [{"document_id", "last_used", "operation_type"}]
+        """
+        limit = max(1, int(limit or 30))
+        cad_open = self.env["plm.cad.open"].sudo()
+        groups = cad_open._read_group(
+            [("userid", "=", self.env.uid), ("document_id", "!=", False)],
+            groupby=["document_id"],
+            aggregates=["id:max"],
+            order="id:max DESC",
+            limit=limit,
+        )
+        last_ids = [last_id for _document, last_id in groups]
+        last = {row.document_id.id: row for row in cad_open.browse(last_ids)}
+        ordered = [document.id for document, _last_id in groups]
+        readable = set(self.env["ir.attachment"].search([("id", "in", ordered)]).ids)
+        return [{"document_id": document_id,
+                 "last_used": fields.Datetime.to_string(last[document_id].create_date),
+                 "operation_type": last[document_id].operation_type or ""}
+                for document_id in ordered if document_id in readable]
+
+    @api.model
     def get_next_product_code(self, prefix="PROD", digit=5):
         """The next code of the PLM sequence PLM_SEQUENCE_<prefix>, made on the
         fly the first time: the CAD client's unique product code (the 2019
