@@ -30,9 +30,9 @@
                 <field name="default_code" optional="hide"/>
                 <field name="engineering_state" select="1" optional="hide"/>
                 <field name="configuration_name" select="1" optional="hide"/>
-                <field name="description" invisible="1"/>
-                <field name="engineering_writable" invisible="1"/>
-                <field name="linkeddocuments" invisible="True"/>
+                <field name="description" column_invisible="1"/>
+                <field name="engineering_writable" column_invisible="1"/>
+                <field name="linkeddocuments" column_invisible="1"/>
             </list>
         </field>
     </record>
