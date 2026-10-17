@@ -154,14 +154,19 @@
                             <field name="company_id" groups="base.group_multi_company" readonly="True"/>
                         </group>
                         <group name="doc_preview">
-                            <field name="preview"
-                                   widget="image"
-                                   options="{'zoom': true, 'zoom_delay': 800}"
-                                   nolabel="1" invisible="preview == False"
-                                   readonly="is_plm==True"/>
-                            <field name="preview_related" colspan="2" widget="image"
-                                   readonly="1" nolabel="1" invisible="preview != False"
-                                   options="{'size':[400,400],'zoom': true, 'zoom_delay': 800}"/>
+                            <div class="o_plm_preview_box position-relative overflow-hidden" colspan="2">
+                                <field name="preview"
+                                       widget="image"
+                                       options="{'zoom': true, 'zoom_delay': 800}"
+                                       nolabel="1" invisible="preview == False"
+                                       readonly="is_plm==True"/>
+                                <field name="preview_related" widget="image"
+                                       readonly="1" nolabel="1" invisible="preview != False"
+                                       options="{'size':[400,400],'zoom': true, 'zoom_delay': 800}"/>
+                                <field name="engineering_state" class="o_plm_obsoleted_stamp"
+                                       readonly="1" nolabel="1"
+                                       invisible="engineering_state != 'obsoleted'"/>
+                            </div>
                         </group>
                     </group>
                     <notebook>
@@ -432,7 +437,7 @@
                            t-value="{'draft': 'rgb(110, 51, 197)', 'confirmed': 'blue', 'released': 'rgba(0, 170, 34, 0.66)', 'undermodify': 'rgb(218, 159, 34)', 'obsoleted': 'rgb(231, 43, 26)'}[record.engineering_state.raw_value] or 'black'"/>
                         <div class="row">
                             <div class="col-4" style="border-right: 1px solid lightgray;">
-                                <div
+                                <div class="o_plm_preview_box position-relative overflow-hidden"
                                     style="margin-right: 3px;">
                                     <field name="preview"
                                            widget="image"
@@ -442,6 +447,10 @@
                                     <field name="preview_related" colspan="2" widget="image"
                                            readonly="1" nolabel="1" invisible="preview != False"
                                            options="{'zoom': true, 'zoom_delay': 800}"/>
+                                    <div t-if="record.engineering_state.raw_value == 'obsoleted'"
+                                         class="o_plm_obsoleted_stamp">
+                                        <t t-out="record.engineering_state.value"/>
+                                    </div>
                                 </div>
                             </div>
                             <div class="col-8">
