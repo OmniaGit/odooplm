@@ -14,21 +14,25 @@
                   decoration-warning="engineering_state == 'undermodify'"
                   decoration-muted="engineering_state == 'obsoleted'">
                 <field name="image_1920" widget="image" options="{ 'size': [60, 60]}"/>
-                <field name="name" select="1"/>
-                <field name="configuration_name" select="1" optional="hide"/>
-                <field name="engineering_code" select="1"/>
-                <field name="default_code"/>
-                <field name="engineering_revision" select="1"/>
-                <field name="engineering_state" select="1"/>
-                <field name="description" invisible="1"/>
-                <field name="engineering_writable" invisible="1"/>
-                <field name="engineering_material"/>
-                <field name="engineering_surface"/>
-                <field name="linkeddocuments" invisible="True"/>
                 <field name="document_checkout_user_ids"
                        widget="many2many_tags"
                        string="Checked-Out By"
                        optional="show"/>
+                <field name="engineering_code" select="1"/>
+                <field name="engineering_revision" select="1"/>
+                <field name="name" select="1"/>
+                <field name="std_description"/>
+                <field name="engineering_material"/>
+                <field name="engineering_surface"/>
+                <field name="engineering_treatment"/>
+                <!-- Hidden, not removed: the web client can show them again, and
+                     the row colours above need engineering_state. -->
+                <field name="default_code" optional="hide"/>
+                <field name="engineering_state" select="1" optional="hide"/>
+                <field name="configuration_name" select="1" optional="hide"/>
+                <field name="description" invisible="1"/>
+                <field name="engineering_writable" invisible="1"/>
+                <field name="linkeddocuments" invisible="True"/>
             </list>
         </field>
     </record>
