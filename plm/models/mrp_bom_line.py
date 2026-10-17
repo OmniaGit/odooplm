@@ -45,6 +45,26 @@ class MrpBomLineExtension(models.Model):
             line.bom_id.rebase_bom_weight()
         return ret
 
+    @api.depends("bom_id.type")
+    def _compute_child_bom_id(self):
+        """
+        A line of a BoM that is not for production (engineering, spare...)
+        descends into the BoM of the same type of its component, so that the
+        structure, the BoM overview and the sub assemblies of such a BoM stay
+        whole; the standard search no longer finds those types.
+        """
+        bom_obj = self.env["mrp.bom"]
+        non_production_types = bom_obj._plm_non_production_bom_types()
+        same_type_lines = self.filtered(
+            lambda line: line.bom_id.type in non_production_types
+        )
+        super(MrpBomLineExtension, self - same_type_lines)._compute_child_bom_id()
+        grouped_lines = same_type_lines.grouped(lambda line: line.bom_id.type)
+        for bom_type, lines in grouped_lines.items():
+            bom_by_product = bom_obj._bom_find(lines.product_id, bom_type=bom_type)
+            for line in lines:
+                line.child_bom_id = bom_by_product.get(line.product_id, False)
+
     def _get_child_bom_lines(self):
         """
         If the BOM line refers to a BOM, return the ids of the child BOM lines

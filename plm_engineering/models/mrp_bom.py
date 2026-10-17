@@ -32,6 +32,10 @@ class MrpBomExtension(models.Model):
     ebom_source_id = fields.Integer('Source Ebom ID')
 
     @api.model
+    def _plm_non_production_bom_types(self):
+        return super()._plm_non_production_bom_types() + ["ebom"]
+
+    @api.model
     def _get_in_bom(self, pid, sid=False, bom_types=[]):
         bom_l_type = self.env['mrp.bom.line']
         if not bom_types:
