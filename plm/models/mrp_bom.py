@@ -1191,11 +1191,22 @@ class MrpBomExtension(models.Model):
             return out
 
     @api.model
+    def _plm_non_production_bom_types(self):
+        """
+        BoM types that are not meant for production (engineering, spare...).
+        The standard BoM search made without a type (cost from BoM, unbuild,
+        lead days, sub BoM of a line...) must never find them: each module
+        adding such a type extends this list.
+        """
+        return []
+
+    @api.model
     def _bom_find_domain(
         self, products, picking_type=None, company_id=False, bom_type=False
     ):
         domain = super()._bom_find_domain(products, picking_type, company_id, bom_type)
         if not bom_type:
-            available_types = ["engineering", "spare"]
-            domain = AND([domain, [("type", "not in", available_types)]])
+            excluded_types = self._plm_non_production_bom_types()
+            if excluded_types:
+                domain = AND([domain, [("type", "not in", excluded_types)]])
         return domain
