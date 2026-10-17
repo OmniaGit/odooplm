@@ -2210,12 +2210,20 @@ class IrAttachment(models.Model):
                     [
                         document.id,
                         document.engineering_code,
-                        "" if document.preview is None else document.preview,
+                        document._plm_preview_base64(),
                         document.engineering_revision,
                         document.description,
                     ]
                 )
         return related_documents
+
+    def _plm_preview_base64(self):
+        """
+        The preview as the base64 string the Client2019 decodes, "" without
+        one: Odoo 20 gives the raw image, which a json answer cannot carry.
+        """
+        self.ensure_one()
+        return self.preview.to_base64() if self.preview else ""
 
     @api.model
     def GetRelatedDocsByAttrs(self, docPropsList=[]):
@@ -3428,7 +3436,7 @@ class IrAttachment(models.Model):
                 {
                     "id": ir_attachment_id.id,
                     "name": ir_attachment_id.name,
-                    "iconStream": ir_attachment_id.preview or "",
+                    "iconStream": ir_attachment_id._plm_preview_base64(),
                     "engineering_revision": ir_attachment_id.engineering_revision,
                     "engineering_code": ir_attachment_id.engineering_code,
                 }
