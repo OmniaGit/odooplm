@@ -11,7 +11,7 @@
     <t t-name="plm.BomOverviewLine" t-inherit="mrp.BomOverviewLine" t-inherit-mode="extension">
         <xpath expr="//td" position="before">
             <td name="td_mrp_bom">
-                <img t-if="image_data" t-att-src="this.image_data" width="50"/>
+                <img t-if="this.image_data" t-att-src="this.image_data" width="50"/>
             </td>
         </xpath>
     </t>
