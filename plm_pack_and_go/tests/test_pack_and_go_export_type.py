@@ -156,4 +156,5 @@ class TestPackAndGoExportType(TransactionCase, PlmEntityCreator):
             for file_name in os.listdir(out_dir):
                 with open(os.path.join(out_dir, file_name), "rb") as pdf_file:
                     text = PdfFileReader(pdf_file).getPage(0).extractText()
-                self.assertIn("Printed by", text, file_name)
+                self.assertIn(f"Printed by '{self.env.user.name}'", text, file_name)
+                self.assertIn("State: draft", text, file_name)
