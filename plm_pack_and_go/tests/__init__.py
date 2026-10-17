@@ -23,3 +23,4 @@ from . import test_pack_and_go
 from . import test_pack_and_go_download
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
+from . import test_pack_and_go_export_type

@@ -9,7 +9,7 @@
                 <group col="12">
                     <group colspan="10">
                         <field name="component_id" readonly="1"/>
-                        <field name="export_type"/>
+                        <field name="export_type_id" options="{'no_create': True}"/>
                         <field name="bom_computation"/>
                         <field name="bom_version"/>
                     </group>

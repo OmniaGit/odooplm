@@ -59,7 +59,9 @@ class PlmDateBom(TransactionCase, PlmEntityCreator):
             {"component_id": product.product_tmpl_id.id}
         )
         for export_type in ["2d", "3d", "pdf", "2dpdf", "3dpdf", "3d2d", "all"]:
-            pack_and_go_id.export_type = export_type
+            pack_and_go_id.export_type_id = self.env.ref(
+                f"plm_pack_and_go.pack_go_export_type_{export_type}"
+            )
             pack_and_go_id.bom_computation = "ONLY_PRODUCT"
             pack_and_go_id.action_compute_attachment_bom()
             if export_type == "2d":

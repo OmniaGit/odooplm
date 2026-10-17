@@ -63,4 +63,32 @@
         <field name="group_id" ref="plm.group_plm_admin"/>
         <field name="operation">crud</field>
     </record>
+    <!-- model_plm_pack_go_extension -->
+    <record id="plm_pack_go_extension_view" model="ir.access">
+        <field name="name">PLM Pack and Go Extension</field>
+        <field name="model_id" ref="model_plm_pack_go_extension"/>
+        <field name="group_id" ref="plm.group_plm_view_user"/>
+        <field name="operation">r</field>
+    </record>
+
+    <record id="plm_pack_go_extension_admin" model="ir.access">
+        <field name="name">PLM Pack and Go Extension</field>
+        <field name="model_id" ref="model_plm_pack_go_extension"/>
+        <field name="group_id" ref="plm.group_plm_admin"/>
+        <field name="operation">crud</field>
+    </record>
+    <!-- model_plm_pack_go_export_type -->
+    <record id="plm_pack_go_export_type_view" model="ir.access">
+        <field name="name">PLM Pack and Go Export Type</field>
+        <field name="model_id" ref="model_plm_pack_go_export_type"/>
+        <field name="group_id" ref="plm.group_plm_view_user"/>
+        <field name="operation">r</field>
+    </record>
+
+    <record id="plm_pack_go_export_type_admin" model="ir.access">
+        <field name="name">PLM Pack and Go Export Type</field>
+        <field name="model_id" ref="model_plm_pack_go_export_type"/>
+        <field name="group_id" ref="plm.group_plm_admin"/>
+        <field name="operation">crud</field>
+    </record>
 </odoo>

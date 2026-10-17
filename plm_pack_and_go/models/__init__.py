@@ -20,3 +20,5 @@
 #
 ##############################################################################
 from . import product_product
+from . import pack_go_extension
+from . import pack_go_export_type

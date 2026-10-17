@@ -47,6 +47,8 @@
     "data": [
         "security/plm_security.xml",
         "data/ir_parameters.xml",
+        "data/pack_go_export_type_data.xml",
+        "views/pack_go_export_type_views.xml",
         "wizard/pack_and_go.xml",
         "wizard/pack_and_go_view.xml",
     ],

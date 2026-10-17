@@ -30,6 +30,7 @@ import base64
 
 from odoo import _, fields, models
 from odoo.exceptions import UserError
+from odoo.addons.plm.report.book_collector import isPdf
 from io import BytesIO
 
 _logger = logging.getLogger(__name__)
@@ -68,18 +69,21 @@ class PackAndGo(models.TransientModel):
         change_default=True,
         default="binary",
     )
-    export_type = fields.Selection(
-        [
-            ("2d", "2D"),
-            ("3d", "3D"),
-            ("pdf", "PDF"),
-            ("2dpdf", "2D + PDF"),
-            ("3dpdf", "3D + PDF"),
-            ("3d2d", "3D + 2D"),
-            ("all", "2D + 3D + PDF"),
-        ],
+    def _default_export_type_id(self):
+        export_type = self.env.ref(
+            "plm_pack_and_go.pack_go_export_type_all", raise_if_not_found=False
+        )
+        if not export_type or not export_type.active:
+            export_type = self.env["plm.pack.go.export.type"].search([], limit=1)
+        return export_type
+
+    export_type_id = fields.Many2one(
+        "plm.pack.go.export.type",
         string="Export Type",
-        default="all",
+        default=_default_export_type_id,
+        required=True,
+        help="The documents to export, and the file extensions they are filtered by."
+        " The export types are defined in PLM > Configuration.",
     )
     export_3d = fields.Many2many(
         "pack_and_go_view",
@@ -223,22 +227,52 @@ class PackAndGo(models.TransientModel):
             "document_id": ir_attachment_id.id,
             "preview": ir_attachment_id.preview,
             "available_types": False,
-            "doc_type": ir_attachment_id.document_type,
+            "doc_type": self._plm_export_tab(ir_attachment_id),
         }
         return objPackView.create(singleCreateDict)
+
+    def _plm_export_tab(self, ir_attachment_id):
+        """
+        The tab a document goes to: its own for a 2D or a 3D document,
+        PDF for any other PDF file, Other for the rest.
+        """
+        if ir_attachment_id.document_type in ("2d", "3d"):
+            return ir_attachment_id.document_type
+        if isPdf(ir_attachment_id.name):
+            return "pdf"
+        return "other"
+
+    def _plm_collect_document(self, ir_attachment_id, product_product_id, rows):
+        """
+        Create the rows of a document in the tabs the export type allows.
+        :rows {"2d"|"3d"|"pdf"|"other": [pack_and_go_view ids]}, filled in place
+        """
+        export_type = self.export_type_id
+        tab = self._plm_export_tab(ir_attachment_id)
+        if getattr(export_type, f"include_{tab}") and export_type._plm_accepts_file(
+            ir_attachment_id.name
+        ):
+            view_id = self.docCheckCreate(ir_attachment_id, product_product_id)
+            rows[tab].append(view_id.id)
+        # The printout of a drawing is no file of its own: the extension
+        # filter does not apply to it.
+        if tab == "2d" and export_type.include_pdf:
+            view_id = self.docCheckCreate(ir_attachment_id, product_product_id)
+            view_id.doc_type = "pdf"
+            rows["pdf"].append(view_id.id)
+
+    def _plm_write_rows(self, rows):
+        self.export_2d = list(set(rows["2d"]))
+        self.export_3d = list(set(rows["3d"]))
+        self.export_other = list(set(rows["other"]))
+        self.export_pdf = list(set(rows["pdf"]))
 
     def action_compute_attachment_bom(self):
         """
         compute the bom and get the attachment
         """
-        #
-        export_2d = []
-        export_3d = []
-        export_other = []
-        export_pdf = []
-        #
         self.clearAll()
-        #
+        rows = {"2d": [], "3d": [], "pdf": [], "other": []}
         computed = []
         for product_product_id, attachment_ids in self.get_attachment(
             self.component_id.product_variant_id
@@ -247,32 +281,8 @@ class PackAndGo(models.TransientModel):
                 if ir_attachment_id in computed:
                     continue
                 computed.append(ir_attachment_id)
-                newViewObj = self.docCheckCreate(ir_attachment_id, product_product_id)
-                if ir_attachment_id.document_type == "2d":
-                    if self.export_type in ("2dpdf", "2d", "3d2d", "all"):
-                        export_2d.append(newViewObj.id)
-                    if self.export_type in ("2dpdf", "pdf", "3dpdf", "all"):
-                        cp_newViewObj = newViewObj.copy()
-                        cp_newViewObj.doc_type = "pdf"
-                        export_pdf.append(cp_newViewObj.id)
-                elif ir_attachment_id.document_type == "3d":
-                    if self.export_type in ("3d", "3dpdf", "3d2d", "all"):
-                        export_3d.append(newViewObj.id)
-                elif ir_attachment_id.document_type == "other":
-                    if self.export_type in ("all"):
-                        export_other.append(newViewObj.id)
-                else:
-                    logging.error(
-                        f"Document {ir_attachment_id.name} of type"
-                        f" {ir_attachment_id.document_type} not collexted"
-                    )
-
-        #
-        self.export_2d = list(set(export_2d))
-        self.export_3d = list(set(export_3d))
-        self.export_other = list(set(export_other))
-        self.export_pdf = list(set(export_pdf))
-        #
+                self._plm_collect_document(ir_attachment_id, product_product_id, rows)
+        self._plm_write_rows(rows)
         return self.returnWizard()
 
     def computeExportRelField(self, forceType=False):
@@ -280,48 +290,15 @@ class PackAndGo(models.TransientModel):
         Populate related field with all components and documents of Bill of Materials
         """
         self.clearAll()
-        # Local colletions of ids, necessary to write in related fields
-        export_2d = []
-        export_3d = []
-        export_other = []
-        export_pdf = []
+        rows = {"2d": [], "3d": [], "pdf": [], "other": []}
         checkedDocumentIds = (
             []
         )  # To know if the same document has been already analyzed
         objProduct = self.env["product.template"]
-        objPackView = self.env["pack_and_go_view"]
         plmDocObject = self.env["ir.attachment"]
 
         def docCheckCreate(ir_attachment_id, product_product_id=False):
-            compId = False
-            compRev = False
-            if product_product_id:
-                compId = product_product_id.product_tmpl_id.id
-                compRev = product_product_id.engineering_revision
-            singleCreateDict = {
-                "component_id": compId,
-                "comp_rev": compRev,
-                "doc_rev": ir_attachment_id.engineering_revision,
-                "document_id": ir_attachment_id.id,
-                "preview": ir_attachment_id.preview,
-                "available_types": False,
-                "doc_type": ir_attachment_id.document_type,
-            }
-            if ir_attachment_id.document_type == "2d":
-                if self.export_type in ("2d", "2dpdf", "3d2d", "all"):
-                    newViewObj = objPackView.create(singleCreateDict)
-                    export_2d.append(newViewObj.id)
-                if self.export_type in ("2dpdf", "pdf", "3dpdf", "all"):
-                    singleCreateDict["doc_type"] = "pdf"
-                    newViewObj = objPackView.create(singleCreateDict)
-                    export_pdf.append(newViewObj.id)
-            elif ir_attachment_id.document_type == "3d":
-                if self.export_type in ("3d", "3dpdf", "3d2d", "all"):
-                    newViewObj = objPackView.create(singleCreateDict)
-                    export_3d.append(newViewObj.id)
-            else:
-                newViewObj = objPackView.create(singleCreateDict)
-                export_other.append(newViewObj.id)
+            self._plm_collect_document(ir_attachment_id, product_product_id, rows)
 
         def recursionDocuments(docBrwsList):
             for ir_attachment_id in docBrwsList:
@@ -350,10 +327,7 @@ class PackAndGo(models.TransientModel):
         ):  # Check / Create BOM structure
             recursionDocuments(product_template_id.product_variant_id.linkeddocuments)
 
-        self.export_2d = export_2d
-        self.export_3d = export_3d
-        self.export_other = export_other
-        self.export_pdf = export_pdf
+        self._plm_write_rows(rows)
         return self.returnWizard()
 
     def returnWizard(self):
@@ -491,12 +465,19 @@ class PackAndGo(models.TransientModel):
         return content
 
     def exportPdf(self, outZipFile):
+        # The printouts and the PDF files go through the same print, which
+        # stamps every page with the user, the date and the state.
         for line_brws in self.export_pdf:
             ir_attachment_id = line_brws.document_id
             out_file_path = self.computeDocName(line_brws, outZipFile)
-            if ir_attachment_id.printout:
-                with open(f"{out_file_path}.pdf", "wb") as fileObj:
-                    fileObj.write(self.getPDF(ir_attachment_id))
+            if ir_attachment_id.document_type == "2d":
+                if not ir_attachment_id.printout:
+                    continue
+                out_file_path = f"{out_file_path}.pdf"
+            elif not isPdf(ir_attachment_id.name):
+                continue
+            with open(out_file_path, "wb") as fileObj:
+                fileObj.write(self.getPDF(ir_attachment_id))
 
     def exportOther(self, outZipFile):
         for lineBrws in self.export_other:
