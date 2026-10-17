@@ -29,6 +29,7 @@ from . import test_multicompany_access
 from . import test_permission_levels
 from . import test_controllers
 from . import test_portal_scope
+from . import test_report_stamp
 from . import test_workflow_transitions
 from . import test_glb_structure_import
 from . import test_client_bom_state
