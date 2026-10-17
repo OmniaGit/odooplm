@@ -767,18 +767,21 @@ class PackAndGo(models.TransientModel):
         product_product_ids = self.get_version(product_product_id)
         all_attchment_collected = self.env["ir.attachment"]
         bom_level = self.bom_computation
+        # _getChildrenBom: level 0 is the root and its direct children,
+        # level 1 the root and every level below it.
         if bom_level == "FIRST_LEVEL":
             product_product_ids = self.env["product.product"]
             ids = product_product_id._getChildrenBom(
-                product_product_id, level=bom_level == "FIRST_LEVEL", bom_type=bom_type
+                product_product_id, level=0, bom_type=bom_type
             )
+            ids = [child_id for child_id in ids if child_id != product_product_id.id]
             for child_product_product_id in self.get_version_list(
                 self.env["product.product"].browse(ids)
             ):
                 product_product_ids += child_product_product_id
         elif bom_level == "ALL_LEVEL":
             ids = product_product_id._getChildrenBom(
-                product_product_id, level=bom_level == "FIRST_LEVEL", bom_type=bom_type
+                product_product_id, level=1, bom_type=bom_type
             )
             for child_product_product_id in self.get_version_list(
                 self.env["product.product"].browse(ids)
