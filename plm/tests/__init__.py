@@ -31,5 +31,6 @@ from . import test_controllers
 from . import test_portal_scope
 from . import test_report_stamp
 from . import test_workflow_transitions
+from . import test_must_update_flag
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
