@@ -200,6 +200,53 @@ class PlmWeb3dRoutes(HttpCase):
         with mute_logger("odoo.addons.plm_web_3d.controllers.main"):
             self.assertEqual(self._product_info("web3d_outsider"), {})
 
+    def test_product_info_lists_every_product_and_the_description(self):
+        """The Description of the document was its state, and of several
+        linked products only the last one was listed."""
+        second = self.env["product.product"].create({"name": "WEB3D-COMP-2"})
+        self.document.write({"linkedcomponents": [Command.link(second.id)],
+                             "description": "WEB3D description"})
+        answer = self._product_info("web3d_insider")
+        self.assertIn("WEB3D-COMP", answer["component"])
+        self.assertIn("WEB3D-COMP-2", answer["component"])
+        self.assertIn("WEB3D description", answer["document"])
+
+    # the product of a part of a .glb of ours, by code and revision
+
+    def _web3d_product(self, login, code, revision, document=None):
+        self.authenticate(login, login)
+        query = "engineering_code=%s&engineering_revision=%s" % (code, revision)
+        if document:
+            query += "&document_id=%s" % document.id
+        response = self.url_open("/plm/web3d_product?" + query)
+        self.assertEqual(response.status_code, 200)
+        return response.json()
+
+    def test_a_glb_part_finds_its_product_by_code_and_revision(self):
+        product = self.env["product.product"].create(
+            {"name": "WEB3D glb part", "engineering_code": "WEB3D-GLB", "engineering_revision": 2})
+        found = self._web3d_product("web3d_insider", "WEB3D-GLB", 2, self.document)
+        self.assertEqual(found, {"id": product.id, "engineering_code": "WEB3D-GLB",
+                                 "engineering_revision": 2, "name": "WEB3D glb part"})
+        # the revision counts, and no document is needed by an internal user
+        self.assertEqual(self._web3d_product("web3d_insider", "WEB3D-GLB", 1), {})
+        self.assertEqual(self._web3d_product("web3d_insider", "WEB3D-GLB", 2)["id"], product.id)
+        self.assertEqual(self._web3d_product("web3d_insider", "WEB3D-GLB", "x"), {})
+
+    def test_a_glb_part_is_found_as_the_user(self):
+        """No sudo: a user who reads the released records only does not get
+        a draft product."""
+        self.env["product.product"].create(
+            {"name": "WEB3D draft", "engineering_code": "WEB3D-DRAFT", "engineering_revision": 0})
+        reader = self.env["res.users"].create({
+            "name": "web3d_reader", "login": "web3d_reader", "password": "web3d_reader",
+            "group_ids": [Command.set((self.env.ref("base.group_user")
+                                       | self.env.ref("plm.group_plm_readonly_released")).ids)],
+        })
+        self.assertTrue(reader)
+        self.assertEqual(self._web3d_product("web3d_reader", "WEB3D-DRAFT", 0), {})
+        self.assertTrue(self._web3d_product("web3d_insider", "WEB3D-DRAFT", 0))
+
     def test_part_colors_load_follows_the_node(self):
         self.document.sudo().web3d_part_colors = '{"part-1": "#ff0000"}'
         self.authenticate("web3d_insider", "web3d_insider")
@@ -481,6 +528,38 @@ class PlmWeb3dRoutes(HttpCase):
                 % self.document.id
             )
         self.assertEqual(page.status_code, 404)
+
+    def test_a_customer_names_only_the_products_of_their_document(self):
+        """A portal user gets the product of a .glb part only under the
+        document they were given, its WebHiTree descendants included: never
+        another product by trying codes, nor by name through the old routes."""
+        self.component.write({"engineering_code": "WEB3D-SOLD", "engineering_revision": 0})
+        viewer_document = self.env["ir.attachment"].create(
+            {"name": "WEB3D-SOLD.3mf", "engineering_code": "WEB3D-SOLD-3MF", "raw": RAW,
+             "is_plm": True, "plm_access_id": self.node.id})
+        viewer_document.linkedcomponents = self.component
+        part_product = self.env["product.product"].create(
+            {"name": "WEB3D sold part", "engineering_code": "WEB3D-SOLD-PART", "engineering_revision": 0})
+        part_document = self.env["ir.attachment"].create(
+            {"name": "WEB3D-SOLD-PART.glb", "engineering_code": "WEB3D-SOLD-PART.glb", "raw": b"glTF",
+             "is_plm": True, "plm_access_id": self.node.id})
+        part_document.linkedcomponents = part_product
+        self.env["ir.attachment.relation"].create(
+            {"parent_id": viewer_document.id, "child_id": part_document.id, "link_kind": "WebHiTree"})
+        self.env["product.product"].create(
+            {"name": "WEB3D secret", "engineering_code": "WEB3D-SECRET", "engineering_revision": 0})
+        self._portal_customer("view", login="web3d_portal_products")
+        login = "web3d_portal_products"
+        self.assertEqual(self._web3d_product(login, "WEB3D-SOLD", 0, viewer_document)["id"],
+                         self.component.id)
+        self.assertEqual(self._web3d_product(login, "WEB3D-SOLD-PART", 0, viewer_document)["id"],
+                         part_product.id)
+        self.assertEqual(self._web3d_product(login, "WEB3D-SECRET", 0, viewer_document), {})
+        self.assertEqual(self._web3d_product(login, "WEB3D-SOLD", 0), {})
+        old_route = "/plm/get_product_id?src_name=WEB3D-SECRET&parent_id=%s" % viewer_document.id
+        self.assertEqual(self.url_open(old_route).json(), {"product_id": None})
+        tooltip = "/plm/get_3d_web_document_info?src_name=WEB3D-SECRET&parent_id=%s" % viewer_document.id
+        self.assertEqual(self.url_open(tooltip).text, "WEB3D-SECRET")
 
     def test_product_info_hides_the_engineering_data(self):
         with mute_logger("odoo.addons.plm_web_3d.controllers.main"):

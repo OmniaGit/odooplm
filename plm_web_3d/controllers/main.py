@@ -39,6 +39,39 @@ def _resolve_components(record):
     return record.env['product.product']
 
 
+def _web_tree(document):
+    """document and its WebHiTree descendants, level by level, each once,
+    read in document's environment."""
+    relations = document.env["ir.attachment.relation"]
+    found, level = document, document
+    while level:
+        level = relations.search([
+            ("parent_id", "in", level.ids),
+            ("link_kind", "=", "WebHiTree"),
+        ]).mapped("child_id") - found
+        found |= level
+    return found
+
+
+def _viewer_product(document, domain):
+    """The first product of domain the viewer of document may name, or an
+    empty recordset.
+
+    An internal user searches as themselves. A portal user has no products of
+    their own to search: _plm_document gave them document in sudo, through
+    their order, so they get only the products of that document and of its
+    WebHiTree descendants, never any other by trying codes. Without a document
+    a portal user gets nothing."""
+    if document and document.env.su:
+        products = document.env["product.product"]
+        for web_document in _web_tree(document):
+            products |= _resolve_components(web_document)
+        return products.filtered_domain(domain)[:1]
+    if not request.env.user._is_internal():
+        return request.env["product.product"]
+    return request.env["product.product"].search(domain, limit=1)
+
+
 def webservice(f):
     @functools.wraps(f)
     def wrap(*args, **kw):
@@ -267,16 +300,20 @@ class Web3DView(Controller):
             <li class="attribute_info"><b>Name:</b> <span class="plm_link" data-doc-id="%s">%s</span></li>
             <li class="attribute_info"><b>Revision:</b> %s</li>
             <li class="attribute_info"><b>Description:</b> %s</li>
+            <li class="attribute_info"><b>State:</b> %s</li>
             """) % (
                 info_doc.id,
                 doc_name,
                 info_doc.engineering_revision,
+                info_doc.description or "",
                 info_doc.engineering_state,
             )
             document = self.document_extra(document)
             out["document"] = document
+            # every linked product, not only the last one
+            components = Markup()
             for component in info_doc.linkedcomponents:
-                components = Markup("""
+                components += self.component_extra(Markup("""
                 <li class="attribute_info" id="linked_component_id" data-id="%s"><b>Product Name:</b> <span class="plm_link" data-prod-id="%s">%s</span></li>
                 <li class="attribute_info"><b>Product Revision:</b> %s</li>
                 <li class="attribute_info"><b>Description:</b> %s</li>
@@ -286,59 +323,77 @@ class Web3DView(Controller):
                     component.engineering_code or component.name,
                     component.engineering_revision,
                     component.name,
-                )
-                components = self.component_extra(components)
+                ))
+            if components:
                 out["component"] = components
         return json.dumps(out)
+
+    def _product_by_name(self, src_name, parent_id, route):
+        """The product a tree node of a viewer file names, by code, internal
+        reference or name: first among the products of parent_id, the document
+        shown, then as _viewer_product allows. Not by revision: the node name
+        has none, so a .glb of ours goes through /plm/web3d_product."""
+        parent_doc = request.env["ir.attachment"]
+        if parent_id and str(parent_id).isdigit():
+            parent_doc = _plm_document(parent_id, route)
+        for product in parent_doc.linkedcomponents:
+            if src_name in (product.engineering_code, product.name, product.default_code):
+                return product
+        return _viewer_product(parent_doc, [
+            "|", "|",
+            ("engineering_code", "=", src_name),
+            ("default_code", "=", src_name),
+            ("name", "=", src_name),
+        ])
 
     @route("/plm/get_product_id", type="http", auth="user")
     def get_product_id(self, src_name, parent_id=None):
         """Return JSON {product_id: N} for the product matching src_name."""
-        env = request.env
-        if parent_id and str(parent_id).isdigit():
-            parent_doc = env["ir.attachment"].sudo().browse(int(parent_id))
-            if parent_doc.exists():
-                for p in parent_doc.linkedcomponents:
-                    if p.engineering_code == src_name or p.name == src_name or p.default_code == src_name:
-                        return json.dumps({"product_id": p.id})
-        prod = env["product.product"].sudo().search(
-            ["|", "|",
-             ("engineering_code", "=", src_name),
-             ("default_code", "=", src_name),
-             ("name", "=", src_name)],
-            limit=1,
-        )
-        return json.dumps({"product_id": prod.id if prod else None})
+        product = self._product_by_name(src_name, parent_id, "get_product_id")
+        return json.dumps({"product_id": product.id or None})
 
     @route("/plm/get_3d_web_document_info", type="http", auth="user")
     def get_3d_web_document_info(self, src_name, parent_id=None):
         if not parent_id or not str(parent_id).isdigit():
             return src_name
-
-        parent_doc = request.env["ir.attachment"].sudo().browse(int(parent_id))
-        if not parent_doc.exists():
+        product = self._product_by_name(src_name, parent_id, "get_3d_web_document_info")
+        if not product:
             return src_name
+        code = product.engineering_code or product.default_code or ''
+        name = product.name or ''
+        if code:
+            return f"{code} - {name}"
+        return name
 
-        for p in parent_doc.linkedcomponents:
-            if p.engineering_code == src_name or p.name == src_name or p.default_code == src_name:
-                code = p.engineering_code or p.default_code or ''
-                name = p.name or ''
-                if code:
-                    return f"{code} - {name}"
-                return name
-
-        prod = request.env['product.product'].sudo().search([
-            '|', '|', ('engineering_code', '=', src_name), ('default_code', '=', src_name), ('name', '=', src_name)
-        ], limit=1)
-        if prod:
-            code = prod.engineering_code or prod.default_code or ''
-            name = prod.name or ''
-            if code:
-                return f"{code} - {name}"
-            return name
-
-        return src_name
-
+    @route("/plm/web3d_product", type="http", auth="user")
+    @webservice
+    def web3d_product(self, document_id=None, engineering_code=None, engineering_revision=None):
+        """{id, engineering_code, engineering_revision, name} of the product
+        with that code and revision, what a .glb of ours (schema
+        odooplm.cad3d) says of the part selected; {} when there is none or it
+        may not be named. document_id is the document the viewer shows: a
+        portal user is answered only for the products under it."""
+        try:
+            revision = int(engineering_revision)
+        except (TypeError, ValueError):
+            return request.make_json_response({})
+        if not engineering_code:
+            return request.make_json_response({})
+        document = _plm_document(document_id, "web3d_product")
+        if not document and not request.env.user._is_internal():
+            return request.make_json_response({})
+        product = _viewer_product(document, [
+            ("engineering_code", "=", engineering_code),
+            ("engineering_revision", "=", revision),
+        ])
+        if not product:
+            return request.make_json_response({})
+        return request.make_json_response({
+            "id": product.id,
+            "engineering_code": product.engineering_code,
+            "engineering_revision": product.engineering_revision,
+            "name": product.name,
+        })
 
     @http.route('/plm/save_preview', type='jsonrpc', auth='user')
     def save_preview(self, document_id=None, image_data=None):

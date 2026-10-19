@@ -8,6 +8,7 @@ import { TextGeometry } from '../three.js/examples/jsm/geometries/TextGeometry.j
  * OdooCad import
  */
 import * as ODOOLOADER from './loaders.js';
+import { fetchPlmProduct, plmIdentity } from '../../src/js/cad3d_features.js';
 
 const html_canvas = document.getElementById('odoo_canvas');
 const odoo_hilight_color = new THREE.Color("#eda3da")
@@ -367,13 +368,27 @@ class OdooCAD {
                     }));
                     return;
                 }
+                // The rows are nested: only the one clicked opens its product,
+                // not every assembly around it
+                event.stopPropagation();
                 const obj = self.tree_ref_elements[webgl_name];
                 if (!obj) return;
-                const eng_code = obj.userData && obj.userData.engineering_code;
-                if (!eng_code) return;
                 const parent_id = document.getElementById('active_model')
                     ? document.getElementById('active_model').getAttribute('active_model')
                     : '';
+                // A .glb of ours names the product by code and revision, the
+                // node's name may not be its code
+                const identity = plmIdentity(obj);
+                if (identity) {
+                    fetchPlmProduct(identity, parent_id).then(function (product) {
+                        if (product.id && window.openOdooPopup) {
+                            window.openOdooPopup('product.product', product.id);
+                        }
+                    });
+                    return;
+                }
+                const eng_code = obj.userData && obj.userData.engineering_code;
+                if (!eng_code) return;
                 fetch(`/plm/get_product_id?src_name=${encodeURIComponent(eng_code)}&parent_id=${parent_id}`)
                     .then(function (r) { return r.json(); })
                     .then(function (data) {

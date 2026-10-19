@@ -67,6 +67,61 @@ function plmData(object) {
 }
 
 /**
+ * The product a part of a .glb of ours stands for, {engineering_code,
+ * engineering_revision} as the CAD wrote them (either may be null), from the
+ * nearest component of an assembly (plm_component) or document (plm) at or
+ * above object; null when object is not in such a file, whose parts are then
+ * found by their name as before.
+ */
+export function plmIdentity(object) {
+	for (let node = object; node; node = node.parent) {
+		const data = node.userData || {};
+		const identity = data.plm_component
+			|| (data.plm && data.plm.schema === SCHEMA ? data.plm.document : null);
+		if (identity) {
+			return {
+				engineering_code: identity.engineering_code ?? null,
+				engineering_revision: identity.engineering_revision ?? null,
+			};
+		}
+	}
+	return null;
+}
+
+/**
+ * The product of a .glb part (plmIdentity) as Odoo has it,
+ * {id, engineering_code, engineering_revision, name}, or {} when Odoo has none
+ * the user may see; documentId is the document the viewer shows. One request
+ * per product.
+ */
+const productRequests = new Map();
+export function fetchPlmProduct(identity, documentId) {
+	if (!identity || !identity.engineering_code
+		|| identity.engineering_revision === null || identity.engineering_revision === undefined) {
+		return Promise.resolve({});
+	}
+	const key = `${identity.engineering_code}|${identity.engineering_revision}`;
+	if (!productRequests.has(key)) {
+		const query = new URLSearchParams({
+			engineering_code: identity.engineering_code,
+			engineering_revision: identity.engineering_revision,
+			document_id: documentId || '',
+		});
+		// a failed request (session expired, server error) is asked again next time
+		productRequests.set(key, fetch(`/plm/web3d_product?${query}`)
+			.then((response) => {
+				if (!response.ok) throw new Error(response.statusText);
+				return response.json();
+			})
+			.catch(() => {
+				productRequests.delete(key);
+				return {};
+			}));
+	}
+	return productRequests.get(key);
+}
+
+/**
  * The CAD face and feature under a raycast hit, or null when the object is
  * not a cad3d export. feature is null for a face no feature owns.
  */

@@ -1256,10 +1256,11 @@ function initcommand() {
 			}
 			try {
 				var result = JSON.parse(responseText);
+				defaultProductInfo = result['component'] || '';
 				var product_info = document.getElementById("product_info");
-				if (product_info) product_info.innerHTML = result['component'];
+				if (product_info) product_info.innerHTML = defaultProductInfo;
 				var document_info = document.getElementById("document_info");
-				if (document_info) document_info.innerHTML = result['document'];
+				if (document_info) document_info.innerHTML = result['document'] || '';
 			} catch (e) {
 				console.error("Error parsing product info JSON:", e);
 			}
@@ -1837,8 +1838,17 @@ window.onPointerMove = function (event) {
 				tooltip.style.display = 'block';
 
 				const obj3d = OdooCad.tree_ref_elements[guid];
-				if (obj3d) {
-					const srcName = (obj3d.userData && obj3d.userData.engineering_code) || obj3d.name || obj3d.type || "Component";
+				const identity = obj3d ? CAD3D.plmIdentity(obj3d) : null;
+				if (identity) {
+					// A .glb of ours: the product by its code and revision
+					tooltip.innerText = identity.engineering_code || obj3d.name;
+					CAD3D.fetchPlmProduct(identity, _viewerDocumentId()).then((product) => {
+						if (product.id && window.tooltipPendingGuid === guid) {
+							tooltip.innerText = `${product.engineering_code} - ${product.name}`;
+						}
+					});
+				} else if (obj3d) {
+					const srcName =(obj3d.userData && obj3d.userData.engineering_code) || obj3d.name || obj3d.type || "Component";
 
 					if (window.tooltipCache[srcName]) {
 						tooltip.innerText = window.tooltipCache[srcName];
@@ -2107,7 +2117,76 @@ function toggleCrate() {
 
 function _onSelectionChanged() {
 	if (crateBox) _showCrate();
+	_showSelectedProduct();
 	render();
+}
+
+/** The document the viewer shows (#active_model) */
+function _viewerDocumentId() {
+	return document.getElementById('active_model')?.getAttribute('active_model') || '';
+}
+
+// What /plm/get_product_info gave for the document shown, put back when the
+// selection is not one part of a .glb of ours
+let defaultProductInfo = '';
+// The last selection asked for, so an older answer arriving late is dropped
+let productInfoRequest = 0;
+
+/**
+ * Product Information follows the selection when it is one part of a .glb of
+ * ours (schema odooplm.cad3d): code, revision and description (name) of the
+ * product Odoo has with the code and revision the file gives. Odoo's values
+ * win over the CAD's: of the file only the identity is used. No part, several
+ * parts or another format: the product of the document shown.
+ */
+function _showSelectedProduct() {
+	const productInfo = document.getElementById('product_info');
+	if (!productInfo) return;
+	const request = ++productInfoRequest;
+	const parts = selectedObjects();
+	const identity = parts.length === 1 ? CAD3D.plmIdentity(parts[0]) : null;
+	if (!identity) {
+		productInfo.innerHTML = defaultProductInfo;
+		return;
+	}
+	CAD3D.fetchPlmProduct(identity, _viewerDocumentId()).then((product) => {
+		if (request !== productInfoRequest) return;
+		productInfo.replaceChildren(...(product.id
+			? _productInfoLines(product)
+			: _productNotFoundLines(identity)));
+	});
+}
+
+function _infoLine(label, value) {
+	const line = document.createElement('li');
+	line.className = 'attribute_info';
+	const bold = document.createElement('b');
+	bold.textContent = `${label}: `;
+	line.append(bold);
+	if (value instanceof Node) line.append(value);
+	else line.append(document.createTextNode(value ?? ''));
+	return line;
+}
+
+function _productInfoLines(product) {
+	// a plm_link opens the product, as the lines /plm/get_product_info writes
+	const link = document.createElement('span');
+	link.className = 'plm_link';
+	link.dataset.prodId = product.id;
+	link.textContent = product.engineering_code;
+	return [
+		_infoLine('Product Name', link),
+		_infoLine('Product Revision', product.engineering_revision),
+		_infoLine('Description', product.name),
+	];
+}
+
+function _productNotFoundLines(identity) {
+	return [
+		_infoLine('Product Name', identity.engineering_code || '-'),
+		_infoLine('Product Revision', identity.engineering_revision ?? '-'),
+		_infoLine('Description', 'Product not found'),
+	];
 }
 
 function onKeyup(event) {
