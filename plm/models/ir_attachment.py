@@ -1716,6 +1716,45 @@ class IrAttachment(models.Model):
                         attachment_id.must_update_from_cad = False
                     else:
                         attachment_id.must_update_from_cad = True
+            #
+            # RfTree: if any referenced child was saved in CAD more recently than the parent,
+            # the parent document is out of date and must be updated from CAD.
+            #
+            if not plm_cad_open:
+                continue
+            if attachment_id._get_newer_rf_relations(plm_cad_open):
+                attachment_id.must_update_from_cad = True
+            elif (
+                attachment_id.document_type == "3d"
+                and attachment_id.must_update_from_cad
+            ):
+                # RfTree is the only source of the flag on a 3D document,
+                # so without newer children it is up to date again
+                attachment_id.must_update_from_cad = False
+
+    def _get_newer_rf_relations(self, plm_cad_open):
+        """RfTree relations whose child was saved in CAD after the given save
+        of this document, in another dbThread."""
+        self.ensure_one()
+        out = self.env["ir.attachment.relation"]
+        cad_open_obj = self.env["plm.cad.open"]
+        db_thread = plm_cad_open.dbThread
+        source_date = plm_cad_open.write_date
+        for relation in out.search(
+            [("parent_id", "=", self.id), ("link_kind", "=", "RfTree")]
+        ):
+            child_plm_cad_open = cad_open_obj.getLastCadSave(relation.child_id)
+            child_db_thread = child_plm_cad_open.dbThread
+            if db_thread not in ["", False] and child_db_thread not in ["", False]:
+                if db_thread == child_db_thread:
+                    continue
+            if (
+                child_plm_cad_open
+                and source_date
+                and child_plm_cad_open.write_date > source_date
+            ):
+                out += relation
+        return out
 
     @api.model
     @api.depends("checkout_ids")
@@ -4287,6 +4326,9 @@ class IrAttachment(models.Model):
                  ("link_kind", "=", "LyTree"),
                 ]
             )
+            plm_cad_open = self.env["plm.cad.open"].getLastCadSave(attachment_id)
+            if plm_cad_open:
+                relation_ids |= attachment_id._get_newer_rf_relations(plm_cad_open)
             return {
                 "name": _("Attachment Relations."),
                 "res_model": "ir.attachment.relation",
