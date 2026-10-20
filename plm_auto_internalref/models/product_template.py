@@ -48,21 +48,27 @@ class ProductTemplateExtension(models.Model):
         return super().create(vals)
 
     def write(self, vals):
+        # Each template gets its own default code: write separately only the templates
+        # whose code changes, all the others together with the original vals
+        res = True
+        unchanged = self.browse()
         for product_template_id in self:
+            new_default_code = False
             if product_template_id.engineering_code:
                 new_default_code = self.env["product.product"].computeDefaultCode(
                     vals, product_template_id
                 )
-                if new_default_code:
-                    vals["default_code"] = new_default_code
-                    if (
-                        product_template_id.product_variant_id.default_code
-                        != new_default_code
-                    ):
-                        product_template_id.product_variant_id.default_code = (
-                            new_default_code
-                        )
-        return super().write(vals)
+            if not new_default_code or new_default_code == product_template_id.default_code:
+                unchanged |= product_template_id
+                continue
+            if product_template_id.product_variant_id.default_code != new_default_code:
+                product_template_id.product_variant_id.default_code = new_default_code
+            res = super(ProductTemplateExtension, product_template_id).write(
+                dict(vals, default_code=new_default_code)
+            ) and res
+        if unchanged:
+            res = super(ProductTemplateExtension, unchanged).write(vals) and res
+        return res
 
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
