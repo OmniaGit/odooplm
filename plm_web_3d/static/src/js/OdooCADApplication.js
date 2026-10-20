@@ -651,6 +651,7 @@ function addAmbient() {
 	addCamera();
 	addLight();
 	addOrbit();
+	watchCanvasSize();
 	/* add gradient background */
 	scene.background = new THREE.Color(0xe0e0e0);
 	scene.fog = new THREE.Fog(0xe0e0e0, 200, 1000);;
@@ -1292,7 +1293,7 @@ function on_data_card_button_click(event) {
 	// highlight the mouseover target
 	let main_div = document.getElementById("main_div");
 	if (clicked) {
-		main_div.style.visibility = 'invisible';
+		main_div.style.visibility = 'hidden';
 		main_div.style.opacity = 0;
 	}
 	else {
@@ -2222,6 +2223,28 @@ function addOrbit() {
 	controls.rotateSpeed = 0.5
 	controls.target.set(0, 0, - 0.2);
 	controls.update();
+}
+
+function watchCanvasSize() {
+	/*
+	 * the scene is drawn only when the camera moves (controls 'change'), so a
+	 * window or layout resize left the canvas drawn at its old size, the image
+	 * stretched and the labels layer wider than the page until the next move:
+	 * redraw, once per frame, whenever the canvas changes size
+	 */
+	let pending = false;
+	const redraw = () => {
+		if (pending) return;
+		pending = true;
+		requestAnimationFrame(() => {
+			pending = false;
+			render();
+		});
+	};
+	window.addEventListener('resize', redraw);
+	if (window.ResizeObserver) {
+		new ResizeObserver(redraw).observe(renderer.domElement);
+	}
 }
 
 function resetLight(bbox, size) {

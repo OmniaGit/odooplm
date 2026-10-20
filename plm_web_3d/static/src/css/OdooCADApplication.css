@@ -379,6 +379,14 @@ label {
     top: 60px;
     right: 7px;
     z-index: 400 !important;
+    /* the container lies over the scene: only the button and the open panel
+       take the mouse, so the scene under them still rotates */
+    pointer-events: none;
+}
+
+#datasheet > #click_show,
+#datasheet > #main_div {
+    pointer-events: auto;
 }
 
 /* ── FIX 1: Remove forced visibility so JS toggle works ── */
@@ -448,8 +456,11 @@ li.attribute_info {
 
 /* ── VIEW CUBE ── */
 .cube {
-    width: 80px;
-    height: 80px;
+    /* the one size of the cube: faces and their distance from the centre
+       follow it, the media queries below change only this */
+    --cube-size: 80px;
+    width: var(--cube-size);
+    height: var(--cube-size);
     left: unset !important;
     top: unset !important;
     bottom: 25px !important;
@@ -465,8 +476,8 @@ li.attribute_info {
     justify-content: center;
     align-items: center;
     position: absolute;
-    width: 80px;
-    height: 80px;
+    width: var(--cube-size);
+    height: var(--cube-size);
     border: 2px solid white;
     line-height: 100px;
     font-size: 18px;
@@ -486,32 +497,32 @@ li.attribute_info {
 
 .cube__face--front {
     background: rgba(194, 103, 171, 0.9);
-    transform: rotateY(0deg) rotateX(180deg) translateZ(-40px);
+    transform: rotateY(0deg) rotateX(180deg) translateZ(calc(var(--cube-size) / -2));
 }
 
 .cube__face--right {
     background: rgba(194, 103, 171, 0.7);
-    transform: rotateY(90deg) rotateX(180deg) translateZ(-40px);
+    transform: rotateY(90deg) rotateX(180deg) translateZ(calc(var(--cube-size) / -2));
 }
 
 .cube__face--back {
     background: rgba(194, 103, 171, 0.7);
-    transform: rotateY(180deg) rotateX(180deg) translateZ(-40px);
+    transform: rotateY(180deg) rotateX(180deg) translateZ(calc(var(--cube-size) / -2));
 }
 
 .cube__face--left {
     background: rgba(194, 103, 171, 0.7);
-    transform: rotateY(-90deg) rotateX(180deg) translateZ(-40px);
+    transform: rotateY(-90deg) rotateX(180deg) translateZ(calc(var(--cube-size) / -2));
 }
 
 .cube__face--top {
     background: rgba(194, 103, 171, 0.7);
-    transform: rotateX(-90deg) rotateX(180deg) translateZ(-40px);
+    transform: rotateX(-90deg) rotateX(180deg) translateZ(calc(var(--cube-size) / -2));
 }
 
 .cube__face--bottom {
     background: rgba(194, 103, 171, 0.7);
-    transform: rotateX(90deg) rotateX(180deg) translateZ(-40px);
+    transform: rotateX(90deg) rotateX(180deg) translateZ(calc(var(--cube-size) / -2));
 }
 
 /* ── TREE LISTS ── */
@@ -961,13 +972,10 @@ canvas#odoo_canvas {
     .cube {
         bottom: 100px !important;
         right: 15px !important;
-        width: 65px !important;
-        height: 65px !important;
+        --cube-size: 65px;
     }
 
     .cube__face {
-        width: 65px !important;
-        height: 65px !important;
         font-size: 11px !important;
         line-height: normal !important;
     }
@@ -1034,13 +1042,10 @@ canvas#odoo_canvas {
         bottom: 175px !important;
         right: 10px !important;
         z-index: 10 !important;
-        width: 55px !important;
-        height: 55px !important;
+        --cube-size: 55px;
     }
 
     .cube__face {
-        width: 55px !important;
-        height: 55px !important;
         font-size: 9px !important;
         line-height: normal !important;
     }
@@ -1091,13 +1096,10 @@ canvas#odoo_canvas {
         bottom: 195px !important;
         right: 5px !important;
         z-index: 10 !important;
-        width: 44px !important;
-        height: 44px !important;
+        --cube-size: 44px;
     }
 
     .cube__face {
-        width: 44px !important;
-        height: 44px !important;
         font-size: 7px !important;
     }
 
