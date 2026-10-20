@@ -893,6 +893,12 @@ export function exportSuffix(name) {
 	return match ? match[0] : '';
 }
 
+/** The root of a .glb of ours (cad3d_glb): a part or an assembly. */
+export function isPlmFile(root) {
+	const plm = root && root.userData && root.userData.plm;
+	return Boolean(plm && plm.schema === SCHEMA);
+}
+
 export function isAssembly(root) {
 	const plm = root && root.userData && root.userData.plm;
 	return Boolean(plm && plm.schema === SCHEMA && plm.kind === 'assembly');

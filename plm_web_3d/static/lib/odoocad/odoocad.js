@@ -8,7 +8,7 @@ import { TextGeometry } from '../three.js/examples/jsm/geometries/TextGeometry.j
  * OdooCad import
  */
 import * as ODOOLOADER from './loaders.js';
-import { fetchPlmProduct, plmIdentity } from '../../src/js/cad3d_features.js';
+import { fetchPlmProduct, isAssembly, isPlmFile, plmIdentity } from '../../src/js/cad3d_features.js';
 
 const html_canvas = document.getElementById('odoo_canvas');
 const odoo_hilight_color = new THREE.Color("#eda3da")
@@ -108,6 +108,32 @@ class OdooCAD {
     // ============================================
     // MODIFIED FUNCTION #1: get_li_structure
     // ============================================
+    tree_children(object) {
+        /*
+         * The children of object that make rows of the tree. A .glb of ours
+         * is one row whatever it holds inside: a component shows the
+         * components of the subassembly it holds and nothing of a part's file
+         * (its root node, its meshes); the root of the document shows its
+         * components, or nothing for a part. Any other model: all children.
+         */
+        const data = object.userData || {};
+        if (data.plm_component) {
+            const out = [];
+            for (const child of object.children) {
+                if (child.userData && child.userData.plm_glb && isAssembly(child)) {
+                    out.push(...this.tree_children(child));
+                }
+            }
+            return out;
+        }
+        if (isPlmFile(object)) {
+            return isAssembly(object)
+                ? object.children.filter((child) => child.userData && child.userData.plm_component)
+                : [];
+        }
+        return object.children;
+    }
+
     get_li_structure(object, nested = false) {
         var self = this;
         var found = false;
@@ -120,8 +146,9 @@ class OdooCAD {
         }
 
         // FIXED: Process all children, not just Groups
-        for (let i = 0; i < object.children.length; i++) {
-            const child = object.children[i];
+        const tree_children = self.tree_children(object);
+        for (let i = 0; i < tree_children.length; i++) {
+            const child = tree_children[i];
 
             // Skip children with no name and no meaningful type
             if (child.name === '' && !['Group', 'Object3D', 'Mesh'].includes(child.type)) {
