@@ -56,6 +56,10 @@ def webservice(f):
     return wrap
 
 
+# The relations /plm_document_upload/extra_file makes between a document and a
+# file beside it: the first is the default, Web3DTree the 3D viewer's.
+EXTRA_FILE_LINK_KINDS = ("ExtraTree", "Web3DTree")
+
 # The magic bytes of the formats a preview can be stored in.
 IMAGE_SIGNATURES = (
     (b"\x89PNG\r\n\x1a\n", "image/png"),
@@ -467,8 +471,24 @@ class UploadDocument(Controller):
     )
     @webservice
     def upload_extra_file(
-        self, product_id="", doc_name="", doc_rev="0", related_attachment_id="", **kw
+        self,
+        product_id="",
+        doc_name="",
+        doc_rev="0",
+        related_attachment_id="",
+        link_kind=EXTRA_FILE_LINK_KINDS[0],
+        related_engineering_code="",
+        related_engineering_revision="",
+        **kw
     ):
+        """A file the CAD client writes beside a document at its check-in.
+
+        It is the document's child with link_kind, ExtraTree by default or
+        Web3DTree for its 3D web file (a .glb of OmniaGLTFConverter); the
+        document is related_attachment_id, else the one with
+        related_engineering_code and related_engineering_revision (the part
+        files of an assembly, which the client knows by code). Without a
+        document the file only goes to the product."""
         logging.info("Start upload extra file %r" % (product_id))
         #
         try:
@@ -483,6 +503,36 @@ class UploadDocument(Controller):
             related_attachment_id = int(related_attachment_id)
         except Exception:
             related_attachment_id = 0
+        if link_kind not in EXTRA_FILE_LINK_KINDS:
+            # HiTree and the others drive the check-out and the download
+            logging.warning(
+                "Extra file %r refused: link kind %r" % (doc_name, link_kind)
+            )
+            return Response(
+                "Extra file Failed upload: link kind %s" % link_kind, status=400
+            )
+        if not related_attachment_id and related_engineering_code:
+            try:
+                related_revision = int(related_engineering_revision)
+            except Exception:
+                related_revision = 0
+            related = request.env["ir.attachment"].search(
+                [
+                    ("engineering_code", "=", related_engineering_code),
+                    ("engineering_revision", "=", related_revision),
+                    ("is_plm", "=", True),
+                ],
+                limit=1,
+            )
+            if not related:
+                logging.warning(
+                    "Extra file %r refused: no document %r revision %r"
+                    % (doc_name, related_engineering_code, related_revision)
+                )
+                return Response(
+                    "Extra file Failed upload: no such document", status=400
+                )
+            related_attachment_id = related.id
         #
         if doc_name:
             value1 = kw.get("file_stream").stream.read()
@@ -498,7 +548,6 @@ class UploadDocument(Controller):
                 "engineering_code": doc_name,
                 "engineering_revision": doc_rev,
             }
-            link_id = request.env["ir.attachment.relation"]
             new_context = request.env.context.copy()
             new_context["backup"] = False
             new_context["check"] = (
@@ -512,22 +561,15 @@ class UploadDocument(Controller):
                 ir_attachment_id = contex_brw.create(to_write)
             else:
                 ir_attachment_id.with_context(new_context).write(to_write)
-            if ir_attachment_id and related_attachment_id:
-                link_id = link_id.search(
-                    [
-                        ("parent_id", "=", related_attachment_id),
-                        ("child_id", "=", ir_attachment_id.id),
-                        ("link_kind", "=", "ExtraTree"),
-                    ]
+            if related_attachment_id:
+                request.env["ir.attachment.relation"].saveDocumentRelationNew(
+                    related_attachment_id, ir_attachment_id.id, link_kind=link_kind
                 )
-            if not link_id:
-                request.env["ir.attachment.relation"].create(
-                    {
-                        "parent_id": related_attachment_id,
-                        "child_id": ir_attachment_id.id,
-                        "link_kind": "ExtraTree",
-                    }
-                )
+                related = request.env["ir.attachment"].browse(related_attachment_id)
+                if link_kind == "Web3DTree" and "has_web3d" in related._fields:
+                    # stored, and computed from the name only: the Web3DTree
+                    # relation just created does not trigger it
+                    request.env.add_to_compute(related._fields["has_web3d"], related)
             if product_id:
                 product_id = request.env["product.product"].browse(product_id)
                 request.env["plm.component.document.rel"].createFromIds(

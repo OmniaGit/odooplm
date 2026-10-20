@@ -129,6 +129,7 @@ The level is `plm_portal_access` on `res.partner` (`none`, `view`, `markup`) wit
 - `GET /plm_document_upload/isalive` — health check
 - `POST /plm_document_upload/upload` — document/model upload
 - `POST /plm_document_upload/upload_pdf` — PDF printout upload
+- `POST /plm_document_upload/extra_file` — a file written beside a document at its check-in, its child with `link_kind` `ExtraTree` (default) or `Web3DTree` (the `.glb` of OmniaGLTFConverter, decided 2026-10-20); the document by `related_attachment_id` or by `related_engineering_code` + `related_engineering_revision`; any other kind, or a document not found, is refused (400). Tests tagged `odoo_plm_extra_file`
 
 ### Document Types
 
