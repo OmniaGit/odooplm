@@ -835,6 +835,98 @@ function _selectAllShown() {
 }
 
 /*
+ * Move a part (M): a gizmo on the part under the pointer, at the centre of
+ * its bounding box (a component's own origin may be far from its body); R
+ * switches between move and rotate, Esc ends, Shift+M puts back every part
+ * moved. On screen only: a markup saves the picture of what is shown.
+ */
+let _moveCtrl = null;
+let _movePivot = null;
+let _moveTarget = null;
+const _moveStart = { pivotInverse: new THREE.Matrix4(), target: new THREE.Matrix4() };
+const _movedParts = new Map();   // part -> its placement before its first move
+
+function _startMove(guid) {
+	const target = OdooCad.tree_ref_elements[guid];
+	if (!target) return;
+	const blocker = _liveUpdateBlocker();
+	if (blocker && !_moveCtrl) {
+		_showNotice(`A part can be moved when ${blocker}`);
+		return;
+	}
+	_endMove();
+	// the explosion back to rest: the parts at their own place
+	const explosion = document.getElementById('object_explosion');
+	if (explosion && parseFloat(explosion.value) !== 0) {
+		explosion.value = 0;
+		explosion.dispatchEvent(new Event('input'));
+	}
+	if (!_movedParts.has(target)) {
+		_movedParts.set(target, {
+			position: target.position.clone(),
+			quaternion: target.quaternion.clone(),
+			scale: target.scale.clone(),
+		});
+	}
+	_moveTarget = target;
+	_movePivot = new THREE.Object3D();
+	new THREE.Box3().setFromObject(target).getCenter(_movePivot.position);
+	scene.add(_movePivot);
+	_movePivot.updateMatrixWorld();
+	_moveCtrl = new TransformControls(camera, renderer.domElement);
+	_moveCtrl.setMode('translate');
+	_moveCtrl.attach(_movePivot);
+	scene.add(_moveCtrl);
+	_moveCtrl.addEventListener('dragging-changed', (e) => {
+		controls.enabled = !e.value;
+		if (e.value) {
+			_moveStart.pivotInverse.copy(_movePivot.matrixWorld).invert();
+			_moveStart.target.copy(_moveTarget.matrixWorld);
+		}
+	});
+	_moveCtrl.addEventListener('objectChange', _applyMove);
+	_moveCtrl.addEventListener('change', render);
+	render();
+}
+
+// What the pivot did since the drag started, done to the part: in the world,
+// then in its parent's frame
+function _applyMove() {
+	if (!_moveTarget || !_movePivot) return;
+	_movePivot.updateMatrixWorld();
+	const delta = new THREE.Matrix4().multiplyMatrices(_movePivot.matrixWorld, _moveStart.pivotInverse);
+	const world = new THREE.Matrix4().multiplyMatrices(delta, _moveStart.target);
+	const local = _moveTarget.parent
+		? new THREE.Matrix4().copy(_moveTarget.parent.matrixWorld).invert().multiply(world)
+		: world;
+	local.decompose(_moveTarget.position, _moveTarget.quaternion, _moveTarget.scale);
+}
+
+function _endMove() {
+	if (!_moveCtrl) return;
+	_moveCtrl.detach();
+	scene.remove(_moveCtrl);
+	_moveCtrl.dispose();
+	scene.remove(_movePivot);
+	_moveCtrl = null;
+	_movePivot = null;
+	_moveTarget = null;
+	controls.enabled = true;
+	render();
+}
+
+function _resetMovedParts() {
+	_endMove();
+	for (const [part, placement] of _movedParts) {
+		part.position.copy(placement.position);
+		part.quaternion.copy(placement.quaternion);
+		part.scale.copy(placement.scale);
+	}
+	_movedParts.clear();
+	render();
+}
+
+/*
  * Live update: a .glb whose files change at a check-in is loaded again
  * (lib/odoocad/live_update.js). Not while the user is working on the view:
  * a measure on screen, a section, a markup, a zoom window or a drag waits.
@@ -851,6 +943,7 @@ function _liveUpdateBlocker() {
 		return 'the measures are removed';
 	}
 	if (zoomWindowActive) return 'the zoom window ends';
+	if (_moveCtrl) return 'the move ends';
 	if (_livePointerDown) return 'the mouse is released';
 	return '';
 }
@@ -867,6 +960,7 @@ function _beforeLiveUpdate() {
 	_explosionInitialized = false;
 	show_all_scene_item();
 	_hideCrate();
+	_resetMovedParts();
 	clearSelection();
 	window.last_highlighted_li = null;
 	last_highlighted_part = null;
@@ -2034,7 +2128,8 @@ function onKeyDone(event) {
 			_hidePartTransparencyPicker();
 			return;
 		}
-		if (zoomWindowActive) _deactivateZoomWindow();
+		if (_moveCtrl) _endMove();
+		else if (zoomWindowActive) _deactivateZoomWindow();
 		else if (ctrlDown) _deactivateMeasure();
 		else clearSelection();
 		return;
@@ -2072,8 +2167,22 @@ function onKeyDone(event) {
 		}
 		render();
 	}
-	if ((event.key === 'm' || event.key === 'M') && !event.target.closest('input, textarea, select')) {
+	if (event.key === 'v' || event.key === 'V') {
 		_showDisplayMode(CAD3D.nextDisplayMode(OdooCad.items));
+	}
+	if (event.key === 'm' || event.key === 'M') {
+		// M on the part under the pointer: the gizmo to move it; Shift+M puts
+		// back every part moved
+		if (event.shiftKey) {
+			_resetMovedParts();
+		} else {
+			const guid = window.last_highlighted_li;
+			if (guid && OdooCad?.tree_ref_elements?.[guid]) _startMove(guid);
+		}
+	}
+	if ((event.key === 'r' || event.key === 'R') && _moveCtrl) {
+		_moveCtrl.setMode(_moveCtrl.getMode() === 'translate' ? 'rotate' : 'translate');
+		render();
 	}
 	if (event.key === 'h' || event.key === 'H') {
 		const guid = window.last_highlighted_li;
