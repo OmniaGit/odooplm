@@ -249,6 +249,7 @@
                         domain="[('active', '=', False)]"
                         />
                         <field name="res_name"/>
+                        <field name="summary"/>
                         <field name="user_id"/>
                         <field name="activity_type_id"/>
                 <group>
