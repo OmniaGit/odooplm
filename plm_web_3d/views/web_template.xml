@@ -35,7 +35,7 @@
                      t-att-data-file-name="document_name"
                      t-att-data-debug="'1' if debug else ''">
 
-                    <span id="active_model" t-att-active_model="document_id" t-att-document_name="document_name"></span>
+                    <span id="active_model" t-att-active_model="document_id" t-att-document_name="document_name" t-att-document_checksum="document_checksum"></span>
                     <div id="odoo_plm_title">
                         <a href="https://odooplm.omniasolutions.website/" id="hiper_odooplm">
                             <img src="../plm_web_3d/static/src/img/odoo_plm_2019x300.png" alt="OdooPLM"

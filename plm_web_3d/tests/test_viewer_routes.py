@@ -195,6 +195,51 @@ class PlmWeb3dRoutes(HttpCase):
         found = self.url_open(base + "&name=WEB3D-PRT_0_Default.glb&parent_id=%s" % top.id).json()
         self.assertEqual(found["document_id"], part.id)
 
+    def test_the_changes_give_the_checksum_of_what_the_user_may_read(self):
+        """The live update of the viewer asks for the checksum of the files it
+        shows: a file written again has another one, a file the user may not
+        read answers null, like one that is gone."""
+        self.authenticate("web3d_insider", "web3d_insider")
+        url = "/plm/web3d_changes?ids=%s,999999999,abc" % self.document.id
+        before = self.url_open(url).json()
+        self.assertEqual(before, {str(self.document.id): self.document.checksum, "999999999": None})
+        self.document.raw = b"solid changed"
+        after = self.url_open(url).json()
+        self.assertNotEqual(before[str(self.document.id)], after[str(self.document.id)])
+        self.assertEqual(after[str(self.document.id)], self.document.checksum)
+        self.authenticate("web3d_outsider", "web3d_outsider")
+        with mute_logger("odoo.addons.plm_web_3d.controllers.main"):
+            self.assertEqual(self.url_open(url).json(), {str(self.document.id): None, "999999999": None})
+
+    def test_a_web_file_url_changes_with_its_content(self):
+        """web3d_component puts the checksum in the url, so the browser never
+        answers a file written again from its cache; the download takes it."""
+        Attachment = self.env["ir.attachment"]
+        native = Attachment.create({"name": "WEB3D-V.par", "engineering_code": "WEB3D-V",
+                                    "engineering_revision": 0, "is_plm": True})
+        part = Attachment.create({"name": "WEB3D-V_0_Default.glb", "engineering_code": "WEB3D-V_0_Default.glb",
+                                  "is_plm": True, "raw": b"glTF one"})
+        self.env["ir.attachment.relation"].create({"parent_id": native.id, "child_id": part.id,
+                                                   "link_kind": "Web3DTree"})
+        self.authenticate("admin", "admin")
+        base = "/plm/web3d_component?engineering_code=WEB3D-V&engineering_revision=0&suffix=.glb"
+        first = self.url_open(base).json()
+        self.assertEqual(first["checksum"], part.checksum)
+        self.assertTrue(first["url"].endswith("&v=%s" % part.checksum))
+        part.raw = b"glTF two"
+        second = self.url_open(base).json()
+        self.assertNotEqual(first["url"], second["url"])
+        download = self.url_open(second["url"])
+        self.assertEqual(download.status_code, 200)
+        self.assertEqual(download.content, b"glTF two")
+
+    def test_the_page_carries_the_checksum_of_the_document(self):
+        self.authenticate("web3d_insider", "web3d_insider")
+        page = self.url_open(
+            "/plm/show_treejs_model?document_id=%s&document_name=WEB3D-1.stl" % self.document.id
+        ).text
+        self.assertIn('document_checksum="%s"' % self.document.checksum, page)
+
     def test_product_info_follows_the_node(self):
         self.assertIn("document", self._product_info("web3d_insider"))
         with mute_logger("odoo.addons.plm_web_3d.controllers.main"):

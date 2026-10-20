@@ -125,6 +125,33 @@ def _plm_document(document_id, route, purpose="view3d"):
     return attachments.browse()
 
 
+def _web3d_file(document):
+    """What the viewer gets of a web file: its id, name, checksum and the url to
+    download it; the checksum in the url makes a file written again a new url."""
+    return {
+        "document_id": document.id,
+        "name": document.name,
+        "checksum": document.checksum or "",
+        "url": "/plm/download_treejs_model?document_id=%s&v=%s"
+        % (document.id, document.checksum or ""),
+    }
+
+
+def _web3d_readable(document_ids):
+    """The documents among document_ids the user may view in 3d, as
+    _plm_document reads them but in one search and without a log line per id:
+    the viewer asks for them every few seconds."""
+    attachments = request.env["ir.attachment"]
+    ids = [int(i) for i in document_ids if str(i).isdigit()]
+    if not ids:
+        return attachments.browse()
+    found = attachments.search([("id", "in", ids), ("is_plm", "=", True)])
+    rest = attachments.sudo().browse(sorted(set(ids) - set(found.ids))).exists()
+    user = request.env.user
+    shared = rest.filtered(lambda document: user._plm_portal_may(document, "view3d"))
+    return found | shared
+
+
 def _can_markup(record):
     """Whether this user may annotate that record from the viewer.
 
@@ -237,6 +264,8 @@ class Web3DView(Controller):
             {
                 "document_id": document_id,
                 "document_name": document_name,
+                # the live update compares it with /plm/web3d_changes
+                "document_checksum": document[:1].checksum or "",
                 "can_markup": _can_markup(document),
                 # Odoo's debug mode (?debug=1, kept in the session): the
                 # viewer shows the CAD dimensions of a feature only then.
@@ -249,7 +278,9 @@ class Web3DView(Controller):
 
     @route("/plm/download_treejs_model", type="http", auth="user")
     @webservice
-    def download_treejs_model(self, document_id):
+    def download_treejs_model(self, document_id, **kw):
+        # kw: v, the checksum web3d_component puts in the url, so a file
+        # written again is a new url and no cache answers the old one
         # No sudo for an internal user: the record rules decide. A portal user
         # holds no PLM group and cannot read attachments, so their scope
         # answers, and only for the file the viewer shows.
@@ -474,11 +505,7 @@ class Web3DView(Controller):
                 ]).mapped("child_id")
                 for child in children:
                     if (child.name or "").lower() == name.lower() and child.has_access("read"):
-                        return request.make_json_response({
-                            "document_id": child.id,
-                            "name": child.name,
-                            "url": "/plm/download_treejs_model?document_id=%s" % child.id,
-                        })
+                        return request.make_json_response(_web3d_file(child))
                 level = [child.id for child in children if child.id not in seen]
                 seen.update(level)
         if not engineering_code or engineering_revision in (None, "") or not suffix:
@@ -507,12 +534,19 @@ class Web3DView(Controller):
             children = children.filtered(lambda child: (child.name or "").lower() == name.lower())
         for child in children:
             if (child.name or "").lower().endswith(suffix) and child.has_access("read"):
-                return request.make_json_response({
-                    "document_id": child.id,
-                    "name": child.name,
-                    "url": "/plm/download_treejs_model?document_id=%s" % child.id,
-                })
+                return request.make_json_response(_web3d_file(child))
         return request.make_json_response({})
+
+    @route("/plm/web3d_changes", type="http", auth="user")
+    @webservice
+    def web3d_changes(self, ids=""):
+        """The checksum of each web file the viewer shows, ids comma separated:
+        {id: checksum}, null for one the user may not read or that is gone.
+        The viewer reloads what changed (live update of the 3d view)."""
+        asked = [i for i in ids.split(",") if i.strip().isdigit()]
+        readable = _web3d_readable(asked)
+        checksums = {str(document.id): document.checksum or "" for document in readable}
+        return request.make_json_response({i.strip(): checksums.get(i.strip()) for i in asked})
 
     @route("/plm/web3d_background", type="http", auth="user")
     def web3d_background(self, background_id=None, part="file"):
