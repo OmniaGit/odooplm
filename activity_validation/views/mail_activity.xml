@@ -331,6 +331,7 @@
                         domain="[('activity_type_id.change_activity_type','in', ('request', 'order'))]"
                     />
 					<field name="res_name" />
+					<field name="summary" />
 					<field name="user_id" />
 					<field name="activity_type_id" />
 					<group expand="0" string="Group By">

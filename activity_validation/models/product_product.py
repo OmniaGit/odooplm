@@ -23,10 +23,10 @@ Created on Nov 16, 2019
 """
 import json
 import logging
-import xml.etree.ElementTree as ElementTree
+from lxml import etree
 
 from odoo import api, fields, models
-from odoo.tools.safe_eval import safe_eval 
+from odoo.tools.safe_eval import safe_eval
 
 class ProductProduct(models.Model):
     _inherit = "product.product"
@@ -119,12 +119,12 @@ class ProductProduct(models.Model):
         if not to_read:
             to_read = ["res_name", "summary", "date_deadline", "user_id"]
         fields_def = activity.fields_get(to_read)
-        form_view = self.env.ref("mail.mail_activity_view_form_popup")
-        activity_view = self.fields_view_get(form_view.id)["arch"]
-        buttons = self.getButtons(activity_view)
+        buttons = self._get_state_buttons(
+            [x["key"] for x in headers_mapping if x.get("type") == "BUTTON"]
+        )
         for read_dict in activities.read():
             tmp_read = {"id": read_dict.get("id")}
-            self.parseViewForButtons(headers_mapping, read_dict, buttons)
+            self._set_buttons_readonly(read_dict, buttons)
             for fieldName in to_read:
                 try:
                     tmp_read[fieldName] = read_dict.get(fieldName, "")
@@ -142,142 +142,41 @@ class ProductProduct(models.Model):
             out.append(tmp_read)
         return json.dumps([headers_mapping, out])
 
-    def getButtons(self, activity_view_arch):
+    @api.model
+    def _get_state_buttons(self, button_names):
+        """
+        {button name: [its invisible expressions]} of the state buttons of the
+        activity form: the form decides which state changes an activity allows,
+        the client asks the same through get_user_activities. A name can appear
+        more than once (Progress), with one condition each
+        """
+        form_view = self.env.ref("mail.mail_activity_view_form_popup")
+        arch = self.env["mail.activity"].get_views([(form_view.id, "form")])["views"][
+            "form"
+        ]["arch"]
         buttons = {}
-        elementObj = ElementTree.XML(activity_view_arch.encode("utf-8"))
-        for sheet in elementObj.findall("sheet"):
-            for elem in list(sheet):
-                if elem.attrib.get("name", "") == "plm_state_buttons":
-                    for button in list(elem):
-                        modifiers = button.attrib.get("modifiers", "")
-                        butt_name = button.attrib.get("name", "")
-                        try:
-                            modifiers = safe_eval(modifiers)
-                            buttons[butt_name] = modifiers.get(
-                                "invisible", modifiers.get("readonly", [])
-                            )
-                        except Exception:
-                            pass
-                    break
+        for button in etree.fromstring(arch).iter("button"):
+            name = button.get("name")
+            if name in button_names:
+                buttons.setdefault(name, []).append(button.get("invisible") or "False")
         return buttons
 
-    def parseViewForButtons(self, headers_mapping, read_dict, buttons):
-        for map_dict in headers_mapping:
-            if map_dict.get("type", "CHAR") == "BUTTON":
-                key = map_dict.get("key", "")
-                modifiers = buttons.get(key, [])
-                if modifiers:
-                    try:
-                        read_dict[key] = evaluateAttrs(read_dict, modifiers)
-                    except Exception as ex:
-                        logging.error(ex)
+    @api.model
+    def _set_buttons_readonly(self, read_dict, buttons):
+        """
+        read_dict[button name] = True when the button is hidden in the form for
+        this activity, that is when every one of its conditions hides it
+        """
+        for name, expressions in buttons.items():
+            readonly = True
+            for expression in expressions:
+                try:
+                    if not safe_eval(expression, dict(read_dict)):
+                        readonly = False
+                        break
+                except Exception as ex:
+                    logging.error(
+                        "Cannot evaluate %r of button %r: %r" % (expression, name, ex)
+                    )
+            read_dict[name] = readonly
         return True
-
-
-def evaluateAttrs(fieldsDict, toCompute):
-    def evalSingleCondition(cond):
-        if len(cond) != 3:
-            logging.warning(
-                "Condition lenght != 3: %r" % (str(cond)), "evalSingleCondition"
-            )
-            return False
-        fieldName, operator, valToCompare = cond
-        fieldVal = fieldsDict.get(fieldName, None)
-        if operator == "=":
-            return fieldVal == valToCompare
-        elif operator == "!=":
-            return fieldVal != valToCompare
-        elif operator == ">":
-            return fieldVal > valToCompare
-        elif operator == "<":
-            return fieldVal < valToCompare
-        elif operator == ">=":
-            return fieldVal >= valToCompare
-        elif operator == "<=":
-            return fieldVal <= valToCompare
-        elif operator == "in":
-            if not isinstance(valToCompare, (list, tuple)):
-                logging.warning(
-                    "valToCompare: %r is not a list for operator: %r"
-                    % (valToCompare, operator),
-                    "evalSingleCondition",
-                )
-                return False
-            return fieldVal in valToCompare
-        elif operator == "not in":
-            if not isinstance(valToCompare, (list, tuple)):
-                logging.warning(
-                    "valToCompare: %r is not a list for operator: %r"
-                    % (valToCompare, operator),
-                    "evalSingleCondition",
-                )
-                return False
-            return fieldVal not in valToCompare
-        elif operator == "like":
-            if not isinstance(valToCompare, str):
-                logging.warning(
-                    "valToCompare: %r is not a char for operator: %r"
-                    % (valToCompare, operator),
-                    "evalSingleCondition",
-                )
-                return False
-            return fieldVal in valToCompare
-        elif operator == "ilike":
-            if not isinstance(valToCompare, str):
-                logging.warning(
-                    "valToCompare: %r is not a char for operator: %r"
-                    % (valToCompare, operator),
-                    "evalSingleCondition",
-                )
-                return False
-            return fieldVal.lower() in valToCompare.lower()
-
-    if isinstance(toCompute, bool):
-        return toCompute
-    if len(toCompute) == 1:
-        return evalSingleCondition(toCompute[0])
-
-    conditions = []
-    operators = []
-    for singleCompute in toCompute:
-        if isinstance(singleCompute, str):
-            if singleCompute == "|":
-                operators.append(singleCompute)
-                continue
-            elif singleCompute == "&":
-                operators.append(singleCompute)
-                continue
-            else:
-                logging.warning(
-                    "Operator %r not implemented" % (singleCompute), "evaluateAttrs"
-                )
-        if not operators:
-            operators.append("&")
-        res = evalSingleCondition(singleCompute)
-        conditions.append(res)
-
-    return _evalSimple(conditions, operators)
-
-
-def _evalSimple(conditions, operators):
-    if len(operators) != len(conditions) - 1:
-        logging.warning(
-            "Cannot eval with conditions: %s and operators: %s"
-            % (str(conditions), str(operators)),
-            "_evalSimple",
-        )
-        for _elem in range(len(conditions) - 1 - len(operators)):
-            operators.append("&")
-    count = 0
-    lastCond = False
-    for cond in conditions:
-        if count == 0:
-            lastCond = cond
-        else:
-            oper = operators[count - 1]
-            if oper == "&":
-                lastCond = lastCond and cond
-            elif oper == "|":
-                lastCond = lastCond or cond
-        count = count + 1
-    return lastCond
