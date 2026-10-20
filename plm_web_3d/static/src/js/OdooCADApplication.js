@@ -1113,7 +1113,8 @@ function initcommand() {
 		}
 		const dx = e.clientX - _clickOriginX;
 		const dy = e.clientY - _clickOriginY;
-		if (dx * dx + dy * dy < 36) onClick(e);
+		// a click on a panel, the tree or the cube is not a click on the scene
+		if (dx * dx + dy * dy < 36 && e.target === renderer.domElement) onClick(e);
 	}, false);
 	document.addEventListener('pointermove', window.onPointerMove);
 	// if (canvas) {
@@ -1507,7 +1508,7 @@ var change_object_explosion = function (event) {
 
 	// Slider back to 0 → restore all original positions
 	if (value === 0) {
-		for (const [guid, obj] of Object.entries(OdooCad.tree_ref_elements)) {
+		for (const [guid, obj] of _explosionLeaves) {
 			var orig = _originalPositions.get(guid);
 			if (orig) obj.position.copy(orig);
 		}
@@ -1515,19 +1516,10 @@ var change_object_explosion = function (event) {
 		return;
 	}
 
-	// Compute bounding box of all entities to get the true global center
-	const allBBox = new THREE.Box3();
-	for (const obj of Object.values(OdooCad.tree_ref_elements)) {
-		allBBox.expandByObject(obj);
-	}
-	const center = new THREE.Vector3();
-	allBBox.getCenter(center);
-	const size = allBBox.getSize(new THREE.Vector3());
-	const maxSize = Math.max(size.x, size.y, size.z);
-
-	// Explode each named tree item independently
-	for (const [guid, obj] of Object.entries(OdooCad.tree_ref_elements)) {
-		explode(obj, guid, center, value, maxSize);
+	// Each single entity away from the barycentre of their bounding box
+	// centres, both taken at rest when the explosion started
+	for (const [guid, obj] of _explosionLeaves) {
+		explode(obj, guid, _explosionCenter, value, _explosionMaxSize);
 	}
 
 	render();
@@ -1864,7 +1856,11 @@ window.onPointerMove = function (event) {
 	pointer.y = -(y / canvas.clientHeight) * 2 + 1;
 
 	raycaster.setFromCamera(pointer, camera);
-	const intersects = _shownHits(raycaster.intersectObjects(OdooCad.items, true));
+	// listened on the document: over the panels, the tree or the cube the
+	// scene is not under the mouse, nothing is preselected there
+	const intersects = event.target === canvas
+		? _shownHits(raycaster.intersectObjects(OdooCad.items, true))
+		: [];
 
 	let hoveredGuid = null;
 	if (intersects.length > 0) {
@@ -2583,24 +2579,52 @@ function getElementByXpath(path, document_env) {
 var _originalPositions = new Map();
 var _originalBBoxCenters = new Map();
 var _explosionInitialized = false;
+// what the explosion moves and from where, taken at rest
+var _explosionLeaves = [];
+var _explosionCenter = new THREE.Vector3();
+var _explosionMaxSize = 0;
+
+// The single entities: the rows of the tree with no row under them. Moving a
+// subassembly too would add its move to its components' own.
+function _explosionEntities() {
+	const objects = new Set(Object.values(OdooCad.tree_ref_elements));
+	const parents = new Set();
+	for (const obj of objects) {
+		for (let parent = obj.parent; parent; parent = parent.parent) {
+			if (objects.has(parent)) parents.add(parent);
+		}
+	}
+	return Object.entries(OdooCad.tree_ref_elements).filter(([, obj]) => !parents.has(obj));
+}
 
 function storeOriginalPositions() {
 	_originalPositions.clear();
 	_originalBBoxCenters.clear();
-	for (const [guid, obj] of Object.entries(OdooCad.tree_ref_elements)) {
+	_explosionLeaves = _explosionEntities();
+	const allBBox = new THREE.Box3();
+	const barycenter = new THREE.Vector3();
+	let counted = 0;
+	for (const [guid, obj] of _explosionLeaves) {
 		_originalPositions.set(guid, obj.position.clone());
 		const bbox = new THREE.Box3().setFromObject(obj);
+		if (bbox.isEmpty()) continue;
 		const bCenter = new THREE.Vector3();
 		bbox.getCenter(bCenter);
 		_originalBBoxCenters.set(guid, bCenter);
+		barycenter.add(bCenter);
+		counted++;
+		allBBox.union(bbox);
 	}
+	_explosionCenter = counted ? barycenter.divideScalar(counted) : barycenter;
+	const size = allBBox.isEmpty() ? new THREE.Vector3() : allBBox.getSize(new THREE.Vector3());
+	_explosionMaxSize = Math.max(size.x, size.y, size.z);
 }
 
 function explode(obj, guid, globalCenter, speed, maxSize) {
 	const originalPos = _originalPositions.get(guid);
 	if (!originalPos) return;
 
-	// Direction: from global bbox center to this object's geometric center
+	// Direction: from the barycentre of the entities to this one's bbox centre
 	const objCenter = _originalBBoxCenters.get(guid) || originalPos;
 	const dir = new THREE.Vector3().subVectors(objCenter, globalCenter);
 
