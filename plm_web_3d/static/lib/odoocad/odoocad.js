@@ -49,13 +49,15 @@ class OdooCAD {
         return box;
     }
 
-    addItemToScene(object, force_material = true, rootInTree = false) {
+    addItemToScene(object, force_material = true, rootInTree = false, fit = true) {
         var self = this;
         /*
          * Add item to scene taking care of adding it to the geometry array.
          * rootInTree: the tree starts from the object itself, so parts that
          * are meshes (a glTF node holding a mesh) get a row and an id too;
          * otherwise only the groups under the object do.
+         * fit: the camera frames the items again (not when the live update
+         * puts back a file that changed: the user's view stays)
          */
         if (force_material === true) {
             object.receiveShadow = true;
@@ -80,8 +82,10 @@ class OdooCAD {
             : this.create_relation_structure(object);
         // Center the object
         // fit item
-        var fitItem = new CustomEvent("OdooCAD_fit_items");
-        html_canvas.dispatchEvent(fitItem);
+        if (fit) {
+            var fitItem = new CustomEvent("OdooCAD_fit_items");
+            html_canvas.dispatchEvent(fitItem);
+        }
         // recompute the bounding box
         this.active_bbox = this.getBBox();
         return out_htm_structure;
@@ -524,7 +528,19 @@ class OdooCAD {
     }
 
     removeItemToSeen(object) {
-        /* TODO: make the remove operation */
+        /* take an item out of the scene and of the items */
+        this.scene.remove(object);
+        const index = this.items.indexOf(object);
+        if (index >= 0) this.items.splice(index, 1);
+        this.active_bbox = this.getBBox();
+    }
+
+    rebuild_tree() {
+        /* the tree again from the items, after the live update changed them:
+         * the rows (and their random ids) of what is gone go with it */
+        this.tree_ref_elements = {};
+        this.create_tree_structure(this.items.map(
+            (item) => this.get_li_structure({ children: [item] })[0]).join(""));
     }
 
     addDxfTextLabels(textEntities, origin) {

@@ -40,9 +40,56 @@ function gltfRoots(gltf) {
  * document), to clone under each component: its root, or its roots in a
  * group when it has several. Each file is read once: the copies are clones. */
 const gltfParts = new Map();
-function loadGltfPart(url) {
+export function loadGltfPart(url) {
 	if (!gltfParts.has(url)) gltfParts.set(url, readGltfPart(url));
 	return gltfParts.get(url);
+}
+
+/** Drop from the cache the parts no copy in the scene uses any more (their
+ * url is not in usedUrls) and free their geometry: the copies are clones
+ * sharing it, so it goes only with the last of them. */
+export function evictGltfParts(usedUrls) {
+	for (const [url, promise] of gltfParts) {
+		if (usedUrls.has(url)) continue;
+		gltfParts.delete(url);
+		promise.then((part) => part.traverse((child) => {
+			if (child.isMesh && child.geometry) child.geometry.dispose();
+		}), () => { });
+	}
+}
+
+/** The roots of a .glb document, in mm: the model the viewer shows. */
+export function loadGltfRoots(url) {
+	return new Promise((resolve, reject) => gLTFLoader.load(url, (gltf) => {
+		const roots = gltfRoots(gltf);
+		for (const root of roots) {
+			root.position.multiplyScalar(GLTF_TO_MM);
+			root.scale.multiplyScalar(GLTF_TO_MM);
+		}
+		resolve(roots);
+	}, undefined, reject));
+}
+
+/** Place a part loaded by reference under its component: a material of its
+ * own per copy, as addItemToScene gives every part, and the .glb it comes
+ * from in userData.plm_glb, which the live update follows; a subassembly by
+ * references loads its own parts, found among its file's WebHiTree children.
+ * Resolves when the subassembly is filled. */
+export function placeGltfPart(part, found) {
+	part.traverse((child) => {
+		if (child.isMesh && child.material) child.material = child.material.clone();
+	});
+	part.userData.plm_glb = {
+		document_id: found.document_id,
+		name: found.name,
+		checksum: found.checksum || '',
+		url: found.url,
+	};
+	prepareGltfPart(part);
+	if (isAssembly(part)) {
+		return loadAssemblyComponents(part, found.name, placeGltfPart, loadGltfPart, found.document_id);
+	}
+	return null;
 }
 
 function readGltfPart(url) {
@@ -66,7 +113,7 @@ function readGltfPart(url) {
 /** What every glTF part gets once placed (cad3d_export): its CAD faces, look
  * and holes, as the JSON gets them; after addItemToScene, which replaces
  * every mesh material. */
-function prepareGltfPart(part) {
+export function prepareGltfPart(part) {
 	prepareGlbFaces(part);
 	applyAppearance(part);
 	addHoleTextures(part);
@@ -201,6 +248,9 @@ class Loader {
 					children[i].position.multiplyScalar(GLTF_TO_MM);
 					children[i].scale.multiplyScalar(GLTF_TO_MM);
 					// the parts of a glTF are meshes: the tree starts from the node
+					// the document shown, a root of the scene: the live update
+					// reloads it when its file changes
+					children[i].userData.plm_glb = { document_id: document_id, name: document_name, root: true };
 					out_html_structure += self.odooCad.addItemToScene(children[i], true, true);
 					prepareGltfPart(children[i]);
 					if (isAssembly(children[i])) assemblies.push(children[i]);
@@ -209,29 +259,21 @@ class Loader {
 				self._hideProgress();
 				// An assembly by references holds no mesh of its parts: each
 				// component names its part's .glb, loaded once and placed in
-				// every component that uses it
-				// a material of its own per copy, as addItemToScene gives every
-				// part; a subassembly by references loads its own parts, found
-				// among its file's WebHiTree children
-				const placePart = (part, found) => {
-					part.traverse((child) => {
-						if (child.isMesh && child.material) child.material = child.material.clone();
-					});
-					prepareGltfPart(part);
-					if (isAssembly(part)) {
-						return loadAssemblyComponents(part, found.name, placePart, loadGltfPart, found.document_id);
-					}
-					return null;
-				};
+				// every component that uses it (placeGltfPart)
+				const filled = [];
 				for (const assembly of assemblies) {
-					loadAssemblyComponents(assembly, document_name, placePart, loadGltfPart, document_id).then(() => {
+					filled.push(loadAssemblyComponents(assembly, document_name, placeGltfPart, loadGltfPart, document_id).then(() => {
 						self.odooCad.create_tree_structure(children.map(
 							(child) => self.odooCad.get_li_structure({ children: [child] })[0]).join(""));
 						const canvas = document.getElementById('odoo_canvas');
 						canvas.dispatchEvent(new CustomEvent("OdooCAD_fit_items"));
 						canvas.dispatchEvent(new CustomEvent("OdooCAD_render"));
-					});
+					}));
 				}
+				// the whole model is in the scene: the live update starts
+				Promise.all(filled).then(() => {
+					document.getElementById('odoo_canvas')?.dispatchEvent(new CustomEvent("OdooCAD_model_loaded"));
+				});
 			},
 			(xhr) => { self._updateProgress(xhr); },
 			(err) => {

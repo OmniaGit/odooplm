@@ -7,6 +7,7 @@ import * as ODOOCAD from '../../lib/odoocad/odoocad.js';
 import * as CAD3D from './cad3d_features.js';
 import { addToSelection, clearSelection, initSelection, selectedObjects, toggleSelection, updateSelectionOutlines } from './selection.js';
 import { buildCrate, disposeCrate } from './crate_box.js';
+import { LiveUpdate } from '../../lib/odoocad/live_update.js';
 // controls
 import { OrbitControls } from '../../lib/three.js/examples/jsm/controls/OrbitControls.js';
 import { TransformControls } from '../../lib/three.js/examples/jsm/controls/TransformControls.js';
@@ -833,6 +834,69 @@ function _selectAllShown() {
 	addToSelection(guids);
 }
 
+/*
+ * Live update: a .glb whose files change at a check-in is loaded again
+ * (lib/odoocad/live_update.js). Not while the user is working on the view:
+ * a measure on screen, a section, a markup, a zoom window or a drag waits.
+ */
+let _livePointerDown = false;
+
+function _liveUpdateBlocker() {
+	const editor = document.getElementById('markup_editor');
+	if (editor && getComputedStyle(editor).display !== 'none') return 'the markup is closed';
+	if (document.getElementById('markup_log_modal')?.classList.contains('open')) return 'the markup is closed';
+	if (sectionPlaneActive) return 'the section is closed';
+	// a measure closed by its button leaves its key: on screen is in the scene
+	if (drawingLine || ctrlDown || Object.values(lines).some((line) => line && line.parent)) {
+		return 'the measures are removed';
+	}
+	if (zoomWindowActive) return 'the zoom window ends';
+	if (_livePointerDown) return 'the mouse is released';
+	return '';
+}
+
+// What depends on the parts shown goes back to rest: the parts may change
+function _beforeLiveUpdate() {
+	const explosion = document.getElementById('object_explosion');
+	if (explosion && parseFloat(explosion.value) !== 0) {
+		explosion.value = 0;
+		explosion.dispatchEvent(new Event('input'));
+	}
+	_originalPositions.clear();
+	_originalBBoxCenters.clear();
+	_explosionInitialized = false;
+	show_all_scene_item();
+	_hideCrate();
+	clearSelection();
+	window.last_highlighted_li = null;
+	last_highlighted_part = null;
+}
+
+function _afterLiveUpdate(count) {
+	OdooCad.rebuild_tree();
+	// the colours and the transparency the user gave, by part name
+	_applyPartAppearance({ colors: { ..._partColors }, opacities: { ..._partOpacity } });
+	render();
+	if (count) _showNotice(`Model updated: ${count} file${count === 1 ? '' : 's'} loaded again`);
+}
+
+function _startLiveUpdate(document_id, document_name, checksum) {
+	const html_canvas = document.getElementById('odoo_canvas');
+	html_canvas.addEventListener('pointerdown', () => { _livePointerDown = true; });
+	window.addEventListener('pointerup', () => { _livePointerDown = false; });
+	html_canvas.addEventListener('OdooCAD_model_loaded', () => {
+		new LiveUpdate(OdooCad, {
+			documentId: document_id,
+			documentName: document_name,
+			checksum: checksum,
+			blocker: _liveUpdateBlocker,
+			beforeUpdate: _beforeLiveUpdate,
+			afterUpdate: _afterLiveUpdate,
+			notify: _showNotice,
+		}).start();
+	}, { once: true });
+}
+
 function show_all_scene_item() {
 	_hiddenWithH.length = 0;
 	var i;
@@ -920,6 +984,10 @@ function init() {
 		if (part && _isShown(part)) toggleSelection(e.detail.guid);
 	});
 	OdooCad.load_document(document_id, document_name);
+	if (document_name && document_name.split('.').pop().toLowerCase() === 'glb') {
+		_startLiveUpdate(document_id, document_name,
+			document.querySelector('#active_model').getAttribute('document_checksum'));
+	}
 	if (document_name && document_name.split('.').pop().toLowerCase() === 'dxf') {
 		controls.enableRotate = false;
 		if (cube) cube.style.display = 'none';

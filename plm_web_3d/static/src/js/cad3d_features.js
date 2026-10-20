@@ -929,6 +929,9 @@ export function loadAssemblyComponents(root, documentName, onComponent, loadPart
 	for (const node of assemblyNodes(root)) {
 		const info = node.userData.plm_component;
 		if (info.modified) continue;
+		// a node holding its part already, or being filled: asked again (the
+		// live update fills only what is missing), it is left alone
+		if (node.userData.plm_pending || node.children.some((child) => child.userData.plm_glb)) continue;
 		const key = info.glb || `${info.engineering_code}|${info.engineering_revision}`;
 		if (!byPart.has(key)) byPart.set(key, { info, nodes: [] });
 		byPart.get(key).nodes.push(node);
@@ -946,6 +949,7 @@ export function loadAssemblyComponents(root, documentName, onComponent, loadPart
 		});
 		if (info.glb) query.set('name', info.glb);
 		if (parentId) query.set('parent_id', parentId);
+		nodes.forEach((node) => { node.userData.plm_pending = true; });
 		return fetch(`/plm/web3d_component?${query}`)
 			.then((response) => response.json())
 			.then((found) => new Promise((resolve) => {
@@ -966,7 +970,8 @@ export function loadAssemblyComponents(root, documentName, onComponent, loadPart
 					resolve();
 				});
 			}))
-			.catch(() => missing.push(info.name));
+			.catch(() => missing.push(info.name))
+			.finally(() => nodes.forEach((node) => { delete node.userData.plm_pending; }));
 	});
 	return Promise.all(jobs).then(() => {
 		if (missing.length) console.warn('assembly components not found:', missing);
