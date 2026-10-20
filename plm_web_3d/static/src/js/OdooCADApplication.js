@@ -1857,8 +1857,10 @@ window.onPointerMove = function (event) {
 
 	raycaster.setFromCamera(pointer, camera);
 	// listened on the document: over the panels, the tree or the cube the
-	// scene is not under the mouse, nothing is preselected there
-	const intersects = event.target === canvas
+	// scene is not under the mouse, nothing is preselected there; a call with
+	// no target (H, after hiding a part, moves the hover on to what is behind
+	// it) is about the scene
+	const intersects = (!event.target || event.target === canvas)
 		? _shownHits(raycaster.intersectObjects(OdooCad.items, true))
 		: [];
 
