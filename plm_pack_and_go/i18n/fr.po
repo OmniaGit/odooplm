@@ -111,11 +111,6 @@ msgid "Conversion server available"
 msgstr "Serveur de conversion disponible"
 
 #. module: plm_pack_and_go
-#: model_terms:ir.ui.view,arch_db:plm_pack_and_go.act_plm_pack_and_go
-msgid "Create zip archive"
-msgstr "Créer une archive zip"
-
-#. module: plm_pack_and_go
 #: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go__create_uid
 #: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go_types__create_uid
 #: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go_view__create_uid
@@ -176,6 +171,11 @@ msgstr "Type de document"
 #: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go__datas
 msgid "Download"
 msgstr "Download"
+
+#. module: plm_pack_and_go
+#: model_terms:ir.ui.view,arch_db:plm_pack_and_go.act_plm_pack_and_go
+msgid "Download zip"
+msgstr "Télécharger le zip"
 
 #. module: plm_pack_and_go
 #: model_terms:ir.ui.view,arch_db:plm_pack_and_go.act_plm_pack_and_go

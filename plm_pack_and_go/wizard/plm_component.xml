@@ -138,21 +138,13 @@
                     <group string="File Options">
                         <field name="file_name_computation" />
                         <field name="create_subfolder_by_category" />
-                        <field name="datas_fname" invisible="1" />
-                        <field
-                            name="datas"
-                            readonly="1"
-                            nolabel="1"
-                            filename="datas_fname"
-                            invisible="datas_fname==False"
-                        />
                     </group>
                     <separator string="" />
                     <footer>
                         <field name="show_create_zip" invisible="True" />
                         <button special="cancel" string="Cancel" />
                         <button
-                            string="Create zip archive"
+                            string="Download zip"
                             name="action_export_zip"
                             invisible="show_create_zip==False"
                             type="object"
