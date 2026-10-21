@@ -26,3 +26,19 @@ msgstr "Prodotto"
 #: model:ir.model,name:plm_auto_internalref.model_product_template
 msgid "Product Template"
 msgstr "Modello prodotto"
+
+#. module: plm_auto_internalref
+#: model:ir.model.fields,field_description:plm_auto_internalref.field_product_product__auto_default_code
+#: model:ir.model.fields,field_description:plm_auto_internalref.field_product_template__auto_default_code
+msgid "Automatic Internal Reference"
+msgstr "Riferimento interno automatico"
+
+#. module: plm_auto_internalref
+#: model:ir.model.fields,help:plm_auto_internalref.field_product_product__auto_default_code
+#: model:ir.model.fields,help:plm_auto_internalref.field_product_template__auto_default_code
+msgid ""
+"Set: the internal reference is computed from the engineering code and revision, and cannot be edited.\n"
+"Unset: the internal reference is edited by hand and no longer computed."
+msgstr ""
+"Attivo: il riferimento interno è calcolato dal codice ingegneristico e dalla revisione, e non si può modificare.\n"
+"Disattivo: il riferimento interno si modifica a mano e non viene più calcolato."

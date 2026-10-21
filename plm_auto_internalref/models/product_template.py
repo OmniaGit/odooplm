@@ -27,47 +27,50 @@ Created on 9 Dec 2016
 
 import logging
 
-from odoo import api, models
+from odoo import api, fields, models
 
 
 class ProductTemplateExtension(models.Model):
     _name = "product.template"
     _inherit = "product.template"
 
+    auto_default_code = fields.Boolean(
+        string="Automatic Internal Reference",
+        default=True,
+        help="Set: the internal reference is computed from the engineering code and"
+        " revision, and cannot be edited.\n"
+        "Unset: the internal reference is edited by hand and no longer computed.",
+    )
+
     @api.model_create_multi
     def create(self, vals):
         obj_pp = self.env["product.product"]
         for val_dict in vals:
-            if "engineering_code" in val_dict and val_dict["engineering_code"] != False:
-                new_default_code = obj_pp.computeDefaultCode(val_dict)
-                if new_default_code:
-                    logging.info(
-                        "OdooPLM: Default Code set to %s " % (new_default_code)
-                    )
-                    val_dict["default_code"] = new_default_code
+            if not val_dict.get("auto_default_code", True):
+                continue
+            new_default_code = obj_pp.computeDefaultCode(val_dict)
+            if new_default_code:
+                logging.info("OdooPLM: Default Code set to %s " % (new_default_code))
+                val_dict["default_code"] = new_default_code
         return super().create(vals)
 
     def write(self, vals):
-        # Each template gets its own default code: write separately only the templates
-        # whose code changes, all the others together with the original vals
+        # Each template gets its own internal reference: write separately only the
+        # templates whose reference changes, all the others together with vals
         res = True
-        unchanged = self.browse()
-        for product_template_id in self:
-            new_default_code = False
-            if product_template_id.engineering_code:
-                new_default_code = self.env["product.product"].computeDefaultCode(
-                    vals, product_template_id
+        to_compute, others = self.env["product.product"]._split_auto_default_code(
+            self, vals
+        )
+        for product_template_id, new_default_code in to_compute:
+            logging.info("OdooPLM: Default Code set to %s " % (new_default_code))
+            res = (
+                super(ProductTemplateExtension, product_template_id).write(
+                    dict(vals, default_code=new_default_code)
                 )
-            if not new_default_code or new_default_code == product_template_id.default_code:
-                unchanged |= product_template_id
-                continue
-            if product_template_id.product_variant_id.default_code != new_default_code:
-                product_template_id.product_variant_id.default_code = new_default_code
-            res = super(ProductTemplateExtension, product_template_id).write(
-                dict(vals, default_code=new_default_code)
-            ) and res
-        if unchanged:
-            res = super(ProductTemplateExtension, unchanged).write(vals) and res
+                and res
+            )
+        if others:
+            res = super(ProductTemplateExtension, others).write(vals) and res
         return res
 
 
