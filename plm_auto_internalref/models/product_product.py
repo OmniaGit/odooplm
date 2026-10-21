@@ -21,19 +21,35 @@
 ##############################################################################
 
 import logging
-from odoo import models
-from odoo import api
+
+from odoo import api, fields, models
+
 
 class ProductProductExtension(models.Model):
     _name = "product.product"
     _inherit = "product.product"
 
+    auto_default_code = fields.Boolean(
+        related="product_tmpl_id.auto_default_code",
+        readonly=False,
+    )
+
     @api.model_create_multi
     def create(self, vals):
         for val_dict in vals:
+            auto_default_code = val_dict.get("auto_default_code")
+            if auto_default_code is None:
+                template_id = val_dict.get("product_tmpl_id")
+                auto_default_code = (
+                    self.env["product.template"].browse(template_id).auto_default_code
+                    if template_id
+                    else True
+                )
+            if not auto_default_code:
+                continue
             new_default_code = self.compute_default_code(val_dict)
             if new_default_code:
-                logging.info(f"OdooPLM: Default Code set to {new_default_code} ")
+                logging.info(f"OdooPLM: Default Code set to {new_default_code}")
                 val_dict["default_code"] = new_default_code
         return super().create(vals)
 
@@ -46,44 +62,55 @@ class ProductProductExtension(models.Model):
         Function to be overloaded for changing the internal reference computation
         :vals dict like with all the value that be updated
         :objBrowse product.product or product.template in case of write operation
+        :return: the internal reference of the engineering code and revision in vals,
+                 those vals does not carry taken from objBrowse; False without an
+                 engineering code
         """
-        out = False
-        in_revision = self.env.context.get("new_revision", False)
-        #
-        engineering_code=""
-        engineering_revision=""
-        default_code=""
-        #
+        engineering_code = vals.get("engineering_code")
+        engineering_revision = vals.get("engineering_revision") or 0
         if objBrowse:  # suppose write operation
-            if not engineering_code:
+            if "engineering_code" not in vals:
                 engineering_code = objBrowse.engineering_code
-            if not engineering_revision:
+            if "engineering_revision" not in vals:
                 engineering_revision = objBrowse.engineering_revision
-            if not default_code:
-                default_code = objBrowse.default_code
-        else:
-            engineering_code = vals.get("engineering_code", "")
-            engineering_revision = vals.get("engineering_revision", 0)
-            default_code = vals.get("default_code")
-        #
-        if not engineering_code:
-            return ""
-        if in_revision and engineering_code and engineering_code != "-":
-            out = self.getDefaultCodeTemplate % (engineering_code, engineering_revision)
-        if engineering_code and not default_code and engineering_code != "-":
-            out = self.getDefaultCodeTemplate % (engineering_code, engineering_revision)
-        if default_code == out:
+        if not engineering_code or engineering_code == "-":
             return False
-        if default_code and engineering_code:
-            out = f"{engineering_code}_{engineering_revision}"
-        return out
+        return self.getDefaultCodeTemplate % (engineering_code, engineering_revision)
+
+    def _split_auto_default_code(self, records, vals):
+        """
+        Split the records (products or templates) a write is about to change
+        :return: the (record, internal reference) pairs of the records whose internal
+                 reference must become the computed one, and the other records, that
+                 take vals as they are. A record follows the computed internal
+                 reference while its auto_default_code is set
+        """
+        to_compute = []
+        others = records.browse()
+        for record in records:
+            new_default_code = False
+            if vals.get("auto_default_code", record.auto_default_code):
+                new_default_code = self.compute_default_code(vals, record)
+            if (
+                new_default_code
+                and vals.get("default_code", record.default_code) != new_default_code
+            ):
+                to_compute.append((record, new_default_code))
+            else:
+                others |= record
+        return to_compute, others
 
     def write(self, vals):
-        ret = False
-        for product in self:
-            new_default_code = product.compute_default_code(vals, product)
-            if product.engineering_code and product.default_code!=new_default_code:
-                logging.info(f"OdooPLM: Default Code set to {new_default_code}")
-                vals["default_code"] = new_default_code
-            ret = super(models.Model, product).write(vals)
-        return ret
+        res = True
+        to_compute, others = self._split_auto_default_code(self, vals)
+        for product, new_default_code in to_compute:
+            logging.info(f"OdooPLM: Default Code set to {new_default_code}")
+            res = (
+                super(ProductProductExtension, product).write(
+                    dict(vals, default_code=new_default_code)
+                )
+                and res
+            )
+        if others:
+            res = super(ProductProductExtension, others).write(vals) and res
+        return res
