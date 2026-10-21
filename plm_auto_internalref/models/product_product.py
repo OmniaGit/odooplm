@@ -87,5 +87,5 @@ class ProductProductExtension(models.Model):
             if product.engineering_code and product.default_code != new_default_code:
                 logging.info("OdooPLM: Default Code set to %s " % (new_default_code))
                 vals["default_code"] = new_default_code
-            ret = super(models.Model, product).write(vals)
+            ret = super(ProductProductExtension, product).write(vals)
         return ret
