@@ -5015,6 +5015,8 @@ class IrAttachment(models.Model):
                     "name": product_tmpl_id.name,
                 }
 
+            return fill_up_product_row(product_product_id)
+
         #
         out = {}
         for product_id in self.linkedcomponents:
