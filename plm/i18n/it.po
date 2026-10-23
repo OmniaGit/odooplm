@@ -4550,3 +4550,17 @@ msgstr ""
 "Un cliente con questa opzione naviga i ricambi di ciò che ha comprato: i "
 "componenti della sua distinta di ricambio, e di quelle sotto, fino "
 "all'ultimo livello. Senza, vede solo i prodotti delle sue righe d'ordine."
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.ir_attachment_search
+msgid "Hide Support Files"
+msgstr "Nascondi file di supporto"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.ir_attachment_search
+msgid ""
+"Hide the files the CAD client uploads beside a document: conversions, zip "
+"archives and 3D web models"
+msgstr ""
+"Nasconde i file che il client CAD carica accanto a un documento: conversioni,"
+" archivi zip e modelli 3D web"
