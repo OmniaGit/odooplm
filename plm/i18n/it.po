@@ -4477,3 +4477,17 @@ msgid ""
 msgstr ""
 "save_parent :  impossibile creare una relazione per la parte ({0}) con "
 "sorgente ({1}) : {2}."
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.ir_attachment_search
+msgid "Hide Support Files"
+msgstr "Nascondi file di supporto"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.ir_attachment_search
+msgid ""
+"Hide the files the CAD client uploads beside a document: conversions, zip "
+"archives and 3D web models"
+msgstr ""
+"Nasconde i file che il client CAD carica accanto a un documento: conversioni,"
+" archivi zip e modelli 3D web"

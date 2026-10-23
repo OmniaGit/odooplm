@@ -75,6 +75,14 @@ class IrAttachment(models.Model):
     is_linkedcomponents = fields.Boolean(
         "Is Linked Components", compute="_compute_linkedcomponents"
     )
+    parent_relation_ids = fields.One2many(
+        "ir.attachment.relation",
+        "child_id",
+        "Parent Relations",
+        help="The relations in which the document is the child: an ExtraTree, "
+        "PkgTree or Web3DTree one marks a support file the CAD client uploads "
+        "beside a document (conversion, zip archive, 3D web model).",
+    )
 
     document_rel_count = fields.Integer(compute="_get_n_rel_doc")
 

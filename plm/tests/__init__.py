@@ -29,5 +29,6 @@ from . import test_multicompany_sequence
 from . import test_res_groups
 from . import test_workflow_transitions
 from . import test_must_update_flag
+from . import test_support_files_filter
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

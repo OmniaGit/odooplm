@@ -157,6 +157,20 @@ class BackupDocWizard(models.TransientModel):
 
     backup_date = fields.Date(string="Backup Date", default=fields.Date.today)
 
+    def _document_list_action(self):
+        """plm_action_document_form without its default filters: they would hide
+        restored documents, the support files among them (PkgTree zip)."""
+        action_vals = self.env["ir.actions.act_window"]._for_xml_id(
+            "plm.plm_action_document_form"
+        )
+        context = safe_eval(action_vals.get("context") or "{}")
+        action_vals["context"] = {
+            key: value
+            for key, value in context.items()
+            if not key.startswith("search_default_")
+        }
+        return action_vals
+
     def action_restore_document(self):
         ctx = self.env.context.copy()
         ctx["check"] = False
@@ -220,9 +234,7 @@ class BackupDocWizard(models.TransientModel):
                         % (documentId)
                     )
 
-        action_vals = self.env["ir.actions.act_window"]._for_xml_id(
-            "plm.plm_action_document_form"
-        )
+        action_vals = self._document_list_action()
         domain = safe_eval(action_vals.get("domain", "[]"))
         domain = expression.AND([domain, [("id", "in", [documentId])]])
         action_vals["domain"] = domain
@@ -367,9 +379,7 @@ class BackupDocWizard(models.TransientModel):
             restored_ids,
         )
 
-        action_vals = self.env["ir.actions.act_window"]._for_xml_id(
-            "plm.plm_action_document_form"
-        )
+        action_vals = self._document_list_action()
         action_vals["domain"] = [("id", "in", restored_ids)]
         action_vals["name"] = _("Restored Documents")
         return action_vals
