@@ -40,6 +40,7 @@ from . import test_bom_overview_image
 from . import test_client_binary_json
 from . import test_client_related_documents
 from . import test_must_update_flag
+from . import test_support_files_filter
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
 from . import test_extra_file_upload
