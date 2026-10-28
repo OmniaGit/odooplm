@@ -4189,6 +4189,8 @@ class IrAttachment(models.Model):
                         'configuration_name':product_product_id.configuration_name,
                         'name': product_tmpl_id.name
                         }
+
+            return fill_up_product_row(product_product_id)
         #
         out={}
         for product_id in self.linkedcomponents:
