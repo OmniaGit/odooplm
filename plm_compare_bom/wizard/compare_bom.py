@@ -306,7 +306,7 @@ class plm_compare_bom(models.TransientModel):
             if key not in bomDict:
                 bomDict[key] = [createVals]
             else:
-                if keyType == "summarize":
+                if keyType == "summarized":
                     bomDict[key][0]["itemqty"] = bomDict[key][0]["itemqty"] + bomLineQty
                 else:
                     bomDict[key].append(createVals)
