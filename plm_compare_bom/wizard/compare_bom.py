@@ -278,7 +278,7 @@ class plm_compare_bom(models.TransientModel):
         @param context: A standard dictionary
         @return: A dictionary which of fields with values.
         """
-        record_ids = self.env.context.get("active_ids")
+        record_ids = self.env.context.get("active_ids") or []
         res = {}
         if len(record_ids) > 0:
             res["bom_id1"] = record_ids[0]
@@ -426,3 +426,23 @@ class plm_compare_bom(models.TransientModel):
             "views": [(id3, "form")],
             "type": "ir.actions.act_window",
         }
+
+    def action_compare_tree(self):
+        """Open the multilevel comparison of the two BoMs."""
+        self.ensure_one()
+        return {
+            "type": "ir.actions.client",
+            "tag": "plm_compare_bom_tree",
+            "name": _("Multilevel BoM Comparison"),
+            "params": {
+                "bom_left_id": self.bom_id1.id,
+                "bom_right_id": self.bom_id2.id,
+            },
+        }
+
+    @api.model
+    def action_compare_level(self, bom_left_id, bom_right_id):
+        """The single level comparison of one pair of the tree, where lines
+        can be copied, moved and saved."""
+        wizard = self.create({"bom_id1": bom_left_id, "bom_id2": bom_right_id})
+        return wizard.action_compare_Bom()

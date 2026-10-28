@@ -20,3 +20,4 @@
 ##############################################################################
 
 from . import test_compare_bom_summarized
+from . import test_compare_bom_tree
