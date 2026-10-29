@@ -42,10 +42,14 @@ code, and a signature built for it would have made the other two impossible.
 Each side keeps its own bill type all the way down: normal on the left stays
 normal, spare on the right stays spare. Swapping type mid-walk would produce a
 tree nobody could interpret.
+
+The walk itself lives in the module plm_compare_bom (plm.compare.bom.tree),
+which the comparison screen of the suite uses too. This module does not depend
+on it: without it the tool says which module to install.
 """
 import logging
 
-from odoo import api, models
+from odoo import _, api, models
 from odoo.exceptions import UserError
 
 from .plm_mcp_tool import mcp_tool
@@ -95,6 +99,9 @@ class PlmMcpToolsCompare(models.AbstractModel):
 
         So an unchanged line is never ambiguous: you can always tell "there was
         nothing to look at" from "I looked and it was the same".
+
+        A component without an engineering code (a commercial part) is matched
+        by product: its engineering_code is false and its default_code names it.
         """,
         properties={
             "code_a": {
@@ -133,6 +140,12 @@ class PlmMcpToolsCompare(models.AbstractModel):
     def plm_compare_bom(self, code_a=None, revision_a=None, bom_type_a="normal",
                         code_b=None, revision_b=None, bom_type_b="normal",
                         max_depth=MAX_DEPTH):
+        # plm_compare_bom holds the comparison; this module does not depend
+        # on it, so the tool says what is missing instead of failing.
+        if "plm.compare.bom.tree" not in self.env:
+            raise UserError(_(
+                "Comparing bills of material needs the module PLM Compare Bom "
+                "(plm_compare_bom): install it to use this tool."))
         left = self._find_part(code_a, revision_a)
         if not left:
             raise UserError(self._no_part(code_a, revision_a))
@@ -144,7 +157,8 @@ class PlmMcpToolsCompare(models.AbstractModel):
         bom_type_b = (bom_type_b or "normal").strip()
         depth = max(1, min(int(max_depth or MAX_DEPTH), MAX_DEPTH))
 
-        node = self._compare_node(left, bom_type_a, right, bom_type_b, depth)
+        node = self._without_ids(self.env["plm.compare.bom.tree"].compare_products(
+            left, bom_type_a, right, bom_type_b, depth))
         # What was actually compared, echoed back: with three optional arguments
         # resolving to defaults, a caller that reads only the differences would
         # otherwise not know which revisions produced them.
@@ -172,227 +186,12 @@ class PlmMcpToolsCompare(models.AbstractModel):
         ], limit=1)
 
     @api.model
-    def _lines_by_code(self, bom):
-        """Bill lines as {code: [entry]}, quantities of identical rows summed.
-
-        The same component listed twice in one bill is one fact — two positions
-        of the same part — so the quantities are added before anything is
-        compared. Left as separate rows they would show up as a spurious
-        difference whenever the other side happened to list it once.
-        """
-        by_code = {}
-        for line in bom.bom_line_ids:
-            component = line.product_id
-            code = component.engineering_code
-            if not code:
-                continue
-            entries = by_code.setdefault(code, {})
-            entry = entries.get(component.engineering_revision)
-            if entry is None:
-                entry = {
-                    "engineering_revision": component.engineering_revision,
-                    "engineering_state": component.engineering_state,
-                    "name": component.name,
-                    "quantity": 0.0,
-                    "itemnum": line.itemnum or None,
-                    "product": component,
-                }
-                entries[component.engineering_revision] = entry
-            entry["quantity"] += line.product_qty
-            if line.itemnum and (entry["itemnum"] is None
-                                 or line.itemnum < entry["itemnum"]):
-                entry["itemnum"] = line.itemnum
-        return by_code
-
-    # ------------------------------------------------------------ the walk
-    @api.model
-    def _compare_node(self, left, type_left, right, type_right, depth, seen=None):
-        """Compare one pair, and nest each component's own comparison under it.
-
-        One shape all the way down: a component and the difference inside it are
-        the same object, because a bill of material is a tree and splitting it
-        into a list of rows plus a parallel list of subtrees made the same
-        component appear twice.
-        """
-        bom_left = self._bom_of(left, type_left)
-        bom_right = self._bom_of(right, type_right)
-
-        if not bom_left and not bom_right:
-            return {"note": "Neither side has a bill of material of this type.",
-                    "components": []}
-        if not bom_left or not bom_right:
-            # One side only. Listing the other side's rows as wholesale
-            # additions would read as a change; it is a missing bill, and saying
-            # so is the useful part.
-            side = "right" if bom_right else "left"
-            missing = type_left if bom_right else type_right
-            return {"note": "Only the %s side has a %s bill of material; there "
-                            "is nothing to compare at this level." % (side, missing),
-                    "components": []}
-
-        # An assembly that contains itself would walk for ever. Real data does
-        # this after a bad import, so the walk stops and says so.
-        seen = set(seen or ())
-        pair = (left.id, right.id)
-        if pair in seen:
-            return {"note": "Already compared higher up — cycle stopped.",
-                    "components": []}
-        seen.add(pair)
-
-        entries = self._compare_entries(self._lines_by_code(bom_left),
-                                        self._lines_by_code(bom_right))
-        entries = self._flag_components(entries, type_left, type_right)
-
-        components = []
-        for entry in entries:
-            component_left = entry.pop("_left", None)
-            component_right = entry.pop("_right", None)
-            if (depth > 1 and entry["has_components"]
-                    and component_left and component_right):
-                child = self._compare_node(component_left, type_left,
-                                           component_right, type_right,
-                                           depth - 1, seen)
-                # Attached only when there is something to report: an identical
-                # subassembly is recognised by has_components with no list.
-                if self._is_different(child):
-                    if child.get("note"):
-                        entry["note"] = child["note"]
-                    if child.get("summary"):
-                        entry["summary"] = child["summary"]
-                    entry["components"] = child["components"]
-            components.append(entry)
-
-        # Read in the order of the drawing: the balloon number is how an
-        # engineer finds the row being talked about.
-        components.sort(key=lambda row: (row.get("itemnum") or 9999,
-                                         row["engineering_code"]))
-        return {"summary": self._summarise(components), "components": components}
-
-    @api.model
-    def _flag_components(self, entries, type_left, type_right):
-        """Say of each entry whether anything hangs below it.
-
-        Both sides are asked in one query each rather than one per component:
-        a thirty-row bill would otherwise cost sixty round trips to answer a
-        question that is a single grouped count.
-        """
-        model = self.env["product.product"]
-        lefts, rights = model.browse(), model.browse()
-        for entry in entries:
-            lefts |= entry.get("_left") or model.browse()
-            rights |= entry.get("_right") or model.browse()
-
-        boms_left = self._boms_by_template(lefts, type_left)
-        boms_right = self._boms_by_template(rights, type_right)
-
-        for entry in entries:
-            component_left = entry.get("_left")
-            component_right = entry.get("_right")
-            entry["has_components"] = bool(
-                (component_left and boms_left.get(
-                    component_left.product_tmpl_id.id))
-                or (component_right and boms_right.get(
-                    component_right.product_tmpl_id.id)))
-        return entries
-
-    @api.model
-    def _compare_entries(self, lines_left, lines_right):
-        """Classify every code into one of the five states."""
-        entries = []
-
-        for code in sorted(set(lines_left) | set(lines_right)):
-            left_entries = dict(lines_left.get(code, {}))
-            right_entries = dict(lines_right.get(code, {}))
-
-            # Exact matches first: same code, same revision.
-            for revision in sorted(set(left_entries) & set(right_entries)):
-                entry_left = left_entries.pop(revision)
-                entry_right = right_entries.pop(revision)
-                same_qty = entry_left["quantity"] == entry_right["quantity"]
-                entry = {
-                    "status": "unchanged" if same_qty else "qty_changed",
-                    "engineering_code": code,
-                    "engineering_revision": revision,
-                    "name": entry_left["name"],
-                    "engineering_state": entry_left["engineering_state"],
-                    "itemnum": entry_left["itemnum"],
-                    "_left": entry_left["product"],
-                    "_right": entry_right["product"],
-                }
-                if same_qty:
-                    entry["quantity"] = entry_left["quantity"]
-                else:
-                    entry["quantity_left"] = entry_left["quantity"]
-                    entry["quantity_right"] = entry_right["quantity"]
-                entries.append(entry)
-
-            # What is left is the same code at different revisions on the two
-            # sides: paired oldest to oldest so the report reads as one change
-            # rather than a removal and an unrelated addition.
-            # strict=False on purpose: when one side has more leftover revisions
-            # than the other, the extras are not pairs — they fall through to
-            # the one-sided states below.
-            for entry_left, entry_right in zip(
-                    [left_entries[r] for r in sorted(left_entries)],
-                    [right_entries[r] for r in sorted(right_entries)],
-                    strict=False):
-                entries.append({
-                    "status": "revision_changed",
-                    "engineering_code": code,
-                    "revision_left": entry_left["engineering_revision"],
-                    "revision_right": entry_right["engineering_revision"],
-                    "state_left": entry_left["engineering_state"],
-                    "state_right": entry_right["engineering_state"],
-                    "name": entry_right["name"],
-                    "itemnum": entry_right["itemnum"] or entry_left["itemnum"],
-                    "quantity_left": entry_left["quantity"],
-                    "quantity_right": entry_right["quantity"],
-                    "_left": entry_left["product"],
-                    "_right": entry_right["product"],
-                })
-                left_entries.pop(entry_left["engineering_revision"], None)
-                right_entries.pop(entry_right["engineering_revision"], None)
-
-            for revision in sorted(left_entries):
-                entries.append(self._one_sided(
-                    "only_left", code, revision, left_entries[revision], "_left"))
-            for revision in sorted(right_entries):
-                entries.append(self._one_sided(
-                    "only_right", code, revision, right_entries[revision], "_right"))
-
-        return entries
-
-    @api.model
-    def _one_sided(self, status, code, revision, entry, side_key):
-        """A component present on one side only.
-
-        It still carries its product on that side, so has_components can say
-        whether a whole subassembly is involved rather than a single part —
-        which is the difference between a detail and a redesign.
-        """
-        return {
-            "status": status,
-            "engineering_code": code,
-            "engineering_revision": revision,
-            "name": entry["name"],
-            "engineering_state": entry["engineering_state"],
-            "itemnum": entry["itemnum"],
-            "quantity": entry["quantity"],
-            side_key: entry["product"],
-        }
-
-    @api.model
-    def _summarise(self, components):
-        counts = {}
-        for component in components:
-            counts[component["status"]] = counts.get(component["status"], 0) + 1
-        return counts
-
-    @api.model
-    def _is_different(self, node):
-        """Whether a compared branch holds anything worth reporting."""
-        if node.get("note"):
-            return True
-        return any(component["status"] != "unchanged"
-                   or component.get("components")
-                   for component in node.get("components", []))
+    def _without_ids(self, node):
+        """Record ids are for the comparison screen; they mean nothing to an
+        agent."""
+        clean = {key: value for key, value in node.items()
+                 if not key.endswith(("_id", "_ids"))}
+        if "components" in node:
+            clean["components"] = [self._without_ids(row)
+                                   for row in node["components"]]
+        return clean
