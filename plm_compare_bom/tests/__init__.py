@@ -21,3 +21,6 @@
 ##############################################################################
 
 from . import test_compare_bom_summarized
+from . import test_compare_bom_tree
+from . import test_compare_bom_tree_tour
+from . import test_compare_bom_quantity
