@@ -239,3 +239,37 @@ class PlmCompareBomTree(TransactionCase, PlmEntityCreator):
         wizard = self.env["plm.compare.bom"].browse(action["res_id"])
         self.assertEqual(wizard.bom_id1, self.bom_asm)
         self.assertEqual(wizard.bom_id2, self.bom_sub_1)
+
+    def test_the_screen_gets_both_bills_and_the_tree(self):
+        data = self.tree.get_tree_data(self.bom_asm.id, self.bom_sub_1.id)
+        self.assertEqual(data["left"]["id"], self.bom_asm.id)
+        self.assertEqual(data["right"]["engineering_code"], "CBT-SUB-001")
+        self.assertIn("components", data["tree"])
+
+    def test_a_quantity_set_on_the_screen_is_written(self):
+        sub_2 = self._revision(self.sub_2)
+        self._bom(sub_2, [(self.prt_3, 5)])
+        sub_1 = self._revision(self.sub_1)
+        self._bom(sub_1, [(self.prt_2, 3), (sub_2, 1)])
+        bom = self._bom(
+            self._revision(self.asm),
+            [(self.prt_1, 2), (sub_1, 1), (self.screw, 8)],
+        )
+        node = self.tree.compare_boms(self.bom_asm, bom)
+        prt_3 = self._row(
+            self._row(self._row(node, "CBT-SUB-001"), "CBT-SUB-002"), "CBT-PRT-003"
+        )
+        self.assertEqual(len(prt_3["line_right_ids"]), 1)
+        self.tree.set_line_quantities([[prt_3["line_right_ids"][0], 4]])
+        node = self.tree.compare_boms(self.bom_asm, bom)
+        sub_2_row = self._row(self._row(node, "CBT-SUB-001"), "CBT-SUB-002")
+        self.assertNotIn("components", sub_2_row)
+
+    def test_a_repeated_line_keeps_all_its_bill_lines(self):
+        bom = self._bom(
+            self._revision(self.asm),
+            [(self.prt_1, 2), (self.sub_1, 1), (self.screw, 3), (self.screw, 5)],
+        )
+        screw = self._row(self.tree.compare_boms(self.bom_asm, bom), "VITE-M6")
+        self.assertEqual(len(screw["line_left_ids"]), 1)
+        self.assertEqual(len(screw["line_right_ids"]), 2)

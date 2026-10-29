@@ -254,8 +254,21 @@ class plm_compare_bom(models.TransientModel):
                     )
                 record.reason = "added"
 
+        def save_quantities(records, bom_id):
+            # Summarized rows sum several lines and show their difference:
+            # there is no line their quantity belongs to.
+            if self.compute_type == "summarized":
+                return
+            for record in records.filtered(
+                lambda x: x.reason != "new" and x.bom_idrow.bom_id == bom_id
+            ):
+                if record.itemqty != record.bom_idrow.product_qty:
+                    record.bom_idrow.product_qty = record.itemqty
+
         self.to_update = False
         for plm_compare_bom_id in self:
+            save_quantities(plm_compare_bom_id.anotinb, self.bom_id1)
+            save_quantities(plm_compare_bom_id.bnotina, self.bom_id2)
 
             process_bom_line(
                 plm_compare_bom_id.anotinb, self.bom_id1, self.bom_id1.type
@@ -267,6 +280,11 @@ class plm_compare_bom(models.TransientModel):
 
             for mrp_bom_line_id in plm_compare_bom_id.bom_line_id_to_delete:
                 mrp_bom_line_id.unlink()
+
+    @api.onchange("anotinb", "bnotina")
+    def _onchange_lines(self):
+        """A quantity edited in the lists is saved with the Save button."""
+        self.to_update = True
 
     @api.model
     def default_get(self, fields):

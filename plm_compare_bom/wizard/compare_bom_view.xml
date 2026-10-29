@@ -22,6 +22,11 @@
                         string="Compare selected BoMs"
                         type="object"
                     />
+                    <button
+                        name="action_compare_tree"
+                        string="Multilevel comparison"
+                        type="object"
+                    />
                     <button string="Cancel" class="oe_link" special="cancel" />
                 </footer>
             </form>
@@ -85,26 +90,41 @@
                         </tr>
                     </table>
                 </div>
-                <group col="12" colspan="4">
-                    <group col="6" colspan="6">
-                        <field name="bom_id1" readonly="True" />
-                        <field name="type_id1" readonly="True" />
-                        <field name="part_id1" readonly="True" />
-                        <field name="revision1" readonly="True" />
-                        <field name="description1" readonly="True" />
-                    </group>
-                    <group col="6" colspan="6">
-                        <field name="bom_id2" readonly="True" />
-                        <field name="type_id2" readonly="True" />
-                        <field name="part_id2" readonly="True" />
-                        <field name="revision2" readonly="True" />
-                        <field name="description2" readonly="True" />
-                    </group>
-                </group>
+                <div class="row g-3 my-1 o_plm_compare_bom_cards">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-body py-2">
+                                <div class="text-muted small">Left</div>
+                                <field name="bom_id1" readonly="True" class="fw-bold" />
+                                <div class="small">
+                                    <field name="type_id1" readonly="True" class="d-inline" />
+                                    · rev. <field name="revision1" readonly="True" class="d-inline" />
+                                    · <field name="description1" readonly="True" class="d-inline" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-body py-2">
+                                <div class="text-muted small">Right</div>
+                                <field name="bom_id2" readonly="True" class="fw-bold" />
+                                <div class="small">
+                                    <field name="type_id2" readonly="True" class="d-inline" />
+                                    · rev. <field name="revision2" readonly="True" class="d-inline" />
+                                    · <field name="description2" readonly="True" class="d-inline" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <group colspan="4" col="12">
                     <group col="6" colspan="6">
-                        <field colspan="2" name="anotinb" nolabel="1" readonly="True">
+                        <field colspan="2" name="anotinb" nolabel="1">
                             <list
+                                editable="bottom"
+                                create="0"
+                                delete="0"
                                 decoration-bf="reason != ''"
                                 decoration-success="reason == 'added'"
                                 decoration-warning="reason == 'changed'"
@@ -119,10 +139,14 @@
                                 />
                                 <field name="itemnum" select="True" />
                                 <field name="bom_idrow" invisible="1" />
-                                <field name="part_id" select="True" optional="hide" />
+                                <field name="part_id" select="True" optional="hide" readonly="1" />
                                 <field name="revision" select="True" />
                                 <field name="description" select="True" />
-                                <field name="itemqty" select="True" />
+                                <field
+                                    name="itemqty"
+                                    select="True"
+                                    readonly="parent.compute_type == 'summarized' or reason == 'new'"
+                                />
                                 <field name="reason" invisible="1" />
                                 <button
                                     name="copy_right_left"
@@ -142,8 +166,11 @@
                         </field>
                     </group>
                     <group col="6" colspan="6">
-                        <field colspan="2" name="bnotina" nolabel="1" readonly="True">
+                        <field colspan="2" name="bnotina" nolabel="1">
                             <list
+                                editable="bottom"
+                                create="0"
+                                delete="0"
                                 decoration-bf="reason != ''"
                                 decoration-success="reason == 'added'"
                                 decoration-warning="reason == 'changed'"
@@ -165,10 +192,14 @@
                                 />
                                 <field name="itemnum" select="True" />
                                 <field name="bom_idrow" invisible="1" />
-                                <field name="part_id" select="True" optional="hide" />
+                                <field name="part_id" select="True" optional="hide" readonly="1" />
                                 <field name="revision" select="True" />
                                 <field name="description" select="True" />
-                                <field name="itemqty" select="True" />
+                                <field
+                                    name="itemqty"
+                                    select="True"
+                                    readonly="parent.compute_type == 'summarized' or reason == 'new'"
+                                />
                                 <field name="reason" invisible="1" />
                                 <button
                                     name="delete_bom_line"

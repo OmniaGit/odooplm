@@ -1,4 +1,5 @@
 from odoo import _, api, models
+from odoo.exceptions import UserError
 
 MAX_DEPTH = 10
 # What product.template._compute_eng_code_editable treats as a code still to
@@ -54,6 +55,43 @@ class PlmCompareBomTree(models.AbstractModel):
             frozenset(),
         )
 
+    @api.model
+    def get_tree_data(self, bom_left_id, bom_right_id):
+        """What the multilevel comparison screen shows: the two bills and the
+        tree between them."""
+        Bom = self.env["mrp.bom"]
+        bom_left = Bom.browse(bom_left_id).exists()
+        bom_right = Bom.browse(bom_right_id).exists()
+        if not bom_left or not bom_right:
+            raise UserError(_("Both bills of material must exist to be compared."))
+        return {
+            "left": self._bom_header(bom_left),
+            "right": self._bom_header(bom_right),
+            "tree": self.compare_boms(bom_left, bom_right),
+        }
+
+    @api.model
+    def set_line_quantities(self, quantities):
+        """Write the quantities edited on the screen: [[bom line id, qty]]."""
+        Line = self.env["mrp.bom.line"]
+        for line_id, quantity in quantities:
+            line = Line.browse(line_id).exists()
+            if line:
+                line.product_qty = quantity
+        return True
+
+    @api.model
+    def _bom_header(self, bom):
+        product = bom.product_id or bom.product_tmpl_id
+        types = dict(bom._fields["type"]._description_selection(self.env))
+        return {
+            "id": bom.id,
+            "name": bom.display_name,
+            "engineering_code": product.engineering_code or False,
+            "engineering_revision": product.engineering_revision,
+            "type": types.get(bom.type, bom.type),
+        }
+
     # -------------------------------------------------------------- helpers
     @api.model
     def _depth(self, max_depth):
@@ -108,8 +146,10 @@ class PlmCompareBomTree(models.AbstractModel):
                     "quantity": 0.0,
                     "itemnum": line.itemnum or None,
                     "product": component,
+                    "lines": self.env["mrp.bom.line"],
                 }
             entry["quantity"] += line.product_qty
+            entry["lines"] |= line
             if line.itemnum and (
                 entry["itemnum"] is None or line.itemnum < entry["itemnum"]
             ):
@@ -228,6 +268,8 @@ class PlmCompareBomTree(models.AbstractModel):
                     "itemnum": entry_left["itemnum"],
                     "_left": entry_left["product"],
                     "_right": entry_right["product"],
+                    "line_left_ids": entry_left["lines"].ids,
+                    "line_right_ids": entry_right["lines"].ids,
                 }
                 if same_qty:
                     entry["quantity"] = entry_left["quantity"]
@@ -258,6 +300,8 @@ class PlmCompareBomTree(models.AbstractModel):
                         "quantity_right": entry_right["quantity"],
                         "_left": entry_left["product"],
                         "_right": entry_right["product"],
+                        "line_left_ids": entry_left["lines"].ids,
+                        "line_right_ids": entry_right["lines"].ids,
                     }
                 )
                 left_entries.pop(entry_left["engineering_revision"], None)
@@ -285,6 +329,7 @@ class PlmCompareBomTree(models.AbstractModel):
             "itemnum": entry["itemnum"],
             "quantity": entry["quantity"],
             side_key: entry["product"],
+            "line%s_ids" % side_key: entry["lines"].ids,
         }
 
     @api.model

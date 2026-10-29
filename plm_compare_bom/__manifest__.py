@@ -32,6 +32,14 @@
         "security/plm_security.xml",
         "wizard/compare_bom_view.xml",
     ],
+    "assets": {
+        "web.assets_backend": [
+            "plm_compare_bom/static/src/**/*",
+        ],
+        "web.assets_tests": [
+            "plm_compare_bom/static/tests/tours/**/*",
+        ],
+    },
     "installable": True,
     "application": False,
     "auto_install": False,
