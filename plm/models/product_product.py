@@ -54,6 +54,12 @@ class ProductProduct(models.Model):
     _inherit = ["product.product"]
     _description = "Product Product"
 
+    @api.model
+    def default_get(self, fields_list):
+        # Odoo 18 overrides default_get without @api.model and the decorator is not
+        # inherited: over RPC call_kw would take fields_list as the record ids
+        return super().default_get(fields_list)
+
     def check_product_change_impact(self):
         self.ensure_one()
         report_data = {}

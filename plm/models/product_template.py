@@ -35,6 +35,12 @@ class ProductTemplate(models.Model):
     _description = "Product Template"
     _inherit = ["revision.plm.mixin", "product.template"]
 
+    @api.model
+    def default_get(self, fields_list):
+        # Odoo 18 overrides default_get without @api.model and the decorator is not
+        # inherited: over RPC call_kw would take fields_list as the record ids
+        return super().default_get(fields_list)
+
     engineering_material = fields.Char(
         "Cad Raw Material",
         size=128,
