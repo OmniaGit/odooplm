@@ -21,7 +21,7 @@
 ##############################################################################
 {
     "name": "PLM Compare Bom",
-    "version": "20.0.1.0.3",
+    "version": "20.0.1.0.4",
     "images": ["static/description/cover.gif"],
     "author": "OmniaSolutions",
     "maintainer": "OmniaSolutions S.n.c di Boscolo Matteo & C",
