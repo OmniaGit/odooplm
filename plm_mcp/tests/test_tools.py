@@ -32,6 +32,8 @@ relation rather than through the document type alone.
 
     odoo --test-tags=odoo_plm_mcp -i plm_mcp -d <database>
 """
+from unittest.mock import patch
+
 from odoo.exceptions import UserError
 from odoo.tests import tagged
 
@@ -158,13 +160,27 @@ class TestTools(McpCommon):
         self.assertEqual(row["quantity"], 2)
 
     # --------------------------------------------------------------- compare
+    def _needs_compare(self):
+        if "plm.compare.bom.tree" not in self.env:
+            self.skipTest("plm_compare_bom is not installed")
+
+    def test_compare_without_plm_compare_bom_says_what_to_install(self):
+        with patch.dict(self.env.registry.models):
+            del self.env.registry.models["plm.compare.bom.tree"]
+            with self.assertRaises(UserError) as refused:
+                self.tool.plm_compare_bom(
+                    code_a="MCPT-ASM-001", code_b="MCPT-ASM-001")
+        self.assertIn("plm_compare_bom", str(refused.exception))
+
     def test_comparing_a_bom_with_itself_finds_nothing_changed(self):
+        self._needs_compare()
         compared = self.tool.plm_compare_bom(
             code_a="MCPT-ASM-001", code_b="MCPT-ASM-001")
         statuses = {row["status"] for row in compared["components"]}
         self.assertEqual(statuses, {"unchanged"})
 
     def test_a_removed_component_is_reported_as_only_on_one_side(self):
+        self._needs_compare()
         # Copying the template does not copy its bill of material, so the new
         # revision gets one of its own — with the machined part left out, which
         # is the difference the comparison has to report.
@@ -179,6 +195,7 @@ class TestTools(McpCommon):
         self.assertEqual(by_code["MCPT-PRT-001"], "only_left")
 
     def test_compare_echoes_which_revisions_it_compared(self):
+        self._needs_compare()
         compared = self.tool.plm_compare_bom(
             code_a="MCPT-ASM-001", code_b="MCPT-ASM-001")
         self.assertEqual(compared["compared"]["left"]["engineering_code"],
