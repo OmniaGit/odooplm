@@ -247,8 +247,21 @@ class plm_compare_bom(models.TransientModel):
                     })
                 record.reason = "added"
 
+        def save_quantities(records, bom_id):
+            # Summarized rows sum several lines and show their difference:
+            # there is no line their quantity belongs to.
+            if self.compute_type == "summarized":
+                return
+            for record in records.filtered(
+                lambda x: x.reason != "new" and x.bom_idrow.bom_id == bom_id
+            ):
+                if record.itemqty != record.bom_idrow.product_qty:
+                    record.bom_idrow.product_qty = record.itemqty
+
         self.to_update = False
         for plm_compare_bom_id in self:
+            save_quantities(plm_compare_bom_id.anotinb, self.bom_id1)
+            save_quantities(plm_compare_bom_id.bnotina, self.bom_id2)
 
             process_bom_line(plm_compare_bom_id.anotinb,
                              self.bom_id1,
@@ -261,6 +274,11 @@ class plm_compare_bom(models.TransientModel):
             for mrp_bom_line_id in plm_compare_bom_id.bom_line_id_to_delete:
                 mrp_bom_line_id.unlink()
 
+    @api.onchange("anotinb", "bnotina")
+    def _onchange_lines(self):
+        """A quantity edited in the lists is saved with the Save button."""
+        self.to_update = True
+
     @api.model
     def default_get(self, fields):
         """To get default values for the object.
@@ -271,7 +289,7 @@ class plm_compare_bom(models.TransientModel):
         @param context: A standard dictionary
         @return: A dictionary which of fields with values.
         """
-        record_ids = self.env.context.get("active_ids")
+        record_ids = self.env.context.get("active_ids") or []
         res = {}
         if len(record_ids) > 0:
             res["bom_id1"] = record_ids[0]
@@ -417,3 +435,23 @@ class plm_compare_bom(models.TransientModel):
             "views": [(id3, "form")],
             "type": "ir.actions.act_window",
         }
+
+    def action_compare_tree(self):
+        """Open the multilevel comparison of the two BoMs."""
+        self.ensure_one()
+        return {
+            "type": "ir.actions.client",
+            "tag": "plm_compare_bom_tree",
+            "name": _("Multilevel BoM Comparison"),
+            "params": {
+                "bom_left_id": self.bom_id1.id,
+                "bom_right_id": self.bom_id2.id,
+            },
+        }
+
+    @api.model
+    def action_compare_level(self, bom_left_id, bom_right_id):
+        """The single level comparison of one pair of the tree, where lines
+        can be copied, moved and saved."""
+        wizard = self.create({"bom_id1": bom_left_id, "bom_id2": bom_right_id})
+        return wizard.action_compare_Bom()

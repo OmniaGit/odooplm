@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+    <t t-name="plm_compare_bom.CompareBomTree">
+        <div class="o_action o_plm_compare_bom_tree">
+            <Layout display="{ controlPanel: {} }">
+                <t t-set-slot="control-panel-buttons">
+                    <div class="d-flex gap-1" t-if="this.state.data">
+                        <button t-if="this.hasPending" class="btn btn-primary o_plm_save_quantities"
+                                t-on-click="() => this.saveQuantities()">Save</button>
+                        <button t-if="this.hasPending" class="btn btn-secondary"
+                                t-on-click="() => this.discardQuantities()">Discard</button>
+                        <button t-attf-class="btn {{ this.hasPending ? 'btn-secondary' : 'btn-primary' }} o_plm_compare_level_root"
+                                t-on-click="() => this.openLevel(this.state.data.left.id, this.state.data.right.id)">
+                            Compare this level
+                        </button>
+                        <button class="btn btn-secondary" t-on-click="() => this.foldAll(false)">Unfold all</button>
+                        <button class="btn btn-secondary" t-on-click="() => this.foldAll(true)">Fold all</button>
+                    </div>
+                </t>
+                <t t-set-slot="control-panel-actions">
+                    <div class="form-check form-switch ms-2" t-if="this.state.data">
+                        <input class="form-check-input o_plm_only_differences" type="checkbox"
+                               id="plm_only_differences" t-model.proxy="this.state.onlyDifferences"/>
+                        <label class="form-check-label" for="plm_only_differences">Only differences</label>
+                    </div>
+                </t>
+
+                <div t-if="!this.state.data" class="alert alert-warning m-3">
+                    This page does not know which two bills of material to compare:
+                    open it again from the Compare BoMs wizard.
+                </div>
+                <div t-else="" class="container-fluid overflow-auto bg-view pb-3">
+                    <div class="row g-3 my-1">
+                        <t t-foreach="['left', 'right']" t-as="side" t-key="side">
+                            <t t-set="bom" t-value="this.state.data[side]"/>
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-body py-2">
+                                        <div class="text-muted small">
+                                            <t t-if="side === 'left'">Left</t>
+                                            <t t-else="">Right</t>
+                                        </div>
+                                        <a href="#" class="fw-bold" t-on-click.prevent="() => this.openBom(bom.id)"
+                                           t-out="bom.name"/>
+                                        <div class="small">
+                                            <t t-out="bom.type"/>
+                                            <t t-if="bom.engineering_code">
+                                                · <t t-out="bom.engineering_code"/>
+                                                rev. <t t-out="bom.engineering_revision"/>
+                                            </t>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </div>
+
+                    <div t-if="this.state.data.tree.note" class="alert alert-info my-2" t-out="this.state.data.tree.note"/>
+                    <div class="d-flex flex-wrap gap-2 my-2 o_plm_compare_summary">
+                        <t t-foreach="this.summary" t-as="item" t-key="item.status">
+                            <span t-attf-class="badge {{ item.badge }}">
+                                <t t-out="item.label"/>: <t t-out="item.count"/>
+                            </span>
+                        </t>
+                        <span t-if="!this.summary.length and !this.state.data.tree.note" class="badge text-bg-success">
+                            The two bills of material are identical
+                        </span>
+                    </div>
+
+                    <table class="table table-sm table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th/>
+                                <th>Code</th>
+                                <th>Description</th>
+                                <th class="text-end">Pos.</th>
+                                <th class="text-end">Left rev.</th>
+                                <th class="text-end">Left qty</th>
+                                <th class="text-end">Right rev.</th>
+                                <th class="text-end">Right qty</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="this.rows" t-as="line" t-key="line.path"
+                                t-att-class="this.statuses[line.row.status].row"
+                                t-att-data-code="this.label(line.row)">
+                                <td>
+                                    <button t-if="line.row.bom_left_id and line.row.bom_right_id"
+                                            class="btn btn-link btn-sm p-0 o_plm_compare_level"
+                                            title="Compare this level"
+                                            t-on-click="() => this.openLevel(line.row.bom_left_id, line.row.bom_right_id)">
+                                        <i class="oi oi-fw" data-icon="view_column"/>
+                                    </button>
+                                    <button t-elif="line.row.bom_left_id or line.row.bom_right_id"
+                                            class="btn btn-link btn-sm p-0 o_plm_open_bom"
+                                            title="Open its bill of material: it exists on one side only"
+                                            t-on-click="() => this.openBom(line.row.bom_left_id or line.row.bom_right_id)">
+                                        <i class="oi oi-fw" data-icon="account_tree"/>
+                                    </button>
+                                </td>
+                                <td t-attf-style="padding-left: {{ 0.5 + line.depth * 1.5 }}rem">
+                                    <button t-if="line.foldable" class="btn btn-link p-0 me-1 o_plm_fold"
+                                            t-on-click="() => this.toggleFold(line.path)">
+                                        <i class="oi oi-fw"
+                                           t-att-data-icon="this.state.folded[line.path] ? 'keyboard_arrow_right' : 'keyboard_arrow_down'"/>
+                                    </button>
+                                    <span t-else="" class="d-inline-block me-1" style="width: 1.25em"/>
+                                    <t t-out="this.label(line.row)"/>
+                                </td>
+                                <td t-out="line.row.name"/>
+                                <td class="text-end" t-out="line.row.itemnum or ''"/>
+                                <t t-foreach="['left', 'right']" t-as="side" t-key="side">
+                                    <td class="text-end" t-out="this.revision(line.row, side)"/>
+                                    <td class="text-end">
+                                        <input t-if="this.editableLine(line.row, side)" type="number" step="any"
+                                               t-attf-class="form-control form-control-sm text-end d-inline-block o_plm_qty {{ this.editableLine(line.row, side) in this.state.pending ? 'border-warning' : '' }}"
+                                               style="width: 6rem" t-att-data-side="side"
+                                               t-att-value="this.shownQuantity(line.row, side)"
+                                               t-on-change="(ev) => this.onQuantityChange(this.editableLine(line.row, side), ev)"/>
+                                        <span t-elif="this.quantity(line.row, side) !== ''" t-out="this.quantity(line.row, side)"
+                                              title="Several bill lines: change them from the bill of material"/>
+                                    </td>
+                                </t>
+                                <td>
+                                    <span t-out="this.statuses[line.row.status].label"/>
+                                    <div t-if="line.row.note" class="small text-muted fst-italic"
+                                         t-out="line.row.note"/>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </Layout>
+        </div>
+    </t>
+</templates>

@@ -46,6 +46,14 @@
         "security/plm_security.xml",
         "wizard/compare_bom_view.xml",
     ],
+    "assets": {
+        "web.assets_backend": [
+            "plm_compare_bom/static/src/**/*",
+        ],
+        "web.assets_tests": [
+            "plm_compare_bom/static/tests/tours/**/*",
+        ],
+    },
     "uninstall_hook": "uninstall_hook",
     "installable": True,
     "application": False,
