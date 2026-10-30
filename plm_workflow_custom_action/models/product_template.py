@@ -38,6 +38,8 @@ class ProductTemplate(models.Model):
         self.ensure_one()
         ctx = self.env.context.copy()
         ctx["active_id"] = self.product_variant_id.id
+        # the actions run on this product, not on the records of the caller context
+        ctx["active_ids"] = [self.product_variant_id.id]
         ctx["active_model"] = "product.product"
         ctx["wf_action"] = "before"
         for action in self.env["plm.automatedwfaction"].search(
@@ -59,6 +61,8 @@ class ProductTemplate(models.Model):
         self.ensure_one()
         ctx = self.env.context.copy()
         ctx["active_id"] = self.product_variant_id.id
+        # the actions run on this product, not on the records of the caller context
+        ctx["active_ids"] = [self.product_variant_id.id]
         ctx["active_model"] = "product.product"
         ctx["wf_action"] = "after"
         for action in self.env["plm.automatedwfaction"].search(
