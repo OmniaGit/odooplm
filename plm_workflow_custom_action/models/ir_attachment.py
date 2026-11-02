@@ -33,11 +33,13 @@ class IrAttachment(models.Model):
         self.ensure_one()
         ctx = self.env.context.copy()
         ctx["active_id"] = self.id
+        # the actions run on this document, not on the records of the caller context
+        ctx["active_ids"] = self.ids
         ctx["active_model"] = "ir.attachment"
         ctx["wf_action"] = "before"
         for action in self.env["plm.automatedwfaction"].search(
             [
-                ("apply_to", "=", "product.product"),
+                ("apply_to", "=", "ir.attachment"),
                 ("from_state", "=", from_state),
                 ("to_state", "=", to_state),
                 ("before_after", "=", "before"),
@@ -54,11 +56,13 @@ class IrAttachment(models.Model):
         self.ensure_one()
         ctx = self.env.context.copy()
         ctx["active_id"] = self.id
+        # the actions run on this document, not on the records of the caller context
+        ctx["active_ids"] = self.ids
         ctx["active_model"] = "ir.attachment"
         ctx["wf_action"] = "after"
         for action in self.env["plm.automatedwfaction"].search(
             [
-                ("apply_to", "=", "product.product"),
+                ("apply_to", "=", "ir.attachment"),
                 ("from_state", "=", from_state),
                 ("to_state", "=", to_state),
                 ("before_after", "=", "after"),
