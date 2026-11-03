@@ -211,6 +211,13 @@ class plm_compare_bom(models.TransientModel):
     )
 
     to_update = fields.Boolean("Bom need to be updated", default=False)
+    follow_kit_subcontract = fields.Boolean(
+        "Include Kit and Subcontracting subassemblies",
+        help="Multilevel comparison of two normal BoMs: also go down into the "
+        "kit and subcontracting BoMs of the components. Two BoMs of different "
+        "types are reported on their parent, and their components are compared "
+        "as usual: the same components are no difference.",
+    )
 
     def _are_equal(self):
         for bom_id in self:
@@ -446,6 +453,7 @@ class plm_compare_bom(models.TransientModel):
             "params": {
                 "bom_left_id": self.bom_id1.id,
                 "bom_right_id": self.bom_id2.id,
+                "follow_kit_subcontract": self.follow_kit_subcontract,
             },
         }
 

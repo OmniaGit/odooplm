@@ -26,6 +26,9 @@ export class CompareBomTree extends Component {
         const context = this.props.action.context || {};
         this.bomLeftId = params.bom_left_id || context.bom_left_id;
         this.bomRightId = params.bom_right_id || context.bom_right_id;
+        this.followKitSubcontract = Boolean(
+            params.follow_kit_subcontract || context.follow_kit_subcontract
+        );
         // folded: {path: true}; a plain object keeps the reactivity simple
         // pending: {bom line id: quantity} edited and not saved yet
         this.state = proxy({
@@ -44,7 +47,7 @@ export class CompareBomTree extends Component {
             this.state.data = await this.orm.call(
                 "plm.compare.bom.tree",
                 "get_tree_data",
-                [this.bomLeftId, this.bomRightId]
+                [this.bomLeftId, this.bomRightId, this.followKitSubcontract]
             );
         }
     }

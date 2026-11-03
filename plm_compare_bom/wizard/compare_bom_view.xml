@@ -10,10 +10,14 @@
                 <group col="2" colspan="4">
                     <field name="bom_id1"/>
                     <field name="bom_id2"/>
+                    <field name="type_id1" invisible="1"/>
+                    <field name="type_id2" invisible="1"/>
                 </group>
                 <newline/>
                 <group>
                     <field name="compute_type" widget="radio"/>
+                    <field name="follow_kit_subcontract"
+                           invisible="type_id1 != 'normal' or type_id2 != 'normal'"/>
                 </group>
                 <footer>
                     <button name="action_compare_Bom"
