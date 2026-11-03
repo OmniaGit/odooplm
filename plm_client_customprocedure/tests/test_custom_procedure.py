@@ -41,7 +41,7 @@ class TestCustomProcedure(HttpCase):
         self.admin = self.env.ref("base.user_admin")
         self.admin.custom_procedure = False
         self.admin.custom_multicad = False
-        for group in self.admin.group_ids:
+        for group in self.admin.all_group_ids:
             group.custom_procedure = False
             group.custom_multicad = False
 
@@ -62,6 +62,29 @@ class TestCustomProcedure(HttpCase):
         self.assertEqual(self._client_call(), (b"group = 1\n", "CustomProcedure.py"))
         self.admin.custom_procedure = _b64("user = 1\n")
         self.assertEqual(self._client_call(), (b"user = 1\n", "CustomProcedure.py"))
+
+    def _implied_group(self, values):
+        """A group holding the file, reached by the user only through another
+        group that implies it."""
+        implied = self.env["res.groups"].create(dict(values, name="Implied group"))
+        direct = self.env["res.groups"].create(
+            {"name": "Direct group", "implied_ids": [(4, implied.id)]}
+        )
+        self.admin.group_ids = [(4, direct.id)]
+        self.assertNotIn(implied, self.admin.group_ids)
+        self.assertIn(implied, self.admin.all_group_ids)
+        return implied
+
+    def test_procedure_of_an_implied_group(self):
+        self._implied_group({"custom_procedure": _b64("implied = 1\n")})
+        self.assertEqual(self._client_call(), (b"implied = 1\n", "CustomProcedure.py"))
+
+    def test_multicad_of_an_implied_group(self):
+        self._implied_group(
+            {"custom_multicad": _b64("implied mc"), "custom_multicad_fname": "implied.zip"}
+        )
+        value, name = self._rpc("res.users", "getCustomMulticad", [])
+        self.assertEqual((base64.b64decode(value), name), (b"implied mc", "implied.zip"))
 
     def test_editor(self):
         group = self.env["res.groups"].create({"name": "CP editor"})

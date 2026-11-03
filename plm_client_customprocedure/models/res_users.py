@@ -118,7 +118,7 @@ class ResUsers(models.Model):
         if user.custom_procedure:
             return user.custom_procedure.to_base64(), CLIENT_FILE_NAME
         logging.info(f"Custom procedure not found for user {user.display_name}")
-        for group in user.group_ids:
+        for group in user.all_group_ids:
             if group.custom_procedure:
                 logging.info(f"Custom procedure of the group {group.display_name} for user {user.display_name}")
                 return group.custom_procedure.to_base64(), CLIENT_FILE_NAME
@@ -133,13 +133,13 @@ class ResUsers(models.Model):
 
         As getCustomProcedure: base64 text, since XML-RPC cannot send an
         Odoo 20 Binary value, and a group tested for a value. The groups are
-        group_ids on Odoo 20 (groups_id is gone).
+        all_group_ids on Odoo 20: group_ids holds only the explicit ones.
         """
         user = self.env.user.sudo()
         logging.info('Request Multicad file for user %r' % user.id)
         if user.custom_multicad:
             return user.custom_multicad.to_base64(), user.custom_multicad_fname or ''
-        for group in user.group_ids:
+        for group in user.all_group_ids:
             if group.custom_multicad:
                 logging.info('Got Multicad file from group %r with ID %r' % (group.display_name, group.id))
                 return group.custom_multicad.to_base64(), group.custom_multicad_fname or ''
