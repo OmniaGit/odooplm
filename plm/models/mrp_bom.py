@@ -1153,6 +1153,10 @@ class MrpBomExtension(models.Model):
             #
             elif bom_changed and mrp_bom_found_id:
                 mrp_bom_found_id._set_outdated_bom_in_productions()
+            #
+            if hasattr(self, "afterSaveRelationNew") and mrp_bom_found_id:
+                self.afterSaveRelationNew(mrp_bom_found_id)
+            #
             return True
         except Exception as ex:
             logging.error(ex)
