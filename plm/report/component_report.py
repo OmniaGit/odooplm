@@ -231,7 +231,6 @@ class ReportProductPdf(models.AbstractModel):
 
     @api.model
     def _render_qweb_pdf(self, products=None, level=0, checkState=False):
-        docRepository, mainBookCollector = self.commonInfos()
         documents = []
 
         for product in products:
@@ -240,12 +239,15 @@ class ReportProductPdf(models.AbstractModel):
                 for childProduct in product._getChildrenBom(product, level):
                     childProduct = self.env["product.product"].browse(childProduct)
                     documents.extend(self.getDocument(childProduct, checkState))
-        if len(documents) == 0:
-            content = getEmptyDocument()
-        else:
-            documentContent = packDocuments(docRepository, documents, mainBookCollector)
-            content = documentContent[0]
-        return content
+        return self._render_documents_pdf(documents)
+
+    @api.model
+    def _render_documents_pdf(self, documents):
+        """One PDF made of the printouts of *documents*, sorted by paper size."""
+        if not documents:
+            return getEmptyDocument()
+        docRepository, mainBookCollector = self.commonInfos()
+        return packDocuments(docRepository, documents, mainBookCollector)[0]
 
     def render_qweb_pdf(self, products=None, level=0, checkState=False):
         content = self._render_qweb_pdf(products, level, checkState)

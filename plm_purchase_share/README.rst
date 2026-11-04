@@ -1,37 +1,48 @@
 PLM Purchase Share
 ==================
 
-Generate and download a ZIP archive of product PDF datasheets for all lines
-in a Purchase order, accessible from the supplier portal.
+Let a vendor download from the portal the PDF of the drawings of what was
+bought from them.
 
 Overview
 --------
 
-Suppliers and internal buyers sometimes need a consolidated document package
-for all products in a purchase order. This module exposes a portal route that
-renders the PLM PDF datasheet for each ordered product and bundles them into a
-single ZIP file available for immediate download.
+A vendor needs the drawings of the parts on their purchase orders. This module
+adds, on the purchase order page of the portal, a download button for each
+line and one for the whole order.
+
+What a vendor may get is decided by the portal scope of ``plm``
+(``res.users._plm_portal_products`` and ``_plm_portal_document_policy``): the
+products on their own order lines, when their partner, or their user, has a
+PLM portal access other than *none*, and of those only the PDF printout of the
+2D drawings, released, under modification or obsoleted since. The native CAD
+file is never given.
 
 Key Features
 ------------
 
-* Portal route: ``/my/purchase/<order_id>/download_docs``
-* Generates one PDF per ordered product using the PLM product report
-* All PDFs are bundled into a ZIP named ``PO_<order_name>_Documents.zip``
-* Accessible with ``auth='public'`` so the link can be shared with external
-  users
+* Portal route ``/my/plm/product/<product_id>/pdf``: the PDF of the drawings
+  of one product; a product outside the user's scope answers 404
+* Portal route ``/my/purchase/<order_id>/download_docs``: one PDF per ordered
+  product, bundled into ``PO_<order_name>_Documents.zip``
+* Both routes need a logged-in user (``auth='user'``); the order route also
+  accepts the order's share ``access_token``
+* The buttons show only where there is something to download
 
 Usage
 -----
 
-Navigate to the purchase order portal page and click the **Download Documents**
-link, or share the URL
-``/my/purchase/<order_id>/download_docs`` directly with the supplier.
+Set **PLM Portal Access** to *View* on the vendor, give their contact a portal
+user, and open the purchase order from the portal.
+
+The backend report route (``/report/html/plm.product_production_pdf_latest/<id>``)
+renders as the user, and a portal user can read neither products nor
+attachments: do not link it from the portal.
 
 Dependencies
 ------------
 
-* ``plm`` — OdooPLM core module (provides the product PDF report)
+* ``plm`` — OdooPLM core module (portal scope and PDF composition)
 * ``purchase`` — Odoo Purchase
 * ``portal`` — Odoo Portal
 * ``website`` — Odoo Website
