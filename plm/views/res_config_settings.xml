@@ -454,6 +454,19 @@
                                     </div>
                                 </div>
                             </div>
+                            <!-- keep_released_backups -->
+                            <div class="col-md-6 col-xs-12 o_setting_box">
+                                <div class="o_setting_left_pane"><field
+                                            name="keep_released_backups"
+                                        /></div>
+                                <div class="o_setting_right_pane"><label
+                                            for="keep_released_backups"
+                                        />
+                                    <div class="text-muted">
+                                        When off, a weekly scheduled action removes the backups of released, obsoleted and under modify documents
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     </app>
