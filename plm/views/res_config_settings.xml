@@ -151,6 +151,9 @@
                         <setting help=" Enable or Disable Template Consumption Plans.">
                             <field name="install_consumption_plan_feature"/>
                         </setting>
+                        <setting help="When off, a weekly scheduled action removes the backups of released, obsoleted and under modify documents.">
+                            <field name="keep_released_backups"/>
+                        </setting>
                     </block>
                 </app>
             </xpath>

@@ -21,4 +21,16 @@
         <field name="active" eval="False"/>
     </record>
 
+    <!-- removes the backups of released, obsoleted and under modify
+         documents, unless the setting plm.keep_released_backups keeps them -->
+    <record id="ir_cron_clean_released_backups" model="ir.cron">
+        <field name="name">Plm Clean Released Backups</field>
+        <field name="model_id" ref="model_plm_backupdoc"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_clean_released_backups()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">weeks</field>
+        <field name="active" eval="True"/>
+    </record>
+
 </odoo>
