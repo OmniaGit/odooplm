@@ -4491,3 +4491,31 @@ msgid ""
 msgstr ""
 "Nasconde i file che il client CAD carica accanto a un documento: conversioni,"
 " archivi zip e modelli 3D web"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_res_config_settings__keep_released_backups
+msgid "Keep Backups of Released Documents"
+msgstr "Conserva i backup dei documenti rilasciati"
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_res_config_settings__keep_released_backups
+msgid ""
+"When off, a weekly scheduled action removes the backups of released, "
+"obsoleted and under modify documents."
+msgstr ""
+"Se disattivato, un'azione pianificata settimanale elimina i backup dei "
+"documenti rilasciati, obsoleti e in modifica."
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid ""
+"When off, a weekly scheduled action removes the backups of released, "
+"obsoleted and under modify documents"
+msgstr ""
+"Se disattivato, un'azione pianificata settimanale elimina i backup dei "
+"documenti rilasciati, obsoleti e in modifica"
+
+#. module: plm
+#: model:ir.actions.server,name:plm.ir_cron_clean_released_backups_ir_actions_server
+msgid "Plm Clean Released Backups"
+msgstr "Plm pulizia backup dei documenti rilasciati"
