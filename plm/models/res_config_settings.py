@@ -84,6 +84,12 @@ class PlmConfigSettings(models.TransientModel):
         string="Enable Consumption Plan Feature",
         config_parameter="plm.install_consumption_plan_feature",
     )
+    keep_released_backups = fields.Boolean(
+        string="Keep Backups of Released Documents",
+        config_parameter="plm.keep_released_backups",
+        help="When off, a weekly scheduled action removes the backups of "
+        "released, obsoleted and under modify documents.",
+    )
 
     @api.model
     def get_values(self):

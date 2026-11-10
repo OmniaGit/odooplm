@@ -27,6 +27,20 @@ import os
 import stat
 import datetime
 
+from odoo.addons.plm.models.plm_mixin import (
+    OBSOLATED_STATUS,
+    RELEASED_STATUS,
+    UNDER_MODIFY_STATUS,
+)
+
+_logger = logging.getLogger(__name__)
+
+# documents in these states can no longer be saved, so their backups are
+# never restored: the weekly cron removes them
+CLEAN_BACKUP_STATES = (RELEASED_STATUS, OBSOLATED_STATUS, UNDER_MODIFY_STATUS)
+KEEP_BACKUP_PARAM = "plm.keep_released_backups"
+CLEAN_BACKUP_BATCH = 1000
+
 
 class PlmBackupDocument(models.Model):
     """
@@ -111,6 +125,105 @@ class PlmBackupDocument(models.Model):
                     )
                     continue
             super(PlmBackupDocument, plm_backup_document_id).unlink()
+
+    @api.model
+    def _clean_backup_domain(self):
+        return [("documentid.engineering_state", "in", CLEAN_BACKUP_STATES)]
+
+    @api.model
+    def _keep_released_backups(self):
+        return self.env["ir.config_parameter"].sudo().get_bool(KEEP_BACKUP_PARAM)
+
+    @api.model
+    def _clean_released_backups_batch(self, batch_size=CLEAN_BACKUP_BATCH):
+        """
+        Remove one batch of backups of the documents that can no longer be
+        saved (released, obsoleted, under modify), rows and files.
+        Return (removed, remaining). The files go when the batch is committed.
+        """
+        domain = self._clean_backup_domain()
+        backup_ids = self.sudo().search(domain, limit=batch_size, order="id")
+        if not backup_ids:
+            return 0, 0
+        removed = backup_ids._remove_backups()
+        return removed, self.sudo().search_count(domain)
+
+    @api.model
+    def _cron_clean_released_backups(self, batch_size=CLEAN_BACKUP_BATCH):
+        """
+        Weekly cron: remove the backups of released, obsoleted and under
+        modify documents, batch after batch, each one committed through the
+        ir.cron progress API, until none remains or the cron time is over
+        (the cron framework then calls again). Does nothing when the setting
+        keeps them.
+        """
+        if self._keep_released_backups():
+            _logger.info("Backup cleaning skipped: %s is set", KEEP_BACKUP_PARAM)
+            return
+        cron = self.env["ir.cron"]
+        while True:
+            removed, remaining = self._clean_released_backups_batch(batch_size)
+            time_left = cron._commit_progress(removed, remaining=remaining)
+            if not remaining or not time_left:
+                break
+
+    def _remove_backups(self):
+        """
+        Delete the backup rows, then their files once the deletion is
+        committed. A file is kept while any other backup or any attachment
+        still uses it (restored documents point their attachment at a
+        backup file, and several backups can share one file).
+        Missing files are skipped: they must not stop the cleaning.
+        """
+        file_names = set(self.filtered("existingfile").mapped("existingfile"))
+        count = len(self)
+        # the rows only: the unlink override deletes the file at once and
+        # raises on a missing file
+        self.sudo().remaining_unlink()
+        if file_names:
+            names = tuple(file_names)
+            self.env.cr.execute(
+                "SELECT existingfile FROM plm_backupdoc WHERE existingfile IN %s",
+                (names,),
+            )
+            still_used = {row[0] for row in self.env.cr.fetchall()}
+            self.env.cr.execute(
+                "SELECT store_fname FROM ir_attachment WHERE store_fname IN %s",
+                (names,),
+            )
+            still_used.update(row[0] for row in self.env.cr.fetchall())
+            to_delete = file_names - still_used
+            if to_delete:
+                filestore = self.env["ir.attachment"]._get_filestore()
+                self.env.cr.postcommit.add(
+                    lambda: self._delete_backup_files(filestore, to_delete)
+                )
+        return count
+
+    @api.model
+    def _delete_backup_files(self, filestore, file_names):
+        """Delete backup files, never outside the filestore."""
+        if not filestore:
+            _logger.warning("Backup files not deleted: no filestore folder")
+            return 0
+        root = os.path.realpath(filestore)
+        deleted = 0
+        for file_name in file_names:
+            full_path = os.path.realpath(os.path.join(root, file_name))
+            if os.path.commonpath([root, full_path]) != root:
+                _logger.warning("Backup file %r is outside the filestore", file_name)
+                continue
+            if not os.path.isfile(full_path):
+                _logger.debug("Backup file %r already missing", file_name)
+                continue
+            try:
+                os.chmod(full_path, stat.S_IWRITE | stat.S_IREAD)
+                os.unlink(full_path)
+                deleted += 1
+            except OSError as ex:
+                _logger.warning("Unable to delete backup file %r: %r", full_path, ex)
+        _logger.info("Backup cleaning: %d files deleted", deleted)
+        return deleted
 
     @api.model
     def getLastBckDocumentByUser(self, doc_id):
