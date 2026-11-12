@@ -74,6 +74,15 @@ class Exporter:
         self.cr.execute(sql, params)
         return self.cr.fetchall()
 
+    def preview_column(self):
+        """Whether ir_attachment still has the preview column."""
+        if not hasattr(self, "_preview_column"):
+            self._preview_column = bool(self.q(
+                """SELECT 1 FROM information_schema.columns
+                   WHERE table_name='ir_attachment' AND column_name='preview'"""
+            ))
+        return self._preview_column
+
     def payload(self, store_fname):
         """Absolute path of an attachment payload in the filestore."""
         if not store_fname:
@@ -275,9 +284,26 @@ class Exporter:
         return documents, relations
 
     def export_preview(self, attachment_id, doc_name):
-        """The thumbnail shown in the document views (a bytea column, not a file)."""
-        rows = self.q("SELECT preview FROM ir_attachment WHERE id=%s", attachment_id)
-        blob = rows[0]["preview"] if rows else None
+        """The thumbnail shown in the document views: a file of the filestore,
+        or the bytea column a database not yet migrated (before plm
+        20.0.1.0.41) still keeps it in."""
+        rows = self.q(
+            """SELECT store_fname, db_datas FROM ir_attachment
+               WHERE res_model='ir.attachment' AND res_id=%s AND res_field='preview'
+               ORDER BY id LIMIT 1""",
+            attachment_id,
+        )
+        blob = None
+        if rows:
+            src = self.payload(rows[0]["store_fname"])
+            if src:
+                with open(src, "rb") as fh:
+                    blob = fh.read()
+            else:
+                blob = rows[0]["db_datas"]
+        elif self.preview_column():
+            rows = self.q("SELECT preview FROM ir_attachment WHERE id=%s", attachment_id)
+            blob = rows[0]["preview"] if rows else None
         if not blob:
             return None
         name = slug(doc_name) + ".png"

@@ -87,7 +87,6 @@ class PlmDocumentRelations(models.Model):
     preview_related = fields.Image(
         compute="_compute_preview_related",
         store=True,
-        attachment=False,
         max_height=1920,
         max_width=1920,
         string="Child Parent Preview",

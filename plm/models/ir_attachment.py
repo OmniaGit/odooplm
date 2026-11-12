@@ -36,6 +36,8 @@ from odoo.addons.plm.models.plm_mixin import (PLM_NO_WRITE_STATE,
                                               OBSOLATED_STATUS,
                                               UNDER_MODIFY_STATUS,
                                               START_STATUS)
+from odoo.addons.plm.models.attachment_binary_fields import (AttachmentBinary,
+                                                        AttachmentImage)
 from odoo.exceptions import UserError, ValidationError
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 from odoo.tools.safe_eval import safe_eval
@@ -55,10 +57,10 @@ class IrAttachment(models.Model):
     _description = "Ir Attachment"
     _inherit = ["revision.plm.mixin", "ir.attachment"]
 
-    printout = fields.Binary(string="Printout Content", help="Print PDF content.")
+    printout = AttachmentBinary(string="Printout Content", help="Print PDF content.")
     printout_name = fields.Char(string="Printout Name", compute="_getPrintoutName")
-    preview = fields.Image(
-        string="Preview Content", max_width=1920, max_height=1920, attachment=False
+    preview = AttachmentImage(
+        string="Preview Content", max_width=1920, max_height=1920
     )
 
     checkout_user = fields.Char(
@@ -140,7 +142,7 @@ class IrAttachment(models.Model):
                                           #store=True
                                           )
 
-    preview_related = fields.Image(
+    preview_related = AttachmentImage(
         max_height=1920, max_width=1920, string="Child Parent Preview"
     )
 
