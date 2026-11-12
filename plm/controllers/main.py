@@ -382,67 +382,16 @@ class UploadDocument(Controller):
             related_attachment_id = 0
         #
         if doc_name:
-            value1 = kw.get("file_stream").stream.read()
-            ir_attachment_id = request.env["ir.attachment"].search(
-                [
-                    ("engineering_code", "=", doc_name),
-                    ("engineering_revision", "=", doc_rev),
-                ]
+            request.env["ir.attachment"]._save_extra_file(
+                kw.get("file_stream").stream.read(),
+                doc_name,
+                doc_rev=doc_rev,
+                file_name=kw.get("filename") or "",
+                related_attachment_id=related_attachment_id,
+                product_id=product_id,
             )
-            to_write = {
-                "datas": base64.b64encode(value1),
-                "name": kw.get("filename") or doc_name,
-                "engineering_code": doc_name,
-                "engineering_revision": doc_rev,
-            }
-            link_id = request.env["ir.attachment.relation"]
-            new_context = request.env.context.copy()
-            new_context["backup"] = False
-            new_context["check"] = (
-                False  # Or zip file will not be updated if in check-in
-            )
-            contex_brw = request.env["ir.attachment"].with_context(new_context)
-            to_write["is_plm"] = True
-            if not ir_attachment_id:
-                to_write["res_model"] = "plm.access"
-                to_write["res_id"] = request.env.ref("plm.plm_basic_access_model").id
-                ir_attachment_id = contex_brw.create(to_write)
-            else:
-                ir_attachment_id.with_context(new_context).write(to_write)
-            if ir_attachment_id and related_attachment_id:
-                link_id = link_id.search(
-                    [
-                        ("parent_id", "=", related_attachment_id),
-                        ("child_id", "=", ir_attachment_id.id),
-                        ("link_kind", "=", "ExtraTree"),
-                    ]
-                )
-            if not link_id:
-                request.env["ir.attachment.relation"].create(
-                    {
-                        "parent_id": related_attachment_id,
-                        "child_id": ir_attachment_id.id,
-                        "link_kind": "ExtraTree",
-                    }
-                )
-            if product_id:
-                product_id = request.env["product.product"].browse(product_id)
-                request.env["plm.component.document.rel"].createFromIds(
-                    product_id, ir_attachment_id
-                )
-            else:
-                if related_attachment_id:
-                    for product_id in (
-                        request.env["ir.attachment"]
-                        .browse(related_attachment_id)
-                        .linkedcomponents
-                    ):
-                        request.env["plm.component.document.rel"].createFromIds(
-                            product_id, ir_attachment_id
-                        )
-                        break
             return Response("Extra file Upload succeeded", status=200)
-        logging.info("Extra file no upload %r" % (ir_attachment_id))
+        logging.info("Extra file no upload, no document name")
         return Response("Extra file Failed upload", status=400)
 
     @route(

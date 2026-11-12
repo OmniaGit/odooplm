@@ -31,5 +31,6 @@ from . import test_workflow_transitions
 from . import test_must_update_flag
 from . import test_support_files_filter
 from . import test_clean_released_backups
+from . import test_extra_file
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

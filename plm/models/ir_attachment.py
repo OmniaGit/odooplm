@@ -16,6 +16,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
+import base64
 import copy
 import json
 import logging
@@ -3287,6 +3288,79 @@ class IrAttachment(models.Model):
     def setupCadOpenRPC(self, hostname="", pws_path="", operation_type=""):
         ret = self.setupCadOpen(hostname, pws_path, operation_type)
         return ret.ids
+
+    @api.model
+    def _save_extra_file(
+        self,
+        content,
+        doc_name,
+        doc_rev=0,
+        file_name="",
+        related_attachment_id=0,
+        product_id=0,
+    ):
+        """Create or update the document of a file produced beside another
+        document (the DWG of a drawing, the STEP or the flat pattern DXF of a
+        part, ...) and link it to that document with an ExtraTree relation.
+        The document is found by code and revision: found, its file is
+        replaced, otherwise it is created.
+        :content bytes of the file
+        :doc_name engineering code of the extra file document
+        :doc_rev engineering revision of the extra file document
+        :file_name name of the file, the code when empty
+        :related_attachment_id id of the document the file comes from, 0 when none
+        :product_id id of the product to link the document to; 0 links it to
+            the first product of the related document
+        :return the extra file document
+        """
+        # no backup of the replaced file, and no check of the check-in state:
+        # the extra file follows its document, it is never checked out
+        attachment = self.with_context(backup=False, check=False)
+        ir_attachment_id = attachment.search(
+            [
+                ("engineering_code", "=", doc_name),
+                ("engineering_revision", "=", doc_rev),
+            ]
+        )
+        to_write = {
+            "datas": base64.b64encode(content),
+            "name": file_name or doc_name,
+            "engineering_code": doc_name,
+            "engineering_revision": doc_rev,
+            "is_plm": True,
+        }
+        if not ir_attachment_id:
+            to_write["res_model"] = "plm.access"
+            to_write["res_id"] = self.env.ref("plm.plm_basic_access_model").id
+            ir_attachment_id = attachment.create(to_write)
+        else:
+            ir_attachment_id.write(to_write)
+        if related_attachment_id:
+            relation = self.env["ir.attachment.relation"]
+            if not relation.search_count(
+                [
+                    ("parent_id", "=", related_attachment_id),
+                    ("child_id", "=", ir_attachment_id.id),
+                    ("link_kind", "=", "ExtraTree"),
+                ]
+            ):
+                relation.create(
+                    {
+                        "parent_id": related_attachment_id,
+                        "child_id": ir_attachment_id.id,
+                        "link_kind": "ExtraTree",
+                    }
+                )
+        component_document_rel = self.env["plm.component.document.rel"]
+        if product_id:
+            component_document_rel.createFromIds(
+                self.env["product.product"].browse(product_id), ir_attachment_id
+            )
+        elif related_attachment_id:
+            for product in self.browse(related_attachment_id).linkedcomponents:
+                component_document_rel.createFromIds(product, ir_attachment_id)
+                break
+        return ir_attachment_id
 
     @api.model
     def clientCanIUpload(self, clientArgs):
