@@ -5262,7 +5262,7 @@ class IrAttachment(models.Model):
             FROM
                 ir_attachment_relation
             WHERE
-                parent_id = %s or child_id = %s and link_kind = %s
+                (parent_id = %s or child_id = %s) and link_kind = %s
             UNION
                 SELECT
                     e.parent_id,
