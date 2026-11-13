@@ -41,7 +41,9 @@ from . import test_client_binary_json
 from . import test_client_related_documents
 from . import test_must_update_flag
 from . import test_support_files_filter
+from . import test_doc_bom_flat_sql
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
 from . import test_extra_file_upload
 from . import test_clean_released_backups
+from . import test_preview_filestore
