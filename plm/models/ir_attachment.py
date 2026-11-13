@@ -4236,11 +4236,6 @@ class IrAttachment(models.Model):
             )
             for doc_id in document_ids:
                 out.append(self.get_row_checkout_data(doc_fields, doc_id,hostname, hostpws))
-                for doc_id_pgk_tree in doc_id.getChildPkgTree():
-                    row_data = {'engineering_code': doc_id_pgk_tree.engineering_code,
-                                'engineering_revision': doc_id_pgk_tree.engineering_revision,
-                                }
-                    out.append(self.get_row_checkout_data(row_data, doc_id_pgk_tree,hostname, hostpws))
                
         return json.dumps(out)
     
