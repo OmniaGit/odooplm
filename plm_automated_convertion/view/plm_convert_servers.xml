@@ -22,6 +22,17 @@
             <field name="arch" type="xml">
                 <form string="Plm Convert Servers">
                     <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button
+                                name="action_view_stack"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-tasks"
+                                groups="plm_automated_convertion.group_plm_convert_view"
+                            >
+                                <field name="stack_count" widget="statinfo" string="Queue" />
+                            </button>
+                        </div>
                         <group>
                             <field name="sequence" />
                             <field name="available" widget="boolean_toggle" />
