@@ -21,7 +21,7 @@
 ##############################################################################
 {
     "name": "Plm Pack and Go",
-    "version": "19.0.1.0.3",
+    "version": "19.0.1.0.4",
     "images": ["static/description/cover.gif"],
     "author": "OmniaSolutions",
     "maintainer": "OmniaSolutions S.n.c di Boscolo Matteo & C",
@@ -47,6 +47,8 @@
     "data": [
         "security/plm_security.xml",
         "data/ir_parameters.xml",
+        "data/pack_go_export_type_data.xml",
+        "views/pack_go_export_type_views.xml",
         "wizard/pack_and_go.xml",
         "wizard/pack_and_go_view.xml",
     ],
