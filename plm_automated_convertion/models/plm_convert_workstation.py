@@ -36,6 +36,11 @@ EXPORT_MODES = [
 class PlmConvertServers(models.Model):
     _inherit = "plm.convert.servers"
 
+    cad_agent = fields.Boolean(
+        "CAD Agent",
+        help="The conversions of this server are made by the agents of a CAD workstation, "
+        "which take them from the conversion stack: Odoo never converts them itself.",
+    )
     workstation_guid = fields.Char(
         "Workstation GUID",
         index=True,
@@ -193,6 +198,11 @@ class PlmConvertFormat(models.Model):
         string="CAD Export Mode",
         help="What a CAD workstation exports from the starting file; it also gives the code "
         "of the converted document, the same the CAD client gives it at check-in.",
+    )
+    cad_version_update = fields.Boolean(
+        "CAD Version Update",
+        help="The conversion updates the files of the start format to the target version of its CAD "
+        "(PLM dictionaries, CAD Versions).",
     )
     presented = fields.Boolean(
         "Presented by the Workstation",

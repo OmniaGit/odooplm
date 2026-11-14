@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="plm_cad_version_queue_wizard_form" model="ir.ui.view">
+        <field name="name">plm.cad.version.queue.wizard.form</field>
+        <field name="model">plm.cad.version.queue.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Massive Update">
+                <group>
+                    <field name="operation_type" widget="radio"/>
+                    <field name="selection_mode" widget="radio"/>
+                    <field name="convert_format_ids" widget="many2many_tags"
+                           domain="operation_type == 'CONVERT' and [('cad_export_mode', '!=', False), ('server_id.cad_agent', '=', True), ('available', '=', True)] or [('cad_version_update', '=', True), ('available', '=', True)]"/>
+                    <field name="document_ids" widget="many2many_tags"
+                           invisible="selection_mode != 'selection'"/>
+                </group>
+                <p class="text-muted">
+                    Only the files of the chosen conversions are queued. Documents already in the queue,
+                    and for a CAD version update documents already at the target version, are left out.
+                </p>
+                <footer>
+                    <button name="action_queue" type="object" string="Queue" class="btn-primary"/>
+                    <button string="Cancel" special="cancel" class="btn-secondary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="plm_cad_version_queue_wizard_action" model="ir.actions.act_window">
+        <field name="name">Massive Update</field>
+        <field name="res_model">plm.cad.version.queue.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="binding_model_id" ref="base.model_ir_attachment"/>
+        <field name="binding_view_types">list</field>
+        <field name="groups_id" eval="[(4, ref('plm_automated_convertion.group_plm_convert_admin'))]"/>
+    </record>
+
+    <menuitem id="plm_cad_version_queue_wizard_menu"
+              name="Massive Update"
+              parent="plm_automated_convertion.menu_cad_conversion"
+              action="plm_cad_version_queue_wizard_action"
+              groups="plm_automated_convertion.group_plm_convert_admin"
+              sequence="50"/>
+</odoo>
