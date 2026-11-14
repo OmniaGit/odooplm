@@ -665,6 +665,44 @@
 
 
 
+<!-- plm.cad, plm.cad.version -->
+    <record id="plm_cad_view" model="ir.model.access">
+        <field name="name">PLM CAD</field>
+        <field name="model_id" ref="model_plm_cad" />
+        <field name="group_id" ref="group_plm_view_user" />
+        <field name="perm_read" eval="1" />
+        <field name="perm_write" eval="0" />
+        <field name="perm_create" eval="0" />
+        <field name="perm_unlink" eval="0" />
+    </record>
+    <record id="plm_cad_admin" model="ir.model.access">
+        <field name="name">PLM CAD</field>
+        <field name="model_id" ref="model_plm_cad" />
+        <field name="group_id" ref="group_plm_admin" />
+        <field name="perm_read" eval="1" />
+        <field name="perm_write" eval="1" />
+        <field name="perm_create" eval="1" />
+        <field name="perm_unlink" eval="1" />
+    </record>
+    <record id="plm_cad_version_view" model="ir.model.access">
+        <field name="name">PLM CAD Version</field>
+        <field name="model_id" ref="model_plm_cad_version" />
+        <field name="group_id" ref="group_plm_view_user" />
+        <field name="perm_read" eval="1" />
+        <field name="perm_write" eval="0" />
+        <field name="perm_create" eval="0" />
+        <field name="perm_unlink" eval="0" />
+    </record>
+    <record id="plm_cad_version_admin" model="ir.model.access">
+        <field name="name">PLM CAD Version</field>
+        <field name="model_id" ref="model_plm_cad_version" />
+        <field name="group_id" ref="group_plm_admin" />
+        <field name="perm_read" eval="1" />
+        <field name="perm_write" eval="1" />
+        <field name="perm_create" eval="1" />
+        <field name="perm_unlink" eval="1" />
+    </record>
+
 <!-- plm.material  -->
     <record id="plm_material_view" model="ir.model.access">
         <field name="name">PLM Material</field>
