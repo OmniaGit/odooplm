@@ -129,6 +129,15 @@
     />
 
     <menuitem
+        name="CAD Versions"
+        action="plm_action_cad_form"
+        id="menu_cad_version"
+        sequence="5"
+        groups="plm.group_plm_admin"
+        parent="plm.plm_menu_dictionaries"
+    />
+
+    <menuitem
         id="plm_dbthread_id"
         name="DbThread"
         parent="plm.plm_menu_dictionaries"
