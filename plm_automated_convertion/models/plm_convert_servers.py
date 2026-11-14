@@ -67,7 +67,6 @@ class PlmConvertServers(models.Model):
         action = self.env["ir.actions.act_window"]._for_xml_id("plm_automated_convertion.plm_convert_stack_action")
         action["domain"] = self._stack_domain()
         action["name"] = "%s: %s" % (action["name"], self.name or "")
-        action["context"] = {}
         return action
 
     def getBaseUrl(self):
