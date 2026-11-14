@@ -139,10 +139,11 @@
 
         <menuitem
             id="plm_convert_servers_menu"
-            name="Plm Convert Servers"
-            parent="plm.plm_menu_dictionaries"
+            name="Workstations and Servers"
+            parent="menu_cad_conversion"
             groups="plm_automated_convertion.group_plm_convert_view"
             action="plm_convert_servers_action"
+            sequence="10"
         />
 
     </data>
