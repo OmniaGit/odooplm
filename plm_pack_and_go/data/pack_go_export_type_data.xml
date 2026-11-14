@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- The values of the former export_type selection, with the same rules:
+         only the last one exports the Other documents. noupdate, so the
+         user can change them. -->
+    <data noupdate="1">
+        <record id="pack_go_export_type_2d" model="plm.pack.go.export.type">
+            <field name="name">2D</field>
+            <field name="sequence">10</field>
+            <field name="include_2d" eval="True"/>
+            <field name="include_pdf" eval="False"/>
+            <field name="include_3d" eval="False"/>
+            <field name="include_other" eval="False"/>
+        </record>
+        <record id="pack_go_export_type_3d" model="plm.pack.go.export.type">
+            <field name="name">3D</field>
+            <field name="sequence">20</field>
+            <field name="include_2d" eval="False"/>
+            <field name="include_pdf" eval="False"/>
+            <field name="include_3d" eval="True"/>
+            <field name="include_other" eval="False"/>
+        </record>
+        <record id="pack_go_export_type_pdf" model="plm.pack.go.export.type">
+            <field name="name">PDF</field>
+            <field name="sequence">30</field>
+            <field name="include_2d" eval="False"/>
+            <field name="include_pdf" eval="True"/>
+            <field name="include_3d" eval="False"/>
+            <field name="include_other" eval="False"/>
+        </record>
+        <record id="pack_go_export_type_2dpdf" model="plm.pack.go.export.type">
+            <field name="name">2D + PDF</field>
+            <field name="sequence">40</field>
+            <field name="include_2d" eval="True"/>
+            <field name="include_pdf" eval="True"/>
+            <field name="include_3d" eval="False"/>
+            <field name="include_other" eval="False"/>
+        </record>
+        <record id="pack_go_export_type_3dpdf" model="plm.pack.go.export.type">
+            <field name="name">3D + PDF</field>
+            <field name="sequence">50</field>
+            <field name="include_2d" eval="False"/>
+            <field name="include_pdf" eval="True"/>
+            <field name="include_3d" eval="True"/>
+            <field name="include_other" eval="False"/>
+        </record>
+        <record id="pack_go_export_type_3d2d" model="plm.pack.go.export.type">
+            <field name="name">3D + 2D</field>
+            <field name="sequence">60</field>
+            <field name="include_2d" eval="True"/>
+            <field name="include_pdf" eval="False"/>
+            <field name="include_3d" eval="True"/>
+            <field name="include_other" eval="False"/>
+        </record>
+        <record id="pack_go_export_type_all" model="plm.pack.go.export.type">
+            <field name="name">2D + 3D + PDF</field>
+            <field name="sequence">70</field>
+            <field name="include_2d" eval="True"/>
+            <field name="include_pdf" eval="True"/>
+            <field name="include_3d" eval="True"/>
+            <field name="include_other" eval="True"/>
+        </record>
+    </data>
+</odoo>

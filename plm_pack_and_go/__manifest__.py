@@ -20,7 +20,7 @@
 ##############################################################################
 {
     "name": "Plm Pack and Go",
-    "version": "18.0.1.0.1",
+    "version": "18.0.1.0.2",
     "author": "OmniaSolutions",
     "website": "https://github.com/OmniaGit/odooplm",
     "category": "Manufacturing/Product Lifecycle Management (PLM)",
@@ -32,6 +32,8 @@
     "data": [
         "security/plm_security.xml",
         "data/ir_parameters.xml",
+        "data/pack_go_export_type_data.xml",
+        "views/pack_go_export_type_views.xml",
         "wizard/plm_component.xml",
     ],
     "installable": True,
