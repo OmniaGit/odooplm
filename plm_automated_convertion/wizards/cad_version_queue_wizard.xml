@@ -18,7 +18,7 @@
                     and for a CAD version update documents already at the target version, are left out.
                 </p>
                 <footer>
-                    <button name="action_queue" type="object" string="Queue" class="btn-primary"/>
+                    <button name="action_queue" type="object" string="Add To The Queue" class="btn-primary"/>
                     <button string="Cancel" special="cancel" class="btn-secondary"/>
                 </footer>
             </form>

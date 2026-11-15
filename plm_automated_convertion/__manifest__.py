@@ -20,7 +20,7 @@
 ##############################################################################
 {
     "name": "Product Lifecycle Management Batch conversion",
-    "version": "18.0.4.3.0",
+    "version": "18.0.4.4.0",
     "author": "OmniaSolutions",
     "website": "https://github.com/OmniaGit/odooplm",
     "category": "Manufacturing/Product Lifecycle Management (PLM)",
@@ -42,6 +42,7 @@
         "view/cad_agent_stack.xml",
         "view/cad_agent_servers.xml",
         "view/cad_agent_attachment.xml",
+        "view/plm_convert_template.xml",
         "wizards/cad_version_queue_wizard.xml",
     ],
     "post_init_hook": "post_init_hook",

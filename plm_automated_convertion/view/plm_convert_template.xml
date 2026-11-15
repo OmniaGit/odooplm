@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="plm_convert_template_form" model="ir.ui.view">
+        <field name="name">plm.convert.template.form</field>
+        <field name="model">plm.convert.template</field>
+        <field name="arch" type="xml">
+            <form string="Conversion Template">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name" />
+                            <field name="owner_id" placeholder="everybody (predefined)" />
+                        </group>
+                        <group>
+                            <field name="cad_version_update" />
+                            <field name="sequence" />
+                            <field name="active" invisible="1" />
+                        </group>
+                    </group>
+                    <field name="line_ids">
+                        <list editable="bottom">
+                            <field name="start_format" placeholder=".ipt" />
+                            <field name="end_format" placeholder=".step" />
+                            <field name="cad_export_mode" />
+                        </list>
+                    </field>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="plm_convert_template_list" model="ir.ui.view">
+        <field name="name">plm.convert.template.list</field>
+        <field name="model">plm.convert.template</field>
+        <field name="arch" type="xml">
+            <list string="Conversion Templates">
+                <field name="sequence" widget="handle" />
+                <field name="name" />
+                <field name="owner_id" />
+                <field name="cad_version_update" />
+            </list>
+        </field>
+    </record>
+
+    <record id="plm_convert_template_search" model="ir.ui.view">
+        <field name="name">plm.convert.template.search</field>
+        <field name="model">plm.convert.template</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name" />
+                <filter string="Predefined" name="predefined" domain="[('owner_id', '=', False)]" />
+                <filter string="Mine" name="mine" domain="[('owner_id', '=', uid)]" />
+                <separator />
+                <filter string="Archived" name="inactive" domain="[('active', '=', False)]" />
+            </search>
+        </field>
+    </record>
+
+    <record id="plm_convert_template_action" model="ir.actions.act_window">
+        <field name="name">Conversion Templates</field>
+        <field name="res_model">plm.convert.template</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <menuitem
+        id="plm_convert_template_menu"
+        name="Conversion Templates"
+        parent="menu_cad_conversion"
+        action="plm_convert_template_action"
+        groups="plm_automated_convertion.group_plm_convert_view"
+        sequence="25"
+    />
+</odoo>
