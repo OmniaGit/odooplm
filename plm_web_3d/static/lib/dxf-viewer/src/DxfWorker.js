@@ -228,6 +228,7 @@ export class DxfWorker {
                         y: pos.y,
                         textHeight: entity.height || 0,
                         rotation: (entity.rotation || 0) + sumRotation(transforms),
+                        attachmentPoint: entity.attachmentPoint || 1,
                     })
                 } else if (entity.type === 'INSERT' && dxf.blocks) {
                     const block = dxf.blocks[entity.name]
