@@ -72,6 +72,36 @@
         <field name="perm_unlink" eval="0" />
     </record>
 
+    <record id="plm_cad_version_queue_wizard_admin" model="ir.model.access">
+        <field name="name">Massive Update Admin</field>
+        <field name="model_id" ref="plm_automated_convertion.model_plm_cad_version_queue_wizard" />
+        <field name="group_id" ref="plm_automated_convertion.group_plm_convert_admin" />
+        <field name="perm_read" eval="1" />
+        <field name="perm_write" eval="1" />
+        <field name="perm_create" eval="1" />
+        <field name="perm_unlink" eval="1" />
+    </record>
+
+    <record id="plm_convert_servers_cad_admin" model="ir.model.access">
+        <field name="name">Plm Convert Servers CAD Admin</field>
+        <field name="model_id" ref="plm_automated_convertion.model_plm_convert_servers_cad" />
+        <field name="group_id" ref="plm_automated_convertion.group_plm_convert_admin" />
+        <field name="perm_read" eval="1" />
+        <field name="perm_write" eval="1" />
+        <field name="perm_create" eval="1" />
+        <field name="perm_unlink" eval="1" />
+    </record>
+
+    <record id="plm_convert_servers_cad_user" model="ir.model.access">
+        <field name="name">Plm Convert Servers CAD User</field>
+        <field name="model_id" ref="plm_automated_convertion.model_plm_convert_servers_cad" />
+        <field name="group_id" ref="plm_automated_convertion.group_plm_convert_view" />
+        <field name="perm_read" eval="1" />
+        <field name="perm_write" eval="0" />
+        <field name="perm_create" eval="0" />
+        <field name="perm_unlink" eval="0" />
+    </record>
+
     <record id="plm_convert_servers_user" model="ir.model.access">
         <field name="name">Plm Convert Servers User</field>
         <field
@@ -108,5 +138,106 @@
         <field name="perm_unlink" eval="0" />
     </record>
 
+
+    <record id="plm_convert_template_user" model="ir.model.access">
+        <field name="name">Conversion Template User</field>
+        <field name="model_id" ref="plm_automated_convertion.model_plm_convert_template" />
+        <field name="group_id" ref="plm_automated_convertion.group_plm_convert_view" />
+        <field name="perm_read" eval="1" />
+        <field name="perm_write" eval="1" />
+        <field name="perm_create" eval="1" />
+        <field name="perm_unlink" eval="1" />
+    </record>
+    <record id="plm_convert_template_admin" model="ir.model.access">
+        <field name="name">Conversion Template Admin</field>
+        <field name="model_id" ref="plm_automated_convertion.model_plm_convert_template" />
+        <field name="group_id" ref="plm_automated_convertion.group_plm_convert_admin" />
+        <field name="perm_read" eval="1" />
+        <field name="perm_write" eval="1" />
+        <field name="perm_create" eval="1" />
+        <field name="perm_unlink" eval="1" />
+    </record>
+    <record id="plm_convert_template_line_user" model="ir.model.access">
+        <field name="name">Conversion Template Line User</field>
+        <field name="model_id" ref="plm_automated_convertion.model_plm_convert_template_line" />
+        <field name="group_id" ref="plm_automated_convertion.group_plm_convert_view" />
+        <field name="perm_read" eval="1" />
+        <field name="perm_write" eval="1" />
+        <field name="perm_create" eval="1" />
+        <field name="perm_unlink" eval="1" />
+    </record>
+    <record id="plm_convert_template_line_admin" model="ir.model.access">
+        <field name="name">Conversion Template Line Admin</field>
+        <field name="model_id" ref="plm_automated_convertion.model_plm_convert_template_line" />
+        <field name="group_id" ref="plm_automated_convertion.group_plm_convert_admin" />
+        <field name="perm_read" eval="1" />
+        <field name="perm_write" eval="1" />
+        <field name="perm_create" eval="1" />
+        <field name="perm_unlink" eval="1" />
+    </record>
+    <record id="plm_convert_line_user" model="ir.model.access">
+        <field name="name">Conversion Wizard Line User</field>
+        <field name="model_id" ref="plm_automated_convertion.model_plm_convert_line" />
+        <field name="group_id" ref="plm_automated_convertion.group_plm_convert_view" />
+        <field name="perm_read" eval="1" />
+        <field name="perm_write" eval="1" />
+        <field name="perm_create" eval="1" />
+        <field name="perm_unlink" eval="1" />
+    </record>
+
+    <!-- a user reads the predefined templates and his own, and changes only his own;
+         a Plm Convert Admin manages them all -->
+    <record id="plm_convert_template_rule_user" model="ir.rule">
+        <field name="name">Conversion templates: predefined and own</field>
+        <field name="model_id" ref="plm_automated_convertion.model_plm_convert_template" />
+        <field name="groups" eval="[(4, ref('plm_automated_convertion.group_plm_convert_view'))]" />
+        <field name="domain_force">['|', ('owner_id', '=', False), ('owner_id', '=', user.id)]</field>
+        <field name="perm_read" eval="1" />
+        <field name="perm_write" eval="0" />
+        <field name="perm_create" eval="0" />
+        <field name="perm_unlink" eval="0" />
+    </record>
+    <record id="plm_convert_template_rule_user_own" model="ir.rule">
+        <field name="name">Conversion templates: change only own</field>
+        <field name="model_id" ref="plm_automated_convertion.model_plm_convert_template" />
+        <field name="groups" eval="[(4, ref('plm_automated_convertion.group_plm_convert_view'))]" />
+        <field name="domain_force">[('owner_id', '=', user.id)]</field>
+        <field name="perm_read" eval="0" />
+        <field name="perm_write" eval="1" />
+        <field name="perm_create" eval="1" />
+        <field name="perm_unlink" eval="1" />
+    </record>
+    <record id="plm_convert_template_line_rule_user" model="ir.rule">
+        <field name="name">Conversion template lines: predefined and own</field>
+        <field name="model_id" ref="plm_automated_convertion.model_plm_convert_template_line" />
+        <field name="groups" eval="[(4, ref('plm_automated_convertion.group_plm_convert_view'))]" />
+        <field name="domain_force">['|', ('template_id.owner_id', '=', False), ('template_id.owner_id', '=', user.id)]</field>
+        <field name="perm_read" eval="1" />
+        <field name="perm_write" eval="0" />
+        <field name="perm_create" eval="0" />
+        <field name="perm_unlink" eval="0" />
+    </record>
+    <record id="plm_convert_template_line_rule_user_own" model="ir.rule">
+        <field name="name">Conversion template lines: change only own</field>
+        <field name="model_id" ref="plm_automated_convertion.model_plm_convert_template_line" />
+        <field name="groups" eval="[(4, ref('plm_automated_convertion.group_plm_convert_view'))]" />
+        <field name="domain_force">[('template_id.owner_id', '=', user.id)]</field>
+        <field name="perm_read" eval="0" />
+        <field name="perm_write" eval="1" />
+        <field name="perm_create" eval="1" />
+        <field name="perm_unlink" eval="1" />
+    </record>
+    <record id="plm_convert_template_rule_admin" model="ir.rule">
+        <field name="name">Conversion templates: all for the admin</field>
+        <field name="model_id" ref="plm_automated_convertion.model_plm_convert_template" />
+        <field name="groups" eval="[(4, ref('plm_automated_convertion.group_plm_convert_admin'))]" />
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+    <record id="plm_convert_template_line_rule_admin" model="ir.rule">
+        <field name="name">Conversion template lines: all for the admin</field>
+        <field name="model_id" ref="plm_automated_convertion.model_plm_convert_template_line" />
+        <field name="groups" eval="[(4, ref('plm_automated_convertion.group_plm_convert_admin'))]" />
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
 
 </odoo>

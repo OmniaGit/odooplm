@@ -75,12 +75,10 @@ class PlmConvertStack(models.Model):
             )
 
     def setToConver(self):
-        for convertStack in self:
-            convertStack.conversion_done = False
+        self.write({"conversion_done": False, "cad_agent_state": "to_do"})
 
     def setToConverted(self):
-        for convertStack in self:
-            convertStack.conversion_done = True
+        self.write({"conversion_done": True, "cad_agent_state": "done"})
 
     @api.model_create_multi
     def create(self, vals):
@@ -150,8 +148,11 @@ class PlmConvertStack(models.Model):
             except Exception as ex:
                 logging.error(ex)
                 traceback.print_exc()
-                stack_id.error_string = (
-                    _("Internal Error %s check odoo log for the full error stack") % ex
+                stack_id.write(
+                    {
+                        "cad_agent_state": "error",
+                        "error_string": _("Internal Error %s check odoo log for the full error stack") % ex,
+                    }
                 )
 
     def generateConvertedDocuments(self):

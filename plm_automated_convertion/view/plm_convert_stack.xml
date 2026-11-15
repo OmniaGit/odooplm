@@ -54,6 +54,8 @@
                             <field name="sequence" groups="base.group_no_one" />
                             <field name="write_date" groups="base.group_no_one" />
                             <field name="operation_type" />
+                            <field name="cad_agent_state" />
+                            <field name="requester_id" />
                             <field name="start_document_id" readonly="True" />
 
                             <field name="server_id" />
@@ -121,14 +123,16 @@
             <field name="res_model">plm.convert.stack</field>
             <field name="view_id" ref="plm_convert_stack_list" />
             <field name="search_view_id" ref="plm_convert_stack_search" />
+            <field name="context">{'search_default_group_operation_type': 1, 'search_default_group_cad_version_state': 1}</field>
         </record>
 
         <menuitem
             id="plm_convert_stack_menu"
-            name="Plm Convert Stack"
-            parent="plm.plm_menu_dictionaries"
+            name="Queue"
+            parent="menu_cad_conversion"
             groups="plm_automated_convertion.group_plm_convert_view"
             action="plm_convert_stack_action"
+            sequence="30"
         />
     </data>
 </odoo>
