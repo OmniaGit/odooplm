@@ -19,6 +19,8 @@ The agent logs in as a user of the group Plm Convert Admin (the session of
 - GET  /plm_cad_agent/download: the file of a document (document_id)
 - POST /plm_cad_agent/upload: a file produced for a row (stack_id, file,
   cad_version for an update, variant = model state for a conversion)
+- POST /plm_cad_agent/release: gives back rows taken and not worked
+  (stack_ids separated by commas): to do again
 - POST /plm_cad_agent/report: closes a row (stack_id, state
   error|skipped, or done for a conversion, message)
 """
@@ -87,6 +89,20 @@ class CadAgentController(http.Controller):
         except (AccessError, UserError) as ex:
             return self._json_error(ex, 403 if isinstance(ex, AccessError) else 400)
         return request.make_json_response({"state": state, "message": message})
+
+    @http.route("/plm_cad_agent/release", type="http", auth="user", methods=["POST"], csrf=False)
+    def release(self, stack_ids="", **kw):
+        """Give back jobs taken and not worked (stack_ids: ids separated by
+        commas): they are to do again for any workstation."""
+        try:
+            self._check_access()
+            ids = [int(value) for value in stack_ids.split(",") if value.strip()]
+        except AccessError as ex:
+            return self._json_error(ex, 403)
+        except ValueError:
+            return self._json_error("stack_ids: ids separated by commas.")
+        rows = request.env["plm.convert.stack"].sudo().browse(ids).exists()
+        return request.make_json_response({"released": rows.cad_agent_give_back()})
 
     @http.route("/plm_cad_agent/report", type="http", auth="user", methods=["POST"], csrf=False)
     def report(self, stack_id, state="error", message="", **kw):
