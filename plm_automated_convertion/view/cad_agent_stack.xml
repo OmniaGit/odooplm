@@ -10,12 +10,12 @@
                 <group name="cad_version" string="CAD Workstation"
                        invisible="operation_type != 'CAD_VERSION' and not (operation_type == 'CONVERT' and cad_agent)">
                     <group>
-                        <field name="cad_agent_state"/>
                         <field name="cad_version_target" invisible="operation_type != 'CAD_VERSION'"/>
                         <field name="cad_download_engineering_state"/>
                         <field name="cad_checkout_id" invisible="operation_type != 'CAD_VERSION'"/>
                     </group>
                     <group>
+                        <field name="workstation_id"/>
                         <field name="cad_hostname"/>
                         <field name="cad_hostpws"/>
                         <field name="cad_download_date"/>
@@ -42,6 +42,8 @@
             <xpath expr="//field[@name='conversion_done']" position="after">
                 <field name="cad_version_target" optional="show"/>
                 <field name="cad_agent_state" optional="show"/>
+                <field name="requester_id" optional="show"/>
+                <field name="workstation_id" optional="show"/>
                 <field name="cad_hostname" optional="hide"/>
                 <field name="cad_upload_date" optional="hide"/>
             </xpath>

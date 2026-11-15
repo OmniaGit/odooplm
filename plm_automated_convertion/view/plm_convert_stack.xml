@@ -54,6 +54,8 @@
                             <field name="sequence" groups="base.group_no_one" />
                             <field name="write_date" groups="base.group_no_one" />
                             <field name="operation_type" />
+                            <field name="cad_agent_state" />
+                            <field name="requester_id" />
                             <field name="start_document_id" readonly="True" />
 
                             <field name="server_id" />

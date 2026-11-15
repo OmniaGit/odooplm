@@ -100,6 +100,8 @@ class PlmConvertServers(models.Model):
             "last_contact": fields.Datetime.now(),
             "work_hours": "\n".join(data.get("work_hours") or []),
             "features": ", ".join(data.get("features") or []),
+            # a workstation takes its jobs from the queue: Odoo never converts them
+            "cad_agent": True,
         }
         server = self.with_context(active_test=False).search([("workstation_guid", "=", guid)], limit=1)
         if server:
@@ -111,6 +113,56 @@ class PlmConvertServers(models.Model):
         server._present_cads(data.get("cads") or [])
         server._present_conversions(data.get("conversions") or [])
         return {"server_id": server.id, "name": server.name, "enabled": server.available}
+
+    def _feature_list(self):
+        self.ensure_one()
+        return [name.strip() for name in (self.features or "").split(",") if name.strip()]
+
+    def _users_tied_to_workstations(self):
+        """The users of the groups tied to a workstation: their jobs are worked
+        only by the workstations of their groups."""
+        return self.with_context(active_test=False).search([("group_ids", "!=", False)]).mapped("group_ids.users")
+
+    def _queue_requester_domain(self):
+        """The jobs this workstation may take, by who asked for them: with
+        groups, only the jobs of the users of its groups; without groups
+        (shared), the jobs of the users not tied to any workstation."""
+        self.ensure_one()
+        if self.group_ids:
+            return [("requester_id", "in", self.group_ids.users.ids)]
+        tied = self._users_tied_to_workstations()
+        if not tied:
+            return []
+        return ["|", ("requester_id", "=", False), ("requester_id", "not in", tied.ids)]
+
+    def _queue_conversion_domain(self, operation_type):
+        """The jobs this workstation can do: a CAD version update of one of
+        its CADs, when it presented the function CAD_VERSION; a conversion it
+        presented (CAD, start and end format, export mode), whatever server
+        the conversion rule of the job belongs to."""
+        self.ensure_one()
+        stack = self.env["plm.convert.stack"]
+        if operation_type == "CAD_VERSION":
+            if "CAD_VERSION" not in self._feature_list():
+                return None
+            domains = [stack._cad_agent_cad_domain(cad.cad_name) for cad in self.workstation_cad_ids]
+            domains = [domain for domain in domains if domain]
+            if not domains:
+                return None
+            return ["|"] * (len(domains) - 1) + [term for domain in domains for term in domain]
+        conversions = self.available_format.filtered(lambda f: f.available and f.cad_export_mode)
+        if not conversions:
+            return None
+        domain = ["|"] * (len(conversions) - 1)
+        for conversion in conversions:
+            domain += [
+                "&", "&", "&",
+                ("convrsion_rule.cad_name", "=ilike", conversion.cad_name),
+                ("convrsion_rule.start_format", "=ilike", conversion.start_format),
+                ("convrsion_rule.end_format", "=ilike", conversion.end_format),
+                ("convrsion_rule.cad_export_mode", "=", conversion.cad_export_mode),
+            ]
+        return domain
 
     def _present_cads(self, cads):
         self.ensure_one()
