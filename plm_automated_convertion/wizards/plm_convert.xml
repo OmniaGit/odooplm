@@ -1,32 +1,54 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <data>
         <record id="act_plm_convert_form" model="ir.ui.view">
             <field name="name">plm.convert.form</field>
             <field name="model">plm.convert</field>
             <field name="arch" type="xml">
-                <form string="Convert Form">
-                    <group colspan="4" col="4">
-                        <field string="Document Of Origin" name="document_id" readonly="1"/>
-                        <field name="extention" invisible="1"/>
+                <form string="Convert File">
+                    <group>
+                        <field name="document_ids" widget="many2many_tags" />
                         <field
-                            string="Convertion Format"
-                            name="targetFormat"
-                            domain="[('start_format', '=', extention), ('available', '=', True)]"
+                            name="template_id"
+                            options="{'no_create': True}"
+                            placeholder="choose the conversions at once"
                         />
                     </group>
+                    <field name="line_ids" nolabel="1">
+                        <list editable="bottom" create="0" delete="0" no_open="1">
+                            <field name="selected" widget="boolean_toggle" />
+                            <field name="start_format" force_save="1" />
+                            <field name="end_format" force_save="1" />
+                            <field name="cad_export_mode" force_save="1" />
+                            <field name="cad_name" force_save="1" optional="show" />
+                            <field name="maker" force_save="1" />
+                            <field name="format_id" force_save="1" column_invisible="1" />
+                        </list>
+                    </field>
+                    <group>
+                        <field name="cad_version_available" invisible="1" />
+                        <field name="cad_version_update" invisible="not cad_version_available" />
+                    </group>
+                    <div class="text-muted">
+                        The conversions of a CAD workstation go into the queue: the first free workstation
+                        able to make them takes them, and the converted file arrives when it is made.
+                    </div>
+                    <group string="Save As My Template">
+                        <div class="o_row" colspan="2">
+                            <field name="template_name" placeholder="name of the template" />
+                            <button
+                                string="Save As My Template"
+                                type="object"
+                                name="action_save_template"
+                                class="btn-secondary"
+                                icon="fa-floppy-o"
+                            />
+                        </div>
+                    </group>
                     <footer>
-                        <button string="Cancel" special="cancel"/>
-                        <button
-                            string="Convert"
-                            type="object"
-                            name="action_create_convert_download"
-                        />
-                        <button
-                            string="Convert to folder"
-                            type="object"
-                            name="action_create_coversion"
-                        />
+                        <button string="Convert" type="object" name="action_convert" class="btn-primary" />
+                        <button string="Convert to folder" type="object" name="action_create_coversion" />
+                        <button string="Cancel" special="cancel" />
                     </footer>
                 </form>
             </field>
@@ -35,8 +57,7 @@
         <record model="ir.actions.act_window" id="act_view_doc_convert">
             <field name="name">Convert File</field>
             <field name="res_model">plm.convert</field>
-            <field name="binding_model_id" ref="model_ir_attachment"/>
-            <field name="context">{'default_document_id': active_id}</field>
+            <field name="binding_model_id" ref="model_ir_attachment" />
             <field name="target">new</field>
             <field name="view_mode">form</field>
         </record>

@@ -89,16 +89,4 @@
     </record>
 
 
-    <!-- The conversion wizard of a document converts inside Odoo: the
-         conversions of a CAD agent are not offered there -->
-    <record id="plm_convert_form_cad_agent" model="ir.ui.view">
-        <field name="name">plm.convert.form.cad.agent</field>
-        <field name="model">plm.convert</field>
-        <field name="inherit_id" ref="plm_automated_convertion.act_plm_convert_form"/>
-        <field name="arch" type="xml">
-            <xpath expr="//field[@name='targetFormat']" position="attributes">
-                <attribute name="domain">[('start_format', '=', extention), ('available', '=', True), ('server_id.cad_agent', '=', False), ('cad_version_update', '=', False)]</attribute>
-            </xpath>
-        </field>
-    </record>
 </odoo>
