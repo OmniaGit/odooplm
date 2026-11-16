@@ -136,3 +136,21 @@ class TestWorkstationRegisterHttp(HttpCase):
         self.authenticate("cad_ws_admin", "cad_ws_admin_pwd")
         self.assertEqual(self.post("not json").status_code, 400)
         self.assertEqual(self.post(json.dumps({"hostname": "x"})).status_code, 400)
+
+    def test_release(self):
+        server = self.env["plm.convert.servers"].create({"name": "Release agent", "cad_agent": True})
+        rule = self.env["plm.convert.format"].create(
+            {"server_id": server.id, "cad_name": "Inventor", "start_format": ".relprt", "end_format": ".step",
+             "cad_export_mode": "file", "available": True}
+        )
+        document = self.env["ir.attachment"].create({"name": "part.relprt", "raw": b"x"})
+        row = self.env["plm.convert.stack"].create(
+            {"convrsion_rule": rule.id, "start_document_id": document.id, "operation_type": "CONVERT",
+             "cad_agent_state": "downloaded", "cad_hostname": "WS"}
+        )
+        self.authenticate("cad_ws_admin", "cad_ws_admin_pwd")
+        response = self.url_open("/plm_cad_agent/release", data={"stack_ids": "%s,%s" % (row.id, row.id + 100000)})
+        self.assertEqual(response.json(), {"released": [row.id]})
+        row.invalidate_recordset()
+        self.assertEqual((row.cad_agent_state, row.cad_hostname), ("to_do", False))
+        self.assertEqual(self.url_open("/plm_cad_agent/release", data={"stack_ids": "x"}).status_code, 400)

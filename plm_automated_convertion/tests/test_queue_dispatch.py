@@ -124,6 +124,16 @@ class TestQueueDispatch(TransactionCase):
         self.tied.group_ids = [(5, 0, 0)]
         self.assertEqual(self.take(self.tied, "CAD_VERSION"), update_job)
 
+    def test_a_job_given_back_is_to_do_again(self):
+        designer_job = self.job(self.step, self.designer)
+        done_job = self.job(self.step, self.designer, name="other.ipt")
+        self.assertEqual(self.take(self.shared), designer_job | done_job)
+        done_job.cad_agent_state = "done"
+        self.assertEqual((designer_job | done_job).cad_agent_give_back(), designer_job.ids)
+        self.assertEqual((designer_job.cad_agent_state, designer_job.workstation_id.id), ("to_do", False))
+        self.assertEqual(done_job.cad_agent_state, "done")
+        self.assertEqual(self.take(self.shared), designer_job)  # any workstation can take it again
+
     def test_an_unknown_workstation_registers_first(self):
         with self.assertRaises(UserError):
             self.env["plm.convert.stack"].cad_agent_next_batch("WS-X", HOSTPWS, 10, "CONVERT", guid="GUID-X")

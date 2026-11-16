@@ -583,6 +583,16 @@ class PlmConvertStack(models.Model):
             values["cad_upload_date"] = fields.Datetime.now()
         self.write(values)
 
+    def cad_agent_give_back(self):
+        """A workstation gives back jobs it took and did not work: they are to
+        do again for any workstation, the check-out of an update removed.
+        Only the jobs in progress are given back.
+        :return the ids given back
+        """
+        rows = self.filtered(lambda row: row.cad_agent_state == "downloaded")
+        rows.action_cad_agent_reset()
+        return rows.ids
+
     def action_cad_agent_reset(self):
         """Put the rows back to do, removing the check-out of the update."""
         rows = self.filtered(
