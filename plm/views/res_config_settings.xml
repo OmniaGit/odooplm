@@ -124,6 +124,11 @@
                         </setting>
                     </block>
                     <block title="Client" name="plm_client" groups="plm.group_plm_admin">
+                        <setting string="CAD Versions"
+                                 help="The CADs and their versions, and the version each CAD is updated to by a CAD version update.">
+                            <button name="%(plm.plm_action_cad_form)d" icon="oi-arrow-right" type="action"
+                                    string="CAD Versions" class="btn-link"/>
+                        </setting>
                         <setting>
                             <field name="module_plm_client_customprocedure"/>
                         </setting>
