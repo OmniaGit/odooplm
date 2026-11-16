@@ -113,13 +113,11 @@
             <field name="search_view_id" ref="plm_convert_stack_search"/>
         </record>
 
-        <menuitem id="menu_plm_submenu_main" name="PLM Conversion" parent="plm.plm_menu_dictionaries"
-          groups="plm_automated_convertion.group_plm_convert_view" sequence="40"/>
-
         <menuitem
             id="plm_convert_stack_menu"
-            name="Plm Automated Stack"
-            parent="plm_automated_convertion.menu_plm_submenu_main"
+            name="Queue"
+            parent="menu_cad_conversion"
+            sequence="30"
             groups="plm_automated_convertion.group_plm_convert_view"
             action="plm_convert_stack_action"/>
     </data>
