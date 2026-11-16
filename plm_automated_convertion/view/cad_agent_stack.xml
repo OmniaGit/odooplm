@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="plm_convert_stack_form_cad_version" model="ir.ui.view">
+        <field name="name">plm.convert.stack.form.cad.version</field>
+        <field name="model">plm.convert.stack</field>
+        <field name="inherit_id" ref="plm_automated_convertion.plm_convert_stack_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='Convert']" position="after">
+                <field name="cad_agent" invisible="1"/>
+                <group name="cad_version" string="CAD Workstation"
+                       invisible="operation_type != 'CAD_VERSION' and not (operation_type == 'CONVERT' and cad_agent)">
+                    <group>
+                        <field name="cad_agent_state"/>
+                        <field name="cad_version_target" invisible="operation_type != 'CAD_VERSION'"/>
+                        <field name="cad_download_engineering_state"/>
+                        <field name="cad_checkout_id" invisible="operation_type != 'CAD_VERSION'"/>
+                    </group>
+                    <group>
+                        <field name="cad_hostname"/>
+                        <field name="cad_hostpws"/>
+                        <field name="cad_download_date"/>
+                        <field name="cad_upload_date"/>
+                    </group>
+                    <field name="cad_export_document_ids" widget="many2many_tags" colspan="2"
+                           invisible="operation_type != 'CONVERT'"/>
+                    <button name="action_cad_agent_reset"
+                            type="object"
+                            string="Back To Do"
+                            icon="fa-undo"
+                            invisible="cad_agent_state == 'to_do'"
+                            groups="plm_automated_convertion.group_plm_convert_admin"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="plm_convert_stack_list_cad_version" model="ir.ui.view">
+        <field name="name">plm.convert.stack.list.cad.version</field>
+        <field name="model">plm.convert.stack</field>
+        <field name="inherit_id" ref="plm_automated_convertion.plm_convert_stack_list"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='conversion_done']" position="after">
+                <field name="cad_version_target" optional="show"/>
+                <field name="cad_agent_state" optional="show"/>
+                <field name="cad_hostname" optional="hide"/>
+                <field name="cad_upload_date" optional="hide"/>
+            </xpath>
+            <xpath expr="//field[@name='sequence']" position="before">
+                <header>
+                    <button name="action_cad_agent_reset"
+                            type="object"
+                            string="Back To Do"
+                            groups="plm_automated_convertion.group_plm_convert_admin"/>
+                </header>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="plm_convert_stack_search_cad_version" model="ir.ui.view">
+        <field name="name">plm.convert.stack.search.cad.version</field>
+        <field name="model">plm.convert.stack</field>
+        <field name="inherit_id" ref="plm_automated_convertion.plm_convert_stack_search"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='plm_convert_errors']" position="after">
+                <separator/>
+                <filter string="CAD Version Update" name="cad_version_update"
+                        domain="[('operation_type', '=', 'CAD_VERSION')]"/>
+                <filter string="Conversion By The CAD Workstation" name="cad_agent_convert"
+                        domain="[('operation_type', '=', 'CONVERT'), ('convrsion_rule.server_id.cad_agent', '=', True)]"/>
+                <separator/>
+                <filter string="To Do" name="cad_version_to_do"
+                        domain="[('cad_agent_state', '=', 'to_do')]"/>
+                <filter string="Downloaded" name="cad_version_downloaded"
+                        domain="[('cad_agent_state', '=', 'downloaded')]"/>
+                <filter string="Done" name="cad_version_done"
+                        domain="[('cad_agent_state', '=', 'done')]"/>
+                <filter string="Error Or Skipped" name="cad_version_failed"
+                        domain="[('cad_agent_state', 'in', ['error', 'skipped'])]"/>
+            </xpath>
+            <xpath expr="//filter[@name='convert_stack_category']" position="after">
+                <filter string="Operation Type" name="group_operation_type"
+                        context="{'group_by': 'operation_type'}"/>
+                <filter string="CAD Agent State" name="group_cad_version_state"
+                        context="{'group_by': 'cad_agent_state'}"/>
+            </xpath>
+        </field>
+    </record>
+
+
+    <!-- The conversion wizard of a document converts inside Odoo: the
+         conversions of a CAD agent are not offered there -->
+    <record id="plm_convert_form_cad_agent" model="ir.ui.view">
+        <field name="name">plm.convert.form.cad.agent</field>
+        <field name="model">plm.convert</field>
+        <field name="inherit_id" ref="plm_automated_convertion.act_plm_convert_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='targetFormat']" position="attributes">
+                <attribute name="domain">[('start_format', '=', extention), ('available', '=', True), ('server_id.cad_agent', '=', False), ('cad_version_update', '=', False)]</attribute>
+            </xpath>
+        </field>
+    </record>
+</odoo>

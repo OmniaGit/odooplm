@@ -111,6 +111,7 @@
             <field name="res_model">plm.convert.stack</field>
             <field name="view_id" ref="plm_convert_stack_list"/>
             <field name="search_view_id" ref="plm_convert_stack_search"/>
+            <field name="context">{'search_default_group_operation_type': 1, 'search_default_group_cad_version_state': 1}</field>
         </record>
 
         <menuitem
