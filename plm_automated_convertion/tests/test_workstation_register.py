@@ -50,6 +50,22 @@ class TestWorkstationRegister(TransactionCase):
             ],
         )
 
+    def test_the_queue_of_the_server(self):
+        server = self.env["plm.convert.servers"].browse(self.register()["server_id"])
+        other = self.env["plm.convert.servers"].browse(self.register(guid="OTHER", hostname="CAD-WS-02")["server_id"])
+        document = self.env["ir.attachment"].create({"name": "part.ipt", "raw": b"x"})
+        stack = self.env["plm.convert.stack"]
+        mine = stack.create(
+            [{"convrsion_rule": rule.id, "start_document_id": document.id, "operation_type": "CONVERT"}
+             for rule in server.available_format]
+        )
+        stack.create({"convrsion_rule": other.available_format[0].id, "start_document_id": document.id,
+                      "operation_type": "CONVERT"})
+        self.assertEqual(server.stack_count, 3)
+        action = server.action_view_stack()
+        self.assertEqual(action["res_model"], "plm.convert.stack")
+        self.assertEqual(stack.search(action["domain"]), mine)
+
     def test_the_same_guid_is_the_same_workstation(self):
         first = self.register()["server_id"]
         server = self.env["plm.convert.servers"].browse(first)
