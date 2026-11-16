@@ -20,3 +20,4 @@
 ##############################################################################
 from . import test_convert_stack_access
 from . import test_step_import
+from . import test_workstation_register
