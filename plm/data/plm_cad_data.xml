@@ -1,0 +1,319 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- The CADs the CAD clients support (MultiCad and the omnia_cad_* packages)
+     and their versions from 2020, as published by their vendors in
+     November 2026. noupdate: the target version and any version added or
+     archived by hand stay; a new version of a later module update is added. -->
+<odoo noupdate="1">
+
+    <!-- Inventor: Inventor 2027 released in spring 2026 (Autodesk) -->
+    <record id="plm_cad_inventor" model="plm.cad">
+        <field name="name">Inventor</field>
+        <field name="code">INVENTOR</field>
+        <field name="prog_id">Inventor.Application</field>
+        <field name="sequence">10</field>
+    </record>
+    <record id="plm_cad_version_inventor_2020" model="plm.cad.version">
+        <field name="cad_id" ref="plm_cad_inventor" />
+        <field name="name">2020</field>
+        <field name="sequence">2020</field>
+    </record>
+    <record id="plm_cad_version_inventor_2021" model="plm.cad.version">
+        <field name="cad_id" ref="plm_cad_inventor" />
+        <field name="name">2021</field>
+        <field name="sequence">2021</field>
+    </record>
+    <record id="plm_cad_version_inventor_2022" model="plm.cad.version">
+        <field name="cad_id" ref="plm_cad_inventor" />
+        <field name="name">2022</field>
+        <field name="sequence">2022</field>
+    </record>
+    <record id="plm_cad_version_inventor_2023" model="plm.cad.version">
+        <field name="cad_id" ref="plm_cad_inventor" />
+        <field name="name">2023</field>
+        <field name="sequence">2023</field>
+    </record>
+    <record id="plm_cad_version_inventor_2024" model="plm.cad.version">
+        <field name="cad_id" ref="plm_cad_inventor" />
+        <field name="name">2024</field>
+        <field name="sequence">2024</field>
+    </record>
+    <record id="plm_cad_version_inventor_2025" model="plm.cad.version">
+        <field name="cad_id" ref="plm_cad_inventor" />
+        <field name="name">2025</field>
+        <field name="sequence">2025</field>
+    </record>
+    <record id="plm_cad_version_inventor_2026" model="plm.cad.version">
+        <field name="cad_id" ref="plm_cad_inventor" />
+        <field name="name">2026</field>
+        <field name="sequence">2026</field>
+    </record>
+    <record id="plm_cad_version_inventor_2027" model="plm.cad.version">
+        <field name="cad_id" ref="plm_cad_inventor" />
+        <field name="name">2027</field>
+        <field name="sequence">2027</field>
+    </record>
+
+    <!-- SolidWorks: SOLIDWORKS 2026 generally available in November 2025; 2027 only in preview when this was written -->
+    <record id="plm_cad_solidworks" model="plm.cad">
+        <field name="name">SolidWorks</field>
+        <field name="code">SOLIDWORKS</field>
+        <field name="prog_id">SldWorks.Application</field>
+        <field name="sequence">20</field>
+    </record>
+    <record id="plm_cad_version_solidworks_2020" model="plm.cad.version">
+        <field name="cad_id" ref="plm_cad_solidworks" />
+        <field name="name">2020</field>
+        <field name="sequence">2020</field>
+    </record>
+    <record id="plm_cad_version_solidworks_2021" model="plm.cad.version">
+        <field name="cad_id" ref="plm_cad_solidworks" />
+        <field name="name">2021</field>
+        <field name="sequence">2021</field>
+    </record>
+    <record id="plm_cad_version_solidworks_2022" model="plm.cad.version">
+        <field name="cad_id" ref="plm_cad_solidworks" />
+        <field name="name">2022</field>
+        <field name="sequence">2022</field>
+    </record>
+    <record id="plm_cad_version_solidworks_2023" model="plm.cad.version">
+        <field name="cad_id" ref="plm_cad_solidworks" />
+        <field name="name">2023</field>
+        <field name="sequence">2023</field>
+    </record>
+    <record id="plm_cad_version_solidworks_2024" model="plm.cad.version">
+        <field name="cad_id" ref="plm_cad_solidworks" />
+        <field name="name">2024</field>
+        <field name="sequence">2024</field>
+    </record>
+    <record id="plm_cad_version_solidworks_2025" model="plm.cad.version">
+        <field name="cad_id" ref="plm_cad_solidworks" />
+        <field name="name">2025</field>
+        <field name="sequence">2025</field>
+    </record>
+    <record id="plm_cad_version_solidworks_2026" model="plm.cad.version">
+        <field name="cad_id" ref="plm_cad_solidworks" />
+        <field name="name">2026</field>
+        <field name="sequence">2026</field>
+    </record>
+
+    <!-- Solid Edge: Solid Edge 2026 released on 22 October 2025 (Siemens) -->
+    <record id="plm_cad_solidedge" model="plm.cad">
+        <field name="name">Solid Edge</field>
+        <field name="code">SOLIDEDGE</field>
+        <field name="prog_id">SolidEdge.Application</field>
+        <field name="sequence">30</field>
+    </record>
+    <record id="plm_cad_version_solidedge_2020" model="plm.cad.version">
+        <field name="cad_id" ref="plm_cad_solidedge" />
+        <field name="name">2020</field>
+        <field name="sequence">2020</field>
+    </record>
+    <record id="plm_cad_version_solidedge_2021" model="plm.cad.version">
+        <field name="cad_id" ref="plm_cad_solidedge" />
+        <field name="name">2021</field>
+        <field name="sequence">2021</field>
+    </record>
+    <record id="plm_cad_version_solidedge_2022" model="plm.cad.version">
+        <field name="cad_id" ref="plm_cad_solidedge" />
+        <field name="name">2022</field>
+        <field name="sequence">2022</field>
+    </record>
+    <record id="plm_cad_version_solidedge_2023" model="plm.cad.version">
+        <field name="cad_id" ref="plm_cad_solidedge" />
+        <field name="name">2023</field>
+        <field name="sequence">2023</field>
+    </record>
+    <record id="plm_cad_version_solidedge_2024" model="plm.cad.version">
+        <field name="cad_id" ref="plm_cad_solidedge" />
+        <field name="name">2024</field>
+        <field name="sequence">2024</field>
+    </record>
+    <record id="plm_cad_version_solidedge_2025" model="plm.cad.version">
+        <field name="cad_id" ref="plm_cad_solidedge" />
+        <field name="name">2025</field>
+        <field name="sequence">2025</field>
+    </record>
+    <record id="plm_cad_version_solidedge_2026" model="plm.cad.version">
+        <field name="cad_id" ref="plm_cad_solidedge" />
+        <field name="name">2026</field>
+        <field name="sequence">2026</field>
+    </record>
+
+    <!-- AutoCAD: AutoCAD 2027 released on 25 March 2026 (Autodesk) -->
+    <record id="plm_cad_autocad" model="plm.cad">
+        <field name="name">AutoCAD</field>
+        <field name="code">AUTOCAD</field>
+        <field name="prog_id">AutoCAD.Application</field>
+        <field name="sequence">40</field>
+    </record>
+    <record id="plm_cad_version_autocad_2020" model="plm.cad.version">
+        <field name="cad_id" ref="plm_cad_autocad" />
+        <field name="name">2020</field>
+        <field name="sequence">2020</field>
+    </record>
+    <record id="plm_cad_version_autocad_2021" model="plm.cad.version">
+        <field name="cad_id" ref="plm_cad_autocad" />
+        <field name="name">2021</field>
+        <field name="sequence">2021</field>
+    </record>
+    <record id="plm_cad_version_autocad_2022" model="plm.cad.version">
+        <field name="cad_id" ref="plm_cad_autocad" />
+        <field name="name">2022</field>
+        <field name="sequence">2022</field>
+    </record>
+    <record id="plm_cad_version_autocad_2023" model="plm.cad.version">
+        <field name="cad_id" ref="plm_cad_autocad" />
+        <field name="name">2023</field>
+        <field name="sequence">2023</field>
+    </record>
+    <record id="plm_cad_version_autocad_2024" model="plm.cad.version">
+        <field name="cad_id" ref="plm_cad_autocad" />
+        <field name="name">2024</field>
+        <field name="sequence">2024</field>
+    </record>
+    <record id="plm_cad_version_autocad_2025" model="plm.cad.version">
+        <field name="cad_id" ref="plm_cad_autocad" />
+        <field name="name">2025</field>
+        <field name="sequence">2025</field>
+    </record>
+    <record id="plm_cad_version_autocad_2026" model="plm.cad.version">
+        <field name="cad_id" ref="plm_cad_autocad" />
+        <field name="name">2026</field>
+        <field name="sequence">2026</field>
+    </record>
+    <record id="plm_cad_version_autocad_2027" model="plm.cad.version">
+        <field name="cad_id" ref="plm_cad_autocad" />
+        <field name="name">2027</field>
+        <field name="sequence">2027</field>
+    </record>
+
+    <!-- AutoCAD LT: AutoCAD LT 2027 documented by Autodesk; AutoCAD LT has no COM automation -->
+    <record id="plm_cad_autocadlt" model="plm.cad">
+        <field name="name">AutoCAD LT</field>
+        <field name="code">AUTOCADLT</field>
+        <field name="sequence">50</field>
+    </record>
+    <record id="plm_cad_version_autocadlt_2020" model="plm.cad.version">
+        <field name="cad_id" ref="plm_cad_autocadlt" />
+        <field name="name">2020</field>
+        <field name="sequence">2020</field>
+    </record>
+    <record id="plm_cad_version_autocadlt_2021" model="plm.cad.version">
+        <field name="cad_id" ref="plm_cad_autocadlt" />
+        <field name="name">2021</field>
+        <field name="sequence">2021</field>
+    </record>
+    <record id="plm_cad_version_autocadlt_2022" model="plm.cad.version">
+        <field name="cad_id" ref="plm_cad_autocadlt" />
+        <field name="name">2022</field>
+        <field name="sequence">2022</field>
+    </record>
+    <record id="plm_cad_version_autocadlt_2023" model="plm.cad.version">
+        <field name="cad_id" ref="plm_cad_autocadlt" />
+        <field name="name">2023</field>
+        <field name="sequence">2023</field>
+    </record>
+    <record id="plm_cad_version_autocadlt_2024" model="plm.cad.version">
+        <field name="cad_id" ref="plm_cad_autocadlt" />
+        <field name="name">2024</field>
+        <field name="sequence">2024</field>
+    </record>
+    <record id="plm_cad_version_autocadlt_2025" model="plm.cad.version">
+        <field name="cad_id" ref="plm_cad_autocadlt" />
+        <field name="name">2025</field>
+        <field name="sequence">2025</field>
+    </record>
+    <record id="plm_cad_version_autocadlt_2026" model="plm.cad.version">
+        <field name="cad_id" ref="plm_cad_autocadlt" />
+        <field name="name">2026</field>
+        <field name="sequence">2026</field>
+    </record>
+    <record id="plm_cad_version_autocadlt_2027" model="plm.cad.version">
+        <field name="cad_id" ref="plm_cad_autocadlt" />
+        <field name="name">2027</field>
+        <field name="sequence">2027</field>
+    </record>
+
+    <!-- ThinkDesign: no version list found: add them by hand -->
+    <record id="plm_cad_thinkdesign" model="plm.cad">
+        <field name="name">ThinkDesign</field>
+        <field name="code">THINKDESIGN</field>
+        <field name="prog_id">TD_appl.Application</field>
+        <field name="sequence">60</field>
+    </record>
+
+    <!-- Creo: Creo 7.0 April 2020 to Creo 13 June 2026; Creo is reached through Creoson, not COM -->
+    <record id="plm_cad_creo" model="plm.cad">
+        <field name="name">Creo</field>
+        <field name="code">CREO</field>
+        <field name="sequence">70</field>
+    </record>
+    <record id="plm_cad_version_creo_7_0" model="plm.cad.version">
+        <field name="cad_id" ref="plm_cad_creo" />
+        <field name="name">7.0</field>
+        <field name="sequence">7</field>
+    </record>
+    <record id="plm_cad_version_creo_8_0" model="plm.cad.version">
+        <field name="cad_id" ref="plm_cad_creo" />
+        <field name="name">8.0</field>
+        <field name="sequence">8</field>
+    </record>
+    <record id="plm_cad_version_creo_9_0" model="plm.cad.version">
+        <field name="cad_id" ref="plm_cad_creo" />
+        <field name="name">9.0</field>
+        <field name="sequence">9</field>
+    </record>
+    <record id="plm_cad_version_creo_10_0" model="plm.cad.version">
+        <field name="cad_id" ref="plm_cad_creo" />
+        <field name="name">10.0</field>
+        <field name="sequence">10</field>
+    </record>
+    <record id="plm_cad_version_creo_11_0" model="plm.cad.version">
+        <field name="cad_id" ref="plm_cad_creo" />
+        <field name="name">11.0</field>
+        <field name="sequence">11</field>
+    </record>
+    <record id="plm_cad_version_creo_12_0" model="plm.cad.version">
+        <field name="cad_id" ref="plm_cad_creo" />
+        <field name="name">12.0</field>
+        <field name="sequence">12</field>
+    </record>
+    <record id="plm_cad_version_creo_13_0" model="plm.cad.version">
+        <field name="cad_id" ref="plm_cad_creo" />
+        <field name="name">13.0</field>
+        <field name="sequence">13</field>
+    </record>
+
+    <!-- FreeCAD: FreeCAD 0.19 (March 2021) to 1.1 (March 2026); FreeCAD has no COM automation -->
+    <record id="plm_cad_freecad" model="plm.cad">
+        <field name="name">FreeCAD</field>
+        <field name="code">FREECAD</field>
+        <field name="sequence">80</field>
+    </record>
+    <record id="plm_cad_version_freecad_0_19" model="plm.cad.version">
+        <field name="cad_id" ref="plm_cad_freecad" />
+        <field name="name">0.19</field>
+        <field name="sequence">19</field>
+    </record>
+    <record id="plm_cad_version_freecad_0_20" model="plm.cad.version">
+        <field name="cad_id" ref="plm_cad_freecad" />
+        <field name="name">0.20</field>
+        <field name="sequence">20</field>
+    </record>
+    <record id="plm_cad_version_freecad_0_21" model="plm.cad.version">
+        <field name="cad_id" ref="plm_cad_freecad" />
+        <field name="name">0.21</field>
+        <field name="sequence">21</field>
+    </record>
+    <record id="plm_cad_version_freecad_1_0" model="plm.cad.version">
+        <field name="cad_id" ref="plm_cad_freecad" />
+        <field name="name">1.0</field>
+        <field name="sequence">100</field>
+    </record>
+    <record id="plm_cad_version_freecad_1_1" model="plm.cad.version">
+        <field name="cad_id" ref="plm_cad_freecad" />
+        <field name="name">1.1</field>
+        <field name="sequence">110</field>
+    </record>
+
+</odoo>
