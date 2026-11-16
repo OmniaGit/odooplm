@@ -23,6 +23,10 @@
 Created on 03/nov/2016
 @author: mboscolo
 """
+# the annotations name cadquery types (cq.Assembly): kept as text, so the module
+# loads also where cadquery cannot be imported (its import below is optional)
+from __future__ import annotations
+
 import base64
 import io
 import json
