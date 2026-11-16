@@ -58,6 +58,7 @@
         "view/cad_agent_stack.xml",
         "view/cad_agent_servers.xml",
         "view/cad_agent_attachment.xml",
+        "view/plm_convert_template.xml",
         "wizards/cad_version_queue_wizard.xml",
     ],
     "post_init_hook": "post_init_hook",

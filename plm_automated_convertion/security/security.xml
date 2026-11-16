@@ -91,4 +91,56 @@
         <field name="operation">crud</field>
     </record>
 
+    <!-- Conversion templates (Odoo 20: an access with a domain allows only the
+         records in it). A user reads the predefined templates (no owner) and
+         his own, and creates, changes and deletes only his own; a Plm Convert
+         Admin does everything. -->
+    <record id="plm_convert_template_user" model="ir.access">
+        <field name="name">Plm Convert Template: read the predefined and own</field>
+        <field name="model_id" ref="plm_automated_convertion.model_plm_convert_template"/>
+        <field name="group_id" ref="plm_automated_convertion.group_plm_convert_view"/>
+        <field name="operation">r</field>
+        <field name="domain">['|', ('owner_id', '=', False), ('owner_id', '=', user.id)]</field>
+    </record>
+    <record id="plm_convert_template_user_own" model="ir.access">
+        <field name="name">Plm Convert Template: change the own</field>
+        <field name="model_id" ref="plm_automated_convertion.model_plm_convert_template"/>
+        <field name="group_id" ref="plm_automated_convertion.group_plm_convert_view"/>
+        <field name="operation">cud</field>
+        <field name="domain">[('owner_id', '=', user.id)]</field>
+    </record>
+    <record id="plm_convert_template_admin" model="ir.access">
+        <field name="name">Plm Convert Template Admin</field>
+        <field name="model_id" ref="plm_automated_convertion.model_plm_convert_template"/>
+        <field name="group_id" ref="plm_automated_convertion.group_plm_convert_admin"/>
+        <field name="operation">crud</field>
+    </record>
+    <record id="plm_convert_template_line_user" model="ir.access">
+        <field name="name">Plm Convert Template Line: read the predefined and own</field>
+        <field name="model_id" ref="plm_automated_convertion.model_plm_convert_template_line"/>
+        <field name="group_id" ref="plm_automated_convertion.group_plm_convert_view"/>
+        <field name="operation">r</field>
+        <field name="domain">['|', ('template_id.owner_id', '=', False), ('template_id.owner_id', '=', user.id)]</field>
+    </record>
+    <record id="plm_convert_template_line_user_own" model="ir.access">
+        <field name="name">Plm Convert Template Line: change the own</field>
+        <field name="model_id" ref="plm_automated_convertion.model_plm_convert_template_line"/>
+        <field name="group_id" ref="plm_automated_convertion.group_plm_convert_view"/>
+        <field name="operation">cud</field>
+        <field name="domain">[('template_id.owner_id', '=', user.id)]</field>
+    </record>
+    <record id="plm_convert_template_line_admin" model="ir.access">
+        <field name="name">Plm Convert Template Line Admin</field>
+        <field name="model_id" ref="plm_automated_convertion.model_plm_convert_template_line"/>
+        <field name="group_id" ref="plm_automated_convertion.group_plm_convert_admin"/>
+        <field name="operation">crud</field>
+    </record>
+    <!-- the lines of the conversion wizard -->
+    <record id="plm_convert_line_user" model="ir.access">
+        <field name="name">Plm Convert Wizard Line</field>
+        <field name="model_id" ref="plm_automated_convertion.model_plm_convert_line"/>
+        <field name="group_id" ref="plm_automated_convertion.group_plm_convert_view"/>
+        <field name="operation">crud</field>
+    </record>
+
 </odoo>

@@ -607,3 +607,86 @@ class PlmConvertStack(models.Model):
             }
         )
         return True
+
+    # ------------------------------------------------------------------
+    # Queue
+    # ------------------------------------------------------------------
+
+    @api.model
+    def _conversion_key(self, convert_format):
+        """What a conversion makes, whatever server its rule belongs to: the
+        same conversion presented by two workstations is one conversion."""
+        return (
+            (convert_format.cad_name or "").strip().lower(),
+            (convert_format.start_format or "").strip().lower(),
+            (convert_format.end_format or "").strip().lower(),
+            convert_format.cad_export_mode or "",
+            bool(convert_format.server_id.cad_agent),
+        )
+
+    @api.model
+    def _queue_jobs(self, documents, formats, operation_type, targets=None):
+        """Put in the queue the jobs of these documents: the one function the
+        conversion wizard and the Massive Update use.
+        :documents ir.attachment
+        :formats plm.convert.format: each document gets the jobs of the
+            formats that start from its extension
+        :operation_type CONVERT or CAD_VERSION
+        :targets CAD_VERSION: {format id: target CAD version}; a document
+            already at the target version is left out
+        :return the new jobs; a document that has the same job waiting or in
+            progress is left out (CAD_VERSION: any update of it)
+        """
+        targets = targets or {}
+        stack = self.sudo()
+        by_extension = {}
+        for convert_format in formats:
+            extension = (convert_format.start_format or "").strip().lower()
+            if extension:
+                by_extension.setdefault(extension, []).append(convert_format)
+        open_rows = stack.search(
+            [
+                ("operation_type", "=", operation_type),
+                ("cad_agent_state", "in", OPEN_CAD_AGENT_STATES),
+                ("start_document_id", "in", documents.ids),
+            ]
+        )
+        queued = {(row.start_document_id.id, self._conversion_key(row.convrsion_rule)) for row in open_rows}
+        queued_documents = set(open_rows.mapped("start_document_id").ids)
+        values = []
+        for document in documents:
+            extension = os.path.splitext(document.name or "")[1].lower()
+            for convert_format in by_extension.get(extension, []):
+                key = self._conversion_key(convert_format)
+                if operation_type == CAD_VERSION_OPERATION:
+                    target = targets.get(convert_format.id)
+                    if document.id in queued_documents or (target and document.cad_version == target):
+                        continue
+                    queued_documents.add(document.id)
+                elif (document.id, key) in queued:
+                    continue
+                queued.add((document.id, key))
+                row_values = {
+                    "operation_type": operation_type,
+                    "start_document_id": document.id,
+                    "convrsion_rule": convert_format.id,
+                    "cad_agent_state": "to_do",
+                    "conversion_done": False,
+                    "requester_id": self.env.uid,
+                    "product_category": document.linkedcomponents[-1:].categ_id.id or False,
+                }
+                if operation_type == CAD_VERSION_OPERATION:
+                    row_values["cad_version_target"] = targets.get(convert_format.id) or False
+                values.append(row_values)
+        return stack.create(values) if values else stack
+
+    @api.model
+    def _queue_action(self, rows):
+        return {
+            "name": _("Queued Jobs"),
+            "type": "ir.actions.act_window",
+            "res_model": "plm.convert.stack",
+            "view_mode": "list,form",
+            "domain": [("id", "in", rows.ids)],
+            "context": {"create": False},
+        }

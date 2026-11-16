@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
-import os
-
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 
-from ..models.plm_cad_agent_stack import CAD_VERSION_OPERATION, CONVERT_OPERATION, OPEN_CAD_AGENT_STATES
+from ..models.plm_cad_agent_stack import CAD_VERSION_OPERATION, CONVERT_OPERATION
 
 RELEASED_STATE = "released"
 DRAFT_STATE = "draft"
@@ -135,44 +133,10 @@ class PlmCadVersionQueueWizard(models.TransientModel):
         if not formats:
             raise UserError(_("Choose at least one conversion."))
         targets = self._target_versions(formats) if self.operation_type == CAD_VERSION_OPERATION else {}
-        stack = self.env["plm.convert.stack"].sudo()
         documents = self.env["ir.attachment"].sudo().search(self._document_domain(list(formats)), order="id")
-        # (document, conversion) already waiting or held by an agent
-        queued = {
-            (row.start_document_id.id, row.convrsion_rule.id)
-            for row in stack.search(
-                [
-                    ("operation_type", "=", self.operation_type),
-                    ("cad_agent_state", "in", OPEN_CAD_AGENT_STATES),
-                    ("start_document_id", "in", documents.ids),
-                ]
-            )
-        }
-        queued_documents = {document_id for document_id, _rule_id in queued}
-        values = []
-        for document in documents:
-            for convert_format in formats.get(os.path.splitext(document.name or "")[1].lower(), []):
-                if self.operation_type == CAD_VERSION_OPERATION:
-                    if document.id in queued_documents or document.cad_version == targets[convert_format.id]:
-                        continue
-                elif (document.id, convert_format.id) in queued:
-                    continue
-                row_values = {
-                    "operation_type": self.operation_type,
-                    "start_document_id": document.id,
-                    "convrsion_rule": convert_format.id,
-                    "cad_agent_state": "to_do",
-                    "conversion_done": False,
-                }
-                if self.operation_type == CAD_VERSION_OPERATION:
-                    row_values["cad_version_target"] = targets[convert_format.id]
-                values.append(row_values)
-        rows = stack.create(values) if values else stack
-        return {
-            "name": _("CAD Workstation Queue"),
-            "type": "ir.actions.act_window",
-            "res_model": "plm.convert.stack",
-            "view_mode": "list,form",
-            "domain": [("id", "in", rows.ids)],
-            "context": {"create": False},
-        }
+        all_formats = self.env["plm.convert.format"].browse()
+        for extension_formats in formats.values():
+            all_formats |= extension_formats
+        stack = self.env["plm.convert.stack"]
+        rows = stack._queue_jobs(documents, all_formats, self.operation_type, targets)
+        return stack._queue_action(rows)
