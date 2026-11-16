@@ -1,9 +1,12 @@
 # CAD Conversion: design of the new module
 
-Status: **design, not implemented yet** (decisions of 2026-11-14). The module
-`plm_automated_convertion` is rewritten after this document; when it is
-done, this text becomes its README. Until then the code of the module still
-works as the old one (push to the CadWebServer, see "What changes").
+Status (2026-11-15): **being implemented** on odooplm
+`matteo_dev_18.0_cad_conversion`. Done: workstations registering by GUID
+(18.0.4.1.0), the menu CAD Conversion, the queue of the CAD workstations moved
+here from `omnia_cad_version_update` (18.0.4.2.0), one state for every job,
+the requester and the dispatch by GUID and groups (18.0.4.3.0). Still to do:
+the conversion wizard with templates, the support files at check-in, the CAD
+attributes, the removal of the push to the CadWebServer.
 
 ## The idea
 
