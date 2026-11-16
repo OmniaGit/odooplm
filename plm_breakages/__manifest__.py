@@ -25,7 +25,7 @@
 
 {
     "name": "PLM Breakages",
-    "version": "20.0.1.0.0",
+    "version": "20.0.1.0.1",
     "images": ["static/description/cover.gif"],
     "author": "OmniaSolutions",
     "maintainer": "OmniaSolutions S.n.c di Boscolo Matteo & C",
