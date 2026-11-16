@@ -131,12 +131,12 @@ class ResUsers(models.Model):
             if userBrws.custom_multicad:
                 return userBrws.custom_multicad, userBrws.custom_multicad_fname
             else:
-                for groupBrws in userBrws.groups_id:
+                for groupBrws in userBrws.group_ids:
                     res, fileContent, fileName = groupBrws.getCustomMulticad()
                     if not res:
                         continue
                     else:
                         logging.info('Got Multicad file from group %r-%r with ID %r' % (
-                            groupBrws.category_id.name, groupBrws.name, groupBrws.id))
+                            groupBrws.full_name, groupBrws.name, groupBrws.id))
                         return fileContent, fileName
         return '', ''
