@@ -54,7 +54,12 @@ class PlmConvertServers(models.Model):
         """The rows of the conversion stack of this server: the ones of its
         conversion rules."""
         self.ensure_one()
-        return [("convrsion_rule.server_id", "=", self.id)]
+        domain = [("convrsion_rule.server_id", "=", self.id)]
+        if self.hostname:
+            # the rows a workstation took (its computer name), whatever server
+            # their conversion belongs to
+            domain = ["|", ("cad_hostname", "=ilike", self.hostname)] + domain
+        return domain
 
     def _compute_stack_count(self):
         stack = self.env["plm.convert.stack"]
