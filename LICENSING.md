@@ -2,7 +2,7 @@
 
 This document is the single reference for the licensing of the OdooPLM suite.
 It exists so that nobody — an integrator, a compliance office, a reviewer — has
-to open 36 manifests to reconstruct the answer.
+to open 40 manifests to reconstruct the answer.
 
 ## In short
 
@@ -11,9 +11,10 @@ The suite is deliberately split in two.
 - The core module **`plm` is LGPL-3.0-or-later**. It can be integrated into
   other products, including proprietary ones, without those products having to
   be published.
-- **Every other module is AGPL-3.0-or-later**. Extending them, distributing the
-  result or serving it over a network carries the obligation to publish the work
-  under the same licence.
+- **Every other module is AGPL-3.0-or-later**, except the six of *The
+  Enterprise bridges* below. Extending them, distributing the result or serving
+  it over a network carries the obligation to publish the work under the same
+  licence.
 
 The repository as a whole, and every artefact that bundles it, is therefore an
 aggregate that contains both licences. The root `LICENSE` file carries the
@@ -38,6 +39,18 @@ service and never returned.
 It is the same arrangement Odoo itself uses — an LGPL core with modules on top —
 and it is a deliberate open-core boundary, not an ambiguity.
 
+## The Enterprise bridges
+
+Three modules connect the suite to Odoo Enterprise apps, which are OEEL-1:
+`plm_ent_breakages_helpdesk` (`helpdesk`), `plm_pdf_workorder_enterprise`
+(`mrp_workorder`) and `plm_mcp_odoo_ai` (`ai`). Odoo Apps accepts no AGPL-3
+module depending on OEEL-1 (FAQ, maintainer_faq_04), and no LGPL-3 module
+depending on AGPL-3. So these three are LGPL-3.0-or-later, and so are the three
+modules they build on — `plm_breakages`, `plm_pdf_workorder` and `plm_mcp` —
+whose only PLM dependency is the LGPL core (decided 2026-11-16). A module that
+depends on one of them can stay AGPL; a new bridge to an Enterprise app must be
+LGPL, and so must everything of the suite it depends on.
+
 ## Module map
 
 The `license` key of each `__manifest__.py` is the authoritative declaration for
@@ -56,7 +69,7 @@ generated from those manifests.
 | `plm_automatic_weight` | AGPL-3.0-or-later | PLM Weight Automatic Calculation |
 | `plm_bom_summarize` | AGPL-3.0-or-later | Summarize bom when client upload it |
 | `plm_box` | AGPL-3.0-or-later | Document management inside Odoo: nested folders, versions, check out and access rights |
-| `plm_breakages` | AGPL-3.0-or-later | PLM Breakages |
+| `plm_breakages` | LGPL-3.0-or-later | PLM Breakages |
 | `plm_client_customprocedure` | AGPL-3.0-or-later | PLM Client Custom Procedure |
 | `plm_compare_bom` | AGPL-3.0-or-later | Allow to compare two boms |
 | `plm_consumption_plans` | AGPL-3.0-or-later | Manage reference maintenance and consumption plans for products and BoM lines |
@@ -65,14 +78,14 @@ generated from those manifests.
 | `plm_demo` | AGPL-3.0-or-later | A populated PLM environment to look at, instead of an empty one |
 | `plm_document_multi_site` | AGPL-3.0-or-later | Multi site document management: synchronise engineering documents between plants |
 | `plm_engineering` | AGPL-3.0-or-later | Allow to use engineering boms |
-| `plm_ent_breakages_helpdesk` | AGPL-3.0-or-later | PLM Breakages, connected to Helpdesk |
-| `plm_mcp` | AGPL-3.0-or-later | Answer questions about the engineering data over the Model Context Protocol |
+| `plm_ent_breakages_helpdesk` | LGPL-3.0-or-later | PLM Breakages, connected to Helpdesk |
+| `plm_mcp` | LGPL-3.0-or-later | Answer questions about the engineering data over the Model Context Protocol |
 | `plm_mcp_bot` | AGPL-3.0-or-later | Ask the PLM tools by typing /plm in a chat with OdooBot |
 | `plm_mcp_ecr` | AGPL-3.0-or-later | Ask the MCP server about engineering change requests and change orders |
-| `plm_mcp_odoo_ai` | AGPL-3.0-or-later | Answer PLM questions inside Odoo's own chat, with the tools of the MCP server |
+| `plm_mcp_odoo_ai` | LGPL-3.0-or-later | Answer PLM questions inside Odoo's own chat, with the tools of the MCP server |
 | `plm_pack_and_go` | AGPL-3.0-or-later | Download BOM structure files from a component |
-| `plm_pdf_workorder` | AGPL-3.0-or-later | Engineering document management on the shop floor: the PLM 2D drawing in the work order |
-| `plm_pdf_workorder_enterprise` | AGPL-3.0-or-later | The PLM pdf document available into the workorder workspace |
+| `plm_pdf_workorder` | LGPL-3.0-or-later | Engineering document management on the shop floor: the PLM 2D drawing in the work order |
+| `plm_pdf_workorder_enterprise` | LGPL-3.0-or-later | The PLM pdf document available into the workorder workspace |
 | `plm_product_description_language_helper` | AGPL-3.0-or-later | PLM Product Description Language Helper |
 | `plm_product_only_latest` | AGPL-3.0-or-later | Show only latest product version in production |
 | `plm_project` | AGPL-3.0-or-later | Connect odoo project with odooPLM |
@@ -87,7 +100,7 @@ generated from those manifests.
 | `plm_web_revision` | AGPL-3.0-or-later | PLM Revision from web side |
 | `plm_workflow_custom_action` | AGPL-3.0-or-later | Custom automated actions on the engineering workflow of parts and documents |
 
-36 modules: 1 LGPL-3.0-or-later, 35 AGPL-3.0-or-later.
+40 modules: 7 LGPL-3.0-or-later, 33 AGPL-3.0-or-later.
 
 ### Code outside the modules
 
@@ -102,7 +115,8 @@ header fall under the repository default, AGPL-3.0-or-later.
 calling it, extending it, linking against it — puts you under the LGPL. You must
 publish your modifications *to `plm` itself* and let your users relink against a
 modified `plm`, but the product you build around it stays yours. The moment you
-depend on any other module in the table, the AGPL applies to your work.
+depend on an AGPL module of the table, the AGPL applies to your work; the six
+LGPL modules of *The Enterprise bridges* are like `plm` in this.
 
 **If you host OdooPLM as a service.** The AGPL's network clause is the point of
 the split. If you run any of the AGPL modules — modified or extended — and let
@@ -127,7 +141,7 @@ module that has no place on the production database a pip install targets. That
 changes what is shipped, not under what terms.
 
 Redistributing such an aggregate means honouring the AGPL for the modules that
-carry it and the LGPL for `plm`. The per-module declaration always governs; the
+carry it and the LGPL for `plm` and the Enterprise bridges. The per-module declaration always governs; the
 aggregate label is the strongest obligation contained, never a relicensing of
 the parts.
 
@@ -163,14 +177,14 @@ carry their own upstream licences.
 
 > OdooPLM — Product Lifecycle Management for Odoo. OmniaSolutions.
 > https://github.com/OmniaSolutions/OdooPLM
-> Core module `plm` licensed under LGPL-3.0-or-later; all other modules under
-> AGPL-3.0-or-later.
+> Core module `plm` and the Enterprise bridges licensed under LGPL-3.0-or-later;
+> all other modules under AGPL-3.0-or-later.
 
 ## Adding a module
 
 A new module must declare `"license"` in its `__manifest__.py` and repeat it in
-the header of its sources. Unless it is part of the LGPL core, it is
-AGPL-3.0-or-later. This table must be updated in the same commit.
+the header of its sources. Unless it is part of the LGPL core or an Enterprise
+bridge, it is AGPL-3.0-or-later. This table must be updated in the same commit.
 
 That last part is not left to memory: the `check-licensing` pre-commit hook
 (`.pre-commit-scripts/check_licensing.py`, also run in CI) fails the commit when

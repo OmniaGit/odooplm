@@ -228,4 +228,4 @@ odoo --test-tags=odoo_plm_mcp -i plm_mcp -d <database>
 
 ## Licence
 
-AGPL-3.0-or-later. See [LICENSING.md](../LICENSING.md).
+LGPL-3.0-or-later. See [LICENSING.md](../LICENSING.md).
