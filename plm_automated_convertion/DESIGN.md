@@ -90,17 +90,30 @@ has made it ("download" and "shared folder" are no longer immediate).
 
 Today the CAD client makes the support files at check-in (DWG of a drawing,
 STEP, flat pattern DXF), from the list `applicationHook_alternative_check_file_format`
-of its CustomProcedure: one file, one file per configuration with a
-component code, flat pattern, or a function of the CustomProcedure (for
-example the formats of the product category).
-
-The same rules move into Odoo (by extension, export mode and, when needed,
-product category: the existing `plm.convert.rule`, to be repaired). A
-setting chooses who makes the support files:
+of its CustomProcedure. The CustomProcedure is the client's: its form does
+not change. A setting chooses who makes the support files:
 
 - **the client** (as today), or
-- **a workstation**: the check-in creates the jobs, the client converts
-  nothing.
+- **a workstation**: the check-in creates the jobs; the client reads the
+  setting and converts nothing at check-in.
+
+When a workstation makes them, Odoo reads the same CustomProcedure the client
+uses: the one of the user who checked in, else the one of his PLM groups
+(module `plm_client_customprocedure`; at Nisbau it is on the integration
+group). Odoo **never runs it**: it imports the client (PyQt4,
+`plmintegration`) and can be Python 2 (Nisbau's does not even parse as
+Python 3). Odoo takes only the text of that list and reads its literal
+values (checked on the Nisbau, Mach and odoov18 CustomProcedures,
+2026-11-14). Each entry becomes jobs as the client does:
+
+- `(from, to)`: on a drawing one file; on a part or assembly one file per
+  configuration / model state with a component code (export mode per model
+  state), one file when it has none;
+- `(from, to, 'FlatPattern')`: the sheet metal flat pattern;
+- `('', '', function)`: a function of the CustomProcedure (Mach:
+  `create_from_category`, the formats of the product category). Odoo cannot
+  run it: for these customers the dedicated tool is the conversion rules of
+  Odoo by product category (`plm.convert.rule`, to be repaired).
 
 ## CAD versions
 
@@ -126,8 +139,8 @@ reimplemented"). It comes back as a job of the workstation:
 - started from the conversion wizard (also inside a template), from a button
   on the product or the document, or automatically (for example at release).
 
-Open: whether the mapping lives only in Odoo (the client reads it from
-there) or also in the CustomProcedure.
+The mapping for these jobs lives in Odoo; the CustomProcedure is not
+touched (it is the client's).
 
 ## Menu
 
@@ -152,5 +165,6 @@ Conversion templates, CAD Versions, Queue, Massive CAD version update.
    wizard with templates, menu, check-in rules, CAD attributes), the
    migration of `omnia_cad_version_update`.
 3. CoreBomWeb: the presentation to Odoo; the CAD attributes job.
-4. Client: the setting that leaves the support files to the workstation.
+4. Client: it reads the setting and leaves the support files to the
+   workstation (the CustomProcedure does not change).
 5. Odoo 19.0 and 20.0.
