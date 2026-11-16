@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Every entry of the CAD conversion under one menu: PLM > Configuration > CAD Conversion -->
+    <menuitem
+        id="menu_cad_conversion"
+        name="CAD Conversion"
+        parent="plm.plm_menu_dictionaries"
+        groups="plm_automated_convertion.group_plm_convert_view"
+        sequence="60"
+    />
+    <!-- the CADs and their target versions are of the plm module: a shortcut -->
+    <menuitem
+        id="menu_cad_conversion_cad_versions"
+        name="CAD Versions"
+        parent="menu_cad_conversion"
+        action="plm.plm_action_cad_form"
+        groups="plm.group_plm_admin"
+        sequence="40"
+    />
+</odoo>
