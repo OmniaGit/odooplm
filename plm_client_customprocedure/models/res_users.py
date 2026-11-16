@@ -131,7 +131,7 @@ class ResUsers(models.Model):
             if userBrws.custom_multicad:
                 return userBrws.custom_multicad, userBrws.custom_multicad_fname
             else:
-                for groupBrws in userBrws.group_ids:
+                for groupBrws in userBrws.all_group_ids:
                     res, fileContent, fileName = groupBrws.getCustomMulticad()
                     if not res:
                         continue
