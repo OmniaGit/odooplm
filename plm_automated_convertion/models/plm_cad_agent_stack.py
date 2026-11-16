@@ -36,18 +36,38 @@ class PlmConvertStack(models.Model):
     )
     cad_agent = fields.Boolean(related="server_id.cad_agent", string="CAD Agent")
     cad_version_target = fields.Char("Target CAD Version", readonly=True)
+    # the state of every job, worked by Odoo or by a CAD workstation
     cad_agent_state = fields.Selection(
         [
             ("to_do", "To Do"),
-            ("downloaded", "Downloaded"),
+            ("downloaded", "In Progress"),
             ("done", "Done"),
             ("error", "Error"),
             ("skipped", "Skipped"),
         ],
-        string="CAD Agent State",
+        string="State",
+        default="to_do",
         readonly=True,
         index=True,
         copy=False,
+    )
+    requester_id = fields.Many2one(
+        "res.users",
+        "Requested By",
+        default=lambda self: self.env.user,
+        readonly=True,
+        index=True,
+        ondelete="set null",
+        help="Who asked for the job: the workstations tied to his groups work it.",
+    )
+    workstation_id = fields.Many2one(
+        "plm.convert.servers",
+        "Taken By",
+        readonly=True,
+        copy=False,
+        index=True,
+        ondelete="set null",
+        help="The CAD workstation working the job, or that worked it.",
     )
     cad_download_date = fields.Datetime("Download Date", readonly=True, copy=False)
     cad_upload_date = fields.Datetime("Upload Date", readonly=True, copy=False)
@@ -102,7 +122,9 @@ class PlmConvertStack(models.Model):
     # ------------------------------------------------------------------
 
     @api.model
-    def cad_agent_next_batch(self, hostname, hostpws, limit=10, operation_type=CAD_VERSION_OPERATION, cad_name=""):
+    def cad_agent_next_batch(
+        self, hostname, hostpws, limit=10, operation_type=CAD_VERSION_OPERATION, cad_name="", guid=""
+    ):
         """Take the next rows of the operation and return the files the agent
         has to download.
         :hostname the workstation of the agent
@@ -112,7 +134,13 @@ class PlmConvertStack(models.Model):
             together)
         :operation_type CAD_VERSION or CONVERT
         :cad_name the CAD of the workstation (inventor, SolidWorks...): only the
-            rows of its conversions; empty: the rows of every CAD
+            rows of its conversions; empty: the rows of every CAD. Not used
+            with a GUID.
+        :guid the GUID of a registered workstation: only the jobs it can do
+            (its CADs and the conversions it presented) and may take (the
+            groups of the requester, see plm.convert.servers
+            _queue_requester_domain). Empty: an agent that did not register,
+            the jobs of every user
         :return {"rows": [...], "files": [...]}, see _cad_agent_batch_data
         """
         if not hostname or not hostpws:
@@ -125,7 +153,22 @@ class PlmConvertStack(models.Model):
         ]
         if operation_type == CONVERT_OPERATION:
             domain.append(("convrsion_rule.server_id.cad_agent", "=", True))
-        domain += self._cad_agent_cad_domain(cad_name)
+        workstation = self.env["plm.convert.servers"]
+        if guid:
+            workstation = workstation.with_context(active_test=False).search(
+                [("workstation_guid", "=", guid)], limit=1
+            )
+            if not workstation:
+                raise UserError(_("The workstation %s is not registered: it presents itself first.", guid))
+            if not workstation.available:
+                return {"rows": [], "files": [], "message": _("The workstation is disabled on Odoo.")}
+            conversion_domain = workstation._queue_conversion_domain(operation_type)
+            if conversion_domain is None:
+                return {"rows": [], "files": []}
+            domain += conversion_domain + workstation._queue_requester_domain()
+        else:
+            domain += self._cad_agent_cad_domain(cad_name)
+        self = self.with_context(cad_agent_workstation_id=workstation.id)
         to_do_ids = self.search(domain, order="sequence ASC, id ASC").ids
         picked = self.browse()
         seen_document_ids = set()
@@ -183,6 +226,7 @@ class PlmConvertStack(models.Model):
             "cad_upload_date": False,
             "cad_hostname": hostname,
             "cad_hostpws": hostpws,
+            "workstation_id": self.env.context.get("cad_agent_workstation_id") or False,
             "cad_download_engineering_state": document.engineering_state,
             "cad_checkout_id": False,
             "error_string": False,
@@ -557,6 +601,7 @@ class PlmConvertStack(models.Model):
                 "cad_upload_date": False,
                 "cad_hostname": False,
                 "cad_hostpws": False,
+                "workstation_id": False,
                 "cad_download_engineering_state": False,
                 "cad_export_document_ids": [(5, 0, 0)],
             }

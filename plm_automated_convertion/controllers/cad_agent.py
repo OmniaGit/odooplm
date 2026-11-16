@@ -13,7 +13,9 @@ The agent logs in as a user of the group Plm Convert Admin (the session of
 
 - POST /plm_cad_agent/next_batch: takes the next rows and returns the files
   to download (hostname, hostpws, limit, operation_type CAD_VERSION|CONVERT,
-  cad_name: the CAD of the workstation, only the rows of its conversions)
+  cad_name: the CAD of the workstation, only the rows of its conversions;
+  guid: the GUID of a registered workstation, only the jobs it can do and
+  may take by the groups of their requester)
 - GET  /plm_cad_agent/download: the file of a document (document_id)
 - POST /plm_cad_agent/upload: a file produced for a row (stack_id, file,
   cad_version for an update, variant = model state for a conversion)
@@ -46,13 +48,13 @@ class CadAgentController(http.Controller):
         return row
 
     @http.route("/plm_cad_agent/next_batch", type="http", auth="user", methods=["POST"], csrf=False)
-    def next_batch(self, hostname="", hostpws="", limit=10, operation_type="CAD_VERSION", cad_name="", **kw):
+    def next_batch(self, hostname="", hostpws="", limit=10, operation_type="CAD_VERSION", cad_name="", guid="", **kw):
         try:
             self._check_access()
             data = (
                 request.env["plm.convert.stack"]
                 .sudo()
-                .cad_agent_next_batch(hostname, hostpws, int(limit), operation_type, cad_name)
+                .cad_agent_next_batch(hostname, hostpws, int(limit), operation_type, cad_name, guid.strip())
             )
         except (AccessError, UserError) as ex:
             return self._json_error(ex, 403 if isinstance(ex, AccessError) else 400)
