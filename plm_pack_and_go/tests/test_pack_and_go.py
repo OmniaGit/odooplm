@@ -23,23 +23,24 @@ Created on 9 Set 2023
 
 @author: mboscolo
 """
+import json
 import logging
 import datetime
-from odoo import models
-from odoo import Command
-from odoo import fields
-from odoo import api
-from odoo import _
+import zipfile
+from io import BytesIO
+from odoo import models, Command, fields, api, _
 from odoo.tests import tagged
 from odoo.exceptions import UserError
 from datetime import timedelta
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 from odoo.tests.common import TransactionCase
-from odoo.addons.plm.models.plm_mixin import RELEASED_STATUS
-from odoo.addons.plm.models.plm_mixin import UNDER_MODIFY_STATUS
-from odoo.addons.plm.models.plm_mixin import START_STATUS
-from odoo.addons.plm.models.plm_mixin import CONFIRMED_STATUS
-from odoo.addons.plm.models.plm_mixin import OBSOLATED_STATUS
+from odoo.addons.plm.models.plm_mixin import (
+    RELEASED_STATUS,
+    UNDER_MODIFY_STATUS,
+    START_STATUS,
+    CONFIRMED_STATUS,
+    OBSOLATED_STATUS,
+)
 from odoo.addons.plm.tests.entity_creator import PlmEntityCreator
 
 #
@@ -382,3 +383,100 @@ class PlmDateBom(TransactionCase, PlmEntityCreator):
                 assert (
                     len(pack_and_go_id.export_other) == 0
                 ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_other}"
+
+    def _get_export_document_ids(self, pack_and_go_id):
+        rows = (
+            pack_and_go_id.export_2d
+            + pack_and_go_id.export_3d
+            + pack_and_go_id.export_pdf
+            + pack_and_go_id.export_other
+        )
+        return rows.document_id
+
+    def _prepare_pack_and_go(self, name):
+        product, _bom = self.get_3_level_assembly(name)
+        pack_and_go_id = self.env["pack.and_go"].create(
+            {"component_id": product.product_tmpl_id.id}
+        )
+        pack_and_go_id.export_type_id = self.env.ref(
+            "plm_pack_and_go.pack_go_export_type_all"
+        )
+        pack_and_go_id.bom_computation = "ALL_LEVEL"
+        pack_and_go_id.action_compute_attachment_bom()
+        return pack_and_go_id, self._get_export_document_ids(pack_and_go_id)
+
+    def test_pack_and_go_export_without_checkout(self):
+        """"Download zip" (action_export_zip): today's behavior, unchanged,
+        no document is checked out and no manifest is added."""
+        pack_and_go_id, document_ids = self._prepare_pack_and_go(
+            "pack_and_go_no_checkout"
+        )
+        pack_and_go_id.action_export_zip()
+        self.assertFalse(
+            self.env["plm.checkout"].search(
+                [("documentid", "in", document_ids.ids)]
+            ),
+            "no document should be checked out by plain Download zip",
+        )
+        with zipfile.ZipFile(BytesIO(bytes(pack_and_go_id.datas))) as zip_file:
+            self.assertNotIn("exported_data.json", zip_file.namelist())
+
+    def test_pack_and_go_export_with_checkout(self):
+        """"Create zip archive checkout" (action_create_zip_checkout): every
+        exported document gets locked and a manifest listing them is added
+        to the zip."""
+        pack_and_go_id, document_ids = self._prepare_pack_and_go(
+            "pack_and_go_checkout"
+        )
+        self.assertTrue(document_ids, "expected at least one document to export")
+        pack_and_go_id.action_create_zip_checkout()
+        checkouts = self.env["plm.checkout"].search(
+            [("documentid", "in", document_ids.ids)]
+        )
+        self.assertEqual(
+            len(checkouts),
+            len(document_ids),
+            "every exported document should be checked out",
+        )
+        with zipfile.ZipFile(BytesIO(bytes(pack_and_go_id.datas))) as zip_file:
+            self.assertIn("exported_data.json", zip_file.namelist())
+            manifest = json.loads(zip_file.read("exported_data.json"))
+        self.assertEqual(
+            {row["id"] for row in manifest["ir_attachment"]}, set(document_ids.ids)
+        )
+
+    def test_pack_and_go_checkout_blocked_by_other_user(self):
+        """One document already checked out by someone else must abort the
+        whole export: no document, including the others, ends up locked."""
+        pack_and_go_id, document_ids = self._prepare_pack_and_go(
+            "pack_and_go_checkout_blocked"
+        )
+        self.assertGreater(
+            len(document_ids), 1, "need more than one document to prove the rollback"
+        )
+        other_user = self.env["res.users"].create(
+            {
+                "name": "Pack and Go other user",
+                "login": "pack_and_go_other_user",
+            }
+        )
+        blocked_document = document_ids[0]
+        other_documents = document_ids[1:]
+        self.env["plm.checkout"].create(
+            {
+                "documentid": blocked_document.id,
+                "userid": other_user.id,
+                "hostname": "test",
+                "hostpws": "C:\\test",
+            }
+        )
+
+        with self.assertRaises(UserError):
+            pack_and_go_id.action_create_zip_checkout()
+
+        self.assertFalse(
+            self.env["plm.checkout"].search(
+                [("documentid", "in", other_documents.ids)]
+            ),
+            "no other document should end up checked out: the export must be all or nothing",
+        )

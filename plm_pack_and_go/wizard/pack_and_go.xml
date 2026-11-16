@@ -116,6 +116,9 @@
                             invisible="show_create_zip==False"
                             type="object"/>
                     <button string="Create zip archive checkout" name="action_create_zip_checkout" class="btn-primary"
+                            invisible="show_create_zip==False"
+                            type="object"/>
+                    <button string="Import zip (check-in)" name="action_open_import_wizard"
                             type="object"/>
                 </footer>
             </form>

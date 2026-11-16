@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_pack_and_go_import_form" model="ir.ui.view">
+        <field name="name">pack.and.go.import.form</field>
+        <field name="model">pack.and.go.import</field>
+        <field name="arch" type="xml">
+            <form string="Import Pack and Go zip">
+                <field name="state" invisible="1"/>
+                <div invisible="state != 'draft'">
+                    <p>
+                        Upload a Pack and Go zip with its manifest to update the
+                        product files in Odoo and check-in.
+                    </p>
+                    <group>
+                        <field name="zip_file" filename="zip_name"/>
+                        <field name="zip_name" invisible="1"/>
+                    </group>
+                </div>
+                <notebook invisible="state != 'preview'">
+                    <page string="2D">
+                        <field name="preview_2d_ids" nolabel="1">
+                            <list>
+                                <field name="document_id" readonly="1"
+                                       decoration-success="status == 'changed'"
+                                       decoration-muted="status == 'unchanged'"
+                                       decoration-warning="status in ('not_checked_out', 'no_file')"/>
+                                <field name="component_id" readonly="1"
+                                       decoration-success="status == 'changed'"
+                                       decoration-muted="status == 'unchanged'"
+                                       decoration-warning="status in ('not_checked_out', 'no_file')"/>
+                                <field name="doc_rev" readonly="1"/>
+                                <field name="status" readonly="1" widget="badge"
+                                       decoration-success="status == 'changed'"
+                                       decoration-muted="status == 'unchanged'"
+                                       decoration-warning="status in ('not_checked_out', 'no_file')"/>
+                                <field name="message" readonly="1"/>
+                            </list>
+                        </field>
+                    </page>
+                    <page string="3D">
+                        <field name="preview_3d_ids" nolabel="1">
+                            <list>
+                                <field name="document_id" readonly="1"
+                                       decoration-success="status == 'changed'"
+                                       decoration-muted="status == 'unchanged'"
+                                       decoration-warning="status in ('not_checked_out', 'no_file')"/>
+                                <field name="component_id" readonly="1"
+                                       decoration-success="status == 'changed'"
+                                       decoration-muted="status == 'unchanged'"
+                                       decoration-warning="status in ('not_checked_out', 'no_file')"/>
+                                <field name="doc_rev" readonly="1"/>
+                                <field name="status" readonly="1" widget="badge"
+                                       decoration-success="status == 'changed'"
+                                       decoration-muted="status == 'unchanged'"
+                                       decoration-warning="status in ('not_checked_out', 'no_file')"/>
+                                <field name="message" readonly="1"/>
+                            </list>
+                        </field>
+                    </page>
+                    <page string="Other">
+                        <field name="preview_other_ids" nolabel="1">
+                            <list>
+                                <field name="document_id" readonly="1"
+                                       decoration-success="status == 'changed'"
+                                       decoration-muted="status == 'unchanged'"
+                                       decoration-warning="status in ('not_checked_out', 'no_file')"/>
+                                <field name="component_id" readonly="1"
+                                       decoration-success="status == 'changed'"
+                                       decoration-muted="status == 'unchanged'"
+                                       decoration-warning="status in ('not_checked_out', 'no_file')"/>
+                                <field name="doc_rev" readonly="1"/>
+                                <field name="status" readonly="1" widget="badge"
+                                       decoration-success="status == 'changed'"
+                                       decoration-muted="status == 'unchanged'"
+                                       decoration-warning="status in ('not_checked_out', 'no_file')"/>
+                                <field name="message" readonly="1"/>
+                            </list>
+                        </field>
+                    </page>
+                </notebook>
+                <group invisible="state != 'done'">
+                    <field name="result" nolabel="1" colspan="2"/>
+                    <field name="document_ids" invisible="1"/>
+                </group>
+                <footer>
+                    <button name="action_import" string="Import" type="object"
+                            class="btn-primary" invisible="state == 'done'"/>
+                    <button name="action_load_preview" string="Load preview" type="object"
+                            invisible="state != 'draft'"/>
+                    <button name="action_open_documents" string="Open the documents" type="object"
+                            class="btn-primary" invisible="state != 'done'"/>
+                    <button string="Close" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

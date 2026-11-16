@@ -63,6 +63,48 @@
         <field name="group_id" ref="plm.group_plm_admin"/>
         <field name="operation">crud</field>
     </record>
+    <!-- model_pack_and_go_import -->
+    <record id="plm_pack_and_go_import_view" model="ir.access">
+        <field name="name">PLM Pack and go Import</field>
+        <field name="model_id" ref="model_pack_and_go_import"/>
+        <field name="group_id" ref="plm.group_plm_view_user"/>
+        <field name="operation">r</field>
+    </record>
+
+    <record id="plm_pack_and_go_import_integration" model="ir.access">
+        <field name="name">PLM Pack and go Import</field>
+        <field name="model_id" ref="model_pack_and_go_import"/>
+        <field name="group_id" ref="plm.group_plm_integration_user"/>
+        <field name="operation">crud</field>
+    </record>
+
+    <record id="plm_pack_and_go_import_admin" model="ir.access">
+        <field name="name">PLM Pack and go Import</field>
+        <field name="model_id" ref="model_pack_and_go_import"/>
+        <field name="group_id" ref="plm.group_plm_admin"/>
+        <field name="operation">crud</field>
+    </record>
+    <!-- model_pack_and_go_import_line -->
+    <record id="plm_pack_and_go_import_line_view" model="ir.access">
+        <field name="name">PLM Pack and go Import Line</field>
+        <field name="model_id" ref="model_pack_and_go_import_line"/>
+        <field name="group_id" ref="plm.group_plm_view_user"/>
+        <field name="operation">r</field>
+    </record>
+
+    <record id="plm_pack_and_go_import_line_integration" model="ir.access">
+        <field name="name">PLM Pack and go Import Line</field>
+        <field name="model_id" ref="model_pack_and_go_import_line"/>
+        <field name="group_id" ref="plm.group_plm_integration_user"/>
+        <field name="operation">crud</field>
+    </record>
+
+    <record id="plm_pack_and_go_import_line_admin" model="ir.access">
+        <field name="name">PLM Pack and go Import Line</field>
+        <field name="model_id" ref="model_pack_and_go_import_line"/>
+        <field name="group_id" ref="plm.group_plm_admin"/>
+        <field name="operation">crud</field>
+    </record>
     <!-- model_plm_pack_go_extension -->
     <record id="plm_pack_go_extension_view" model="ir.access">
         <field name="name">PLM Pack and Go Extension</field>
