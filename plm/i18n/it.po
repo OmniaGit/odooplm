@@ -4584,3 +4584,13 @@ msgstr ""
 #: model:ir.actions.server,name:plm.ir_cron_clean_released_backups_ir_actions_server
 msgid "Plm Clean Released Backups"
 msgstr "Plm pulizia backup dei documenti rilasciati"
+
+#. module: plm
+#. odoo-python
+#: code:addons/plm/models/mrp_bom.py:0
+msgid ""
+"The product %(product)s of the bom %(bom)s cannot be deleted as it is in "
+"%(state)s status"
+msgstr ""
+"Il prodotto %(product)s della distinta base %(bom)s non può essere eliminato "
+"perché è in stato %(state)s"
