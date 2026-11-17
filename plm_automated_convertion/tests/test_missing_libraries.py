@@ -18,7 +18,6 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-import base64
 from unittest.mock import patch
 
 from odoo.exceptions import UserError
@@ -47,12 +46,12 @@ class TestMissingLibraries(TransactionCase):
         )
         patcher.start()
         self.addCleanup(patcher.stop)
-        content = base64.b64encode(b"ISO-10303-21;\nEND-ISO-10303-21;\n")
+        # Odoo 20 removed datas: the content goes through raw
         self.step = self.env["ir.attachment"].create(
-            {"name": "missing_lib.step", "datas": content}
+            {"name": "missing_lib.step", "raw": b"ISO-10303-21;\nEND-ISO-10303-21;\n"}
         )
         self.stl = self.env["ir.attachment"].create(
-            {"name": "missing_lib.stl", "datas": base64.b64encode(b"solid x\nendsolid x\n")}
+            {"name": "missing_lib.stl", "raw": b"solid x\nendsolid x\n"}
         )
 
     def _assert_cadquery_refused(self, method, *args, **kwargs):
