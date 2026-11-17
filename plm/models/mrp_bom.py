@@ -29,6 +29,7 @@ import logging
 import sys
 
 from odoo import models, fields, api, _
+from odoo.exceptions import UserError
 from odoo.fields import Domain
 
 from odoo.addons.plm.models.plm_mixin import (
@@ -837,8 +838,21 @@ class MrpBomExtension(models.Model):
         for mrp_bom in self:
             if mrp_bom.product_tmpl_id.engineering_code:
                 if mrp_bom.product_tmpl_id.engineering_state != START_STATUS:
+                    product_tmpl = mrp_bom.product_tmpl_id
+                    state_label = dict(
+                        product_tmpl._fields["engineering_state"]._description_selection(
+                            self.env
+                        )
+                    ).get(product_tmpl.engineering_state)
                     raise UserError(
-                        f"the bom {mrp_bom.product_tmpl_id.engineering_code} must be in state {START_STATUS} to be delated")
+                        _(
+                            "The product %(product)s of the bom %(bom)s cannot be"
+                            " deleted as it is in %(state)s status",
+                            product=product_tmpl.display_name,
+                            bom=mrp_bom.display_name,
+                            state=state_label,
+                        )
+                    )
         return super(MrpBomExtension, self).unlink()
 
     def delete_child_row(self, document_id):
