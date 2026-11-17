@@ -220,6 +220,20 @@ class PackAndGoImport(models.TransientModel):
             "target": "new",
         }
 
+    def action_reset_to_draft(self):
+        """Reset the wizard back to the upload step so the user can upload
+        a different zip without closing and reopening the dialog."""
+        self.ensure_one()
+        self.write({"state": "draft", "line_ids": [(5, 0, 0)]})
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("Import Pack and Go zip"),
+            "res_model": self._name,
+            "res_id": self.id,
+            "view_mode": "form",
+            "target": "new",
+        }
+
     def action_open_documents(self):
         self.ensure_one()
         return {

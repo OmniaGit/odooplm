@@ -89,6 +89,8 @@
                             invisible="state != 'draft'"/>
                     <button name="action_open_documents" string="Open the documents" type="object"
                             class="btn-primary" invisible="state != 'done'"/>
+                    <button name="action_reset_to_draft" string="Back" type="object"
+                            class="btn-secondary" invisible="state != 'preview'"/>
                     <button string="Close" class="btn-secondary" special="cancel"/>
                 </footer>
             </form>
