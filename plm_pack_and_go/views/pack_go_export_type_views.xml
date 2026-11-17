@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Extensions -->
+    <record id="plm_pack_go_extension_view_list" model="ir.ui.view">
+        <field name="name">plm.pack.go.extension.list</field>
+        <field name="model">plm.pack.go.extension</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="name"/>
+                <field name="color" widget="color_picker"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="plm_pack_go_extension_action" model="ir.actions.act_window">
+        <field name="name">Pack and Go Extensions</field>
+        <field name="res_model">plm.pack.go.extension</field>
+        <field name="view_mode">list</field>
+    </record>
+
+    <!-- Export types -->
+    <record id="plm_pack_go_export_type_view_list" model="ir.ui.view">
+        <field name="name">plm.pack.go.export.type.list</field>
+        <field name="model">plm.pack.go.export.type</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="include_2d"/>
+                <field name="include_pdf"/>
+                <field name="include_3d"/>
+                <field name="include_other"/>
+                <field name="extension_ids" widget="many2many_tags" options="{'color_field': 'color'}"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="plm_pack_go_export_type_view_form" model="ir.ui.view">
+        <field name="name">plm.pack.go.export.type.form</field>
+        <field name="model">plm.pack.go.export.type</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <widget name="web_ribbon" title="Archived" bg_color="text-bg-danger" invisible="active"/>
+                    <group>
+                        <field name="name"/>
+                        <field name="active" invisible="1"/>
+                    </group>
+                    <group string="Documents">
+                        <field name="include_2d"/>
+                        <field name="include_pdf"/>
+                        <field name="include_3d"/>
+                        <field name="include_other"/>
+                    </group>
+                    <group string="Extension filter">
+                        <field name="extension_ids"
+                               widget="many2many_tags"
+                               options="{'color_field': 'color'}"
+                               placeholder="All the extensions"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="plm_pack_go_export_type_action" model="ir.actions.act_window">
+        <field name="name">Pack and Go Export Types</field>
+        <field name="res_model">plm.pack.go.export.type</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <menuitem id="menu_plm_pack_go_export_type"
+              name="Pack and Go Export Types"
+              action="plm_pack_go_export_type_action"
+              parent="plm.plm_menu_dictionaries"
+              sequence="20"
+              groups="plm.group_plm_admin"/>
+
+    <menuitem id="menu_plm_pack_go_extension"
+              name="Pack and Go Extensions"
+              action="plm_pack_go_extension_action"
+              parent="plm.plm_menu_dictionaries"
+              sequence="21"
+              groups="plm.group_plm_admin"/>
+</odoo>
