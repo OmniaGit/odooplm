@@ -138,3 +138,23 @@ msgstr "Documento correlato"
 #: model:ir.model,name:plm_automated_convertion.model_plm_convert
 msgid "Temp Class for batch converter"
 msgstr "Classe Temp per convertitore batch"
+
+#. module: plm_automated_convertion
+#. odoo-python
+#: code:addons/plm_automated_convertion/models/ir_attachment.py:0
+msgid ""
+"STEP files cannot be processed: the Python library cadquery cannot be loaded "
+"on the server (%s)."
+msgstr ""
+"I file STEP non possono essere elaborati: la libreria Python cadquery non si "
+"carica sul server (%s)."
+
+#. module: plm_automated_convertion
+#. odoo-python
+#: code:addons/plm_automated_convertion/models/ir_attachment.py:0
+msgid ""
+"STL files cannot be converted to 3MF: the Python library to_3mf cannot be "
+"loaded on the server (%s)."
+msgstr ""
+"I file STL non possono essere convertiti in 3MF: la libreria Python to_3mf non "
+"si carica sul server (%s)."

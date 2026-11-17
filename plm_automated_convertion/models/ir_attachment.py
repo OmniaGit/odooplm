@@ -23,6 +23,8 @@
 Created on 03/nov/2016
 @author: mboscolo
 """
+from __future__ import annotations
+
 import base64
 import io
 import json
@@ -64,6 +66,10 @@ try:
 except Exception as _mpl_ex:
     _logger.warning("matplotlib not available, DXF/STL preview features disabled: %s", _mpl_ex)
 
+# cadquery and to_3mf may fail to import (missing package or dependency): the
+# module still loads, the features needing them log here and refuse at use.
+cq = None
+_CADQUERY_ERROR = None
 try:
     with warnings.catch_warnings():
         warnings.filterwarnings("ignore", category=DeprecationWarning,
@@ -83,11 +89,46 @@ try:
         from cadquery.occ_impl.shapes import Shape
         from cadquery.occ_impl.assembly import Color
 except Exception as ex:
-    logging.warning(ex)
+    cq = None
+    _CADQUERY_ERROR = str(ex) or ex.__class__.__name__
+    _logger.warning(
+        "cadquery not available, STEP conversion, preview, split and BoM recovery "
+        "disabled: %s",
+        _CADQUERY_ERROR,
+    )
+stl_to_3mf = None
+_TO_3MF_ERROR = None
 try:
     from to_3mf.stl_to_3mf import stl_to_3mf
 except Exception as ex:
-    logging.warning(ex)
+    stl_to_3mf = None
+    _TO_3MF_ERROR = str(ex) or ex.__class__.__name__
+    _logger.warning("to_3mf not available, STL to 3MF conversion disabled: %s", _TO_3MF_ERROR)
+
+
+def _check_cadquery(env):
+    """Refuse a STEP feature when cadquery could not be imported."""
+    if cq is None:
+        raise UserError(
+            env._(
+                "STEP files cannot be processed: the Python library cadquery "
+                "cannot be loaded on the server (%s).",
+                _CADQUERY_ERROR,
+            )
+        )
+
+
+def _check_to_3mf(env):
+    """Refuse an STL to 3MF conversion when to_3mf could not be imported."""
+    if stl_to_3mf is None:
+        raise UserError(
+            env._(
+                "STL files cannot be converted to 3MF: the Python library to_3mf "
+                "cannot be loaded on the server (%s).",
+                _TO_3MF_ERROR,
+            )
+        )
+
 
 def _import_step_preserve_names(path: str) -> cq.Assembly:
     """Import a STEP file into a cq.Assembly using instance (comp_label) names.
@@ -472,6 +513,7 @@ class ir_attachment(models.Model):
         return newFileName
 
     def convert_from_step_to(self, toFormat):
+        _check_cadquery(self.env)
         newFileName = ""
         try:
             if not self.store_fname:
@@ -533,6 +575,7 @@ class ir_attachment(models.Model):
             name, exte = os.path.splitext(self.name)
             newFileName = os.path.join(tmpdirname, "%s%s" % (name, toFormat))
             if toFormat=='.3mf':
+                _check_to_3mf(self.env)
                 stl_to_3mf([store_fname],
                            newFileName)
             else:
@@ -601,6 +644,13 @@ class ir_attachment(models.Model):
         store_fname = self._full_path(self.store_fname)
         if not store_fname or not os.path.exists(store_fname):
             return None
+        if cq is None:
+            _logger.warning(
+                "STEP preview of %r skipped, cadquery not available: %s",
+                self.name,
+                _CADQUERY_ERROR,
+            )
+            return None
         try:
             result = cq.importers.importStep(store_fname)
             with tempfile.TemporaryDirectory() as tmp:
@@ -612,7 +662,8 @@ class ir_attachment(models.Model):
                     return base64.b64encode(f.read()).decode()
         except Exception as ex:
             _logger.warning("STEP preview generation failed for %r: %s", self.name, ex)
-            plt.close("all")
+            if plt is not None:
+                plt.close("all")
             return None
 
     def action_update_preview(self):
@@ -779,6 +830,7 @@ class ir_attachment(models.Model):
         if not store_fname or not os.path.exists(store_fname):
             raise UserError(_("The STEP file cannot be found in the file store."))
 
+        _check_cadquery(self.env)
         try:
             assembly = _import_step_preserve_names(store_fname)
         except Exception as ex:
@@ -1113,6 +1165,7 @@ class ir_attachment(models.Model):
         if not store_fname or not os.path.exists(store_fname):
             raise UserError(_("The STEP file cannot be found in the file store."))
 
+        _check_cadquery(self.env)
         try:
             assembly = _import_step_preserve_names(store_fname)
         except Exception as ex:
