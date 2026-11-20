@@ -1375,22 +1375,42 @@ class IrAttachment(models.Model):
                         )
                     )
 
-    def update_component_preview(self,
-                                 product_id=False):
-        for ir_attachment_id in self:
-            if ir_attachment_id.document_type == '3d' and ir_attachment_id.preview:
+    def _plm_is_image_source_of(self, product):
+        """Whether the preview of this document may become the image of
+        product: a 3D model's always, a 2D drawing's only when product has no
+        3D document at all (a DWG drawn in AutoCAD, with no model behind it).
+        A product with a 3D document takes its image from the model alone,
+        even while that model has no preview yet."""
+        self.ensure_one()
+        if not self.preview:
+            return False
+        if self.document_type == "3d":
+            return True
+        if self.document_type == "2d":
+            # sudo: whether a model exists does not depend on who saves
+            return not product.sudo().linkeddocuments.filtered(
+                lambda document: document.document_type == "3d"
+            )
+        return False
+
+    def update_component_preview(self, product_id=False):
+        """The preview of each document becomes the image of product_id, when
+        given, else of the highest revision among its linked components, as
+        far as _plm_is_image_source_of allows."""
+        for ir_attachment_id in self.filtered("preview"):
+            product = self.env["product.product"]
+            if product_id:
                 try:
-                    if product_id:
-                        product_product_id = self.env['product.product'].browse(int(product_id))
-                        product_product_id.image_1920 = self.preview
-                        break
-                except Exception as ex:
+                    product = product.browse(int(product_id)).exists()
+                except (TypeError, ValueError) as ex:
                     logging.error(ex)
-                to_update = {}
-                for product_product_id in ir_attachment_id.linkedcomponents:
-                    to_update[product_product_id.engineering_revision] = product_product_id
-                if to_update:
-                    to_update[max(to_update)].image_1920 = self.preview
+            if not product and ir_attachment_id.linkedcomponents:
+                product = max(
+                    ir_attachment_id.linkedcomponents,
+                    key=lambda component: component.engineering_revision,
+                )
+            if product and ir_attachment_id._plm_is_image_source_of(product):
+                product.image_1920 = ir_attachment_id.preview
 
     def write(self, vals):
         self._plm_access_to_res_record(vals)
@@ -3542,8 +3562,8 @@ class IrAttachment(models.Model):
             last_update = datetime.strptime(last_update, DEFAULT_SERVER_DATETIME_FORMAT)
             condition.append(("write_date", ">=", last_update))
         for document_id in self.search(condition):
-            if document_id.is3D():
-                for product_id in document_id.linkedcomponents:
+            for product_id in document_id.linkedcomponents:
+                if document_id._plm_is_image_source_of(product_id):
                     product_id.image_1920 = document_id.preview
                     product_id.product_tmpl_id.image_1920 = document_id.preview
         configParamObj.set_str(
