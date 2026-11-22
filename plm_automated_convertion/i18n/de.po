@@ -10,11 +10,11 @@ msgstr ""
 "PO-Revision-Date: 2022-02-02 10:45+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
+"Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: \n"
-"Language: de\n"
 "X-Generator: Poedit 2.0.6\n"
 
 #. module: plm_automated_convertion
@@ -24,6 +24,7 @@ msgstr "Dateianhang"
 
 #. module: plm_automated_convertion
 #: model_terms:ir.ui.view,arch_db:plm_automated_convertion.act_plm_convert_form
+#: model_terms:ir.ui.view,arch_db:plm_automated_convertion.plm_cad_version_queue_wizard_form
 msgid "Cancel"
 msgstr "Abbrechen"
 
@@ -39,6 +40,8 @@ msgstr "Konvertieren"
 
 #. module: plm_automated_convertion
 #: model:ir.actions.act_window,name:plm_automated_convertion.act_view_doc_convert
+#: code:addons/plm_automated_convertion/wizards/plm_convert.py:0
+#: model_terms:ir.ui.view,arch_db:plm_automated_convertion.act_plm_convert_form
 msgid "Convert File"
 msgstr "Datei konvertieren"
 
@@ -69,16 +72,19 @@ msgstr "Konvertierungsformat"
 
 #. module: plm_automated_convertion
 #: model:ir.model.fields,field_description:plm_automated_convertion.field_plm_convert__create_uid
+#: model:ir.model.fields,field_description:plm_automated_convertion.field_plm_cad_version_queue_wizard__create_uid
 msgid "Created by"
 msgstr "Erstellt von"
 
 #. module: plm_automated_convertion
 #: model:ir.model.fields,field_description:plm_automated_convertion.field_plm_convert__create_date
+#: model:ir.model.fields,field_description:plm_automated_convertion.field_plm_cad_version_queue_wizard__create_date
 msgid "Created on"
 msgstr "Erstellt am"
 
 #. module: plm_automated_convertion
 #: model:ir.model.fields,field_description:plm_automated_convertion.field_plm_convert__display_name
+#: model:ir.model.fields,field_description:plm_automated_convertion.field_plm_cad_version_queue_wizard__display_name
 msgid "Display Name"
 msgstr "Anzeigename"
 
@@ -106,6 +112,7 @@ msgstr "Datei konvertiert Überprüfen Sie den freigegebenen Ordner"
 
 #. module: plm_automated_convertion
 #: model:ir.model.fields,field_description:plm_automated_convertion.field_plm_convert__id
+#: model:ir.model.fields,field_description:plm_automated_convertion.field_plm_cad_version_queue_wizard__id
 msgid "ID"
 msgstr "ID"
 
@@ -116,11 +123,13 @@ msgstr "Zuletzt geändert am"
 
 #. module: plm_automated_convertion
 #: model:ir.model.fields,field_description:plm_automated_convertion.field_plm_convert__write_uid
+#: model:ir.model.fields,field_description:plm_automated_convertion.field_plm_cad_version_queue_wizard__write_uid
 msgid "Last Updated by"
 msgstr "Zuletzt aktualisiert von"
 
 #. module: plm_automated_convertion
 #: model:ir.model.fields,field_description:plm_automated_convertion.field_plm_convert__write_date
+#: model:ir.model.fields,field_description:plm_automated_convertion.field_plm_cad_version_queue_wizard__write_date
 msgid "Last Updated on"
 msgstr "Zuletzt aktualisiert am"
 
@@ -138,3 +147,912 @@ msgstr "Zugehöriges Dokument"
 #: model:ir.model,name:plm_automated_convertion.model_plm_convert
 msgid "Temp Class for batch converter"
 msgstr "Temp-Klasse für Stapelkonverter"
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields,help:plm_automated_convertion.field_plm_convert_stack__operation_type
+msgid ""
+"\n"
+"        Type of conversion operation\n"
+"        Update: Perform an update to the given document (pdf, Bitmap)\n"
+"        Download: Perform a conversion on the given format and download the file\n"
+"                  in the given server path\n"
+"        Convert: Convert the file in place on the stack object\n"
+"        "
+msgstr ""
+"\n"
+"        Art des Konvertierungsvorgangs\n"
+"        Aktualisieren: aktualisiert das angegebene Dokument (PDF, Bitmap)\n"
+"        Herunterladen: konvertiert in das angegebene Format und legt die Datei\n"
+"                  im angegebenen Serverpfad ab\n"
+"        Konvertieren: konvertiert die Datei direkt im Stapeleintrag\n"
+"        "
+
+#. module: plm_automated_convertion
+#. odoo-python
+#: code:addons/plm_automated_convertion/models/plm_cad_agent_stack.py:0
+msgid "A CAD version update needs a conversion marked as CAD version update."
+msgstr ""
+"Eine CAD-Versionsaktualisierung benötigt eine als CAD-Versionsaktualisierung"
+" markierte Konvertierung."
+
+#. module: plm_automated_convertion
+#. odoo-python
+#: code:addons/plm_automated_convertion/models/plm_cad_agent_stack.py:0
+msgid "A conversion of a CAD agent needs its CAD export mode."
+msgstr "Eine Konvertierung eines CAD-Agenten benötigt ihren CAD-Exportmodus."
+
+#. module: plm_automated_convertion
+#. odoo-python
+#: code:addons/plm_automated_convertion/models/plm_cad_agent_stack.py:0
+msgid "A flat pattern has no model state."
+msgstr "Eine Abwicklung hat keinen Modellzustand."
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields.selection,name:plm_automated_convertion.selection__plm_cad_version_queue_wizard__selection_mode__not_checked_out
+msgid "All documents not checked out"
+msgstr "Alle nicht ausgecheckten Dokumente"
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields.selection,name:plm_automated_convertion.selection__plm_cad_version_queue_wizard__selection_mode__not_draft
+msgid "All documents not in draft"
+msgstr "Alle Dokumente, die nicht im Entwurf sind"
+
+#. module: plm_automated_convertion
+#: model_terms:ir.ui.view,arch_db:plm_automated_convertion.plm_convert_stack_form_cad_version
+#: model_terms:ir.ui.view,arch_db:plm_automated_convertion.plm_convert_stack_list_cad_version
+msgid "Back To Do"
+msgstr "Zurück auf Zu erledigen"
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields,field_description:plm_automated_convertion.field_plm_convert_stack__cad_checkout_id
+msgid "Batch Check-Out"
+msgstr "Check-Out der Aktualisierung"
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields,field_description:plm_automated_convertion.field_plm_convert_servers__cad_agent
+#: model:ir.model.fields,field_description:plm_automated_convertion.field_plm_convert_stack__cad_agent
+msgid "CAD Agent"
+msgstr "CAD-Agent"
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields,field_description:plm_automated_convertion.field_plm_convert_stack__cad_agent_state
+#: model_terms:ir.ui.view,arch_db:plm_automated_convertion.plm_convert_stack_search_cad_version
+msgid "CAD Agent State"
+msgstr "Status CAD-Agent"
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields,field_description:plm_automated_convertion.field_plm_convert_format__cad_export_mode
+msgid "CAD Export Mode"
+msgstr "CAD-Exportmodus"
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields,field_description:plm_automated_convertion.field_ir_attachment__cad_version
+#: model:ir.model.fields,field_description:plm_automated_convertion.field_product_document__cad_version
+#: model_terms:ir.ui.view,arch_db:plm_automated_convertion.view_attachment_form_cad_version
+msgid "CAD Version"
+msgstr "CAD-Version"
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields.selection,name:plm_automated_convertion.selection__plm_convert_stack__operation_type__cad_version
+#: model:ir.model.fields,field_description:plm_automated_convertion.field_plm_convert_format__cad_version_update
+#: model_terms:ir.ui.view,arch_db:plm_automated_convertion.plm_convert_stack_search_cad_version
+msgid "CAD Version Update"
+msgstr "CAD-Versionsaktualisierung"
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields,field_description:plm_automated_convertion.field_ir_attachment__cad_version_update_date
+#: model:ir.model.fields,field_description:plm_automated_convertion.field_product_document__cad_version_update_date
+msgid "CAD Version Update Date"
+msgstr "Datum der CAD-Versionsaktualisierung"
+
+#. module: plm_automated_convertion
+#: model_terms:ir.ui.view,arch_db:plm_automated_convertion.plm_convert_stack_form_cad_version
+msgid "CAD Workstation"
+msgstr "CAD-Arbeitsplatz"
+
+#. module: plm_automated_convertion
+#. odoo-python
+#: code:addons/plm_automated_convertion/wizards/cad_version_queue_wizard.py:0
+msgid "CAD Workstation Queue"
+msgstr "Warteschlange CAD-Arbeitsplatz"
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields,help:plm_automated_convertion.field_ir_attachment__cad_version
+#: model:ir.model.fields,help:plm_automated_convertion.field_product_document__cad_version
+msgid ""
+"CAD version the file was updated to by the CAD version update. Empty when "
+"unknown."
+msgstr ""
+"CAD-Version, auf die die CAD-Versionsaktualisierung die Datei gebracht hat. "
+"Leer, wenn unbekannt."
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields.selection,name:plm_automated_convertion.selection__plm_cad_version_queue_wizard__operation_type__cad_version
+msgid "CAD version update"
+msgstr "CAD-Versionsaktualisierung"
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields,help:plm_automated_convertion.field_plm_convert_stack__cad_checkout_id
+msgid ""
+"Check-out the update holds on a draft document while the agent works on it."
+msgstr ""
+"Check-Out, den die Aktualisierung auf einem Dokument im Entwurf hält, "
+"solange der Agent daran arbeitet."
+
+#. module: plm_automated_convertion
+#. odoo-python
+#: code:addons/plm_automated_convertion/wizards/cad_version_queue_wizard.py:0
+msgid "Choose at least one conversion."
+msgstr "Wählen Sie mindestens eine Konvertierung."
+
+#. module: plm_automated_convertion
+#: model_terms:ir.ui.view,arch_db:plm_automated_convertion.plm_convert_stack_search_cad_version
+msgid "Conversion By The CAD Workstation"
+msgstr "Konvertierung durch den CAD-Arbeitsplatz"
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields.selection,name:plm_automated_convertion.selection__plm_cad_version_queue_wizard__operation_type__convert
+msgid "Conversion of the files"
+msgstr "Konvertierung der Dateien"
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields,field_description:plm_automated_convertion.field_plm_cad_version_queue_wizard__convert_format_ids
+msgid "Conversions"
+msgstr "Konvertierungen"
+
+#. module: plm_automated_convertion
+#: model:ir.model,name:plm_automated_convertion.model_plm_convert_format
+msgid "Convert Format"
+msgstr "Konvertierungsformat"
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields,field_description:plm_automated_convertion.field_plm_convert_stack__cad_export_document_ids
+msgid "Converted Documents"
+msgstr "Konvertierte Dokumente"
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields,field_description:plm_automated_convertion.field_plm_cad_version_queue_wizard__selection_mode
+msgid "Documents"
+msgstr "Dokumente"
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields,help:plm_automated_convertion.field_plm_convert_stack__cad_export_document_ids
+msgid ""
+"Documents the agent created or updated from the conversion of the starting "
+"document."
+msgstr ""
+"Dokumente, die der Agent aus der Konvertierung des Ausgangsdokuments "
+"erstellt oder aktualisiert hat."
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields.selection,name:plm_automated_convertion.selection__plm_convert_stack__cad_agent_state__done
+#: model_terms:ir.ui.view,arch_db:plm_automated_convertion.plm_convert_stack_search_cad_version
+msgid "Done"
+msgstr "Erledigt"
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields,field_description:plm_automated_convertion.field_plm_convert_stack__cad_download_date
+msgid "Download Date"
+msgstr "Download-Datum"
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields.selection,name:plm_automated_convertion.selection__plm_convert_stack__cad_agent_state__downloaded
+#: model_terms:ir.ui.view,arch_db:plm_automated_convertion.plm_convert_stack_search_cad_version
+msgid "Downloaded"
+msgstr "Heruntergeladen"
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields.selection,name:plm_automated_convertion.selection__plm_convert_stack__cad_agent_state__error
+msgid "Error"
+msgstr "Fehler"
+
+#. module: plm_automated_convertion
+#: model_terms:ir.ui.view,arch_db:plm_automated_convertion.plm_convert_stack_search_cad_version
+msgid "Error Or Skipped"
+msgstr "Fehler oder übersprungen"
+
+#. module: plm_automated_convertion
+#. odoo-python
+#: code:addons/plm_automated_convertion/models/plm_cad_agent_stack.py:0
+msgid "File converted again from %s by the CAD conversion."
+msgstr "Datei durch die CAD-Konvertierung erneut aus %s konvertiert."
+
+#. module: plm_automated_convertion
+#. odoo-python
+#: code:addons/plm_automated_convertion/models/plm_cad_agent_stack.py:0
+msgid "File updated to CAD version %s by the CAD version update."
+msgstr ""
+"Datei durch die CAD-Versionsaktualisierung auf CAD-Version %s aktualisiert."
+
+#. module: plm_automated_convertion
+#: model:ir.model,name:plm_automated_convertion.model_ir_attachment
+msgid "Ir Attachment"
+msgstr "Dateianhang"
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields,field_description:plm_automated_convertion.field_ir_attachment__cad_upload_date
+#: model:ir.model.fields,field_description:plm_automated_convertion.field_product_document__cad_upload_date
+msgid "Last CAD Upload"
+msgstr "Letzter CAD-Upload"
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields,help:plm_automated_convertion.field_ir_attachment__cad_upload_date
+#: model:ir.model.fields,help:plm_automated_convertion.field_product_document__cad_upload_date
+msgid ""
+"Last time the file was saved from the CAD. The CAD version update does not "
+"change it."
+msgstr ""
+"Letztes Speichern der Datei aus dem CAD. Die CAD-Versionsaktualisierung "
+"ändert es nicht."
+
+#. module: plm_automated_convertion
+#. odoo-python
+#: code:addons/plm_automated_convertion/models/plm_cad_agent_stack.py:0
+msgid "More documents have the code %s: the conversion cannot choose one."
+msgstr ""
+"Mehrere Dokumente haben den Code %s: die Konvertierung kann keines davon "
+"wählen."
+
+#. module: plm_automated_convertion
+#. odoo-python
+#: code:addons/plm_automated_convertion/models/plm_cad_agent_stack.py:0
+msgid "No converted file was uploaded for the row %s."
+msgstr "Für die Zeile %s wurde keine konvertierte Datei hochgeladen."
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields.selection,name:plm_automated_convertion.selection__plm_convert_format__cad_export_mode__file
+msgid "One File"
+msgstr "Eine Datei"
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields.selection,name:plm_automated_convertion.selection__plm_convert_format__cad_export_mode__model_state
+msgid "One File Per Model State"
+msgstr "Eine Datei pro Modellzustand"
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields.selection,name:plm_automated_convertion.selection__plm_cad_version_queue_wizard__selection_mode__released
+msgid "Only released documents"
+msgstr "Nur freigegebene Dokumente"
+
+#. module: plm_automated_convertion
+#: model_terms:ir.ui.view,arch_db:plm_automated_convertion.plm_cad_version_queue_wizard_form
+msgid ""
+"Only the files of the chosen conversions are queued. Documents already in the queue,\n"
+"                    and for a CAD version update documents already at the target version, are left out."
+msgstr ""
+"Nur die Dateien der gewählten Konvertierungen werden eingereiht. Dokumente, die bereits in der Warteschlange sind,\n"
+"                    und bei einer CAD-Versionsaktualisierung Dokumente, die bereits in der Zielversion sind, werden ausgelassen."
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields,field_description:plm_automated_convertion.field_plm_cad_version_queue_wizard__operation_type
+msgid "Operation"
+msgstr "Vorgang"
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields,field_description:plm_automated_convertion.field_plm_convert_stack__operation_type
+#: model_terms:ir.ui.view,arch_db:plm_automated_convertion.plm_convert_stack_search_cad_version
+msgid "Operation Type"
+msgstr "Vorgangsart"
+
+#. module: plm_automated_convertion
+#: model_terms:ir.ui.view,arch_db:plm_automated_convertion.plm_cad_version_queue_wizard_form
+msgid "Add To The Queue"
+msgstr "Einreihen"
+
+#. module: plm_automated_convertion
+#: model:ir.actions.act_window,name:plm_automated_convertion.plm_cad_version_queue_wizard_action
+#: model:ir.model,name:plm_automated_convertion.model_plm_cad_version_queue_wizard
+#: model:ir.ui.menu,name:plm_automated_convertion.plm_cad_version_queue_wizard_menu
+#: model_terms:ir.ui.view,arch_db:plm_automated_convertion.plm_cad_version_queue_wizard_form
+msgid "Massive Update"
+msgstr "Massenaktualisierung"
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields,field_description:plm_automated_convertion.field_plm_cad_version_queue_wizard__document_ids
+msgid "Selected Documents"
+msgstr "Ausgewählte Dokumente"
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields.selection,name:plm_automated_convertion.selection__plm_cad_version_queue_wizard__selection_mode__selection
+msgid "Selected documents"
+msgstr "Ausgewählte Dokumente"
+
+#. module: plm_automated_convertion
+#: model:ir.model,name:plm_automated_convertion.model_plm_convert_servers
+msgid "Servers of conversions"
+msgstr "Konvertierungsserver"
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields,help:plm_automated_convertion.field_plm_convert_format__cad_export_mode
+msgid ""
+"Set on a conversion of a CAD agent: what the agent exports from the starting"
+" file. It also gives the code of the converted document, the same the CAD "
+"client gives it at check-in."
+msgstr ""
+"Bei einer Konvertierung eines CAD-Agenten gesetzt: was der Agent aus der "
+"Ausgangsdatei exportiert. Daraus ergibt sich auch der Code des konvertierten"
+" Dokuments, derselbe, den der CAD-Client beim Einchecken vergibt."
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields.selection,name:plm_automated_convertion.selection__plm_convert_format__cad_export_mode__flat_pattern
+msgid "Sheet Metal Flat Pattern"
+msgstr "Blechabwicklung"
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields.selection,name:plm_automated_convertion.selection__plm_convert_stack__cad_agent_state__skipped
+msgid "Skipped"
+msgstr "Übersprungen"
+
+#. module: plm_automated_convertion
+#: model:ir.model,name:plm_automated_convertion.model_plm_convert_stack
+msgid "Stack of conversions"
+msgstr "Konvertierungswarteschlange"
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields,field_description:plm_automated_convertion.field_plm_convert_stack__cad_download_engineering_state
+msgid "State At Download"
+msgstr "Status beim Download"
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields,help:plm_automated_convertion.field_plm_convert_stack__cad_download_engineering_state
+msgid ""
+"State of the document when the agent downloaded it: the upload is refused if"
+" it changed."
+msgstr ""
+"Status des Dokuments beim Download durch den Agenten: Hat er sich geändert, "
+"wird der Upload abgelehnt."
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields,field_description:plm_automated_convertion.field_plm_convert_stack__cad_version_target
+msgid "Target CAD Version"
+msgstr "Ziel-CAD-Version"
+
+#. module: plm_automated_convertion
+#. odoo-python
+#: code:addons/plm_automated_convertion/models/plm_cad_agent_stack.py:0
+msgid "The check-out of the update on the document was removed."
+msgstr "Der Check-Out der Aktualisierung auf dem Dokument wurde entfernt."
+
+#. module: plm_automated_convertion
+#. odoo-python
+#: code:addons/plm_automated_convertion/wizards/cad_version_queue_wizard.py:0
+msgid "The conversion %s does not belong to the operation chosen."
+msgstr "Die Konvertierung %s gehört nicht zum gewählten Vorgang."
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields,help:plm_automated_convertion.field_plm_convert_servers__cad_agent
+#: model:ir.model.fields,help:plm_automated_convertion.field_plm_convert_stack__cad_agent
+msgid ""
+"The conversions of this server are made by the agents of a CAD workstation, "
+"which take them from the conversion stack: Odoo never converts them itself."
+msgstr ""
+"Die Konvertierungen dieses Servers werden von den Agenten eines CAD-"
+"Arbeitsplatzes ausgeführt, die sie aus dem Konvertierungsstapel holen: Odoo "
+"konvertiert sie nie selbst."
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields,help:plm_automated_convertion.field_plm_cad_version_queue_wizard__convert_format_ids
+msgid "The conversions to queue: their start format chooses the files."
+msgstr ""
+"Die einzureihenden Konvertierungen: ihr Ausgangsformat bestimmt die Dateien."
+
+#. module: plm_automated_convertion
+#. odoo-python
+#: code:addons/plm_automated_convertion/models/plm_cad_agent_stack.py:0
+msgid "The document %(code)s is checked out by %(user)s."
+msgstr "Das Dokument %(code)s ist von %(user)s ausgecheckt."
+
+#. module: plm_automated_convertion
+#. odoo-python
+#: code:addons/plm_automated_convertion/models/plm_cad_agent_stack.py:0
+msgid "The document has a saving error."
+msgstr "Das Dokument hat einen Speicherfehler."
+
+#. module: plm_automated_convertion
+#. odoo-python
+#: code:addons/plm_automated_convertion/models/plm_cad_agent_stack.py:0
+msgid "The document is already at CAD version %s."
+msgstr "Das Dokument hat bereits die CAD-Version %s."
+
+#. module: plm_automated_convertion
+#. odoo-python
+#: code:addons/plm_automated_convertion/models/plm_cad_agent_stack.py:0
+msgid "The document was checked out by %s during the conversion."
+msgstr "Das Dokument wurde während der Konvertierung von %s ausgecheckt."
+
+#. module: plm_automated_convertion
+#. odoo-python
+#: code:addons/plm_automated_convertion/models/plm_cad_agent_stack.py:0
+msgid "The document was checked out by %s during the update."
+msgstr "Das Dokument wurde während der Aktualisierung von %s ausgecheckt."
+
+#. module: plm_automated_convertion
+#. odoo-python
+#: code:addons/plm_automated_convertion/models/plm_cad_agent_stack.py:0
+msgid "The operation %s is not worked by a CAD agent."
+msgstr "Der Vorgang %s wird nicht von einem CAD-Agenten bearbeitet."
+
+#. module: plm_automated_convertion
+#. odoo-python
+#: code:addons/plm_automated_convertion/models/plm_cad_agent_stack.py:0
+msgid "The row %s is not waiting for an upload."
+msgstr "Die Zeile %s wartet nicht auf einen Upload."
+
+#. module: plm_automated_convertion
+#. odoo-python
+#: code:addons/plm_automated_convertion/models/plm_cad_agent_stack.py:0
+msgid "The row has no document."
+msgstr "Die Zeile hat kein Dokument."
+
+#. module: plm_automated_convertion
+#. odoo-python
+#: code:addons/plm_automated_convertion/models/plm_cad_agent_stack.py:0
+msgid "The state %s cannot be reported."
+msgstr "Der Status %s kann nicht gemeldet werden."
+
+#. module: plm_automated_convertion
+#. odoo-python
+#: code:addons/plm_automated_convertion/models/plm_cad_agent_stack.py:0
+msgid ""
+"The state of the document changed from %(old)s to %(new)s during the update."
+msgstr ""
+"Der Status des Dokuments hat sich während der Aktualisierung von %(old)s auf"
+" %(new)s geändert."
+
+#. module: plm_automated_convertion
+#. odoo-python
+#: code:addons/plm_automated_convertion/models/plm_cad_agent_stack.py:0
+msgid "The uploaded file is empty."
+msgstr "Die hochgeladene Datei ist leer."
+
+#. module: plm_automated_convertion
+#. odoo-python
+#: code:addons/plm_automated_convertion/models/plm_cad_agent_stack.py:0
+msgid "The workstation and its working directory are required."
+msgstr "Die Arbeitsstation und ihr Arbeitsverzeichnis sind erforderlich."
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields.selection,name:plm_automated_convertion.selection__plm_convert_stack__cad_agent_state__to_do
+#: model_terms:ir.ui.view,arch_db:plm_automated_convertion.plm_convert_stack_search_cad_version
+msgid "To Do"
+msgstr "Zu erledigen"
+
+#. module: plm_automated_convertion
+#. odoo-python
+#: code:addons/plm_automated_convertion/wizards/cad_version_queue_wizard.py:0
+msgid "Two conversions start from the format %s: choose only one."
+msgstr "Zwei Konvertierungen beginnen mit dem Format %s: Wählen Sie nur eine."
+
+#. module: plm_automated_convertion
+#. odoo-python
+#: code:addons/plm_automated_convertion/models/plm_cad_agent_stack.py:0
+msgid "Unable to check out the document: %s"
+msgstr "Das Dokument kann nicht ausgecheckt werden: %s"
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields,field_description:plm_automated_convertion.field_plm_convert_stack__cad_upload_date
+msgid "Upload Date"
+msgstr "Upload-Datum"
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields,help:plm_automated_convertion.field_ir_attachment__cad_version_update_date
+#: model:ir.model.fields,help:plm_automated_convertion.field_product_document__cad_version_update_date
+msgid "When the CAD version update replaced the file."
+msgstr "Wann die CAD-Versionsaktualisierung die Datei ersetzt hat."
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields,field_description:plm_automated_convertion.field_plm_convert_stack__cad_hostpws
+msgid "Working Directory"
+msgstr "Arbeitsverzeichnis"
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields,field_description:plm_automated_convertion.field_plm_convert_stack__cad_hostname
+msgid "Workstation"
+msgstr "Arbeitsstation"
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields,help:plm_automated_convertion.field_plm_convert_format__cad_version_update
+msgid ""
+"The conversion updates the files of the start format to the target version "
+"of its CAD (PLM dictionaries, CAD Versions)."
+msgstr ""
+"Die Konvertierung aktualisiert die Dateien des Startformats auf die "
+"Zielversion ihres CAD (PLM-Wörterbücher, CAD-Versionen)."
+
+#. module: plm_automated_convertion
+#. odoo-python
+#: code:addons/plm_automated_convertion/wizards/cad_version_queue_wizard.py:0
+msgid "%s has no target version: choose it in PLM dictionaries, CAD Versions."
+msgstr ""
+"%s hat keine Zielversion: wählen Sie sie unter PLM-Wörterbücher, CAD-"
+"Versionen."
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields,help:plm_automated_convertion.field_plm_convert__cad_version_update
+msgid ""
+"A CAD workstation opens the files and saves them in the target version of "
+"their CAD (PLM dictionaries, CAD Versions), without changing the history of "
+"the documents."
+msgstr ""
+"Ein CAD-Arbeitsplatz öffnet die Dateien und speichert sie in der Zielversion"
+" ihres CAD (PLM-Wörterbücher, CAD-Versionen), ohne die Historie der "
+"Dokumente zu ändern."
+
+#. module: plm_automated_convertion
+#. odoo-python
+#: code:addons/plm_automated_convertion/models/plm_convert_workstation.py:0
+msgid "A workstation registers with the GUID of its machine."
+msgstr "Ein Arbeitsplatz meldet sich mit der GUID seines Rechners an."
+
+#. module: plm_automated_convertion
+#: model:ir.model.constraint,message:plm_automated_convertion.constraint_plm_convert_servers_workstation_guid_unique
+msgid "A workstation with this GUID exists already."
+msgstr "Ein Arbeitsplatz mit dieser GUID existiert bereits."
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields,field_description:plm_automated_convertion.field_plm_convert_servers__alive
+msgid "Alive"
+msgstr "Erreichbar"
+
+#. module: plm_automated_convertion
+#: model_terms:ir.ui.view,arch_db:plm_automated_convertion.plm_convert_template_search
+msgid "Archived"
+msgstr "Archiviert"
+
+#. module: plm_automated_convertion
+#: model:ir.ui.menu,name:plm_automated_convertion.menu_cad_conversion
+msgid "CAD Conversion"
+msgstr "CAD-Konvertierung"
+
+#. module: plm_automated_convertion
+#: model:ir.ui.menu,name:plm_automated_convertion.menu_cad_conversion_cad_versions
+msgid "CAD Versions"
+msgstr "CAD-Versionen"
+
+#. module: plm_automated_convertion
+#: model:ir.model,name:plm_automated_convertion.model_plm_convert_servers_cad
+msgid "CAD of a CAD workstation"
+msgstr "CAD eines CAD-Arbeitsplatzes"
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields.selection,name:plm_automated_convertion.selection__plm_convert_line__maker__workstation
+msgid "CAD workstation, in the queue"
+msgstr "CAD-Arbeitsplatz, in der Warteschlange"
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields,field_description:plm_automated_convertion.field_plm_convert_servers__workstation_cad_ids
+msgid "CADs"
+msgstr "CAD-Systeme"
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields,field_description:plm_automated_convertion.field_plm_convert_servers_cad__prog_id
+msgid "COM ProgID"
+msgstr "COM-ProgID"
+
+#. module: plm_automated_convertion
+#. odoo-python
+#: code:addons/plm_automated_convertion/wizards/plm_convert.py:0
+msgid "Choose at least one document."
+msgstr "Wählen Sie mindestens ein Dokument."
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields,help:plm_automated_convertion.field_plm_convert__template_id
+msgid ""
+"Chooses its conversions; the predefined ones are for everybody, the personal"
+" ones are yours."
+msgstr ""
+"Wählt seine Konvertierungen; die vordefinierten gelten für alle, die "
+"persönlichen sind Ihre."
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields,field_description:plm_automated_convertion.field_plm_convert_servers__hostname
+msgid "Computer"
+msgstr "Computer"
+
+#. module: plm_automated_convertion
+#: model:ir.model,name:plm_automated_convertion.model_plm_convert_template_line
+msgid "Conversion Of A Template"
+msgstr "Konvertierung einer Vorlage"
+
+#. module: plm_automated_convertion
+#: model:ir.model,name:plm_automated_convertion.model_plm_convert
+msgid "Conversion Of Documents"
+msgstr "Konvertierung von Dokumenten"
+
+#. module: plm_automated_convertion
+#: model:ir.model,name:plm_automated_convertion.model_plm_convert_line
+msgid "Conversion Offered By The Wizard"
+msgstr "Vom Assistenten angebotene Konvertierung"
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields,field_description:plm_automated_convertion.field_plm_convert_line__format_id
+msgid "Conversion Rule"
+msgstr "Konvertierungsregel"
+
+#. module: plm_automated_convertion
+#: model:ir.ui.menu,name:plm_automated_convertion.plm_convert_rule_menu
+msgid "Conversion Rules"
+msgstr "Konvertierungsregeln"
+
+#. module: plm_automated_convertion
+#: model:ir.model,name:plm_automated_convertion.model_plm_convert_template
+#: model_terms:ir.ui.view,arch_db:plm_automated_convertion.plm_convert_template_form
+msgid "Conversion Template"
+msgstr "Konvertierungsvorlage"
+
+#. module: plm_automated_convertion
+#: model:ir.actions.act_window,name:plm_automated_convertion.plm_convert_template_action
+#: model:ir.ui.menu,name:plm_automated_convertion.plm_convert_template_menu
+#: model_terms:ir.ui.view,arch_db:plm_automated_convertion.plm_convert_template_list
+msgid "Conversion Templates"
+msgstr "Konvertierungsvorlagen"
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields,field_description:plm_automated_convertion.field_plm_convert_servers__agent_version
+msgid "CoreBomWeb Version"
+msgstr "CoreBomWeb-Version"
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields,help:plm_automated_convertion.field_plm_convert_template__owner_id
+msgid ""
+"Empty: a predefined template, for everybody. Set: the personal template of "
+"this user."
+msgstr ""
+"Leer: eine vordefinierte Vorlage für alle. Gesetzt: die persönliche Vorlage "
+"dieses Benutzers."
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields,help:plm_automated_convertion.field_plm_convert_template_line__cad_export_mode
+msgid ""
+"Empty: whatever export mode the conversion has (a conversion made by Odoo "
+"has none)."
+msgstr ""
+"Leer: beliebiger Exportmodus der Konvertierung (eine Konvertierung durch "
+"Odoo hat keinen)."
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields,field_description:plm_automated_convertion.field_plm_convert_line__cad_export_mode
+msgid "Export Mode"
+msgstr "Exportmodus"
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields,field_description:plm_automated_convertion.field_plm_convert_line__start_format
+msgid "From"
+msgstr "Von"
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields,field_description:plm_automated_convertion.field_plm_convert_servers__features
+msgid "Functions"
+msgstr "Funktionen"
+
+#. module: plm_automated_convertion
+#. odoo-python
+#: code:addons/plm_automated_convertion/wizards/plm_convert.py:0
+msgid "Give a name to the template."
+msgstr "Geben Sie der Vorlage einen Namen."
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields.selection,name:plm_automated_convertion.selection__plm_convert_stack__cad_agent_state__downloaded
+msgid "In Progress"
+msgstr "In Bearbeitung"
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields,field_description:plm_automated_convertion.field_plm_convert_servers__last_contact
+msgid "Last Contact"
+msgstr "Letzter Kontakt"
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields,field_description:plm_automated_convertion.field_plm_convert_line__maker
+msgid "Made By"
+msgstr "Erstellt durch"
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields,help:plm_automated_convertion.field_plm_convert_format__presented
+msgid ""
+"Made by the workstation when it registered: it becomes unavailable when the "
+"workstation no longer presents it."
+msgstr ""
+"Vom Arbeitsplatz bei der Anmeldung angelegt: wird nicht verfügbar, wenn der "
+"Arbeitsplatz sie nicht mehr meldet."
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields,field_description:plm_automated_convertion.field_plm_convert_line__selected
+msgid "Make"
+msgstr "Erstellen"
+
+#. module: plm_automated_convertion
+#: model_terms:ir.ui.view,arch_db:plm_automated_convertion.plm_convert_template_search
+msgid "Mine"
+msgstr "Meine"
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields,field_description:plm_automated_convertion.field_plm_convert__template_name
+msgid "Name Of My Template"
+msgstr "Name meiner Vorlage"
+
+#. module: plm_automated_convertion
+#. odoo-python
+#: code:addons/plm_automated_convertion/wizards/plm_convert.py:0
+msgid ""
+"Nothing to queue: the same jobs are already waiting, or the files are at the"
+" target CAD version."
+msgstr ""
+"Nichts einzureihen: dieselben Aufträge warten bereits, oder die Dateien sind"
+" bereits in der CAD-Zielversion."
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields.selection,name:plm_automated_convertion.selection__plm_convert_line__maker__odoo
+msgid "Odoo, at once"
+msgstr "Odoo, sofort"
+
+#. module: plm_automated_convertion
+#. odoo-python
+#: code:addons/plm_automated_convertion/wizards/plm_convert.py:0
+msgid "Only the conversions made by Odoo go to the shared folder."
+msgstr "Nur die Konvertierungen durch Odoo gehen in den freigegebenen Ordner."
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields,field_description:plm_automated_convertion.field_plm_convert_template__owner_id
+msgid "Owner"
+msgstr "Besitzer"
+
+#. module: plm_automated_convertion
+#: model_terms:ir.ui.view,arch_db:plm_automated_convertion.plm_convert_template_search
+msgid "Predefined"
+msgstr "Vordefiniert"
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields,field_description:plm_automated_convertion.field_plm_convert_format__presented
+msgid "Presented by the Workstation"
+msgstr "Vom Arbeitsplatz gemeldet"
+
+#. module: plm_automated_convertion
+#. odoo-python
+#: code:addons/plm_automated_convertion/models/plm_cad_agent_stack.py:0
+msgid "Queued Jobs"
+msgstr "Eingereihte Aufträge"
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields,field_description:plm_automated_convertion.field_plm_convert_stack__requester_id
+msgid "Requested By"
+msgstr "Angefordert von"
+
+#. module: plm_automated_convertion
+#: model_terms:ir.ui.view,arch_db:plm_automated_convertion.act_plm_convert_form
+msgid "Save As My Template"
+msgstr "Als meine Vorlage speichern"
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields,field_description:plm_automated_convertion.field_plm_convert_stack__cad_agent_state
+msgid "State"
+msgstr "Status"
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields,field_description:plm_automated_convertion.field_plm_convert_stack__workstation_id
+msgid "Taken By"
+msgstr "Übernommen von"
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields,field_description:plm_automated_convertion.field_plm_convert__template_id
+#: model:ir.model.fields,field_description:plm_automated_convertion.field_plm_convert_template_line__template_id
+msgid "Template"
+msgstr "Vorlage"
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields,help:plm_automated_convertion.field_plm_convert_stack__workstation_id
+msgid "The CAD workstation working the job, or that worked it."
+msgstr "Der CAD-Arbeitsplatz, der den Auftrag bearbeitet oder bearbeitet hat."
+
+#. module: plm_automated_convertion
+#: model_terms:ir.ui.view,arch_db:plm_automated_convertion.act_plm_convert_form
+msgid ""
+"The conversions of a CAD workstation go into the queue: the first free workstation\n"
+"                        able to make them takes them, and the converted file arrives when it is made."
+msgstr ""
+"Die Konvertierungen eines CAD-Arbeitsplatzes gehen in die Warteschlange: der erste freie Arbeitsplatz,\n"
+"                        der sie erstellen kann, übernimmt sie, und die konvertierte Datei kommt, sobald sie erstellt ist."
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields,help:plm_automated_convertion.field_plm_convert_template_line__end_format
+msgid "The extension of the converted file, .step"
+msgstr "Die Dateiendung der konvertierten Datei, .step"
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields,help:plm_automated_convertion.field_plm_convert_template_line__start_format
+msgid "The extension of the starting file, .ipt"
+msgstr "Die Dateiendung der Ausgangsdatei, .ipt"
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields,help:plm_automated_convertion.field_plm_convert_template__cad_version_update
+msgid ""
+"The files are also updated to the target version of their CAD (PLM "
+"dictionaries, CAD Versions)."
+msgstr ""
+"Die Dateien werden außerdem auf die Zielversion ihres CAD aktualisiert (PLM-"
+"Wörterbücher, CAD-Versionen)."
+
+#. module: plm_automated_convertion
+#. odoo-python
+#: code:addons/plm_automated_convertion/models/plm_cad_agent_stack.py:0
+msgid "The workstation %s is not registered: it presents itself first."
+msgstr "Der Arbeitsplatz %s ist nicht angemeldet: er muss sich zuerst melden."
+
+#. module: plm_automated_convertion
+#. odoo-python
+#: code:addons/plm_automated_convertion/models/plm_cad_agent_stack.py:0
+msgid "The workstation is disabled on Odoo."
+msgstr "Der Arbeitsplatz ist in Odoo deaktiviert."
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields,field_description:plm_automated_convertion.field_plm_convert_line__end_format
+msgid "To"
+msgstr "Nach"
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields,field_description:plm_automated_convertion.field_plm_convert__cad_version_update
+#: model:ir.model.fields,field_description:plm_automated_convertion.field_plm_convert_template__cad_version_update
+msgid "Update To The Target CAD Version"
+msgstr "Auf die CAD-Zielversion aktualisieren"
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields,field_description:plm_automated_convertion.field_plm_convert_servers__group_ids
+msgid "User Groups"
+msgstr "Benutzergruppen"
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields,help:plm_automated_convertion.field_plm_convert_servers__features
+msgid "What the workstation can do besides converting."
+msgstr "Was der Arbeitsplatz außer Konvertieren kann."
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields,help:plm_automated_convertion.field_plm_convert_servers__work_hours
+msgid ""
+"When the workstation starts jobs by itself, crontab expressions; empty: "
+"always."
+msgstr ""
+"Wann der Arbeitsplatz Aufträge selbst startet, Crontab-Ausdrücke; leer: "
+"immer."
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields,help:plm_automated_convertion.field_plm_convert_stack__requester_id
+msgid "Who asked for the job: the workstations tied to his groups work it."
+msgstr ""
+"Wer den Auftrag angefordert hat: die Arbeitsplätze seiner Gruppen bearbeiten"
+" ihn."
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields,field_description:plm_automated_convertion.field_plm_convert_servers__work_hours
+msgid "Work Hours"
+msgstr "Arbeitszeiten"
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields,field_description:plm_automated_convertion.field_plm_convert_servers__workstation_guid
+msgid "Workstation GUID"
+msgstr "Arbeitsplatz-GUID"
+
+#. module: plm_automated_convertion
+#: model:ir.ui.menu,name:plm_automated_convertion.plm_convert_servers_menu
+msgid "Workstations and Servers"
+msgstr "Arbeitsplätze und Server"
+
+#. module: plm_automated_convertion
+#: model_terms:ir.ui.view,arch_db:plm_automated_convertion.act_plm_convert_form
+msgid "choose the conversions at once"
+msgstr "die Konvertierungen auf einmal wählen"
+
+#. module: plm_automated_convertion
+#: model_terms:ir.ui.view,arch_db:plm_automated_convertion.plm_convert_template_form
+msgid "everybody (predefined)"
+msgstr "alle (vordefiniert)"
+
+#. module: plm_automated_convertion
+#: model_terms:ir.ui.view,arch_db:plm_automated_convertion.act_plm_convert_form
+msgid "name of the template"
+msgstr "Name der Vorlage"
+
+#. module: plm_automated_convertion
+#: model:ir.ui.menu,name:plm_automated_convertion.plm_convert_stack_menu
+#: model:ir.model.fields,field_description:plm_automated_convertion.field_plm_convert_servers__stack_count
+#: model_terms:ir.ui.view,arch_db:plm_automated_convertion.plm_convert_servers_form
+msgid "Queue"
+msgstr "Warteschlange"

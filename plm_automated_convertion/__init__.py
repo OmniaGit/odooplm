@@ -18,7 +18,25 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
+from . import controllers
 from . import models
 from . import wizards
+
+
+def post_init_hook(env):
+    """Fill the last CAD upload date of the existing documents from their
+    last CAD save, without touching their modification date."""
+    env.cr.execute(
+        """
+        UPDATE ir_attachment a
+           SET cad_upload_date = s.write_date
+          FROM (SELECT DISTINCT ON (document_id) document_id, write_date
+                  FROM plm_cad_open
+                 WHERE operation_type = 'save'
+                   AND document_id IS NOT NULL
+              ORDER BY document_id, create_date DESC) s
+         WHERE s.document_id = a.id
+        """
+    )
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

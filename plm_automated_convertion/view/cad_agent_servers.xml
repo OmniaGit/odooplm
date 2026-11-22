@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="plm_convert_servers_form_cad_version" model="ir.ui.view">
+        <field name="name">plm.convert.servers.form.cad.version</field>
+        <field name="model">plm.convert.servers</field>
+        <field name="inherit_id" ref="plm_automated_convertion.plm_convert_servers_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='available_format']/list/field[@name='cad_name']" position="after">
+                <field name="cad_version_update" optional="show"/>
+                <field name="cad_export_mode" optional="show"/>
+            </xpath>
+            <xpath expr="//field[@name='is_internal']" position="after">
+                <field name="cad_agent"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

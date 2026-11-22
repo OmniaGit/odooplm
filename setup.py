@@ -6,17 +6,11 @@ from setuptools import setup
 HERE = os.path.abspath(os.path.dirname(__file__))
 
 # Path fragments that are excluded from the wheel.
-# three.js ships docs/examples/manual that are not needed at runtime.
 # static/description contains large GIFs/PNGs only used by the Odoo app store.
+# The three.js and dxf-viewer submodules live in third_party/, which is not an
+# addon and so never reaches the wheel: plm_web_3d/static/lib holds the copy of
+# the files the viewer needs (scripts/sync_web3d_libs.py), and all of it ships.
 EXCLUDE_DIR_FRAGMENTS = [
-    os.path.join("three.js", "manual"),
-    os.path.join("three.js", "examples"),
-    os.path.join("three.js", "test"),
-    os.path.join("three.js", "docs"),
-    os.path.join("three.js", "editor"),
-    os.path.join("three.js", "utils"),
-    os.path.join("three.js", "src"),
-    os.path.join("three.js", "files"),
     os.path.join("static", "description"),
 ]
 
@@ -26,6 +20,10 @@ ASSET_EXTENSIONS = {
     ".scss", ".css", ".js", ".ts", ".html", ".json",
     ".ttf", ".woff", ".woff2", ".eot", ".map",
 }
+
+# Files without an extension that ship too: the licences of the third party
+# libraries copied into plm_web_3d/static/lib.
+ASSET_NAMES = {"LICENSE"}
 
 
 def get_version():
@@ -96,7 +94,7 @@ def build_package_info(addons):
                 continue
             for fname in files:
                 ext = os.path.splitext(fname)[1].lower()
-                if ext in ASSET_EXTENSIONS:
+                if ext in ASSET_EXTENSIONS or fname in ASSET_NAMES:
                     rel = os.path.relpath(os.path.join(root, fname), addon_abs)
                     assets.append(rel)
 

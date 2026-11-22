@@ -25,3 +25,5 @@ Created on Nov 21, 2017
 @author: dsmerghetto
 """
 from . import product_product
+from . import pack_go_extension
+from . import pack_go_export_type

@@ -129,10 +129,11 @@
 
         <menuitem
             id="plm_convert_rule_menu"
-            name="Plm Convert Rule"
-            parent="plm.plm_menu_dictionaries"
+            name="Conversion Rules"
+            parent="menu_cad_conversion"
             groups="plm_automated_convertion.group_plm_convert_view"
             action="plm_convert_rule_action"
+            sequence="20"
         />
 
     </data>

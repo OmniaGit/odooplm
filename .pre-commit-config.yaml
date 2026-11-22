@@ -35,6 +35,15 @@ repos:
         entry: found forbidden files; remove them
         language: fail
         files: "\\.rej$"
+      # plm_web_3d/static/lib/three.js and dxf-viewer are a copy of the files
+      # the 3D viewer uses, taken from the submodules in third_party/ at the
+      # commits they record; without the submodules it only checks the copy
+      - id: sync-web3d-libs
+        name: Copy the plm_web_3d libraries from third_party
+        entry: python3 scripts/sync_web3d_libs.py
+        language: system
+        pass_filenames: false
+        always_run: true
       - id: bump-plm-version
         name: Bump plm app version
         entry: python3 scripts/bump_plm_version.py
