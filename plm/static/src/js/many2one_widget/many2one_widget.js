@@ -1,112 +1,32 @@
 /** @odoo-module */
 import {registry} from "@web/core/registry";
 import {Many2OneField, many2OneField} from "@web/views/fields/many2one/many2one_field";
-import {onWillUpdateProps} from "@odoo/owl";
+import {PlmProductImage} from "@plm/js/product_image/product_image";
 
 export class PlmMany2oneWidget extends Many2OneField {
     static template = "plm.PlmMany2oneWidget";
+    static components = {...Many2OneField.components, PlmProductImage};
     static props = {
         ...Many2OneField.props,
         options: {type: Object, optional: true},
     };
     static defaultProps = {
         ...Many2OneField.defaultProps,
-        options: false,
+        options: {},
     };
 
-    async setup() {
-        super.setup();
-        this.imageData = false;
-        this.relatedField = false;
-        this.imageToolTipData = false;
-        onWillUpdateProps(async (nextProps) => {
-            this.imageData = false;
-            this.imageToolTipData = false;
-            let fieldName = nextProps.name;
-            if (
-                nextProps &&
-                nextProps.record &&
-                nextProps.record.data &&
-                nextProps.record.data[fieldName] &&
-                nextProps.record.data[fieldName].length != 0
-            ) {
-                let imageData = await this.env.model.orm.call(
-                    this.relation,
-                    "search_read",
-                    [],
-                    {
-                        domain: [["id", "=", nextProps.record.data[fieldName][0]]],
-                        fields: [nextProps.options.image_field],
-                    }
-                );
-                if (
-                    imageData &&
-                    imageData.length != 0 &&
-                    imageData[0][nextProps.options.image_field]
-                ) {
-                    this.imageData =
-                        "data:image/png;base64, " +
-                        imageData[0][nextProps.options.image_field];
-                    this.imageToolTipData = JSON.stringify({url: this.imageData});
-                    this.render();
-                }
-            }
-        });
-        if (
-            this.props &&
-            this.props.record &&
-            this.props.record.data &&
-            this.props.record.data[this.props.name] &&
-            this.props.record.data[this.props.name].length != 0
-        ) {
-            let imageData = await this.env.model.orm.call(
-                this.relation,
-                "search_read",
-                [],
-                {
-                    domain: [["id", "=", this.props.record.data[this.props.name][0]]],
-                    fields: [this.props.options.image_field],
-                }
-            );
-            this.relatedField = await this.env.model.orm.call(
-                this.relation,
-                "search_read",
-                [],
-                {
-                    domain: [["id", "=", this.props.record.data[this.props.name][0]]],
-                    fields: [this.props.options.linked_field],
-                }
-            );
-            if (
-                imageData &&
-                imageData.length != 0 &&
-                imageData[0][this.props.options.image_field]
-            ) {
-                this.imageData =
-                    "data:image/png;base64, " +
-                    imageData[0][this.props.options.image_field];
-                this.imageToolTipData = JSON.stringify({url: this.imageData});
-                this.render();
-            }
-        }
-    }
-
-    async onImageClicked(event) {
-        event.stopPropagation(); // It stops the event from triggering any additional event handlers
-        let selectedProductId = this.props.record.data.product_id[0];
-        let relatedFieldName = this.props.options.linked_field;
-        let model = this.props.record.model.root.model.config.fields[this.props.name]
-            .relation;
-        let action_open_linked_field = await this.props.record.model.orm.call(
-            model,
-            "action_open_linked_field",
-            [selectedProductId, relatedFieldName]
-        );
-        return this.action.doAction(action_open_linked_field);
+    get plmProductImageProps() {
+        // the product of this field, whatever the field is called
+        return {
+            resModel: this.relation,
+            resId: this.resId || false,
+            imageField: this.props.options.image_field || "image_1920",
+            linkedField: this.props.options.linked_field || "linkeddocuments",
+        };
     }
 }
 
-const plmMany2oneField = {
+export const plmMany2oneField = {
     ...many2OneField,
     component: PlmMany2oneWidget,
     extractProps: ({attrs, context, decorations, options, string}, dynamicInfo) => ({
