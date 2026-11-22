@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t
+        t-name="plm_sale_widget.PlmSaleProductImage"
+        t-inherit="plm.PlmProductImage"
+        t-inherit-mode="primary"
+    >
+        <!-- a click here never reaches the row (no line in edition) -->
+        <xpath expr="//span[hasclass('plm_m2o_avatar')]" position="attributes">
+            <attribute name="t-on-click.stop">() => {}</attribute>
+        </xpath>
+        <xpath expr="//span[hasclass('plm_product_image')]" position="attributes">
+            <attribute name="style">cursor:default;</attribute>
+        </xpath>
+        <xpath expr="//span[hasclass('plm_product_image')]" position="after">
+            <button
+                t-if="this.state.info.web3d"
+                type="button"
+                class="o_plm_sale_3d btn btn-sm btn-link px-1 py-0 text-nowrap"
+                t-att-title="this.buttonTitle('3d')"
+                t-on-click="() => this.open('3d')"
+            >
+                <i class="oi" data-icon="deployed_code"/> 3D
+            </button>
+            <button
+                t-if="this.state.info.pdf"
+                type="button"
+                class="o_plm_sale_pdf btn btn-sm btn-link px-1 py-0 text-nowrap"
+                t-att-title="this.buttonTitle('pdf')"
+                t-on-click="() => this.open('pdf')"
+            >
+                <i class="oi" data-icon="picture_as_pdf"/> PDF
+            </button>
+        </xpath>
+    </t>
+</templates>

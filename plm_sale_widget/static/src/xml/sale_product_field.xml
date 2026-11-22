@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t
+        t-name="plm_sale_widget.SaleProductField"
+        t-inherit="sale.SaleProductField"
+        t-inherit-mode="primary"
+    >
+        <div name="m2o_product" position="inside">
+            <PlmSaleProductImage t-props="this.plmProductImageProps()"/>
+        </div>
+    </t>
+    <t
+        t-name="plm_sale_widget.SaleLabelTextField"
+        t-inherit="sale.SaleLabelTextField"
+        t-inherit-mode="primary"
+    >
+        <xpath expr="//div[@name='account_label_text_readonly']/div[1]" position="before">
+            <PlmSaleProductImage t-props="this.plmProductImageProps()"/>
+        </xpath>
+    </t>
+</templates>
