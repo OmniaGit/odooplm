@@ -2436,11 +2436,10 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
 
     def action_open_linked_field(self, related_field):
         view_id = self.env["ir.model.data"]._xmlid_to_res_id("plm.document_kanban_view")
-        related_field_value = getattr(self, related_field, False)
-        if related_field_value:
-            related_ids = related_field_value.ids
-        else:
-            related_ids = []
+        # every variant of a template at once (product.template delegates here)
+        related_ids = []
+        if related_field in self._fields:
+            related_ids = self.mapped(related_field).ids
         ctx = self.env.context.copy()
         domain = [("is_plm", "=", True), ("id", "in", related_ids)]
         ctx.update(

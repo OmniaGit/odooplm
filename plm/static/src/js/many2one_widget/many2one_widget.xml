@@ -1,30 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates xml:space="preserve">
-    <t t-name="plm.CustomImageM2oField">
-        <div class="d-flex align-items-center gap-1">
-            <span t-if="this.state.imageData" style="padding:0px 30px 0px 0px;">
-                <img data-tooltip-template="web.ImageZoomTooltip"
-                     t-att-data-tooltip-info="this.imageToolTipData"
-                     style="width:30px;height:30px" t-att-src="this.state.imageData"
-                     t-on-click="this.onImageClicked"/>
-            </span>
-            <span t-else="" style="padding:0px 15px 0px 0px;" class="plm_m2o_avatar">
-                <div class="oi" data-icon="folder" t-on-click="this.onImageClicked"
-                     style="font-size: 20px; width:30px;height:30px"/>
-            </span>
-            <t t-if="!this.props.canOpen">
-                <span t-if="this.state.imageData" style="padding:0px 20px 0px 0px;" class="plm_m2o_avatar">
-                      <img data-tooltip-template="web.ImageZoomTooltip"
-                           t-att-data-tooltip-info="this.imageToolTipData"
-                           style="width:30px;height:30px" t-att-src="this.state.imageData"
-                           t-on-click="this.onImageClicked"/>
-                </span>
-                <span t-else="" style="padding:0px 25px 0px 0px;" class="plm_m2o_avatar">
-                    <div class="oi" data-icon="folder" t-on-click="this.onImageClicked"
-                         style="font-size: 20px; width:30px;height:30px"/>
-                </span>
-            </t>
-            <Many2One t-props="this.m2oProps"/>
+    <t t-name="plm.Many2OnePlmField">
+        <div class="d-flex align-items-center">
+            <PlmProductImage t-props="this.plmProductImageProps()"/>
+            <Many2One cssClass="'flex-grow-1'" t-props="this.m2oProps"/>
         </div>
     </t>
 </templates>
