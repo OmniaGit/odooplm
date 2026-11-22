@@ -4434,24 +4434,35 @@ class IrAttachment(models.Model):
             #
             return out
 
+        def is_2d(attachment_id):
+            return (attachment_id.document_type or "").upper() in ["2D"]
+
+        #
+        # from a 3D only its structure, from a 2D the 2D itself and the
+        # structure of its models: no other 2D in either case, the first
+        # row is always the document to open
         #
         if self.document_type.upper() in ["2D"]:
-            out = []
-            check = []
-            for attachment_id in get_all_ids(self, ["LyTree", "RfTree"], latest):
-                if attachment_id.id not in check:
-                    check.append(attachment_id.id)
-                    out.append(attachment_id)
-                    if attachment_id.document_type.upper() in ["3D"]:
-                        for model_attachment_id in get_all_ids(
-                            attachment_id, ["HiTree", "RfTree"], latest
-                        ):
-                            if model_attachment_id.id not in check:
-                                check.append(model_attachment_id.id)
-                                out.append(model_attachment_id)
+            root_id = self.get_latest_version() if latest else self
+            out = [root_id]
+            check = [root_id.id]
+            for model_id in self.browse(
+                root_id.getRelatedOneLevelLinks(root_id.id, ["LyTree", "RfTree"])
+            ):
+                if is_2d(model_id):
+                    continue
+                for model_attachment_id in get_all_ids(
+                    model_id, ["HiTree", "RfTree"], latest
+                ):
+                    if model_attachment_id.id not in check and not is_2d(
+                        model_attachment_id
+                    ):
+                        check.append(model_attachment_id.id)
+                        out.append(model_attachment_id)
             return out
         else:
-            return get_all_ids(self, ["HiTree", "RfTree"], latest)
+            out = get_all_ids(self, ["HiTree", "RfTree"], latest)
+            return out[:1] + [x for x in out[1:] if not is_2d(x)]
 
     def get_2d_documents_in_doc_structure(self):
         """
@@ -4487,21 +4498,39 @@ class IrAttachment(models.Model):
         """
         self.ensure_one()
         #
+        # same rule as getDocBomFlat: from a 3D only its structure, from a 2D
+        # the 2D itself and the structure of its models; no other 2D in
+        # either case. self stays first, the client takes the first row as
+        # the document to open
         out = [self]
+        check = {self.id}
         #
-        to_compute = ["RfTree"]
+        def add(attachment_ids):
+            for attachment_id in attachment_ids:
+                if attachment_id.id in check:
+                    continue
+                if (attachment_id.document_type or "").upper() in ["2D"]:
+                    continue
+                check.add(attachment_id.id)
+                out.append(attachment_id)
+        #
         if self.document_type.upper() in ["2D"]:
-            to_compute.append("LyTree")
+            model_ids = (
+                self.env["ir.attachment.relation"]
+                .search(
+                    [
+                        ("parent_id", "=", self.id),
+                        ("link_kind", "in", ["LyTree", "RfTree"]),
+                    ]
+                )
+                .child_id
+            )
+            for model_id in model_ids:
+                if (model_id.document_type or "").upper() in ["2D"]:
+                    continue
+                add(model_id.get_all_relation_flat_structure_sql(["HiTree", "RfTree"]))
         else:
-            to_compute.append("HiTree")
-        #
-        for link_kind in to_compute:
-            for related_attachment_id in self.get_all_relation_flat_structure_sql(
-                link_kind
-            ):
-                out.append(related_attachment_id)
-                if link_kind == "LyTree" and self.id != related_attachment_id.id:
-                    out += related_attachment_id.getDocBomFlatSql()
+            add(self.get_all_relation_flat_structure_sql(["HiTree", "RfTree"]))
         return out
 
     @api.model
@@ -5246,37 +5275,38 @@ class IrAttachment(models.Model):
             ),
         }
 
-    def get_all_relation_flat_structure_sql(self, link_kind="HiTree"):
+    def get_all_relation_flat_structure_sql(self, link_kinds=("HiTree", "RfTree")):
         """
         smart and fast way to get the document structure
         this function dose not allow to work on latest version
-        :link_kind kind of link to get the doc bom
+        every link of any of the given kinds is followed at every level, so a
+        branch that changes kind (HiTree -> RfTree -> HiTree) is not cut,
+        as getDocBomFlat does for the latest version
+        :link_kinds kinds of link to get the doc bom
         :return: [browserecord(ir.attachment),..]
         """
         sql = """
         WITH RECURSIVE subordinates AS (
             SELECT
-                parent_id,
-                child_id,
-                link_kind
+                child_id
             FROM
                 ir_attachment_relation
             WHERE
-                (parent_id = %s or child_id = %s) and link_kind = %s
+                parent_id = %s and link_kind in %s
             UNION
                 SELECT
-                    e.parent_id,
-                    e.child_id,
-                    e.link_kind
+                    e.child_id
                 FROM
                     ir_attachment_relation e
-                INNER JOIN subordinates s ON s.child_id = e.parent_id and s.link_kind=e.link_kind
+                INNER JOIN subordinates s ON s.child_id = e.parent_id
+                WHERE e.link_kind in %s
         )
         SELECT child_id from subordinates;
         """
         ids = set()
         ids.add(self.id)
-        self.env.cr.execute(sql, (self.id, self.id, link_kind))
+        link_kinds = tuple(link_kinds)
+        self.env.cr.execute(sql, (self.id, link_kinds, link_kinds))
         for child_id in self.env.cr.fetchall():
             ids.add(child_id[0])
         return self.browse(list(ids))
