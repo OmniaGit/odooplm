@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+    <t t-name="plm.PlmProductImage">
+        <span
+            t-if="props.resId"
+            class="plm_m2o_avatar d-inline-flex align-items-center flex-shrink-0"
+            style="padding:0px 10px 0px 0px;"
+        >
+            <span
+                class="plm_product_image d-inline-flex"
+                style="cursor:pointer;"
+                t-on-click="onClick"
+            >
+                <img
+                    t-if="state.info.unique"
+                    data-tooltip-template="web.ImageZoomTooltip"
+                    t-att-data-tooltip-info="tooltipInfo"
+                    style="width:30px;height:30px;object-fit:contain;"
+                    t-att-src="thumbnailUrl"
+                    alt=""
+                />
+                <div
+                    t-else=""
+                    class="fa fa-folder-open"
+                    style="font-size: 20px; width:30px;height:30px"
+                />
+            </span>
+        </span>
+    </t>
+</templates>
