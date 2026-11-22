@@ -93,6 +93,7 @@ generated from those manifests.
 | `plm_purchase_share` | AGPL-3.0-or-later | Supplier document sharing: engineering documents of a purchase order from the portal |
 | `plm_report_language_helper` | AGPL-3.0-or-later | Manage multilanguage PLM reports |
 | `plm_sale_only_latest` | AGPL-3.0-or-later | Show only latest product version in sale |
+| `plm_sale_widget` | AGPL-3.0-or-later | Product image, 3D model and PDF in the sale order lines |
 | `plm_spare` | AGPL-3.0-or-later | Add spare BOM and Spare Parts Manual |
 | `plm_suspended` | AGPL-3.0-or-later | Add a suspended state to the engineering workflow, for products and documents |
 | `plm_web_3d` | AGPL-3.0-or-later | View 3D model files and 2D documents in Odoo |

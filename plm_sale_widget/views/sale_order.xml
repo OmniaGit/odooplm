@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_order_form_plm_sale_widget" model="ir.ui.view">
+        <field name="name">sale.order.form.plm.sale.widget</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='order_line']/list//field[@name='product_template_id']" position="attributes">
+                <attribute name="widget">plm_sol_product_many2one</attribute>
+            </xpath>
+            <xpath expr="//field[@name='order_line']/list//field[@name='product_id']" position="attributes">
+                <attribute name="widget">plm_sol_product_many2one</attribute>
+            </xpath>
+            <xpath expr="//field[@name='order_line']/list//field[@name='label']" position="attributes">
+                <attribute name="widget">plm_sol_label_text</attribute>
+            </xpath>
+        </field>
+    </record>
+</odoo>
