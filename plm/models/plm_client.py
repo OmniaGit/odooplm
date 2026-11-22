@@ -307,7 +307,7 @@ class PlmClient(models.TransientModel):
         rows = [
             {
                 "document_id": c["documentid"][0],
-                "file_name": file_names.get(c["documentid"][0], ""),
+                "file_name": file_names.get(c["documentid"][0]) or "",
                 "user": c["userid"][1] if c["userid"] else "",
                 "user_id": c["userid"][0] if c["userid"] else 0,
                 "hostname": c["hostname"] or "",
