@@ -92,8 +92,10 @@ class ProductTemplate(models.Model):
     )
 
     def action_open_linked_field(self, related_field):
-        product_id = self.env["product.product"].browse(self.id)
-        return product_id.action_open_linked_field(related_field)
+        # the documents are linked to the variant (linkeddocuments of the
+        # template is related to product_variant_id)
+        self.ensure_one()
+        return self.product_variant_id.action_open_linked_field(related_field)
 
     def unlinkCheckBomRelations(self):
 

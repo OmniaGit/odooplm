@@ -23,6 +23,12 @@ import logging
 from odoo import _, api, fields, models
 
 
+# link kinds of the support files: the files the CAD client uploads beside a
+# document (conversions DWG/STEP/DXF, zip archive, 3D web model); the filter
+# "Hide Support Files" of the document search view uses the same kinds
+SUPPORT_LINK_KINDS = ("ExtraTree", "PkgTree", "Web3DTree")
+
+
 class PlmDocumentRelations(models.Model):
     _name = "ir.attachment.relation"
     _description = "Relation between document used for cad file structure"

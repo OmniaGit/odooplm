@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+    <t
+        t-name="plm_sale_widget.SaleProductField"
+        t-inherit="sale.SaleProductField"
+        t-inherit-mode="primary"
+    >
+        <!-- line in edition -->
+        <xpath expr="//Many2XAutocomplete" position="before">
+            <PlmProductImage t-props="plmProductImageProps"/>
+        </xpath>
+        <!-- line not in edition, product not clickable -->
+        <xpath
+            expr="//span[@t-if='productName' and @t-ref='productNodeRef']/span[hasclass('text-truncate')]"
+            position="before"
+        >
+            <PlmProductImage t-props="plmProductImageProps"/>
+        </xpath>
+        <!-- line not in edition, product clickable (locked order) -->
+        <xpath
+            expr="//a/span[@t-ref='productNodeRef']"
+            position="before"
+        >
+            <PlmProductImage t-props="plmProductImageProps"/>
+        </xpath>
+    </t>
+</templates>

@@ -20,7 +20,7 @@
 ##############################################################################
 {
     "name": "Product Lifecycle Management",
-    "version": "18.0.21.0.39",
+    "version": "18.0.21.0.40",
     "author": "OmniaSolutions",
     "website": "https://github.com/OmniaGit/odooplm",
     "category": "Manufacturing/Product Lifecycle Management (PLM)",
@@ -82,6 +82,8 @@
             "plm/static/src/xml/mrp_bom_overview_table_inherit.xml",
             "plm/static/src/scss/bom_product_clip.scss",
             # many2one Widget
+            "plm/static/src/js/product_image/product_image.js",
+            "plm/static/src/js/product_image/product_image.xml",
             "plm/static/src/js/many2one_widget/many2one_widget.js",
             "plm/static/src/js/many2one_widget/many2one_widget.xml",
         ],
