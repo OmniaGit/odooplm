@@ -1,0 +1,58 @@
+# -*- coding: utf-8 -*-
+##############################################################################
+#
+#    OmniaSolutions, Open Source Management Solution
+#    Copyright (C) 2010-2021 OmniaSolutions (<https://www.omniasolutions.website>). All Rights Reserved
+#    $Id$
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+##############################################################################
+{
+    "name": "PLM Sale Widget",
+    "version": "19.0.1.0.0",
+    "author": "OmniaSolutions",
+    "maintainer": "OmniaSolutions S.n.c di Boscolo Matteo & C",
+    "website": "https://odooplm.omniasolutions.website",
+    "support": "https://github.com/OmniaGit/odooplm/issues",
+    "category": "Manufacturing/Product Lifecycle Management (PLM)",
+    "sequence": 15,
+    "license": "AGPL-3",
+    "contributors": [
+        "Matteo Boscolo <matteo.boscolo@omniasolutions.eu>",
+    ],
+    "summary": "Product image, 3D model and PDF in the sale order lines",
+    "description": """
+        The product of the sale order line shows its image (zoom on hover)
+        and two buttons: 3D (its 3D web model, the first of .3mf, .obj,
+        .stl) and PDF (the printout of its drawing). The native CAD files are
+        never shown nor opened from there.
+        The widget plm_sale_many2one_image does the same on any product field.
+        """,
+    "depends": ["plm", "plm_web_3d", "sale"],
+    "data": [
+        "views/sale_order.xml",
+    ],
+    "assets": {
+        "web.assets_backend": [
+            "plm_sale_widget/static/src/js/sale_product_image.js",
+            "plm_sale_widget/static/src/xml/sale_product_image.xml",
+            "plm_sale_widget/static/src/js/sale_product_field.js",
+            "plm_sale_widget/static/src/xml/sale_product_field.xml",
+        ],
+    },
+    "installable": True,
+    "application": False,
+    "auto_install": False,
+}

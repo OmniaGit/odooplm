@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+    <t
+        t-name="plm_sale_widget.SaleProductField"
+        t-inherit="sale.SaleProductField"
+        t-inherit-mode="primary"
+    >
+        <xpath expr="//Many2One" position="before">
+            <PlmProductImage t-props="plmProductImageProps"/>
+        </xpath>
+    </t>
+</templates>

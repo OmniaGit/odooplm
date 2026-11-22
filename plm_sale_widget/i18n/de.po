@@ -1,0 +1,52 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* plm_sale_widget
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-22 08:00+0000\n"
+"PO-Revision-Date: 2026-11-22 08:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: plm_sale_widget
+#. odoo-javascript
+#: code:addons/plm_sale_widget/static/src/js/sale_product_image.js:0
+msgid "3D"
+msgstr "3D"
+
+#. module: plm_sale_widget
+#. odoo-javascript
+#: code:addons/plm_sale_widget/static/src/js/sale_product_image.js:0
+msgid "PDF"
+msgstr "PDF"
+
+#. module: plm_sale_widget
+#. odoo-javascript
+#: code:addons/plm_sale_widget/static/src/js/sale_product_image.js:0
+msgid "Show the 3D model"
+msgstr "3D-Modell anzeigen"
+
+#. module: plm_sale_widget
+#. odoo-javascript
+#: code:addons/plm_sale_widget/static/src/js/sale_product_image.js:0
+msgid "Show the PDF of the drawing"
+msgstr "PDF der Zeichnung anzeigen"
+
+#. module: plm_sale_widget
+#. odoo-python
+#: code:addons/plm_sale_widget/models/product.py:0
+msgid "This product has no 3D model to show."
+msgstr "Für dieses Produkt gibt es kein 3D-Modell zum Anzeigen."
+
+#. module: plm_sale_widget
+#. odoo-python
+#: code:addons/plm_sale_widget/models/product.py:0
+msgid "This product has no PDF to show."
+msgstr "Für dieses Produkt gibt es kein PDF zum Anzeigen."
