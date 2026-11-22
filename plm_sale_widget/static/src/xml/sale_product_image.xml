@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+    <t
+        t-name="plm_sale_widget.PlmSaleProductImage"
+        t-inherit="plm.PlmProductImage"
+        t-inherit-mode="primary"
+    >
+        <!-- a click here never reaches the row (no line in edition) -->
+        <xpath expr="//span[hasclass('plm_m2o_avatar')]" position="attributes">
+            <attribute name="t-on-click.stop">() => {}</attribute>
+        </xpath>
+        <xpath expr="//span[hasclass('plm_product_image')]" position="attributes">
+            <attribute name="style">cursor:default;</attribute>
+        </xpath>
+        <xpath expr="//span[hasclass('plm_product_image')]" position="after">
+            <button
+                t-foreach="buttons"
+                t-as="button"
+                t-key="button.kind"
+                type="button"
+                t-attf-class="btn btn-sm btn-link px-1 py-0 text-nowrap o_plm_sale_{{ button.kind }}"
+                t-att-title="button.title"
+                t-on-click="() => this.openDocument(button)"
+            >
+                <i t-att-class="button.icon" /> <t t-esc="button.label" />
+            </button>
+        </xpath>
+    </t>
+</templates>
