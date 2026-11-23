@@ -1,150 +1,45 @@
-/** @odoo-module **/
-
+import { t, useProps } from "@odoo/owl";
 import { registry } from "@web/core/registry";
-import { buildM2OFieldDescription, Many2OneField } from "@web/views/fields/many2one/many2one_field";
-import { Many2One } from "@web/views/fields/many2one/many2one";
-import { useService } from "@web/core/utils/hooks";
-import { onWillStart, onWillUpdateProps, proxy } from "@odoo/owl";
+import {
+    buildM2OFieldDescription,
+    extractM2OFieldProps,
+    Many2OneField,
+    many2OneFieldProps,
+} from "@web/views/fields/many2one/many2one_field";
+import { PlmProductImage } from "@plm/js/product_image/product_image";
 
-export class CustomImageM2oField extends Many2One {
-    static components = {
-        ...Many2One.components,
-    };
-    get many2XAutocompleteProps() {
-        const props = super.many2XAutocompleteProps;
-        return { ...props };
-    }
-}
-
+/**
+ * A product many2one with the image of the product in front of it: the zoom
+ * on hover, a click opens its linked documents (PlmProductImage).
+ * Options: image_field (the image of the zoom, image_1920 by default) and
+ * linked_field (the documents opened, linkeddocuments by default).
+ */
 export class Many2OnePlmField extends Many2OneField {
-    static template = "plm.CustomImageM2oField";
-    static components = {
-        ...Many2OneField.components,
-        Many2One: CustomImageM2oField,
-    };
+    static template = "plm.Many2OnePlmField";
+    static components = { ...Many2OneField.components, PlmProductImage };
+    props = useProps({ ...many2OneFieldProps, options: t.object().optional({}) });
 
-    getRelationModel() {
-        const relFromConfig = this.props?.record?.model?.root?.model?.config?.fields?.[this.props.name]?.relation;
-        const relFromField = this.props?.field?.relation;
-        return relFromConfig || relFromField;
-    }
-
-    setup() {
-        super.setup();
-        this.relatedField = false;
-        this.imageToolTipData = false;
-        this.actionService = useService("action");
-        this.state = proxy({ imageData: false });
-
-        onWillStart(async () => {
-            // Initial load
-            const value = this.props?.record?.data?.[this.props.name];
-            const imageField = "image_1920";
-            const linkedField = "linkeddocuments";
-
-            let recordId = null;
-            if (Array.isArray(value) && value.length > 0) {
-                recordId = value[0];
-            } else if (value && typeof value === "object" && value.id) {
-                recordId = value.id;
-            } else {
-                // no-op
-            }
-
-            const model = this.getRelationModel();
-
-            if (recordId && (imageField || linkedField) && model) {
-                // Load image
-                if (imageField) {
-                    const imageData = await this.env.model.orm.call(
-                        model,
-                        "search_read",
-                        [],
-                        {
-                            domain: [["id", "=", recordId]],
-                            fields: [imageField],
-                        }
-                    );
-                    if (imageData?.length && imageData[0][imageField]) {
-                        this.state.imageData = "data:image/png;base64," + imageData[0][imageField].content;
-                        this.imageToolTipData = JSON.stringify({ url: this.state.imageData });
-                    }
-                }
-
-                // Load linked field
-                if (linkedField) {
-                    this.relatedField = await this.env.model.orm.call(
-                        model,
-                        "search_read",
-                        [],
-                        {
-                            domain: [["id", "=", recordId]],
-                            fields: [linkedField],
-                        }
-                    );
-                }
-            }
-        });
-
-        onWillUpdateProps(async (nextProps) => {
-            this.state.imageData = false;
-            this.imageToolTipData = false;
-
-            const fieldName = nextProps?.name;
-            const value = nextProps?.record?.data?.[fieldName];
-            const imageField = "image_1920";
-            const linkedField = "linkeddocuments";
-
-            let recordId = null;
-            if (Array.isArray(value) && value.length > 0) {
-                recordId = value[0];
-            } else if (value && typeof value === "object" && value.id) {
-                recordId = value.id;
-            } else {
-                // no-op
-            }
-
-            const model = this.getRelationModel();
-
-            if (recordId && imageField && model) {
-                const imageData = await this.env.model.orm.call(
-                    model,
-                    "search_read",
-                    [],
-                    {
-                        domain: [["id", "=", recordId]],
-                        fields: [imageField],
-                    }
-                );
-
-                if (imageData?.length && imageData[0][imageField]) {
-                    this.state.imageData = "data:image/png;base64," + imageData[0][imageField].content;
-                    this.imageToolTipData = JSON.stringify({ url: this.state.imageData });
-                }
-            }
-        });
-    }
-
-    async onImageClicked(event) {
-        event.stopPropagation();
-        const productId = this.props?.record?.data?.product_tmpl_id?.id;
-        const relatedFieldName = "linkeddocuments";
-        if (!productId || !relatedFieldName) {
-            return;
-        }
-        const model =
-            this.props.record.model.root.model.config.fields[this.props.name].relation;
-        const action_open_linked_field = await this.props.record.model.orm.call(
-            model,
-            "action_open_linked_field",
-            [productId, "linkeddocuments"]
-        );
-        return this.actionService.doAction(action_open_linked_field);
+    plmProductImageProps() {
+        // the product of this field, whatever the field is called
+        const value = this.props.record.data[this.props.name];
+        const options = this.props.options || {};
+        return {
+            resModel: this.props.record.fields[this.props.name].relation,
+            resId: (value && value.id) || false,
+            imageField: options.image_field || "image_1920",
+            linkedField: options.linked_field || "linkeddocuments",
+        };
     }
 }
 
 export const many2OnePlmField = {
     ...buildM2OFieldDescription(Many2OnePlmField),
+    extractProps(staticInfo, dynamicInfo) {
+        return {
+            ...extractM2OFieldProps(staticInfo, dynamicInfo),
+            options: staticInfo.options,
+        };
+    },
 };
 
 registry.category("fields").add("plm_many2one_image", many2OnePlmField);

@@ -32,14 +32,14 @@
                     string="Split Assembly"
                     name="split_step_assembly"
                     type="object"
-                    invisible="not name or ('.step' not in name.lower() and '.stp' not in name.lower())"
+                    invisible="not name or ('.step' not in (name or '').lower() and '.stp' not in (name or '').lower())"
                 />
                 <button
                     icon="account_tree"
                     string="STEP Structure"
                     name="action_view_step_tree"
                     type="object"
-                    invisible="not name or ('.step' not in name.lower() and '.stp' not in name.lower())"
+                    invisible="not name or ('.step' not in (name or '').lower() and '.stp' not in (name or '').lower())"
                 />
                 <button
                     icon="image"
@@ -47,14 +47,14 @@
                     name="action_update_preview"
                     type="object"
                     invisible="not name or (
-                        '.step' not in name.lower() and
-                        '.stp' not in name.lower() and
-                        '.stl' not in name.lower() and
-                        '.obj' not in name.lower() and
-                        '.dxf' not in name.lower() and
-                        '.3mf' not in name.lower() and
-                        '.gltf' not in name.lower() and
-                        '.glb' not in name.lower()
+                        '.step' not in (name or '').lower() and
+                        '.stp' not in (name or '').lower() and
+                        '.stl' not in (name or '').lower() and
+                        '.obj' not in (name or '').lower() and
+                        '.dxf' not in (name or '').lower() and
+                        '.3mf' not in (name or '').lower() and
+                        '.gltf' not in (name or '').lower() and
+                        '.glb' not in (name or '').lower()
                     )"
                 />
             </field>
@@ -91,7 +91,7 @@
                     name="split_step_assembly"
                     type="object"
                     class="btn btn-secondary"
-                    invisible="not name or ('.step' not in name.lower() and '.stp' not in name.lower())"
+                    invisible="not name or ('.step' not in (name or '').lower() and '.stp' not in (name or '').lower())"
                 >
                     <i class="oi me-1" data-icon="share"></i>
                     Split Assembly
@@ -100,7 +100,7 @@
                     name="action_view_step_tree"
                     type="object"
                     class="btn btn-secondary"
-                    invisible="not name or ('.step' not in name.lower() and '.stp' not in name.lower())"
+                    invisible="not name or ('.step' not in (name or '').lower() and '.stp' not in (name or '').lower())"
                 >
                     <i class="oi me-1" data-icon="account_tree"></i>
                     STEP Structure
@@ -110,14 +110,14 @@
                     type="object"
                     class="btn btn-secondary"
                     invisible="not name or (
-                        '.step' not in name.lower() and
-                        '.stp' not in name.lower() and
-                        '.stl' not in name.lower() and
-                        '.obj' not in name.lower() and
-                        '.dxf' not in name.lower() and
-                        '.3mf' not in name.lower() and
-                        '.gltf' not in name.lower() and
-                        '.glb' not in name.lower()
+                        '.step' not in (name or '').lower() and
+                        '.stp' not in (name or '').lower() and
+                        '.stl' not in (name or '').lower() and
+                        '.obj' not in (name or '').lower() and
+                        '.dxf' not in (name or '').lower() and
+                        '.3mf' not in (name or '').lower() and
+                        '.gltf' not in (name or '').lower() and
+                        '.glb' not in (name or '').lower()
                     )"
                 >
                     <i class="oi me-1" data-icon="image"></i>

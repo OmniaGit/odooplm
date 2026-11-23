@@ -6,7 +6,7 @@ from collections import Counter
 from odoo import http
 from odoo.http import request, Response
 
-from ..models.ir_attachment import _import_step_preserve_names
+from ..models.ir_attachment import _check_cadquery, _import_step_preserve_names
 
 _logger = logging.getLogger(__name__)
 
@@ -873,6 +873,7 @@ class StepTreeController(http.Controller):
             )
 
         try:
+            _check_cadquery(request.env)
             asm = _import_step_preserve_names(store_fname)
         except Exception as exc:
             _logger.exception("step_tree: failed to parse %s", attachment.name)

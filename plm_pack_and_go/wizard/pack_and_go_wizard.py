@@ -25,13 +25,11 @@ import os
 import shutil
 import tempfile
 import requests
-import zipfile
 import base64
 
 from odoo import _, fields, models
 from odoo.exceptions import UserError
 from odoo.addons.plm.report.book_collector import isPdf
-from io import BytesIO
 
 _logger = logging.getLogger(__name__)
 
@@ -127,6 +125,19 @@ class PackAndGo(models.TransientModel):
         help="""
         Create inside the zip a folder structure that is equal
         to the product category assing to each product
+        """,
+    )
+    checkout_on_export = fields.Boolean(
+        string="Check out exported documents",
+        help="""
+        Service field set by action_create_zip_checkout: check out (lock)
+        every document included in the zip, so nobody else can check it
+        out while you work on the exported copy, and add a manifest
+        (exported_data.json) listing the exported documents and
+        components to the zip.
+        If any document cannot be checked out (already checked out by
+        someone else, or not in a state that allows checkout), the whole
+        export is aborted and nothing is checked out.
         """,
     )
     bom_computation = fields.Selection(
@@ -583,6 +594,90 @@ class PackAndGo(models.TransientModel):
 
         shutil.copyfile(filePath, outFilePath)
 
+    def _get_export_rows(self):
+        """Every pack_and_go_view row selected for export, across the four tabs."""
+        return self.export_2d + self.export_3d + self.export_pdf + self.export_other
+
+    def _get_export_documents(self):
+        """Distinct documents among the exported rows (a printout row
+        shares its document_id with the 2D row it was printed from)."""
+        rows = self._get_export_rows()
+        return self.env["ir.attachment"].browse(
+            list(dict.fromkeys(rows.document_id.ids))
+        )
+
+    def _checkout_exported_documents(self):
+        """Check out every exported document, all or nothing: each one is
+        validated before any is actually checked out."""
+        documents = self._get_export_documents()
+        for document_id in documents:
+            if document_id.isCheckedOutByMe():
+                continue
+            can_checkout, msg = document_id.canCheckOut(showError=False)
+            if not can_checkout:
+                raise UserError(msg)
+        for document_id in documents:
+            document_id.checkout("localhost", "pack_go", showError=True)
+
+    def _write_export_manifest(self, outZipFile):
+        """Write exported_data.json inside the zip folder: who exported
+        what, when, and the identity/relations of every document/component."""
+        document_ids = self._get_export_documents()
+        component_ids = self.env["product.template"].browse(
+            list(dict.fromkeys(self._get_export_rows().component_id.ids))
+        )
+
+        rels = self.env["ir.attachment.relation"].search([
+            ("parent_id", "in", document_ids.ids),
+            ("child_id", "in", document_ids.ids),
+        ])
+        comp_rels = self.env["plm.component.document.rel"].search([
+            ("document_id", "in", document_ids.ids)
+        ])
+
+        json_data = {
+            "user_id": self.env.user.id,
+            "user_name": self.env.user.name,
+            "date": fields.Datetime.now().isoformat(),
+            "ir_attachment": [
+                {
+                    "id": document_id.id,
+                    "name": document_id.name,
+                    "engineering_code": document_id.engineering_code,
+                    "engineering_revision": document_id.engineering_revision,
+                }
+                for document_id in document_ids
+            ],
+            "product_product": [
+                {
+                    "id": component_id.id,
+                    "name": component_id.name,
+                    "engineering_code": component_id.engineering_code,
+                    "engineering_revision": component_id.engineering_revision,
+                }
+                for component_id in component_ids
+            ],
+            "ir_attachment_relation": [
+                {
+                    "link_kind": rel.link_kind,
+                    "parent_id": rel.parent_id.id,
+                    "child_id": rel.child_id.id,
+                }
+                for rel in rels
+            ],
+            "plm_component_document_rel": [
+                {
+                    "document_id": rel.document_id.id,
+                    "component_id": rel.component_id.id,
+                    "line_id": rel.id,
+                }
+                for rel in comp_rels
+            ],
+        }
+        manifest_path = os.path.join(outZipFile, "exported_data.json")
+        with open(manifest_path, "w") as manifest_file:
+            json.dump(json_data, manifest_file, indent=4)
+
     def action_export_zip(self):
         """
         action to import the data
@@ -600,10 +695,16 @@ class PackAndGo(models.TransientModel):
         outZipFile = os.path.join(export_zip_folder, self.component_id.engineering_code)
         checkCreateFolder(outZipFile)
         #
+        if self.checkout_on_export:
+            self._checkout_exported_documents()
+        #
         self.export2D(convertionModuleInstalled, outZipFile)
         self.export3D(convertionModuleInstalled, outZipFile)
         self.exportPdf(outZipFile)
         self.exportOther(outZipFile)
+        #
+        if self.checkout_on_export:
+            self._write_export_manifest(outZipFile)
         #
         # Make archive, upload it and clean
         #
@@ -627,6 +728,23 @@ class PackAndGo(models.TransientModel):
             "type": "ir.actions.act_url",
             "url": "/plm_pack_and_go/download/%s" % self.id,
             "target": "self",
+        }
+
+    def action_create_zip_checkout(self):
+        """Same export as action_export_zip, with the exported documents
+        checked out and a manifest added to the zip."""
+        self.checkout_on_export = True
+        return self.action_export_zip()
+
+    def action_open_import_wizard(self):
+        """Open a blank Pack and Go import wizard: no res_id, so the client
+        shows a new, unsaved form until zip_file is filled in and saved."""
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("Import Pack and Go zip"),
+            "res_model": "pack.and.go.import",
+            "view_mode": "form",
+            "target": "new",
         }
 
     def get_steram(self, file_name):
@@ -750,101 +868,3 @@ class PackAndGo(models.TransientModel):
                             out[product_product_id].append(ref_ir_attachment_id)
         return out
 
-    def action_create_zip_checkout(self):
-        active_ids = self.env.context.get('active_ids')
-        products = self.env['product.product'].browse(active_ids)
-
-        user = self.env.user
-        now = fields.Datetime.now()
-
-        # Containers
-        ir_attachment_data = []
-        product_data = []
-        relation_data = []
-        component_doc_data = []
-
-        zip_buffer = BytesIO()
-        with zipfile.ZipFile(zip_buffer, 'w') as zip_file:
-            all_attachment_ids = []
-
-            for product in products:
-
-                product_data.append({
-                    'id': product.id,
-                    'name': product.name,
-                    'engineering_code': product.engineering_code,
-                    'engineering_revision': product.engineering_revision,
-                })
-
-                for attach in product.linkeddocuments:
-                    content = attach.preview or attach.raw  # fallback to raw if preview is empty
-
-                    if content:
-                        try:
-                            zip_file.writestr(attach.name or f"file_{attach.id}", bytes(content))
-                        except Exception as e:
-                            _logger.warning(f"Could not write file {attach.name}: {e}")
-                    else:
-                        _logger.warning(f"Attachment {attach.name} has no valid preview or datas content.")
-
-                    ir_attachment_data.append({
-                        'id': attach.id,
-                        'name': attach.name,
-                        'engineering_code': attach.engineering_code,
-                        'engineering_revision': attach.engineering_revision,
-                    })
-                    all_attachment_ids.append(attach.id)
-
-            rels = self.env['ir.attachment.relation'].search([
-                ('parent_id', 'in', all_attachment_ids),
-                ('child_id', 'in', all_attachment_ids)
-            ])
-            for rel in rels:
-                relation_data.append({
-                    'link_kind': rel.link_kind,
-                    'parent_id': rel.parent_id.id,
-                    'child_id': rel.child_id.id,
-                })
-
-            comp_rels = self.env['plm.component.document.rel'].search([
-                ('document_id', 'in', all_attachment_ids)
-            ])
-            for rel in comp_rels:
-                component_doc_data.append({
-                    'document_id': rel.document_id.id,
-                    'component_id': rel.component_id.id,
-                    'line_id': rel.id,
-                })
-
-            json_data = {
-                'user_id': user.id,
-                'user_name': user.name,
-                'date': now.isoformat(),
-                'ir_attachment': ir_attachment_data,
-                'product_product': product_data,
-                'ir_attachment_relation': relation_data,
-                'plm_component_document_rel': component_doc_data,
-            }
-
-            zip_file.writestr('exported_data.json', json.dumps(json_data, indent=4))
-
-        # Save ZIP to temporary attachment
-        zip_buffer.seek(0)
-        zip_data = base64.b64encode(zip_buffer.read()).decode()
-
-        # More than one product can be selected: default_code is a singleton read
-        zip_name = '%s_Export.zip' % (products.default_code if len(products) == 1 else 'PackAndGo')
-
-        attachment = self.env['ir.attachment'].create({
-            'name': zip_name,
-            'type': 'binary',
-            'raw': zip_data,
-            'mimetype': 'application/zip',
-        })
-
-        # Trigger file download with static name
-        return {
-            'type': 'ir.actions.act_url',
-            'url': f'/web/content/{attachment.id}?download=true&filename={zip_name}',
-            'target': 'self',
-        }

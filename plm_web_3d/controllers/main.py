@@ -287,7 +287,10 @@ class Web3DView(Controller):
         for ir_attachment in _plm_document(
             document_id, "download_treejs_model", purpose="view3d"
         ):
-            if ir_attachment.has_web3d:
+            # only a file in a web format: has_web3d is also true for a native
+            # CAD file with a Web3DTree child, whose content must not be sent
+            # (the viewer is always given the child, get_url_for_3dWebModel)
+            if ir_attachment.isWebGl():
                 headers = []
                 content = bytes(ir_attachment.raw)
                 headers.append(("Content-Length", len(content)))

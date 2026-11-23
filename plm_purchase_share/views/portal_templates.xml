@@ -1,5 +1,8 @@
 <odoo>
     <template id="plm_purchase_order_portal_content" inherit_id="purchase.purchase_order_portal_content" active="True">
+        <xpath expr="//table[@id='purchase_order_table']" position="before">
+            <t t-set="plm_portal_scope" t-value="request.env.user._plm_portal_products()"/>
+        </xpath>
         <xpath expr="//section[@id='details']//table[@id='purchase_order_table']//thead//tr//th[hasclass('text-start')]"
                position="after">
             <th>
@@ -7,14 +10,29 @@
         </xpath>
         <xpath expr="//section[@id='details']//table[@id='purchase_order_table']//tbody//td[@id='product_name']"
                position="after">
-            <t t-set="doc" t-value="line.product_id.linkeddocuments.filtered(lambda a: a.document_type == '2d')[:1]"/>
-            <td id="single_product_download">
-                <t t-if="doc and request.env.user.has_group('plm_purchase_share.group_plm_purchase_portal_user')">
-                    <a t-att-href="'/report/html/plm.product_production_pdf_latest/%s' % line.product_id.id"
-                       class="btn btn-primary d-flex align-items-center justify-content-center"
+            <td id="single_product_download" class="text-nowrap">
+                <t t-if="request.env.user._plm_portal_printouts(line.product_id, plm_portal_scope)">
+                    <a t-att-href="'/my/plm/product/%s/view?order_id=%s' % (line.product_id.id, order.id)"
+                       class="btn btn-secondary"
                        style="width:50px; height:40px;"
-                       target="_blank">
+                       title="View the drawings">
+                        <i class="oi" data-icon="visibility"/>
+                    </a>
+                    <a t-att-href="'/my/plm/product/%s/pdf?download=1' % line.product_id.id"
+                       class="btn btn-primary"
+                       style="width:50px; height:40px;"
+                       title="Download the drawings">
                         <i class="oi" data-icon="download"/>
+                    </a>
+                </t>
+                <t t-set="plm_viewer_url" t-value="request.env.user._plm_portal_viewer_url(line.product_id, plm_portal_scope)"/>
+                <t t-if="plm_viewer_url">
+                    <a t-att-href="plm_viewer_url"
+                       class="btn btn-secondary"
+                       style="width:50px; height:40px;"
+                       title="Open in 3D"
+                       target="_blank">
+                        <i class="oi" data-icon="deployed_code"/>
                     </a>
                 </t>
             </td>
@@ -23,7 +41,8 @@
 
     <template id="plm_portal_my_purchase_order" inherit_id="purchase.portal_my_purchase_order" active="True">
         <xpath expr="//a[@id='print_invoice_report']" position="after">
-            <t t-if="request.env.user.has_group('plm_purchase_share.group_plm_purchase_portal_user')">
+            <t t-set="plm_portal_scope" t-value="request.env.user._plm_portal_products()"/>
+            <t t-if="any(request.env.user._plm_portal_printouts(product, plm_portal_scope) for product in order.order_line.product_id)">
                 <a
                     id="all_product_download"
                     class="btn btn-primary"
@@ -34,5 +53,26 @@
                 </a>
             </t>
         </xpath>
+    </template>
+
+    <template id="portal_product_printouts" name="PLM drawings of a product">
+        <t t-call="portal.portal_layout">
+            <t t-set="no_breadcrumbs" t-value="True"/>
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+                <h3 class="mb-0" t-out="product_name"/>
+                <div class="d-flex gap-2">
+                    <a t-att-href="back_url" class="btn btn-secondary">
+                        <i class="oi me-1" data-icon="arrow_back"/>Back
+                    </a>
+                    <a t-att-href="pdf_url + '?download=1'" class="btn btn-primary">
+                        <i class="oi me-1" data-icon="download"/>Download
+                    </a>
+                </div>
+            </div>
+            <iframe t-att-src="pdf_url"
+                    t-att-title="product_name"
+                    class="w-100 border rounded"
+                    style="height: 80vh;"/>
+        </t>
     </template>
 </odoo>

@@ -831,8 +831,21 @@ class MrpBomExtension(models.Model):
         for mrp_bom in self:
             if mrp_bom.product_tmpl_id.engineering_code:
                 if mrp_bom.product_tmpl_id.engineering_state != START_STATUS:
+                    product_tmpl = mrp_bom.product_tmpl_id
+                    state_label = dict(
+                        product_tmpl._fields["engineering_state"]._description_selection(
+                            self.env
+                        )
+                    ).get(product_tmpl.engineering_state)
                     raise UserError(
-                        f"the bom {mrp_bom.product_tmpl_id.engineering_code} must be in state {START_STATUS} to be delated")
+                        _(
+                            "The product %(product)s of the bom %(bom)s cannot be"
+                            " deleted as it is in %(state)s status",
+                            product=product_tmpl.display_name,
+                            bom=mrp_bom.display_name,
+                            state=state_label,
+                        )
+                    )
         return super(MrpBomExtension, self).unlink()
 
     def delete_child_row(self, document_id):
@@ -1153,6 +1166,10 @@ class MrpBomExtension(models.Model):
             #
             elif bom_changed and mrp_bom_found_id:
                 mrp_bom_found_id._set_outdated_bom_in_productions()
+            #
+            if hasattr(self, "afterSaveRelationNew") and mrp_bom_found_id:
+                self.afterSaveRelationNew(mrp_bom_found_id)
+            #
             return True
         except Exception as ex:
             logging.error(ex)
