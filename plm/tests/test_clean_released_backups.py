@@ -97,6 +97,20 @@ class PlmCleanReleasedBackups(TransactionCase, PlmEntityCreator):
         self.assertTrue(backup_id.exists())
         self.assertTrue(os.path.exists(self._path(backup_id)))
 
+    def test_setting_saved(self):
+        """The setting saved from the settings page stops the cleaning, and
+        saving it off lets the cleaning run again."""
+        backup_id = self._backup(self._document("released"))
+        settings = self.env["res.config.settings"]
+        settings.create({"keep_released_backups": True}).execute()
+        self.assertEqual(self.backup._cron_clean_released_backups(), 0)
+        self.assertTrue(backup_id.exists())
+        settings.create({"keep_released_backups": False}).execute()
+        path = self._path(backup_id)
+        self._clean()
+        self.assertFalse(backup_id.exists())
+        self.assertFalse(os.path.exists(path))
+
     def test_shared_file_kept(self):
         """A file still used by another backup or by an attachment stays."""
         released = self._document("released")
