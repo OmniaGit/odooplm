@@ -1493,7 +1493,13 @@ class IrAttachment(models.Model):
                                     % (self.env.uid)
                                 )
                             )
-                        if not attachment_id.is_plm_state_writable():
+                        # a library document (a SOLIDWORKS Toolbox master) holds
+                        # the products of many sizes: checked out, new sizes are
+                        # saved into it whatever its state, obsoleted apart
+                        if not attachment_id.is_plm_state_writable() and not (
+                            attachment_id.is_library
+                            and attachment_id.engineering_state != OBSOLATED_STATUS
+                        ):
                             raise UserError(
                                 _(
                                     "The active state does not allow you to make save action"
@@ -3317,10 +3323,15 @@ class IrAttachment(models.Model):
         documentAttribute["is_library"] = documentAttribute.get("IS_LIBRARY", "")
         documentAttribute["library_path"] = documentAttribute.get("LIBRARY_PATH", "")
         if found:  # write
+            # a library document (a SOLIDWORKS Toolbox master) checked out is
+            # saved also when released: the client adds new sizes to it
             if ir_attachemnt_id.engineering_state not in [
                 RELEASED_STATUS,
                 OBSOLATED_STATUS,
-            ]:
+            ] or (
+                ir_attachemnt_id.is_library
+                and ir_attachemnt_id.engineering_state == RELEASED_STATUS
+            ):
                 if ir_attachemnt_id.needUpdate():
                     ir_attachemnt_id.write(documentAttribute)
                     action = ir_attachemnt_id.canIUpload(dbThread)
