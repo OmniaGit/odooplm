@@ -69,6 +69,26 @@ class TestConvertFormatAdmin(TransactionCase):
                 line.available = True
         self.assertIn(".igs", self.server.available_format.mapped("end_format"))
 
+    def test_a_cad_agent_made_by_hand_needs_no_address(self):
+        """A CAD agent server without GUID (made by hand or by a module, as
+        the CAD Workstation of Nisbau) is saved from its form without the
+        address of a push server."""
+        agent = self.env["plm.convert.servers"].create({"name": "Hand agent FA", "cad_agent": True})
+        with Form(agent.with_user(self.admin)) as form:
+            with form.available_format.new() as line:
+                line.start_format = ".faipt"
+                line.end_format = ".faipt"
+                line.cad_name = "Inventor"
+                line.cad_version_update = True
+                line.available = True
+        self.assertTrue(agent.available_format.cad_version_update)
+        self.assertFalse(agent.address)
+        # a push server still needs its address
+        push = self.env["plm.convert.servers"].create({"name": "Push FA"})
+        with self.assertRaises(AssertionError):
+            with Form(push.with_user(self.admin)) as form:
+                form.timeout = 3
+
     # -------------------------------------------------------- constraint
 
     def test_a_conversion_is_not_a_cad_version_update(self):
