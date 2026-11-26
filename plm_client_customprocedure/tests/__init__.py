@@ -19,3 +19,4 @@
 #
 ##############################################################################
 from . import test_custom_procedure
+from . import test_sheet_templates

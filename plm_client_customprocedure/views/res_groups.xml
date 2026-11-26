@@ -31,6 +31,10 @@
                                invisible="custom_multicad_content in [False, '']"
                                style="min-height:1000px;width:100%"/>
                     </group>
+                    <group name="omnia_plm_sheet_templates" string="Frames and title blocks">
+                        <field name="plm_frame_document_ids" widget="many2many_tags"/>
+                        <field name="plm_titleblock_document_ids" widget="many2many_tags"/>
+                    </group>
                 </page>
             </notebook>
         </field>
