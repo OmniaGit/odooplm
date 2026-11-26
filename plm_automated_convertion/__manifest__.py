@@ -20,7 +20,7 @@
 ##############################################################################
 {
     "name": "Product Lifecycle Management Batch conversion",
-    "version": "18.0.4.4.1",
+    "version": "18.0.4.4.2",
     "author": "OmniaSolutions",
     "website": "https://github.com/OmniaGit/odooplm",
     "category": "Manufacturing/Product Lifecycle Management (PLM)",
@@ -34,6 +34,7 @@
         "data/ir_action_server.xml",
         "data/data.xml",
         "wizards/plm_convert.xml",
+        "wizards/plm_convert_servers_template.xml",
         "view/menu.xml",
         "view/ir_attachment.xml",
         "view/plm_convert_rule.xml",

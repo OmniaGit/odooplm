@@ -12,6 +12,27 @@
             <xpath expr="//field[@name='is_internal']" position="after">
                 <field name="cad_agent"/>
             </xpath>
+            <!-- a CAD agent calls Odoo and Odoo never converts its rows: the
+                 address, the test and the processes of a push server do not
+                 apply to it, registered or made by hand -->
+            <xpath expr="//group[@name='server_spec']" position="attributes">
+                <attribute name="invisible">is_internal or workstation_guid or cad_agent</attribute>
+            </xpath>
+            <xpath expr="//field[@name='address']" position="attributes">
+                <attribute name="required">not is_internal and not workstation_guid and not cad_agent</attribute>
+            </xpath>
+            <xpath expr="//field[@name='protocol']" position="attributes">
+                <attribute name="required">not is_internal and not workstation_guid and not cad_agent</attribute>
+            </xpath>
+            <xpath expr="//field[@name='port']" position="attributes">
+                <attribute name="required">not is_internal and not workstation_guid and not cad_agent</attribute>
+            </xpath>
+            <xpath expr="//button[@name='killProcess']/.." position="attributes">
+                <attribute name="invisible">is_internal or workstation_guid or cad_agent or client_processes in [False, '']</attribute>
+            </xpath>
+            <xpath expr="//button[@name='getClientProcesses']/.." position="attributes">
+                <attribute name="invisible">is_internal or workstation_guid or cad_agent</attribute>
+            </xpath>
         </field>
     </record>
 </odoo>

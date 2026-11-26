@@ -137,6 +137,26 @@
         <field name="perm_create" eval="0" />
         <field name="perm_unlink" eval="0" />
     </record>
+    <!-- the conversion rules of a server are made in Odoo by a Plm Convert
+         Admin (the workstations make their own when they register) -->
+    <record id="plm_convert_format_admin" model="ir.model.access">
+        <field name="name">Plm Convert Format Admin</field>
+        <field name="model_id" ref="plm_automated_convertion.model_plm_convert_format" />
+        <field name="group_id" ref="plm_automated_convertion.group_plm_convert_admin" />
+        <field name="perm_read" eval="1" />
+        <field name="perm_write" eval="1" />
+        <field name="perm_create" eval="1" />
+        <field name="perm_unlink" eval="1" />
+    </record>
+    <record id="plm_convert_servers_template_wizard_admin" model="ir.model.access">
+        <field name="name">Add Conversions From A Template</field>
+        <field name="model_id" ref="plm_automated_convertion.model_plm_convert_servers_template_wizard" />
+        <field name="group_id" ref="plm_automated_convertion.group_plm_convert_admin" />
+        <field name="perm_read" eval="1" />
+        <field name="perm_write" eval="1" />
+        <field name="perm_create" eval="1" />
+        <field name="perm_unlink" eval="1" />
+    </record>
 
 
     <record id="plm_convert_template_user" model="ir.model.access">

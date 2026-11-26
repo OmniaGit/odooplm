@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="plm_convert_servers_template_wizard_form" model="ir.ui.view">
+        <field name="name">plm.convert.servers.template.wizard.form</field>
+        <field name="model">plm.convert.servers.template.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Add Conversions From A Template">
+                <p class="text-muted">
+                    The conversions of the template the server does not have yet are added to it.
+                </p>
+                <group>
+                    <field name="server_id" readonly="1" />
+                    <field name="template_id" />
+                    <field name="cad_name" placeholder="Inventor" />
+                </group>
+                <footer>
+                    <button name="action_add_and_close" type="object" string="Add" class="btn-primary" />
+                    <button string="Cancel" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="plm_convert_servers_template_wizard_action" model="ir.actions.act_window">
+        <field name="name">Add Conversions From A Template</field>
+        <field name="res_model">plm.convert.servers.template.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>

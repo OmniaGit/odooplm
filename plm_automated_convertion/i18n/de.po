@@ -25,6 +25,7 @@ msgstr "Dateianhang"
 #. module: plm_automated_convertion
 #: model_terms:ir.ui.view,arch_db:plm_automated_convertion.act_plm_convert_form
 #: model_terms:ir.ui.view,arch_db:plm_automated_convertion.plm_cad_version_queue_wizard_form
+#: model_terms:ir.ui.view,arch_db:plm_automated_convertion.plm_convert_servers_template_wizard_form
 msgid "Cancel"
 msgstr "Abbrechen"
 
@@ -620,8 +621,16 @@ msgstr "Zu erledigen"
 #. module: plm_automated_convertion
 #. odoo-python
 #: code:addons/plm_automated_convertion/wizards/cad_version_queue_wizard.py:0
-msgid "Two conversions start from the format %s: choose only one."
-msgstr "Zwei Konvertierungen beginnen mit dem Format %s: Wählen Sie nur eine."
+msgid ""
+"Two CAD version updates start from the format %(extension)s: %(first)s and "
+"%(second)s. Choose only one, or remove CAD Version Update from the one that "
+"is a conversion (PLM > Configuration > CAD Conversion > Workstations and "
+"Servers)."
+msgstr ""
+"Zwei CAD-Versionsaktualisierungen beginnen mit dem Format %(extension)s: "
+"%(first)s und %(second)s. Wählen Sie nur eine, oder entfernen Sie die CAD-"
+"Versionsaktualisierung bei derjenigen, die eine Konvertierung ist (PLM > "
+"Konfiguration > CAD-Konvertierung > Arbeitsplätze und Server)."
 
 #. module: plm_automated_convertion
 #. odoo-python
@@ -935,6 +944,7 @@ msgstr "Übernommen von"
 #. module: plm_automated_convertion
 #: model:ir.model.fields,field_description:plm_automated_convertion.field_plm_convert__template_id
 #: model:ir.model.fields,field_description:plm_automated_convertion.field_plm_convert_template_line__template_id
+#: model:ir.model.fields,field_description:plm_automated_convertion.field_plm_convert_servers_template_wizard__template_id
 msgid "Template"
 msgstr "Vorlage"
 
@@ -1056,3 +1066,48 @@ msgstr "Name der Vorlage"
 #: model_terms:ir.ui.view,arch_db:plm_automated_convertion.plm_convert_servers_form
 msgid "Queue"
 msgstr "Warteschlange"
+
+#. module: plm_automated_convertion
+#. odoo-python
+#: code:addons/plm_automated_convertion/models/plm_convert_workstation.py:0
+msgid ""
+"%(rule)s: a conversion with a CAD export mode cannot also be a CAD version "
+"update; a CAD version update starts and ends with the same format and has no "
+"export mode."
+msgstr ""
+"%(rule)s: Eine Konvertierung mit einem CAD-Exportmodus kann nicht zugleich "
+"eine CAD-Versionsaktualisierung sein; eine CAD-Versionsaktualisierung beginnt "
+"und endet mit demselben Format und hat keinen Exportmodus."
+
+#. module: plm_automated_convertion
+#. odoo-python
+#: code:addons/plm_automated_convertion/wizards/plm_convert_servers_template.py:0
+msgid "Choose the CAD of the conversions."
+msgstr "Wählen Sie das CAD der Konvertierungen."
+
+#. module: plm_automated_convertion
+#: model_terms:ir.ui.view,arch_db:plm_automated_convertion.plm_convert_servers_template_wizard_form
+msgid "Add"
+msgstr "Hinzufügen"
+
+#. module: plm_automated_convertion
+#: model:ir.actions.act_window,name:plm_automated_convertion.plm_convert_servers_template_wizard_action
+#: model:ir.model,name:plm_automated_convertion.model_plm_convert_servers_template_wizard
+#: model_terms:ir.ui.view,arch_db:plm_automated_convertion.plm_convert_servers_template_wizard_form
+msgid "Add Conversions From A Template"
+msgstr "Konvertierungen aus einer Vorlage hinzufügen"
+
+#. module: plm_automated_convertion
+#: model_terms:ir.ui.view,arch_db:plm_automated_convertion.plm_convert_servers_form
+msgid "Add From Template"
+msgstr "Aus Vorlage hinzufügen"
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields,help:plm_automated_convertion.field_plm_convert_servers_template_wizard__cad_name
+msgid "The CAD of the conversions made, as the rules write it (Inventor)."
+msgstr "Das CAD der erstellten Konvertierungen, so wie die Regeln es schreiben (Inventor)."
+
+#. module: plm_automated_convertion
+#: model_terms:ir.ui.view,arch_db:plm_automated_convertion.plm_convert_servers_template_wizard_form
+msgid "The conversions of the template the server does not have yet are added to it."
+msgstr "Die Konvertierungen der Vorlage, die der Server noch nicht hat, werden ihm hinzugefügt."
