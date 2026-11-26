@@ -103,15 +103,26 @@
                                 nolabel="1"
                             />
                         </group>
+                        <div class="d-flex justify-content-end" invisible="not id">
+                            <button
+                                name="%(plm_automated_convertion.plm_convert_servers_template_wizard_action)d"
+                                type="action"
+                                string="Add From Template"
+                                icon="fa-plus"
+                                class="btn-secondary"
+                                context="{'default_server_id': id}"
+                                groups="plm_automated_convertion.group_plm_convert_admin"
+                            />
+                        </div>
                         <field name="available_format">
-                            <list>
+                            <list editable="bottom">
                                 <field name="available" widget="boolean_toggle" />
-                                <field name="name" />
-                                <field name="sequence" />
-                                <field name="start_format" />
-                                <field name="end_format" />
+                                <field name="name" readonly="1" optional="hide" />
+                                <field name="sequence" optional="hide" />
+                                <field name="start_format" placeholder=".ipt" />
+                                <field name="end_format" placeholder=".step" />
                                 <field name="presented" optional="hide" />
-                                <field name="cad_name" />
+                                <field name="cad_name" placeholder="Inventor" />
                             </list>
                         </field>
                     </sheet>

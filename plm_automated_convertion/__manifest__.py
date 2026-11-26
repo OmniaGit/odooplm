@@ -48,6 +48,7 @@
         "data/ir_action_server.xml",
         "data/data.xml",
         "wizards/plm_convert.xml",
+        "wizards/plm_convert_servers_template.xml",
         "view/menu.xml",
         "view/ir_attachment.xml",
         "view/plm_convert_format_views.xml",

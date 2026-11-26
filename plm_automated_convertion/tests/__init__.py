@@ -24,3 +24,4 @@ from . import test_workstation_register
 from . import test_queue_dispatch
 from . import test_convert_wizard
 from . import test_missing_libraries
+from . import test_convert_format_admin

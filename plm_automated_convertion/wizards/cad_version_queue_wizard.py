@@ -83,7 +83,16 @@ class PlmCadVersionQueueWizard(models.TransientModel):
                 continue
             formats = out.setdefault(extension, self.env["plm.convert.format"])
             if self.operation_type == CAD_VERSION_OPERATION and formats and formats != convert_format:
-                raise UserError(_("Two conversions start from the format %s: choose only one.", extension))
+                raise UserError(
+                    _(
+                        "Two CAD version updates start from the format %(extension)s: %(first)s and %(second)s. "
+                        "Choose only one, or remove CAD Version Update from the one that is a conversion "
+                        "(PLM > Configuration > CAD Conversion > Workstations and Servers).",
+                        extension=extension,
+                        first=_rule_label(formats[0]),
+                        second=_rule_label(convert_format),
+                    )
+                )
             out[extension] = formats | convert_format
         return out
 
@@ -140,3 +149,10 @@ class PlmCadVersionQueueWizard(models.TransientModel):
         stack = self.env["plm.convert.stack"]
         rows = stack._queue_jobs(documents, all_formats, self.operation_type, targets)
         return stack._queue_action(rows)
+
+
+def _rule_label(rule):
+    """A conversion rule as the user finds it: CAD, formats and server."""
+    return "%s %s -> %s (%s, id %s)" % (
+        rule.cad_name or "", rule.start_format or "", rule.end_format or "", rule.server_id.name or "", rule.id
+    )

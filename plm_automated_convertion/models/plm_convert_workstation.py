@@ -22,7 +22,7 @@ their machine, and present what they can do (DESIGN.md, CAD workstations)."""
 import datetime
 
 from odoo import _, api, fields, models
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 
 # a workstation is alive when it called Odoo in the last minutes
 ALIVE_MINUTES = 10
@@ -263,3 +263,19 @@ class PlmConvertFormat(models.Model):
         help="Made by the workstation when it registered: it becomes unavailable when the workstation "
         "no longer presents it.",
     )
+
+    @api.constrains("cad_export_mode", "cad_version_update")
+    def _check_export_or_version_update(self):
+        """A rule either exports (a conversion of the workstation) or updates
+        the file to the target CAD version, never both: a conversion marked
+        as CAD version update leaves the conversion wizard and makes the
+        Massive Update find two version updates for one format."""
+        for rule in self:
+            if rule.cad_export_mode and rule.cad_version_update:
+                raise ValidationError(
+                    _(
+                        "%(rule)s: a conversion with a CAD export mode cannot also be a CAD version update; "
+                        "a CAD version update starts and ends with the same format and has no export mode.",
+                        rule=rule.display_name,
+                    )
+                )
