@@ -38,6 +38,21 @@ class ResGroups(models.Model):
     custom_multicad_fname = fields.Char("MultiCad File name")
     custom_multicad_content = fields.Text('Custom Multicad Content')
 
+    # The customer's frames (squadrature) and title blocks (cartigli), as PLM
+    # documents: the CAD client of every member downloads them, each code at
+    # its highest revision (plm.client.get_sheet_templates), so a change on
+    # the server reaches every client (2026-11-26).
+    plm_frame_document_ids = fields.Many2many(
+        'ir.attachment', 'res_groups_plm_frame_document_rel', 'group_id', 'attachment_id',
+        string='Frames', domain=[('is_plm', '=', True)],
+        help='The frames (squadrature) the CAD client of the members of this group offers. '
+             'The client takes the highest revision of each document code.')
+    plm_titleblock_document_ids = fields.Many2many(
+        'ir.attachment', 'res_groups_plm_titleblock_document_rel', 'group_id', 'attachment_id',
+        string='Title blocks', domain=[('is_plm', '=', True)],
+        help='The title blocks (cartigli) the CAD client of the members of this group offers. '
+             'The client takes the highest revision of each document code.')
+
     def write(self, vals):
         erase = self.env.context.get('erase_multicad', True)
         erase_custom = self.env.context.get('erase_customprocedure', True)

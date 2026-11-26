@@ -28,3 +28,4 @@ from . import odoo_cad_mapping
 from . import product_product
 from . import plm_conversion_stack_line
 from . import plm_convert_stack
+from . import plm_client
