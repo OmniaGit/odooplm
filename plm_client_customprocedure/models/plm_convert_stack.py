@@ -122,7 +122,7 @@ class PlmConvertStack(models.Model):
                     else:
                         stack_id.write({
                             'error_string': error_msg,
-                            'state': 'draft'
+                            'cad_agent_state': 'error',
                         })
                         continue  # skip success flow
                 except Exception as ex:

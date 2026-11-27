@@ -21,7 +21,7 @@
 ##############################################################################
 {
     "name": "Product Lifecycle Management Batch conversion",
-    "version": "20.0.1.0.4",
+    "version": "20.0.1.0.6",
     "images": ["static/description/cover.gif"],
     "author": "OmniaSolutions",
     "maintainer": "OmniaSolutions S.n.c di Boscolo Matteo & C",
@@ -48,14 +48,21 @@
         "data/ir_action_server.xml",
         "data/data.xml",
         "wizards/plm_convert.xml",
+        "wizards/plm_convert_servers_template.xml",
+        "view/menu.xml",
         "view/ir_attachment.xml",
         "view/plm_convert_format_views.xml",
         "view/plm_convert_stack.xml",
         "view/plm_convert_servers.xml",
         "view/plm_convert_rule.xml",
         "view/res_config_settings_views.xml",
-
+        "view/cad_agent_stack.xml",
+        "view/cad_agent_servers.xml",
+        "view/cad_agent_attachment.xml",
+        "view/plm_convert_template.xml",
+        "wizards/cad_version_queue_wizard.xml",
     ],
+    "post_init_hook": "post_init_hook",
     "external_dependencies": {
         "python": ["ezdxf",
                    "matplotlib",

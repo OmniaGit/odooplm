@@ -48,6 +48,31 @@ class PlmConvertServers(models.Model):
     )
     folder_to = fields.Text("Folder To")
     available = fields.Boolean("Is Available", default=True)
+    stack_count = fields.Integer("Queue", compute="_compute_stack_count")
+
+    def _stack_domain(self):
+        """The rows of the conversion stack of this server: the ones of its
+        conversion rules and the ones it took as a workstation."""
+        self.ensure_one()
+        domain = ["|", ("workstation_id", "=", self.id), ("convrsion_rule.server_id", "=", self.id)]
+        if self.hostname:
+            # the rows a workstation took before it registered (its computer
+            # name), whatever server their conversion belongs to
+            domain = ["|", ("cad_hostname", "=ilike", self.hostname)] + domain
+        return domain
+
+    def _compute_stack_count(self):
+        stack = self.env["plm.convert.stack"]
+        for server in self:
+            server.stack_count = stack.search_count(server._stack_domain()) if server.id else 0
+
+    def action_view_stack(self):
+        """The conversion stack of this server."""
+        self.ensure_one()
+        action = self.env["ir.actions.act_window"]._for_xml_id("plm_automated_convertion.plm_convert_stack_action")
+        action["domain"] = self._stack_domain()
+        action["name"] = "%s: %s" % (action["name"], self.name or "")
+        return action
 
     def getBaseUrl(self):
         for server in self:

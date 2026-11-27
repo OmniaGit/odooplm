@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+<data>
+    <record model="ir.ui.view" id="plm_view_cad_list">
+        <field name="name">plm.view.cad.list</field>
+        <field name="model">plm.cad</field>
+        <field name="arch" type="xml">
+            <list string="CADs">
+                <field name="sequence" widget="handle" />
+                <field name="name" />
+                <field name="code" />
+                <field name="target_version_id" options="{'no_create': True}" />
+                <field name="prog_id" optional="hide" />
+            </list>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="plm_view_cad_form">
+        <field name="name">plm.view.cad.form</field>
+        <field name="model">plm.cad</field>
+        <field name="arch" type="xml">
+            <form string="CAD">
+                <sheet>
+                    <widget name="web_ribbon" title="Archived" bg_color="text-bg-danger" invisible="active" />
+                    <group>
+                        <group>
+                            <field name="name" />
+                            <field name="code" />
+                            <field name="prog_id" />
+                        </group>
+                        <group>
+                            <field name="target_version_id" options="{'no_create': True}" />
+                            <field name="active" invisible="1" />
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Versions" name="versions">
+                            <field name="version_ids" context="{'active_test': False}">
+                                <list editable="bottom">
+                                    <field name="sequence" />
+                                    <field name="name" />
+                                    <field name="active" widget="boolean_toggle" />
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="plm_view_cad_search">
+        <field name="name">plm.view.cad.search</field>
+        <field name="model">plm.cad</field>
+        <field name="arch" type="xml">
+            <search string="CADs">
+                <field name="name" />
+                <field name="code" />
+                <filter string="Archived" name="inactive" domain="[('active', '=', False)]" />
+            </search>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="plm_action_cad_form">
+        <field name="name">CAD Versions</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">plm.cad</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Add a CAD</p>
+            <p>The CADs the PLM works with, their versions, and the version each one is updated to.</p>
+        </field>
+    </record>
+</data>
+</odoo>

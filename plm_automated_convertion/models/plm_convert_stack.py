@@ -79,14 +79,6 @@ class PlmConvertStack(models.Model):
         """
     )
     stack_data = fields.Json()
-    state = fields.Selection(
-        [
-            ('draft', 'Draft'),
-            ('done', 'Done'),
-        ],
-        string="Status",
-        default='draft'
-    )
 
     def _compute_name(self):
         for stack_id in self:
@@ -96,12 +88,10 @@ class PlmConvertStack(models.Model):
             )
 
     def setToConver(self):
-        for convertStack in self:
-            convertStack.state = 'draft'
+        self.write({"conversion_done": False, "cad_agent_state": "to_do"})
 
     def setToConverted(self):
-        for convertStack in self:
-            convertStack.state = 'done'
+        self.write({"conversion_done": True, "cad_agent_state": "done"})
 
     @api.model_create_multi
     def create(self, vals):
@@ -168,8 +158,11 @@ class PlmConvertStack(models.Model):
             except Exception as ex:
                 logging.error(ex)
                 traceback.print_exc()
-                stack_id.error_string = (
-                    _("Internal Error %s check odoo log for the full error stack") % ex
+                stack_id.write(
+                    {
+                        "cad_agent_state": "error",
+                        "error_string": _("Internal Error %s check odoo log for the full error stack") % ex,
+                    }
                 )
 
     def generateConvertedDocuments(self):
@@ -285,11 +278,6 @@ class PlmConvertStack(models.Model):
             raise Exception(_("File not converted"))
         return newFilePath
 
-
-    def generateConvertedDocuments(self):
-        logging.info("generateConvertedDocuments started")
-        toConvert = self.search([("state", "=", 'draft')], order="sequence ASC")
-        toConvert.convert()
 
     def getAllFiles(self, document_id):
         out = {}

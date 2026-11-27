@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_attachment_form_cad_version" model="ir.ui.view">
+        <field name="name">ir.attachment.form.cad.version</field>
+        <field name="model">ir.attachment</field>
+        <field name="inherit_id" ref="plm.view_attachment_form_plm_hinerit"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='workflow_section']/group[1]" position="after">
+                <group string="CAD Version" name="cad_version">
+                    <group>
+                        <field name="cad_version"/>
+                        <field name="cad_version_update_date"/>
+                    </group>
+                    <group>
+                        <field name="cad_upload_date"/>
+                    </group>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="ir_attachment_search_cad_version" model="ir.ui.view">
+        <field name="name">ir.attachment.search.cad.version</field>
+        <field name="model">ir.attachment</field>
+        <field name="inherit_id" ref="plm.ir_attachment_search"/>
+        <field name="arch" type="xml">
+            <xpath expr="//search" position="inside">
+                <field name="cad_version"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

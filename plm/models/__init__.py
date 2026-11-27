@@ -20,6 +20,7 @@
 ##############################################################################
 from . import base
 from . import plm_mixin
+from . import plm_cad
 from . import plm_access
 from . import res_company
 from . import product_product_document_rel
